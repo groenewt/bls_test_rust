@@ -1,0 +1,1655 @@
+[4.0K]  .
+├── [4.0K]  final
+├── [4.0K]  processed
+├── [4.0K]  raw
+│   └── [4.0K]  bls
+│       ├── [4.0K]  ap
+│       │   ├── [225K]  ap.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [8.3M]  ap.data.0.Current
+│       │   │   ├── [4.3M]  ap.data.1.HouseholdFuels
+│       │   │   ├── [3.9M]  ap.data.2.Gasoline
+│       │   │   └── [5.9M]  ap.data.3.Food
+│       │   └── [4.0K]  map
+│       │       ├── [2.1K]  ap.area
+│       │       ├── [ 987]  ap.contacts
+│       │       ├── [  29]  ap.footnote
+│       │       ├── [9.0K]  ap.item
+│       │       ├── [ 252]  ap.period
+│       │       └── [  79]  ap.seasonal
+│       ├── [4.0K]  bd
+│       │   ├── [5.4M]  bd.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [181M]  bd.data.0.Current
+│       │   │   └── [234M]  bd.data.1.AllItems
+│       │   └── [4.0K]  map
+│       │       ├── [ 209]  bd.contacts
+│       │       ├── [  39]  bd.county
+│       │       ├── [ 267]  bd.dataclass
+│       │       ├── [ 153]  bd.footnote
+│       │       ├── [4.3K]  bd.industry
+│       │       ├── [  35]  bd.msa
+│       │       ├── [ 570]  bd.sizeclass
+│       │       └── [ 771]  bd.state
+│       ├── [4.0K]  bg
+│       │   ├── [1.3K]  bg.series
+│       │   ├── [4.0K]  data
+│       │   │   └── [ 28K]  bg.data.1.AllData
+│       │   └── [4.0K]  map
+│       │       ├── [ 257]  bg.alteration
+│       │       ├── [ 731]  bg.contacts
+│       │       ├── [  66]  bg.duration
+│       │       ├── [1.2K]  bg.measure
+│       │       ├── [ 146]  bg.period
+│       │       ├── [ 195]  bg.sector
+│       │       ├── [ 114]  bg.selection
+│       │       └── [ 123]  bg.unit
+│       ├── [4.0K]  bp
+│       │   ├── [5.0K]  bp.series
+│       │   ├── [4.0K]  data
+│       │   │   └── [185K]  bp.data.1.AllData
+│       │   └── [4.0K]  map
+│       │       ├── [ 291]  bp.alteration
+│       │       ├── [ 731]  bp.contacts
+│       │       ├── [  80]  bp.duration
+│       │       ├── [ 290]  bp.industry
+│       │       ├── [3.0K]  bp.measure
+│       │       ├── [ 146]  bp.period
+│       │       ├── [  94]  bp.periodicity
+│       │       ├── [ 111]  bp.selection
+│       │       └── [ 123]  bp.unit
+│       ├── [4.0K]  cb
+│       │   ├── [3.6G]  cb.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [2.1G]  cb.data.0.Current
+│       │   │   └── [2.1G]  cb.data.1.AllData
+│       │   └── [4.0K]  map
+│       │       ├── [1.0K]  cb.age
+│       │       ├── [1.0K]  cb.case
+│       │       ├── [123K]  cb.category
+│       │       ├── [2.8K]  cb.contacts
+│       │       ├── [ 467]  cb.datatype
+│       │       ├── [ 25K]  cb.event
+│       │       ├── [ 111]  cb.footnote
+│       │       ├── [ 101]  cb.gender
+│       │       ├── [ 292]  cb.hour
+│       │       ├── [ 57K]  cb.industry
+│       │       ├── [ 157]  cb.los
+│       │       ├── [ 179]  cb.medical
+│       │       ├── [ 15K]  cb.nature
+│       │       ├── [ 67K]  cb.occupation
+│       │       ├── [ 148]  cb.ownership
+│       │       ├── [5.9K]  cb.pob
+│       │       ├── [ 329]  cb.race
+│       │       ├── [ 55K]  cb.source
+│       │       ├── [  81]  cb.special
+│       │       ├── [ 997]  cb.state
+│       │       ├── [ 217]  cb.time
+│       │       └── [ 160]  cb.weekday
+│       ├── [4.0K]  cc
+│       │   ├── [278K]  cc.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [2.4M]  cc.data.0.Current
+│       │   │   └── [3.9M]  cc.data.1.AllData
+│       │   └── [4.0K]  map
+│       │       ├── [1.1K]  cc.benefit
+│       │       ├── [1.5K]  cc.contacts
+│       │       ├── [ 115]  cc.costfactor
+│       │       ├── [  97]  cc.footnote
+│       │       ├── [8.2K]  cc.industryocc
+│       │       └── [ 425]  cc.sector
+│       ├── [4.0K]  cd
+│       │   ├── [ 22M]  cd.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 38M]  cd.data.0.Current
+│       │   │   └── [110M]  cd.data.1.AllData
+│       │   └── [4.0K]  map
+│       │       ├── [ 168]  cd.age
+│       │       ├── [ 700]  cd.case
+│       │       ├── [ 37K]  cd.category
+│       │       ├── [3.8K]  cd.category2
+│       │       ├── [2.5K]  cd.contacts
+│       │       ├── [ 147]  cd.datatype
+│       │       ├── [ 13K]  cd.event
+│       │       ├── [  49]  cd.footnote
+│       │       ├── [  86]  cd.gender
+│       │       ├── [ 41K]  cd.industry
+│       │       ├── [ 143]  cd.los
+│       │       ├── [ 25K]  cd.nature
+│       │       ├── [ 23K]  cd.occupation
+│       │       ├── [6.4K]  cd.pob
+│       │       ├── [ 195]  cd.race
+│       │       └── [ 59K]  cd.source
+│       ├── [4.0K]  ce
+│       ├── [4.0K]  cf
+│       │   ├── [5.1M]  cf.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [8.2M]  cf.data.0.Current
+│       │   │   └── [ 23M]  cf.data.1.AllData
+│       │   └── [4.0K]  map
+│       │       ├── [ 262]  cf.case
+│       │       ├── [ 36K]  cf.category
+│       │       ├── [6.1K]  cf.category2
+│       │       ├── [2.5K]  cf.contacts
+│       │       ├── [  29]  cf.datatype
+│       │       ├── [ 13K]  cf.event
+│       │       ├── [ 105]  cf.footnote
+│       │       ├── [ 62K]  cf.industry
+│       │       ├── [ 29K]  cf.occupation
+│       │       └── [ 61K]  cf.source
+│       ├── [4.0K]  ch
+│       │   ├── [1.5G]  ch.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [3.1G]  ch.data.0.Current
+│       │   │   └── [3.1G]  ch.data.1.AllData
+│       │   └── [4.0K]  map
+│       │       ├── [1.2K]  ch.age
+│       │       ├── [ 993]  ch.case
+│       │       ├── [ 72K]  ch.category
+│       │       ├── [2.6K]  ch.contacts
+│       │       ├── [ 136]  ch.datatype
+│       │       ├── [ 13K]  ch.event
+│       │       ├── [  84]  ch.footnote
+│       │       ├── [ 105]  ch.gender
+│       │       ├── [ 304]  ch.hour
+│       │       ├── [ 75K]  ch.industry
+│       │       ├── [ 163]  ch.los
+│       │       ├── [ 21K]  ch.nature
+│       │       ├── [ 67K]  ch.occupation
+│       │       ├── [ 153]  ch.ownership
+│       │       ├── [5.8K]  ch.pob
+│       │       ├── [ 303]  ch.race
+│       │       ├── [ 54K]  ch.source
+│       │       ├── [  83]  ch.special
+│       │       ├── [1.0K]  ch.state
+│       │       ├── [ 225]  ch.time
+│       │       └── [ 168]  ch.weekday
+│       ├── [4.0K]  ci
+│       │   ├── [476K]  ci.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [3.7M]  ci.data.0.Current
+│       │   │   └── [7.9M]  ci.data.1.AllData
+│       │   └── [4.0K]  map
+│       │       ├── [1.5K]  ci.area
+│       │       ├── [ 11M]  ci.aspect
+│       │       ├── [ 669]  ci.contacts
+│       │       ├── [ 178]  ci.estimate
+│       │       ├── [1.8K]  ci.footnote
+│       │       ├── [1.6K]  ci.industry
+│       │       ├── [1.2K]  ci.occupation
+│       │       ├── [ 166]  ci.owner
+│       │       ├── [ 536]  ci.periodicity
+│       │       ├── [  79]  ci.seasonal
+│       │       └── [ 504]  ci.subcell
+│       ├── [4.0K]  cm
+│       │   ├── [1.5M]  cm.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 13M]  cm.data.0.Current
+│       │   │   └── [ 24M]  cm.data.1.AllData
+│       │   └── [4.0K]  map
+│       │       ├── [1.5K]  cm.area
+│       │       ├── [ 33M]  cm.aspect
+│       │       ├── [ 790]  cm.contacts
+│       │       ├── [ 730]  cm.datatype
+│       │       ├── [ 900]  cm.estimate
+│       │       ├── [2.8K]  cm.footnote
+│       │       ├── [1.5K]  cm.industry
+│       │       ├── [1.1K]  cm.occupation
+│       │       ├── [ 166]  cm.owner
+│       │       ├── [  79]  cm.seasonal
+│       │       └── [ 715]  cm.subcell
+│       ├── [4.0K]  cs
+│       │   ├── [2.0G]  cs.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [5.7G]  cs.data.0.Current
+│       │   │   └── [5.7G]  cs.data.1.AllData
+│       │   └── [4.0K]  map
+│       │       ├── [1.1K]  cs.age
+│       │       ├── [ 979]  cs.case
+│       │       ├── [105K]  cs.category
+│       │       ├── [2.9K]  cs.contacts
+│       │       ├── [ 133]  cs.datatype
+│       │       ├── [ 29K]  cs.event
+│       │       ├── [  48]  cs.footnote
+│       │       ├── [ 101]  cs.gender
+│       │       ├── [ 292]  cs.hour
+│       │       ├── [ 76K]  cs.industry
+│       │       ├── [ 157]  cs.los
+│       │       ├── [ 23K]  cs.nature
+│       │       ├── [ 77K]  cs.occupation
+│       │       ├── [ 148]  cs.ownership
+│       │       ├── [7.1K]  cs.pob
+│       │       ├── [ 293]  cs.race
+│       │       ├── [ 67K]  cs.source
+│       │       ├── [  81]  cs.special
+│       │       ├── [1016]  cs.state
+│       │       ├── [ 217]  cs.time
+│       │       └── [ 160]  cs.weekday
+│       ├── [4.0K]  cu
+│       │   ├── [1.3M]  cu.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 45M]  cu.data.0.Current
+│       │   │   ├── [ 11M]  cu.data.10.OtherWest
+│       │   │   ├── [6.2M]  cu.data.11.USFoodBeverage
+│       │   │   ├── [2.5M]  cu.data.12.USHousing
+│       │   │   ├── [1.3M]  cu.data.13.USApparel
+│       │   │   ├── [2.1M]  cu.data.14.USTransportation
+│       │   │   ├── [961K]  cu.data.15.USMedical
+│       │   │   ├── [1.3M]  cu.data.16.USRecreation
+│       │   │   ├── [858K]  cu.data.17.USEducationAndCommunication
+│       │   │   ├── [1.0M]  cu.data.18.USOtherGoodsAndServices
+│       │   │   ├── [1.4M]  cu.data.19.PopulationSize
+│       │   │   ├── [2.5M]  cu.data.1.AllItems
+│       │   │   ├── [3.4M]  cu.data.20.USCommoditiesServicesSpecial
+│       │   │   ├── [ 11M]  cu.data.2.Summaries
+│       │   │   ├── [676K]  cu.data.3.AsizeNorthEast
+│       │   │   ├── [2.4M]  cu.data.4.AsizeNorthCentral
+│       │   │   ├── [462K]  cu.data.5.AsizeSouth
+│       │   │   ├── [1.8M]  cu.data.6.AsizeWest
+│       │   │   ├── [8.9M]  cu.data.7.OtherNorthEast
+│       │   │   ├── [ 10M]  cu.data.8.OtherNorthCentral
+│       │   │   └── [ 12M]  cu.data.9.OtherSouth
+│       │   └── [4.0K]  map
+│       │       ├── [2.1K]  cu.area
+│       │       ├── [ 28M]  cu.aspect
+│       │       ├── [  45]  cu.base
+│       │       ├── [ 984]  cu.contacts
+│       │       ├── [  29]  cu.footnote
+│       │       ├── [ 16K]  cu.item
+│       │       ├── [ 323]  cu.period
+│       │       ├── [  61]  cu.periodicity
+│       │       └── [  79]  cu.seasonal
+│       ├── [4.0K]  cw
+│       │   ├── [1.4M]  cw.series
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 43M]  cw.data.0.Current
+│       │   │   ├── [ 11M]  cw.data.10.OtherWest
+│       │   │   ├── [4.6M]  cw.data.11.USFoodBeverage
+│       │   │   ├── [2.5M]  cw.data.12.USHousing
+│       │   │   ├── [1.3M]  cw.data.13.USApparel
+│       │   │   ├── [1.7M]  cw.data.14.USTransportation
+│       │   │   ├── [956K]  cw.data.15.USMedical
+│       │   │   ├── [1.0M]  cw.data.16.USRecreation
+│       │   │   ├── [803K]  cw.data.17.USEducationAndCommunication
+│       │   │   ├── [681K]  cw.data.18.USOtherGoodsAndServices
+│       │   │   ├── [1.4M]  cw.data.19.PopulationSize
+│       │   │   ├── [2.5M]  cw.data.1.AllItems
+│       │   │   ├── [3.1M]  cw.data.20.USCommoditiesServicesSpecial
+│       │   │   ├── [ 11M]  cw.data.2.Summaries
+│       │   │   ├── [674K]  cw.data.3.AsizeNorthEast
+│       │   │   ├── [2.4M]  cw.data.4.AsizeNorthCentral
+│       │   │   ├── [462K]  cw.data.5.AsizeSouth
+│       │   │   ├── [1.8M]  cw.data.6.AsizeWest
+│       │   │   ├── [8.9M]  cw.data.7.OtherNorthEast
+│       │   │   ├── [ 10M]  cw.data.8.OtherNorthCentral
+│       │   │   └── [ 12M]  cw.data.9.OtherSouth
+│       │   └── [4.0K]  map
+│       │       ├── [2.1K]  cw.area
+│       │       ├── [3.8M]  cw.aspect
+│       │       ├── [  45]  cw.base
+│       │       ├── [ 988]  cw.contacts
+│       │       ├── [  29]  cw.footnote
+│       │       ├── [ 13K]  cw.item
+│       │       ├── [ 323]  cw.period
+│       │       ├── [  61]  cw.periodicity
+│       │       └── [  79]  cw.seasonal
+│       ├── [4.0K]  cx
+│       │   ├── [8.2K]  cx.characteristics
+│       │   ├── [ 519]  cx.contacts
+│       │   ├── [4.0K]  data
+│       │   └── [4.0K]  map
+│       ├── [4.0K]  eb
+│       │   ├── [4.0K]  data
+│       │   │   └── [135K]  eb.data.1.AllData
+│       │   ├── [ 43K]  eb.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 667]  eb.contacts
+│       │       ├── [ 293]  eb.footnote
+│       │       ├── [  48]  eb.period
+│       │       ├── [  79]  eb.seasonal
+│       │       ├── [ 58K]  eb.title
+│       │       └── [ 161]  eb.type
+│       ├── [4.0K]  ec
+│       │   ├── [4.0K]  data
+│       │   └── [4.0K]  map
+│       ├── [4.0K]  ee
+│       │   ├── [4.0K]  data
+│       │   │   ├── [840K]  ee.data.10.TradeAECurr
+│       │   │   ├── [267K]  ee.data.11.FireAECurr
+│       │   │   ├── [883K]  ee.data.12.ServicesAECurr
+│       │   │   ├── [283K]  ee.data.13.GovtAECurr
+│       │   │   ├── [456K]  ee.data.14.TotsWWPWCurr
+│       │   │   ├── [4.8M]  ee.data.15.ManufactureWWPWCurr
+│       │   │   ├── [464K]  ee.data.16.ServiceProdTPUWWPWCurr
+│       │   │   ├── [1.3M]  ee.data.17.TradeWWPWCurr
+│       │   │   ├── [381K]  ee.data.18.FireWWPWCurr
+│       │   │   ├── [1.5M]  ee.data.19.ServicesWWPWCurr
+│       │   │   ├── [920K]  ee.data.1.CurrentSeasAE
+│       │   │   ├── [ 99K]  ee.data.20.GovtWWCurr
+│       │   │   ├── [233K]  ee.data.21.TotsAHECurr
+│       │   │   ├── [2.8M]  ee.data.22.ManufactureAHECurr
+│       │   │   ├── [191K]  ee.data.23.ServiceProdTPUAHECurr
+│       │   │   ├── [516K]  ee.data.24.TradeAHECurr
+│       │   │   ├── [116K]  ee.data.25.FireAHECurr
+│       │   │   ├── [632K]  ee.data.26.ServicesAHECurr
+│       │   │   ├── [466K]  ee.data.27.TotsAWCurr
+│       │   │   ├── [7.8M]  ee.data.28.ManufactureAWCurr
+│       │   │   ├── [383K]  ee.data.29.ServiceProdTPUAWCurr
+│       │   │   ├── [568K]  ee.data.2.CurrentSeasPWWW
+│       │   │   ├── [1.0M]  ee.data.30.TradeAWCurr
+│       │   │   ├── [233K]  ee.data.31.FireAWCurr
+│       │   │   ├── [1.2M]  ee.data.32.ServicesAWCurr
+│       │   │   ├── [ 74K]  ee.data.33.TotsOtherCurr
+│       │   │   ├── [425K]  ee.data.34.ManufactureOtherCurr
+│       │   │   ├── [ 33K]  ee.data.35.ServiceProdTPUOtherCurr
+│       │   │   ├── [ 50K]  ee.data.36.TradeOtherCurr
+│       │   │   ├── [ 17K]  ee.data.37.FireOtherCurr
+│       │   │   ├── [ 17K]  ee.data.38.ServicesOtherCurr
+│       │   │   ├── [546K]  ee.data.39.TotsAEHist
+│       │   │   ├── [963K]  ee.data.3.CurrentSeasOther
+│       │   │   ├── [3.1M]  ee.data.40a.ManufactureAEHist
+│       │   │   ├── [1.3M]  ee.data.40b.ManufactureAEHist
+│       │   │   ├── [4.4M]  ee.data.40.ManufactureAEHist
+│       │   │   ├── [424K]  ee.data.41.ServiceProdTPUAEHist
+│       │   │   ├── [771K]  ee.data.42.TradeAEHist
+│       │   │   ├── [228K]  ee.data.43.FireAEHist
+│       │   │   ├── [509K]  ee.data.44.ServicesAEHist
+│       │   │   ├── [525K]  ee.data.45.GovtAEHist
+│       │   │   ├── [790K]  ee.data.46.TotsWWPWHist
+│       │   │   ├── [3.6M]  ee.data.47a.ManufactureWWPWHist
+│       │   │   ├── [4.0M]  ee.data.47b.ManufactureWWPWHist
+│       │   │   ├── [7.7M]  ee.data.47.ManufactureWWPWHist
+│       │   │   ├── [506K]  ee.data.48.ServiceProdTPUWWPWHist
+│       │   │   ├── [1.3M]  ee.data.49.TradeWWPWHist
+│       │   │   ├── [1.8M]  ee.data.4.HistorySeasAE
+│       │   │   ├── [294K]  ee.data.50.FireWWPWHist
+│       │   │   ├── [707K]  ee.data.51.ServicesWWPWHist
+│       │   │   ├── [135K]  ee.data.52.GovtWWHist
+│       │   │   ├── [465K]  ee.data.53.TotsAHEHist
+│       │   │   ├── [3.4M]  ee.data.54a.ManufactureAHEHist
+│       │   │   ├── [1.3M]  ee.data.54b.ManufactureAHEHist
+│       │   │   ├── [4.7M]  ee.data.54.ManufactureAHEHist
+│       │   │   ├── [235K]  ee.data.55.ServiceProdTPUAHEHist
+│       │   │   ├── [622K]  ee.data.56.TradeAHEHist
+│       │   │   ├── [ 78K]  ee.data.57.FireAHEHist
+│       │   │   ├── [258K]  ee.data.58.ServicesAHEHist
+│       │   │   ├── [932K]  ee.data.59.TotsAWHist
+│       │   │   ├── [1.2M]  ee.data.5.HistorySeasPWWW
+│       │   │   ├── [3.9M]  ee.data.60a.ManufactureAWHist
+│       │   │   ├── [3.5M]  ee.data.60b.ManufactureAWHist
+│       │   │   ├── [4.2M]  ee.data.60c.ManufactureAWHist
+│       │   │   ├── [ 12M]  ee.data.60.ManufactureAWHist
+│       │   │   ├── [470K]  ee.data.61.ServiceProdTPUAWHist
+│       │   │   ├── [1.2M]  ee.data.62.TradeAWHist
+│       │   │   ├── [176K]  ee.data.63.FireAWHist
+│       │   │   ├── [515K]  ee.data.64.ServicesAWHist
+│       │   │   ├── [166K]  ee.data.65.TotsOtherHist
+│       │   │   ├── [1.0M]  ee.data.66.ManufactureOtherHist
+│       │   │   ├── [ 52K]  ee.data.67.ServiceProdTPUOtherHist
+│       │   │   ├── [ 97K]  ee.data.68.TradeOtherHist
+│       │   │   ├── [ 26K]  ee.data.69.FireOtherHist
+│       │   │   ├── [1.9M]  ee.data.6.HistorySeasOther
+│       │   │   ├── [ 26K]  ee.data.70.ServicesOtherHist
+│       │   │   ├── [201K]  ee.data.71.WeeklyEarnings
+│       │   │   ├── [422K]  ee.data.72.WeeklyEarningsHist
+│       │   │   ├── [258K]  ee.data.7.TotsAECurr
+│       │   │   ├── [2.6M]  ee.data.8.ManufactureAECurr
+│       │   │   └── [317K]  ee.data.9.ServiceProdTPUAECurr
+│       │   ├── [205K]  ee.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 397]  ee.contacts
+│       │       ├── [ 962]  ee.datatype
+│       │       ├── [ 174]  ee.footnote
+│       │       ├── [ 35K]  ee.industry
+│       │       ├── [ 366]  ee.period
+│       │       └── [  79]  ee.seasonal
+│       ├── [4.0K]  ei
+│       │   ├── [4.0K]  data
+│       │   │   ├── [2.4M]  ei.data.01.BEAImport
+│       │   │   ├── [1.8M]  ei.data.02.BEAExport
+│       │   │   ├── [1.2M]  ei.data.03.NAICSImport
+│       │   │   ├── [788K]  ei.data.04.NAICSExport
+│       │   │   ├── [1.6M]  ei.data.05.HarmonizedImport
+│       │   │   ├── [1.0M]  ei.data.06.HarmonizedExport
+│       │   │   ├── [1.8M]  ei.data.07.LocalityofOrigin
+│       │   │   ├── [118K]  ei.data.08.LocalityofDestination
+│       │   │   ├── [ 44K]  ei.data.09.TermsofTrade
+│       │   │   ├── [ 10M]  ei.data.0.Current
+│       │   │   ├── [145K]  ei.data.10.ServicesImport
+│       │   │   ├── [174K]  ei.data.11.ServicesExport
+│       │   │   ├── [ 45K]  ei.data.12.ServicesInbound
+│       │   │   └── [ 44K]  ei.data.13.ServicesOutbound
+│       │   ├── [371K]  ei.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 298]  ei.contacts
+│       │       ├── [ 691]  ei.footnote
+│       │       ├── [ 490]  ei.index
+│       │       ├── [ 404]  ei.period
+│       │       └── [  79]  ei.seasonal
+│       ├── [4.0K]  ep
+│       │   ├── [4.0K]  data
+│       │   │   └── [6.1M]  ep.data.1.AllData
+│       │   ├── [ 18M]  ep.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 45M]  ep.aspect
+│       │       ├── [1.1K]  ep.contacts
+│       │       ├── [  87]  ep.dates
+│       │       ├── [  52]  ep.display
+│       │       ├── [ 262]  ep.eductrn
+│       │       ├── [  29]  ep.footnote
+│       │       ├── [ 23K]  ep.industry
+│       │       ├── [174K]  ep.laytitle
+│       │       ├── [ 58K]  ep.occupation
+│       │       ├── [ 180]  ep.otjt
+│       │       ├── [  29]  ep.rank
+│       │       ├── [  79]  ep.seasonal
+│       │       └── [  74]  ep.wkex
+│       ├── [4.0K]  fa
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 16M]  fa.data.0.Current
+│       │   │   └── [ 16M]  fa.data.1.AllData
+│       │   ├── [ 22M]  fa.series
+│       │   └── [4.0K]  map
+│       │       ├── [1.3K]  fa.area
+│       │       ├── [ 571]  fa.case
+│       │       ├── [162K]  fa.category
+│       │       ├── [ 16K]  fa.category2
+│       │       ├── [2.7K]  fa.contacts
+│       │       ├── [  55]  fa.datatype
+│       │       ├── [9.5K]  fa.event
+│       │       ├── [  29]  fa.footnote
+│       │       ├── [ 37K]  fa.industry
+│       │       ├── [ 25K]  fa.occupation
+│       │       └── [ 19K]  fa.source
+│       ├── [4.0K]  fi
+│       │   ├── [4.0K]  data
+│       │   │   ├── [218M]  fi.data.0.Current
+│       │   │   └── [218M]  fi.data.1.AllData
+│       │   ├── [ 78M]  fi.series
+│       │   └── [4.0K]  map
+│       │       ├── [1.9K]  fi.area
+│       │       ├── [ 583]  fi.case
+│       │       ├── [ 82K]  fi.category
+│       │       ├── [8.8K]  fi.category2
+│       │       ├── [2.5K]  fi.contacts
+│       │       ├── [  56]  fi.datatype
+│       │       ├── [9.5K]  fi.event
+│       │       ├── [  29]  fi.footnote
+│       │       ├── [ 61K]  fi.industry
+│       │       ├── [ 41K]  fi.occupation
+│       │       └── [ 26K]  fi.source
+│       ├── [4.0K]  fm
+│       │   ├── [4.0K]  data
+│       │   │   ├── [1.4M]  fm.data.0.Current
+│       │   │   └── [1.4M]  fm.data.1.AllData
+│       │   ├── [619K]  fm.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 524]  fm.chld
+│       │       ├── [ 380]  fm.contacts
+│       │       ├── [ 136]  fm.fchld
+│       │       ├── [ 124]  fm.fdat
+│       │       ├── [ 143]  fm.fhlf
+│       │       ├── [ 259]  fm.fnmatwk
+│       │       ├── [ 260]  fm.fnme
+│       │       ├── [ 304]  fm.fnmlf
+│       │       ├── [  67]  fm.fnmu
+│       │       ├── [ 157]  fm.fnmws
+│       │       ├── [ 225]  fm.footnote
+│       │       ├── [  54]  fm.forig
+│       │       ├── [  81]  fm.frace
+│       │       ├── [ 123]  fm.ftpt
+│       │       ├── [ 187]  fm.ftyp
+│       │       ├── [ 143]  fm.hhlf
+│       │       ├── [ 380]  fm.lfst
+│       │       ├── [ 155]  fm.mari
+│       │       ├── [  67]  fm.misclf
+│       │       ├── [ 143]  fm.mwlf
+│       │       ├── [  52]  fm.orig
+│       │       ├── [ 161]  fm.prlf
+│       │       ├── [  79]  fm.race
+│       │       ├── [  79]  fm.seasonal
+│       │       ├── [  44]  fm.sexs
+│       │       ├── [  58]  fm.tdat
+│       │       └── [ 121]  fm.wkst
+│       ├── [4.0K]  fw
+│       │   ├── [4.0K]  data
+│       │   │   ├── [593M]  fw.data.0.Current
+│       │   │   └── [593M]  fw.data.1.AllData
+│       │   ├── [343M]  fw.series
+│       │   └── [4.0K]  map
+│       │       ├── [2.0K]  fw.area
+│       │       ├── [ 571]  fw.case
+│       │       ├── [204K]  fw.category
+│       │       ├── [ 17K]  fw.category2
+│       │       ├── [2.7K]  fw.contacts
+│       │       ├── [  55]  fw.datatype
+│       │       ├── [ 17K]  fw.event
+│       │       ├── [  29]  fw.footnote
+│       │       ├── [ 76K]  fw.industry
+│       │       ├── [ 58K]  fw.occupation
+│       │       ├── [  79]  fw.seasonal
+│       │       └── [ 38K]  fw.source
+│       ├── [4.0K]  gg
+│       │   ├── [4.0K]  data
+│       │   │   └── [208K]  gg.data.1.AllData
+│       │   ├── [148K]  gg.series
+│       │   └── [4.0K]  map
+│       │       ├── [  47]  gg.altenergy
+│       │       ├── [ 941]  gg.area
+│       │       ├── [ 206]  gg.contacts
+│       │       ├── [ 111]  gg.dataelement
+│       │       ├── [ 354]  gg.footnote
+│       │       ├── [  54]  gg.greenquartile
+│       │       ├── [ 13K]  gg.industry
+│       │       ├── [ 122]  gg.own
+│       │       ├── [  46]  gg.periodicity
+│       │       ├── [  50]  gg.ratelevel
+│       │       ├── [  79]  gg.seasonal
+│       │       └── [  49]  gg.size
+│       ├── [4.0K]  gp
+│       │   ├── [4.0K]  data
+│       │   │   └── [5.4M]  gp.data.1.AllData
+│       │   ├── [773K]  gp.series
+│       │   └── [4.0K]  map
+│       │       ├── [1.4K]  gp.area
+│       │       ├── [3.4K]  gp.charact
+│       │       ├── [ 296]  gp.contacts
+│       │       ├── [ 146]  gp.labor.force
+│       │       ├── [  48]  gp.period
+│       │       └── [ 704]  gp.state
+│       ├── [4.0K]  hc
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 11M]  hc.data.0.Current
+│       │   │   └── [ 11M]  hc.data.1.AllData
+│       │   ├── [ 15M]  hc.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 168]  hc.age
+│       │       ├── [ 700]  hc.case
+│       │       ├── [ 37K]  hc.category
+│       │       ├── [3.9K]  hc.category2
+│       │       ├── [2.5K]  hc.contacts
+│       │       ├── [ 147]  hc.datatype
+│       │       ├── [ 13K]  hc.event
+│       │       ├── [  49]  hc.footnote
+│       │       ├── [  86]  hc.gender
+│       │       ├── [ 40K]  hc.industry
+│       │       ├── [ 143]  hc.los
+│       │       ├── [ 25K]  hc.nature
+│       │       ├── [ 23K]  hc.occupation
+│       │       ├── [6.4K]  hc.pob
+│       │       ├── [ 212]  hc.race
+│       │       └── [ 59K]  hc.source
+│       ├── [4.0K]  hs
+│       │   ├── [4.0K]  data
+│       │   │   ├── [3.8M]  hs.data.1.1976to1980
+│       │   │   ├── [3.3M]  hs.data.2.1981to1984
+│       │   │   └── [3.1M]  hs.data.3.1985to1988
+│       │   ├── [1.1M]  hs.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 349]  hs.case.type
+│       │       ├── [2.5K]  hs.contacts
+│       │       ├── [  80]  hs.data.type
+│       │       ├── [ 296]  hs.division
+│       │       ├── [ 29K]  hs.industry
+│       │       └── [  48]  hs.period
+│       ├── [4.0K]  ii
+│       │   ├── [4.0K]  data
+│       │   │   └── [141M]  ii.data.1.AllData
+│       │   ├── [ 55M]  ii.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 10K]  ii.area
+│       │       ├── [ 997]  ii.case_type
+│       │       ├── [2.5K]  ii.contacts
+│       │       ├── [2.3K]  ii.data_type
+│       │       ├── [ 157]  ii.footnote
+│       │       ├── [ 82K]  ii.industry
+│       │       ├── [  79]  ii.seasonal
+│       │       └── [ 537]  ii.supersector
+│       ├── [4.0K]  in
+│       │   ├── [4.0K]  data
+│       │   │   ├── [1.5M]  in.data.0.Current
+│       │   │   └── [2.4M]  in.data.1.AllData
+│       │   ├── [219K]  in.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 581]  in.contacts
+│       │       ├── [ 539]  in.country
+│       │       ├── [ 269]  in.economicgroup
+│       │       ├── [4.1K]  in.economicseries
+│       │       ├── [  49]  in.footnote
+│       │       ├── [1.6K]  in.industry
+│       │       ├── [ 160]  in.period
+│       │       ├── [  72]  in.periodicity
+│       │       └── [  79]  in.seasonal
+│       ├── [4.0K]  ip
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 25M]  ip.data.0.Current
+│       │   │   └── [ 38M]  ip.data.1.AllData
+│       │   ├── [3.8M]  ip.series
+│       │   └── [4.0K]  map
+│       │       ├── [1.4K]  ip.area
+│       │       ├── [ 562]  ip.contacts
+│       │       ├── [  76]  ip.duration
+│       │       ├── [  29]  ip.footnote
+│       │       ├── [ 45K]  ip.industry
+│       │       ├── [2.1K]  ip.measure
+│       │       ├── [  79]  ip.seasonal
+│       │       ├── [ 659]  ip.sector
+│       │       └── [  83]  ip.type
+│       ├── [4.0K]  is
+│       │   ├── [4.0K]  data
+│       │   │   └── [214M]  is.data.1.AllData
+│       │   ├── [119M]  is.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 10K]  is.area
+│       │       ├── [1.1K]  is.case_type
+│       │       ├── [2.5K]  is.contacts
+│       │       ├── [2.5K]  is.data_type
+│       │       ├── [ 123]  is.footnote
+│       │       ├── [ 75K]  is.industry
+│       │       ├── [  79]  is.seasonal
+│       │       └── [ 523]  is.supersector
+│       ├── [4.0K]  jl
+│       │   ├── [4.0K]  data
+│       │   │   ├── [278K]  jl.data.0.Current
+│       │   │   └── [278K]  jl.data.1.AllItems
+│       │   ├── [ 15K]  jl.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 215]  jl.contacts
+│       │       ├── [ 250]  jl.dataelement
+│       │       ├── [ 683]  jl.footnote
+│       │       ├── [ 621]  jl.industry
+│       │       ├── [ 124]  jl.ratelevel
+│       │       ├── [ 319]  jl.region
+│       │       └── [  79]  jl.seasonal
+│       ├── [4.0K]  jt
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 19M]  jt.data.0.Current
+│       │   │   ├── [ 32M]  jt.data.1.AllItems
+│       │   │   ├── [5.7M]  jt.data.2.JobOpenings
+│       │   │   ├── [5.7M]  jt.data.3.Hires
+│       │   │   ├── [5.7M]  jt.data.4.TotalSeparations
+│       │   │   ├── [5.7M]  jt.data.5.Quits
+│       │   │   ├── [5.7M]  jt.data.6.LayoffsDischarges
+│       │   │   ├── [2.4M]  jt.data.7.OtherSeparations
+│       │   │   └── [821K]  jt.data.8.UnemployedPerJobOpeningRatio
+│       │   ├── [149K]  jt.series
+│       │   └── [4.0K]  map
+│       │       ├── [  83]  jt.area
+│       │       ├── [ 215]  jt.contacts
+│       │       ├── [ 297]  jt.dataelement
+│       │       ├── [  44]  jt.footnote
+│       │       ├── [1.1K]  jt.industry
+│       │       ├── [ 242]  jt.period
+│       │       ├── [ 114]  jt.ratelevel
+│       │       ├── [  79]  jt.seasonal
+│       │       ├── [ 283]  jt.sizeclass
+│       │       └── [1.2K]  jt.state
+│       ├── [4.0K]  la
+│       │   ├── [4.0K]  data
+│       │   │   ├── [110M]  la.data.0.CurrentU00-04
+│       │   │   ├── [110M]  la.data.0.CurrentU05-09
+│       │   │   ├── [112M]  la.data.0.CurrentU10-14
+│       │   │   ├── [114M]  la.data.0.CurrentU15-19
+│       │   │   ├── [115M]  la.data.0.CurrentU20-24
+│       │   │   ├── [ 11M]  la.data.0.CurrentU25-29
+│       │   │   ├── [104M]  la.data.0.CurrentU90-94
+│       │   │   ├── [105M]  la.data.0.CurrentU95-99
+│       │   │   ├── [ 12M]  la.data.10.Arkansas
+│       │   │   ├── [ 37M]  la.data.11.California
+│       │   │   ├── [ 12M]  la.data.12.Colorado
+│       │   │   ├── [ 19M]  la.data.13.Connecticut
+│       │   │   ├── [1.4M]  la.data.14.Delaware
+│       │   │   ├── [1.0M]  la.data.15.DC
+│       │   │   ├── [ 20M]  la.data.16.Florida
+│       │   │   ├── [ 24M]  la.data.17.Georgia
+│       │   │   ├── [1.3M]  la.data.18.Hawaii
+│       │   │   ├── [7.9M]  la.data.19.Idaho
+│       │   │   ├── [ 13M]  la.data.1.CurrentS
+│       │   │   ├── [ 27M]  la.data.20.Illinois
+│       │   │   ├── [ 18M]  la.data.21.Indiana
+│       │   │   ├── [ 16M]  la.data.22.Iowa
+│       │   │   ├── [ 14M]  la.data.23.Kansas
+│       │   │   ├── [ 17M]  la.data.24.Kentucky
+│       │   │   ├── [ 11M]  la.data.25.Louisiana
+│       │   │   ├── [ 52M]  la.data.26.Maine
+│       │   │   ├── [5.0M]  la.data.27.Maryland
+│       │   │   ├── [ 37M]  la.data.28.Massachusetts
+│       │   │   ├── [ 22M]  la.data.29.Michigan
+│       │   │   ├── [ 12M]  la.data.2.AllStatesU
+│       │   │   ├── [ 17M]  la.data.30.Minnesota
+│       │   │   ├── [ 13M]  la.data.31.Mississippi
+│       │   │   ├── [ 18M]  la.data.32.Missouri
+│       │   │   ├── [7.2M]  la.data.33.Montana
+│       │   │   ├── [ 12M]  la.data.34.Nebraska
+│       │   │   ├── [3.7M]  la.data.35.Nevada
+│       │   │   ├── [ 25M]  la.data.36.NewHampshire
+│       │   │   ├── [ 13M]  la.data.37.NewJersey
+│       │   │   ├── [6.4M]  la.data.38.NewMexico
+│       │   │   ├── [ 20M]  la.data.39.NewYork
+│       │   │   ├── [9.8M]  la.data.3.AllStatesS
+│       │   │   ├── [ 20M]  la.data.40.NorthCarolina
+│       │   │   ├── [7.2M]  la.data.41.NorthDakota
+│       │   │   ├── [ 22M]  la.data.42.Ohio
+│       │   │   ├── [ 13M]  la.data.43.Oklahoma
+│       │   │   ├── [9.3M]  la.data.44.Oregon
+│       │   │   ├── [ 18M]  la.data.45.Pennsylvania
+│       │   │   ├── [9.1M]  la.data.46.PuertoRico
+│       │   │   ├── [4.9M]  la.data.47.RhodeIsland
+│       │   │   ├── [9.2M]  la.data.48.SouthCarolina
+│       │   │   ├── [8.8M]  la.data.49.SouthDakota
+│       │   │   ├── [1.8M]  la.data.4.RegionDivisionU
+│       │   │   ├── [ 16M]  la.data.50.Tennessee
+│       │   │   ├── [ 51M]  la.data.51.Texas
+│       │   │   ├── [7.5M]  la.data.52.Utah
+│       │   │   ├── [ 27M]  la.data.53.Vermont
+│       │   │   ├── [ 20M]  la.data.54.Virginia
+│       │   │   ├── [ 11M]  la.data.56.Washington
+│       │   │   ├── [8.8M]  la.data.57.WestVirginia
+│       │   │   ├── [ 15M]  la.data.58.Wisconsin
+│       │   │   ├── [4.2M]  la.data.59.Wyoming
+│       │   │   ├── [1.6M]  la.data.5.RegionDivisionS
+│       │   │   ├── [ 38M]  la.data.60.Metro
+│       │   │   ├── [4.1M]  la.data.61.Division
+│       │   │   ├── [ 53M]  la.data.62.Micro
+│       │   │   ├── [ 18M]  la.data.63.Combined
+│       │   │   ├── [313M]  la.data.64.County
+│       │   │   ├── [306M]  la.data.65.City
+│       │   │   ├── [ 14M]  la.data.7.Alabama
+│       │   │   ├── [4.0M]  la.data.8.Alaska
+│       │   │   └── [6.0M]  la.data.9.Arizona
+│       │   ├── [3.9M]  la.series
+│       │   └── [4.0K]  map
+│       │       ├── [428K]  la.area
+│       │       ├── [428K]  la.areamaps
+│       │       ├── [ 455]  la.area_type
+│       │       ├── [ 316]  la.contacts
+│       │       ├── [ 672]  la.footnote
+│       │       ├── [1.6K]  la.map_info
+│       │       ├── [ 205]  la.measure
+│       │       ├── [ 252]  la.period
+│       │       └── [  79]  la.seasonal
+│       ├── [4.0K]  le
+│       │   ├── [4.0K]  data
+│       │   │   ├── [9.3M]  le.data.0.Current
+│       │   │   └── [9.5M]  le.data.1.AllData
+│       │   ├── [2.3M]  le.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 454]  le.ages
+│       │       ├── [ 119]  le.born
+│       │       ├── [ 164]  le.cert
+│       │       ├── [ 381]  le.class
+│       │       ├── [ 282]  le.contacts
+│       │       ├── [ 807]  le.earn
+│       │       ├── [1.1K]  le.education
+│       │       ├── [ 950]  le.fips
+│       │       ├── [  84]  le.footnote
+│       │       ├── [1.3K]  le.indy
+│       │       ├── [  80]  le.lfst
+│       │       ├── [ 30K]  le.occupation
+│       │       ├── [  77]  le.orig
+│       │       ├── [ 231]  le.pcts
+│       │       ├── [  85]  le.race
+│       │       ├── [  79]  le.seasonal
+│       │       ├── [  51]  le.sexs
+│       │       ├── [  67]  le.tdata
+│       │       └── [  87]  le.unin
+│       ├── [4.0K]  li
+│       │   ├── [4.0K]  data
+│       │   │   ├── [313K]  li.data.0.Current
+│       │   │   └── [613K]  li.data.1.AllData
+│       │   ├── [2.3K]  li.series
+│       │   └── [4.0K]  map
+│       │       ├── [  46]  li.area
+│       │       ├── [ 987]  li.contacts
+│       │       ├── [  29]  li.footnote
+│       │       ├── [ 807]  li.item
+│       │       └── [ 252]  li.period
+│       ├── [4.0K]  ln
+│       │   ├── [4.0K]  data
+│       │   │   └── [356M]  ln.data.1.AllData
+│       │   ├── [ 14M]  ln.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 104]  ln.absn
+│       │       ├── [ 190]  ln.activity
+│       │       ├── [ 716]  ln.ages
+│       │       ├── [ 203]  ln.born
+│       │       ├── [ 164]  ln.cert
+│       │       ├── [ 198]  ln.chld
+│       │       ├── [ 871]  ln.class
+│       │       ├── [  66]  ln.disa
+│       │       ├── [ 288]  ln.duration
+│       │       ├── [1010]  ln.education
+│       │       ├── [  58]  ln.entr
+│       │       ├── [  74]  ln.expr
+│       │       ├── [ 795]  ln.footnote
+│       │       ├── [  52]  ln.hheader
+│       │       ├── [ 256]  ln.hour
+│       │       ├── [ 15K]  ln.indy
+│       │       ├── [  70]  ln.jdes
+│       │       ├── [2.4K]  ln.lfst
+│       │       ├── [ 783]  ln.look
+│       │       ├── [ 389]  ln.mari
+│       │       ├── [ 326]  ln.mjhs
+│       │       ├── [ 32K]  ln.occupation
+│       │       ├── [ 459]  ln.orig
+│       │       ├── [1.3K]  ln.pcts
+│       │       ├── [  69]  ln.periodicity
+│       │       ├── [ 343]  ln.race
+│       │       ├── [ 811]  ln.rjnw
+│       │       ├── [ 678]  ln.rnlf
+│       │       ├── [ 882]  ln.rwns
+│       │       ├── [  79]  ln.seasonal
+│       │       ├── [  63]  ln.seek
+│       │       ├── [  51]  ln.sexs
+│       │       ├── [ 611]  ln.tdat
+│       │       ├── [ 573]  ln.tlwk
+│       │       ├── [ 314]  ln.vets
+│       │       └── [ 490]  ln.wkst
+│       ├── [4.0K]  lu
+│       │   ├── [4.0K]  data
+│       │   │   ├── [1.2M]  lu.data.0.Current
+│       │   │   └── [1.2M]  lu.data.1.AllData
+│       │   ├── [227K]  lu.series
+│       │   └── [4.0K]  map
+│       │       ├── [ 182]  lu.ages
+│       │       ├── [ 381]  lu.class
+│       │       ├── [ 282]  lu.contacts
+│       │       ├── [ 133]  lu.earn
+│       │       ├── [  39]  lu.education
+│       │       ├── [ 733]  lu.fips
+│       │       ├── [ 199]  lu.footnote
+│       │       ├── [1.3K]  lu.indy
+│       │       ├── [  80]  lu.lfst
+│       │       ├── [1.4K]  lu.occupation
+│       │       ├── [  60]  lu.orig
+│       │       ├── [  66]  lu.pcts
+│       │       ├── [  64]  lu.periodicity
+│       │       ├── [  85]  lu.race
+│       │       ├── [  79]  lu.seasonal
+│       │       ├── [  51]  lu.sexs
+│       │       ├── [  89]  lu.tdata
+│       │       └── [  87]  lu.unin
+│       ├── [4.0K]  ml
+│       │   ├── [4.0K]  data
+│       │   │   ├── [201M]  ml.data.0.Current
+│       │   │   └── [249M]  ml.data.1.AllData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 200]  ml.contacts
+│       │   │   ├── [ 104]  ml.dataelement
+│       │   │   ├── [  40]  ml.dataseries
+│       │   │   ├── [ 727]  ml.footnote
+│       │   │   ├── [  87]  ml.industrybase
+│       │   │   ├── [ 12K]  ml.irc
+│       │   │   ├── [ 576]  ml.period
+│       │   │   └── [1.7K]  ml.srd
+│       │   └── [3.3M]  ml.series
+│       ├── [4.0K]  mp
+│       │   ├── [4.0K]  data
+│       │   │   └── [6.9M]  mp.data.1.AllData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 562]  mp.contacts
+│       │   │   ├── [ 138]  mp.duration
+│       │   │   ├── [ 412]  mp.footnote
+│       │   │   ├── [1.9K]  mp.measure
+│       │   │   ├── [  32]  mp.period
+│       │   │   ├── [  79]  mp.seasonal
+│       │   │   └── [4.9K]  mp.sector
+│       │   └── [722K]  mp.series
+│       ├── [4.0K]  mu
+│       │   ├── [4.0K]  data
+│       │   │   ├── [5.9M]  mu.data.0.Current
+│       │   │   ├── [1.9M]  mu.data.10.OtherWest
+│       │   │   ├── [3.3M]  mu.data.11.USFoodBeverage
+│       │   │   ├── [1.4M]  mu.data.12.USHousing
+│       │   │   ├── [911K]  mu.data.13.USApparel
+│       │   │   ├── [938K]  mu.data.14.USTransportation
+│       │   │   ├── [386K]  mu.data.15.USMedical
+│       │   │   ├── [310K]  mu.data.16.USEntertainment
+│       │   │   ├── [408K]  mu.data.17.USOtherGoodsServices
+│       │   │   ├── [1.4M]  mu.data.18.USCommoditiesServicesSpecial
+│       │   │   ├── [3.7M]  mu.data.19.PopulationSize
+│       │   │   ├── [1.6M]  mu.data.1.AllItems
+│       │   │   ├── [7.5M]  mu.data.2.Summaries
+│       │   │   ├── [5.2M]  mu.data.3.AsizeNorthEast
+│       │   │   ├── [6.9M]  mu.data.4.AsizeNorthCentral
+│       │   │   ├── [5.0M]  mu.data.5.AsizeSouth
+│       │   │   ├── [5.4M]  mu.data.6.AsizeWest
+│       │   │   ├── [2.3M]  mu.data.7.OtherNorthEast
+│       │   │   ├── [2.9M]  mu.data.8.OtherNorthCentral
+│       │   │   └── [2.9M]  mu.data.9.OtherSouth
+│       │   ├── [4.0K]  map
+│       │   │   ├── [1.5K]  mu.area
+│       │   │   ├── [ 986]  mu.contacts
+│       │   │   ├── [ 40K]  mu.item
+│       │   │   └── [118K]  mu.MapErrors
+│       │   └── [502K]  mu.series
+│       ├── [4.0K]  mw
+│       │   ├── [4.0K]  data
+│       │   │   ├── [5.8M]  mw.data.0.Current
+│       │   │   ├── [1.9M]  mw.data.10.OtherWest
+│       │   │   ├── [3.1M]  mw.data.11.USFoodBeverage
+│       │   │   ├── [1.4M]  mw.data.12.USHousing
+│       │   │   ├── [876K]  mw.data.13.USApparel
+│       │   │   ├── [932K]  mw.data.14.USTransportation
+│       │   │   ├── [386K]  mw.data.15.USMedical
+│       │   │   ├── [310K]  mw.data.16.USEntertainment
+│       │   │   ├── [402K]  mw.data.17.USOtherGoodsServices
+│       │   │   ├── [1.3M]  mw.data.18.USCommoditiesServicesSpecial
+│       │   │   ├── [3.7M]  mw.data.19.PopulationSize
+│       │   │   ├── [1.6M]  mw.data.1.AllItems
+│       │   │   ├── [7.5M]  mw.data.2.Summaries
+│       │   │   ├── [5.1M]  mw.data.3.AsizeNorthEast
+│       │   │   ├── [6.8M]  mw.data.4.AsizeNorthCentral
+│       │   │   ├── [5.0M]  mw.data.5.AsizeSouth
+│       │   │   ├── [5.3M]  mw.data.6.AsizeWest
+│       │   │   ├── [2.3M]  mw.data.7.OtherNorthEast
+│       │   │   ├── [2.9M]  mw.data.8.OtherNorthCentral
+│       │   │   └── [2.9M]  mw.data.9.OtherSouth
+│       │   ├── [4.0K]  map
+│       │   │   ├── [1.5K]  mw.area
+│       │   │   ├── [ 985]  mw.contacts
+│       │   │   ├── [ 40K]  mw.item
+│       │   │   └── [118K]  mw.MapErrors
+│       │   └── [501K]  mw.series
+│       ├── [4.0K]  nb
+│       │   ├── [4.0K]  data
+│       │   │   └── [ 38M]  nb.data.1.AllData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 39M]  nb.aspect
+│       │   │   ├── [ 544]  nb.contacts
+│       │   │   ├── [ 659]  nb.datatype
+│       │   │   ├── [1.7K]  nb.estimate
+│       │   │   ├── [ 872]  nb.footnote
+│       │   │   ├── [1.3K]  nb.industry
+│       │   │   ├── [1.1K]  nb.occupation
+│       │   │   ├── [ 242]  nb.ownership
+│       │   │   ├── [ 98K]  nb.provision
+│       │   │   ├── [  79]  nb.seasonal
+│       │   │   ├── [1.7K]  nb.subcell
+│       │   │   └── [ 149]  nb.survey
+│       │   └── [ 24M]  nb.series
+│       ├── [4.0K]  nc
+│       │   ├── [4.0K]  data
+│       │   │   └── [ 18M]  nc.data.1.AllData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [7.7K]  nc.area
+│       │   │   ├── [  26]  nc.baseline
+│       │   │   ├── [ 409]  nc.contacts
+│       │   │   ├── [ 733]  nc.factor_item
+│       │   │   ├── [ 479]  nc.level
+│       │   │   ├── [ 25K]  nc.mogocc
+│       │   │   ├── [ 45K]  nc.occupation
+│       │   │   ├── [8.8K]  nc.starea
+│       │   │   └── [ 937]  nc.state
+│       │   └── [3.8M]  nc.series
+│       ├── [4.0K]  nd
+│       │   ├── [4.0K]  data
+│       │   │   ├── [105K]  nd.data.05.ForestryandLogging
+│       │   │   ├── [ 41M]  nd.data.0.Current
+│       │   │   ├── [853K]  nd.data.10.Wood
+│       │   │   ├── [3.0M]  nd.data.11.Paper
+│       │   │   ├── [1.4M]  nd.data.12.Printing
+│       │   │   ├── [822K]  nd.data.13.PetroleumCoalProducts
+│       │   │   ├── [3.4M]  nd.data.14.Chemicals
+│       │   │   ├── [822K]  nd.data.15.PlasticsRubberProducts
+│       │   │   ├── [2.9M]  nd.data.16.NonmetallicMineral
+│       │   │   ├── [3.4M]  nd.data.17.PrimaryMetal
+│       │   │   ├── [6.4M]  nd.data.18.FabricatedMetalProduct
+│       │   │   ├── [8.3M]  nd.data.19.Machinery
+│       │   │   ├── [390K]  nd.data.1.OilAndGas
+│       │   │   ├── [2.4M]  nd.data.20.ComputerProduct
+│       │   │   ├── [4.3M]  nd.data.21.ElectricalMachinery
+│       │   │   ├── [2.1M]  nd.data.22.TransportationEquipment
+│       │   │   ├── [2.0M]  nd.data.23.Furniture
+│       │   │   ├── [3.8M]  nd.data.24.Miscellaneous
+│       │   │   ├── [113K]  nd.data.25.MotorVehicleDealers
+│       │   │   ├── [138K]  nd.data.26.FurnitureStores
+│       │   │   ├── [287K]  nd.data.27.ElectronicsStores
+│       │   │   ├── [238K]  nd.data.28.BuildingGardenStores
+│       │   │   ├── [224K]  nd.data.29.FoodBeverageStores
+│       │   │   ├── [1.9M]  nd.data.2.Mining
+│       │   │   ├── [256K]  nd.data.30.HealthStores
+│       │   │   ├── [185K]  nd.data.31.GasolineStations
+│       │   │   ├── [372K]  nd.data.32.ClothingStores
+│       │   │   ├── [327K]  nd.data.33.SportsMusicStores
+│       │   │   ├── [274K]  nd.data.34.GeneralStores
+│       │   │   ├── [203K]  nd.data.35.NonstoreRetailers
+│       │   │   ├── [ 41K]  nd.data.36.AirTransportation
+│       │   │   ├── [380K]  nd.data.37.RailTransportation
+│       │   │   ├── [ 19K]  nd.data.38.WaterTransportation
+│       │   │   ├── [ 50K]  nd.data.39.TruckTransportation
+│       │   │   ├── [272K]  nd.data.3.MiningSupport
+│       │   │   ├── [ 19K]  nd.data.40.PipelineTransportation
+│       │   │   ├── [156K]  nd.data.42.TransportationSupport
+│       │   │   ├── [777K]  nd.data.43.PostalService
+│       │   │   ├── [6.3K]  nd.data.44.CouriersAndMessengers
+│       │   │   ├── [ 89K]  nd.data.45.WarehousingStorage
+│       │   │   ├── [ 27K]  nd.data.46.Utilities
+│       │   │   ├── [5.5K]  nd.data.47.AmbulatoryHealthCareServices
+│       │   │   ├── [5.5M]  nd.data.4.Food
+│       │   │   ├── [656K]  nd.data.50.Hospitals
+│       │   │   ├── [  72]  nd.data.51.NursingResidentialCareFacil
+│       │   │   ├── [1.9M]  nd.data.53.Publishing
+│       │   │   ├── [523K]  nd.data.54.Broadcasting
+│       │   │   ├── [890K]  nd.data.55.Telecommunications
+│       │   │   ├── [ 61K]  nd.data.56.ISPsSearchPortandDataProcess
+│       │   │   ├── [568K]  nd.data.57.Finance
+│       │   │   ├── [160K]  nd.data.58.InsuranceCarriers
+│       │   │   ├── [ 49K]  nd.data.59.RealEstate
+│       │   │   ├── [1.1M]  nd.data.5.BeverageTobacco
+│       │   │   ├── [ 37K]  nd.data.61.EducationalService
+│       │   │   ├── [ 70K]  nd.data.62.RentalandLeasingServices
+│       │   │   ├── [234K]  nd.data.63.ProfessionalandTechnicalServ
+│       │   │   ├── [245K]  nd.data.67.AdministrativeandSupportServ
+│       │   │   ├── [2.1M]  nd.data.6.Textile
+│       │   │   ├── [  72]  nd.data.70.WasteMgtandRemediationServ
+│       │   │   ├── [ 20K]  nd.data.71.Accommodation
+│       │   │   ├── [880K]  nd.data.72.RecyclableMaterials
+│       │   │   ├── [245K]  nd.data.73.MiscellaneousStoreRetailers
+│       │   │   ├── [ 95K]  nd.data.74.PremiumsforPropandCasualtyIns
+│       │   │   ├── [216K]  nd.data.75.Construction
+│       │   │   ├── [1.2M]  nd.data.76.WholesaleTrade
+│       │   │   ├── [  72]  nd.data.77.Recreation
+│       │   │   ├── [1.3M]  nd.data.7.TextileProduct
+│       │   │   ├── [  72]  nd.data.81.OtherServices
+│       │   │   ├── [5.0M]  nd.data.8.Apparel
+│       │   │   └── [1.1M]  nd.data.9.Leather
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 355]  nd.contacts
+│       │   │   ├── [ 150]  nd.footnote
+│       │   │   ├── [ 33K]  nd.industry
+│       │   │   ├── [364K]  nd.product
+│       │   │   └── [  79]  nd.seasonal
+│       │   └── [1.3M]  nd.series
+│       ├── [4.0K]  nw
+│       │   ├── [4.0K]  data
+│       │   │   └── [2.4G]  nw.data.1.AllData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 409]  nw.contacts
+│       │   │   ├── [ 700]  nw.datatype_id
+│       │   │   ├── [ 104]  nw.estimate_id
+│       │   │   ├── [ 108]  nw.footnote
+│       │   │   ├── [1.2K]  nw.industry
+│       │   │   ├── [ 784]  nw.level
+│       │   │   ├── [ 45K]  nw.occupation
+│       │   │   ├── [ 247]  nw.ownership
+│       │   │   ├── [ 11K]  nw.starea
+│       │   │   └── [ 865]  nw.subcell_id
+│       │   └── [1.2G]  nw.series
+│       ├── [4.0K]  oe
+│       │   ├── [4.0K]  data
+│       │   │   ├── [317M]  oe.data.0.Current
+│       │   │   └── [317M]  oe.data.1.AllData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 21K]  oe.area
+│       │   │   ├── [  90]  oe.areatype
+│       │   │   ├── [3.1K]  oe.contacts
+│       │   │   ├── [ 528]  oe.datatype
+│       │   │   ├── [ 746]  oe.footnote
+│       │   │   ├── [ 25K]  oe.industry
+│       │   │   ├── [256K]  oe.occupation
+│       │   │   ├── [  44]  oe.release
+│       │   │   ├── [  79]  oe.seasonal
+│       │   │   └── [1.2K]  oe.sector
+│       │   └── [1.2G]  oe.series
+│       ├── [4.0K]  or
+│       │   ├── [4.0K]  data
+│       │   │   └── [2.2M]  or.data.1.AllData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [3.4K]  or.additive
+│       │   │   ├── [2.3M]  or.aspect
+│       │   │   ├── [1.7K]  or.category
+│       │   │   ├── [ 284]  or.contacts
+│       │   │   ├── [ 137]  or.datatype
+│       │   │   ├── [ 27K]  or.estimate
+│       │   │   ├── [1.7K]  or.footnote
+│       │   │   ├── [  92]  or.industry
+│       │   │   ├── [ 111]  or.job_characteristic
+│       │   │   ├── [9.6K]  or.occupation
+│       │   │   ├── [  96]  or.ownership
+│       │   │   ├── [ 245]  or.requirement
+│       │   │   └── [  79]  or.seasonal
+│       │   └── [9.7M]  or.series
+│       ├── [4.0K]  pc
+│       │   ├── [4.0K]  data
+│       │   │   ├── [198K]  pc.data.01.aggregates
+│       │   │   ├── [131K]  pc.data.05.ForestryandLogging
+│       │   │   ├── [ 62M]  pc.data.0.Current
+│       │   │   ├── [2.0M]  pc.data.10.Wood
+│       │   │   ├── [1.9M]  pc.data.11.Paper
+│       │   │   ├── [923K]  pc.data.12.Printing
+│       │   │   ├── [1.3M]  pc.data.13.PetroleumCoalProducts
+│       │   │   ├── [6.1M]  pc.data.14.Chemicals
+│       │   │   ├── [2.7M]  pc.data.15.PlasticsRubberProducts
+│       │   │   ├── [3.2M]  pc.data.16.NonmetallicMineral
+│       │   │   ├── [2.6M]  pc.data.17.PrimaryMetal
+│       │   │   ├── [6.1M]  pc.data.18.FabricatedMetalProduct
+│       │   │   ├── [7.3M]  pc.data.19.Machinery
+│       │   │   ├── [282K]  pc.data.1.OilAndGas
+│       │   │   ├── [2.9M]  pc.data.20.ComputerProduct
+│       │   │   ├── [3.0M]  pc.data.21.ElectricalMachinery
+│       │   │   ├── [3.6M]  pc.data.22.TransportationEquipment
+│       │   │   ├── [2.1M]  pc.data.23.Furniture
+│       │   │   ├── [2.9M]  pc.data.24.Miscellaneous
+│       │   │   ├── [423K]  pc.data.25.MotorVehicleDealers
+│       │   │   ├── [232K]  pc.data.26.FurnitureStores
+│       │   │   ├── [232K]  pc.data.27.ElectronicsStores
+│       │   │   ├── [155K]  pc.data.28.BuildingGardenStores
+│       │   │   ├── [447K]  pc.data.29.FoodBeverageStores
+│       │   │   ├── [1.4M]  pc.data.2.Mining
+│       │   │   ├── [297K]  pc.data.30.HealthStores
+│       │   │   ├── [142K]  pc.data.31.GasolineStations
+│       │   │   ├── [262K]  pc.data.32.ClothingStores
+│       │   │   ├── [322K]  pc.data.33.SportsMusicStores
+│       │   │   ├── [163K]  pc.data.34.GeneralStores
+│       │   │   ├── [ 13K]  pc.data.35.NonstoreRetailers
+│       │   │   ├── [516K]  pc.data.36.AirTransportation
+│       │   │   ├── [218K]  pc.data.37.RailTransportation
+│       │   │   ├── [309K]  pc.data.38.WaterTransportation
+│       │   │   ├── [608K]  pc.data.39.TruckTransportation
+│       │   │   ├── [410K]  pc.data.3.MiningSupport
+│       │   │   ├── [274K]  pc.data.40.PipelineTransportation
+│       │   │   ├── [663K]  pc.data.42.TransportationSupport
+│       │   │   ├── [562K]  pc.data.43.PostalService
+│       │   │   ├── [252K]  pc.data.44.CouriersAndMessengers
+│       │   │   ├── [277K]  pc.data.45.WarehousingStorage
+│       │   │   ├── [1.8M]  pc.data.46.Utilities
+│       │   │   ├── [937K]  pc.data.47.AmbulatoryHealthCareServices
+│       │   │   ├── [8.9M]  pc.data.4.Food
+│       │   │   ├── [667K]  pc.data.50.Hospitals
+│       │   │   ├── [233K]  pc.data.51.NursingResidentialCareFacil
+│       │   │   ├── [849K]  pc.data.53.Publishing
+│       │   │   ├── [444K]  pc.data.54.Broadcasting
+│       │   │   ├── [406K]  pc.data.55.Telecommunications
+│       │   │   ├── [129K]  pc.data.56.ISPsSearchPortandDataProcess
+│       │   │   ├── [798K]  pc.data.57.Finance
+│       │   │   ├── [880K]  pc.data.58.InsuranceCarriers
+│       │   │   ├── [491K]  pc.data.59.RealEstate
+│       │   │   ├── [1.3M]  pc.data.5.BeverageTobacco
+│       │   │   ├── [  72]  pc.data.61.EducationalServices
+│       │   │   ├── [371K]  pc.data.62.RentalandLeasingServices
+│       │   │   ├── [956K]  pc.data.63.ProfessionalandTechnicalServ
+│       │   │   ├── [726K]  pc.data.67.AdministrativeandSupportServ
+│       │   │   ├── [1.4M]  pc.data.6.Textile
+│       │   │   ├── [ 97K]  pc.data.70.WasteMgtandRemediationServ
+│       │   │   ├── [375K]  pc.data.71.Accommodation
+│       │   │   ├── [748K]  pc.data.72.RecyclableMaterials
+│       │   │   ├── [ 11K]  pc.data.73.MiscellaneousStoreRetailers
+│       │   │   ├── [204K]  pc.data.74.PremiumsforPropandCasualtyIns
+│       │   │   ├── [480K]  pc.data.75.Construction
+│       │   │   ├── [1.1M]  pc.data.76.WholesaleTrade
+│       │   │   ├── [295K]  pc.data.77.Recreation
+│       │   │   ├── [886K]  pc.data.7.TextileProduct
+│       │   │   ├── [ 97K]  pc.data.81.OtherServices
+│       │   │   ├── [904K]  pc.data.8.Apparel
+│       │   │   └── [508K]  pc.data.9.Leather
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 357]  pc.contacts
+│       │   │   ├── [ 150]  pc.footnote
+│       │   │   ├── [ 44K]  pc.industry
+│       │   │   ├── [ 252]  pc.period
+│       │   │   ├── [255K]  pc.product
+│       │   │   └── [  79]  pc.seasonal
+│       │   └── [876K]  pc.series
+│       ├── [4.0K]  pd
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 53M]  pd.data.0.Current
+│       │   │   ├── [4.6M]  pd.data.10.Lumber
+│       │   │   ├── [3.7M]  pd.data.11.Furniture
+│       │   │   ├── [5.1M]  pd.data.12.Paper
+│       │   │   ├── [4.5M]  pd.data.13.Printing
+│       │   │   ├── [9.7M]  pd.data.14.Chemicals
+│       │   │   ├── [1.6M]  pd.data.15.Petroleum
+│       │   │   ├── [3.5M]  pd.data.16.Rubber
+│       │   │   ├── [1.7M]  pd.data.17.Leather
+│       │   │   ├── [5.3M]  pd.data.18.Stone
+│       │   │   ├── [7.5M]  pd.data.19.PrimaryMetal
+│       │   │   ├── [407K]  pd.data.1.MetalMining
+│       │   │   ├── [ 10M]  pd.data.20.FabricatedMetal
+│       │   │   ├── [ 19M]  pd.data.21.Machinery
+│       │   │   ├── [ 11M]  pd.data.22.ElectricalMachinery
+│       │   │   ├── [3.7M]  pd.data.23.TransportationEquipment
+│       │   │   ├── [4.8M]  pd.data.24.MeasuringInstruments
+│       │   │   ├── [4.0M]  pd.data.25.Miscellaneous
+│       │   │   ├── [371K]  pd.data.29.AirTransportation
+│       │   │   ├── [105K]  pd.data.2.AnthraciteMining
+│       │   │   ├── [123K]  pd.data.30.PipeLines
+│       │   │   ├── [9.6M]  pd.data.31.Other
+│       │   │   ├── [825K]  pd.data.3.BituminousAndLignite
+│       │   │   ├── [704K]  pd.data.4.OilAndGas
+│       │   │   ├── [1.9M]  pd.data.5.NonMetallicMining
+│       │   │   ├── [ 16M]  pd.data.6.Food
+│       │   │   ├── [759K]  pd.data.7.Tobacco
+│       │   │   ├── [5.2M]  pd.data.8.Textile
+│       │   │   └── [5.6M]  pd.data.9.Apparel
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 286]  pd.contacts
+│       │   │   ├── [ 122]  pd.footnote
+│       │   │   ├── [ 35K]  pd.industry
+│       │   │   ├── [ 252]  pd.period
+│       │   │   ├── [853K]  pd.product
+│       │   │   └── [  79]  pd.seasonal
+│       │   └── [1.2M]  pd.series
+│       ├── [4.0K]  pr
+│       │   ├── [4.0K]  data
+│       │   │   ├── [1.5M]  pr.data.0.Current
+│       │   │   └── [3.0M]  pr.data.1.AllData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 102]  pr.class
+│       │   │   ├── [ 562]  pr.contacts
+│       │   │   ├── [ 176]  pr.duration
+│       │   │   ├── [  40]  pr.footnote
+│       │   │   ├── [ 745]  pr.measure
+│       │   │   ├── [ 146]  pr.period
+│       │   │   ├── [  79]  pr.seasonal
+│       │   │   └── [ 263]  pr.sector
+│       │   └── [ 15K]  pr.series
+│       ├── [4.0K]  sa
+│       │   ├── [4.0K]  data
+│       │   │   ├── [114M]  sa.data.0.Current
+│       │   │   ├── [3.4M]  sa.data.10a.Florida
+│       │   │   ├── [2.4M]  sa.data.10b.Florida
+│       │   │   ├── [5.7M]  sa.data.10c.Florida
+│       │   │   ├── [2.9M]  sa.data.11a.Georgia
+│       │   │   ├── [4.0M]  sa.data.11b.Georgia
+│       │   │   ├── [2.6M]  sa.data.12.Hawaii
+│       │   │   ├── [2.4M]  sa.data.13.Idaho
+│       │   │   ├── [3.7M]  sa.data.14a.Illinois
+│       │   │   ├── [3.4M]  sa.data.14b.Illinois
+│       │   │   ├── [7.2M]  sa.data.14c.Illinois
+│       │   │   ├── [2.6M]  sa.data.15a.Indiana
+│       │   │   ├── [7.1M]  sa.data.15b.Indiana
+│       │   │   ├── [5.8M]  sa.data.16.Iowa
+│       │   │   ├── [2.6M]  sa.data.17.Kansas
+│       │   │   ├── [6.4M]  sa.data.18.Kentucky
+│       │   │   ├── [2.5M]  sa.data.19a.Louisiana
+│       │   │   ├── [4.5M]  sa.data.19b.Louisiana
+│       │   │   ├── [2.7M]  sa.data.1a.Alabama
+│       │   │   ├── [3.5M]  sa.data.1b.Alabama
+│       │   │   ├── [2.6M]  sa.data.20.Maine
+│       │   │   ├── [5.5M]  sa.data.21.Maryland
+│       │   │   ├── [3.1M]  sa.data.22a.Massachusetts
+│       │   │   ├── [5.7M]  sa.data.22b.Massachusetts
+│       │   │   ├── [3.0M]  sa.data.23a.Michigan
+│       │   │   ├── [4.0M]  sa.data.23b.Michigan
+│       │   │   ├── [3.0M]  sa.data.23c.Michigan
+│       │   │   ├── [9.7M]  sa.data.23d.Michigan
+│       │   │   ├── [6.0M]  sa.data.24.Minnesota
+│       │   │   ├── [3.7M]  sa.data.25.Mississippi
+│       │   │   ├── [2.7M]  sa.data.26a.Missouri
+│       │   │   ├── [5.9M]  sa.data.26b.Missouri
+│       │   │   ├── [1.7M]  sa.data.27.Montana
+│       │   │   ├── [5.3M]  sa.data.28.Nebraska
+│       │   │   ├── [2.8M]  sa.data.29.Nevada
+│       │   │   ├── [1.4M]  sa.data.2.Alaska
+│       │   │   ├── [3.3M]  sa.data.30.NewHampshire
+│       │   │   ├── [4.0M]  sa.data.31a.NewJersey
+│       │   │   ├── [2.6M]  sa.data.31b.NewJersey
+│       │   │   ├── [6.1M]  sa.data.31c.NewJersey
+│       │   │   ├── [3.9M]  sa.data.32.NewMexico
+│       │   │   ├── [3.0M]  sa.data.33a.NewYork
+│       │   │   ├── [2.0M]  sa.data.33b.NewYork
+│       │   │   ├── [1.8M]  sa.data.33c.NewYork
+│       │   │   ├── [2.3M]  sa.data.33d.NewYork
+│       │   │   ├── [3.1M]  sa.data.33e.NewYork
+│       │   │   ├── [3.4M]  sa.data.33f.NewYork
+│       │   │   ├── [3.6M]  sa.data.33g.NewYork
+│       │   │   ├── [2.7M]  sa.data.33h.NewYork
+│       │   │   ├── [ 10M]  sa.data.33i.NewYork
+│       │   │   ├── [4.3M]  sa.data.34a.NorthCarolina
+│       │   │   ├── [6.4M]  sa.data.34b.NorthCarolina
+│       │   │   ├── [2.3M]  sa.data.35.NorthDakota
+│       │   │   ├── [3.2M]  sa.data.36a.Ohio
+│       │   │   ├── [2.5M]  sa.data.36b.Ohio
+│       │   │   ├── [1.8M]  sa.data.36c.Ohio
+│       │   │   ├── [2.1M]  sa.data.36d.Ohio
+│       │   │   ├── [2.3M]  sa.data.36e.Ohio
+│       │   │   ├── [9.9M]  sa.data.36f.Ohio
+│       │   │   ├── [5.7M]  sa.data.37.Oklahoma
+│       │   │   ├── [2.8M]  sa.data.38a.Oregon
+│       │   │   ├── [4.4M]  sa.data.38b.Oregon
+│       │   │   ├── [4.4M]  sa.data.39a.Pennsylvania
+│       │   │   ├── [4.3M]  sa.data.39b.Pennsylvania
+│       │   │   ├── [4.5M]  sa.data.39c.Pennsylvania
+│       │   │   ├── [3.5M]  sa.data.39d.Pennsylvania
+│       │   │   ├── [3.2M]  sa.data.39e.Pennsylvania
+│       │   │   ├── [2.3M]  sa.data.39f.Pennsylvania
+│       │   │   ├── [8.8M]  sa.data.39g(1).Pennsylvania
+│       │   │   ├── [8.8M]  sa.data.39g.Pennsylvania
+│       │   │   ├── [3.2M]  sa.data.3.Arizona
+│       │   │   ├── [3.8M]  sa.data.40.PuertoRico
+│       │   │   ├── [4.2M]  sa.data.41.RhodeIsland
+│       │   │   ├── [3.0M]  sa.data.42a.SouthCarolina
+│       │   │   ├── [3.9M]  sa.data.42b.SouthCarolina
+│       │   │   ├── [2.0M]  sa.data.43.SouthDakota
+│       │   │   ├── [2.8M]  sa.data.44a.Tennessee
+│       │   │   ├── [4.4M]  sa.data.44b.Tennessee
+│       │   │   ├── [2.3M]  sa.data.45a.Texas
+│       │   │   ├── [2.8M]  sa.data.45b.Texas
+│       │   │   ├── [2.4M]  sa.data.45c.Texas
+│       │   │   ├── [2.1M]  sa.data.45d.Texas
+│       │   │   ├── [9.7M]  sa.data.45e.Texas
+│       │   │   ├── [2.7M]  sa.data.46.Utah
+│       │   │   ├── [3.3M]  sa.data.47.Vermont
+│       │   │   ├── [4.3M]  sa.data.48a.Virginia
+│       │   │   ├── [2.6M]  sa.data.48b.Virginia
+│       │   │   ├── [5.7M]  sa.data.48c.Virginia
+│       │   │   ├── [681K]  sa.data.49.VirginIslands
+│       │   │   ├── [2.4M]  sa.data.4a.Arkansas
+│       │   │   ├── [4.6M]  sa.data.4b.Arkansas
+│       │   │   ├── [4.1M]  sa.data.50.Washington
+│       │   │   ├── [3.1M]  sa.data.51a.WestVirginia
+│       │   │   ├── [6.1M]  sa.data.51b.WestVirginia
+│       │   │   ├── [2.9M]  sa.data.52a.Wisconsin
+│       │   │   ├── [6.2M]  sa.data.52b.Wisconsin
+│       │   │   ├── [1.5M]  sa.data.53.Wyoming
+│       │   │   ├── [4.4M]  sa.data.5a.California
+│       │   │   ├── [3.8M]  sa.data.5b.California
+│       │   │   ├── [3.5M]  sa.data.5c.California
+│       │   │   ├── [3.5M]  sa.data.5d.California
+│       │   │   ├── [3.7M]  sa.data.5e.California
+│       │   │   ├── [3.3M]  sa.data.5f.California
+│       │   │   ├── [ 14M]  sa.data.5g.California
+│       │   │   ├── [2.9M]  sa.data.6.Colorado
+│       │   │   ├── [4.3M]  sa.data.7a.Connecticut
+│       │   │   ├── [4.8M]  sa.data.7b.Connecticut
+│       │   │   ├── [3.7M]  sa.data.8.Delaware
+│       │   │   └── [1.9M]  sa.data.9.DC
+│       │   ├── [4.0K]  map
+│       │   │   ├── [6.3K]  sa.area
+│       │   │   ├── [ 689]  sa.contacts
+│       │   │   ├── [ 257]  sa.data_type
+│       │   │   ├── [ 292]  sa.detail
+│       │   │   ├── [ 284]  sa.footnote
+│       │   │   ├── [ 20K]  sa.industry
+│       │   │   ├── [ 252]  sa.period
+│       │   │   ├── [ 757]  sa.state
+│       │   │   └── [3.1K]  Untitled.message
+│       │   └── [2.3M]  sa.series
+│       ├── [4.0K]  sh
+│       │   ├── [4.0K]  data
+│       │   │   └── [ 15M]  sh.data.1.AllData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 668]  sh.case.type
+│       │   │   ├── [2.5K]  sh.contacts
+│       │   │   ├── [ 302]  sh.data.type
+│       │   │   ├── [ 296]  sh.division
+│       │   │   ├── [ 259]  sh.footnote
+│       │   │   ├── [ 41K]  sh.industry
+│       │   │   └── [  48]  sh.period
+│       │   └── [2.2M]  sh.series
+│       ├── [4.0K]  si
+│       │   ├── [4.0K]  data
+│       │   │   ├── [773K]  si.data.1.AllData
+│       │   │   └── [ 614]  si.data.1.TestData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 429]  si.case_type
+│       │   │   ├── [2.5K]  si.contacts
+│       │   │   ├── [ 314]  si.data_type
+│       │   │   ├── [ 298]  si.division
+│       │   │   ├── [  70]  si.footnote
+│       │   │   └── [ 41K]  si.industry
+│       │   └── [891K]  si.series
+│       ├── [4.0K]  sm
+│       │   ├── [4.0K]  data
+│       │   │   ├── [311M]  sm.data.0.Current
+│       │   │   ├── [9.1M]  sm.data.10a.Florida
+│       │   │   ├── [ 14M]  sm.data.10b.Florida
+│       │   │   ├── [ 13M]  sm.data.11.Georgia
+│       │   │   ├── [5.7M]  sm.data.12.Hawaii
+│       │   │   ├── [7.5M]  sm.data.13.Idaho
+│       │   │   ├── [ 15M]  sm.data.14.Illinois
+│       │   │   ├── [ 13M]  sm.data.15.Indiana
+│       │   │   ├── [7.7M]  sm.data.16.Iowa
+│       │   │   ├── [5.3M]  sm.data.17.Kansas
+│       │   │   ├── [6.7M]  sm.data.18.Kentucky
+│       │   │   ├── [ 10M]  sm.data.19.Louisiana
+│       │   │   ├── [ 11M]  sm.data.1.Alabama
+│       │   │   ├── [523M]  sm.data.1.AllData
+│       │   │   ├── [4.5M]  sm.data.20.Maine
+│       │   │   ├── [7.7M]  sm.data.21.Maryland
+│       │   │   ├── [ 12M]  sm.data.22.Massachusetts
+│       │   │   ├── [6.8M]  sm.data.23a.Michigan
+│       │   │   ├── [ 13M]  sm.data.23b.Michigan
+│       │   │   ├── [8.7M]  sm.data.24.Minnesota
+│       │   │   ├── [4.9M]  sm.data.25.Mississippi
+│       │   │   ├── [9.8M]  sm.data.26.Missouri
+│       │   │   ├── [5.2M]  sm.data.27.Montana
+│       │   │   ├── [6.4M]  sm.data.28.Nebraska
+│       │   │   ├── [5.6M]  sm.data.29.Nevada
+│       │   │   ├── [3.9M]  sm.data.2.Alaska
+│       │   │   ├── [4.3M]  sm.data.30.NewHampshire
+│       │   │   ├── [ 11M]  sm.data.31.NewJersey
+│       │   │   ├── [3.9M]  sm.data.32.NewMexico
+│       │   │   ├── [9.4M]  sm.data.33a.NewYork
+│       │   │   ├── [ 14M]  sm.data.33b.NewYork
+│       │   │   ├── [ 14M]  sm.data.34.NorthCarolina
+│       │   │   ├── [5.6M]  sm.data.35.NorthDakota
+│       │   │   ├── [ 15M]  sm.data.36.Ohio
+│       │   │   ├── [6.4M]  sm.data.37.Oklahoma
+│       │   │   ├── [ 12M]  sm.data.38.Oregon
+│       │   │   ├── [7.1M]  sm.data.39a.Pennsylvania
+│       │   │   ├── [ 11M]  sm.data.39b.Pennsylvania
+│       │   │   ├── [8.4M]  sm.data.3.Arizona
+│       │   │   ├── [5.1M]  sm.data.40.PuertoRico
+│       │   │   ├── [4.0M]  sm.data.41.RhodeIsland
+│       │   │   ├── [7.2M]  sm.data.42.SouthCarolina
+│       │   │   ├── [3.0M]  sm.data.43.SouthDakota
+│       │   │   ├── [9.6M]  sm.data.44.Tennessee
+│       │   │   ├── [4.3M]  sm.data.45a.Texas
+│       │   │   ├── [6.6M]  sm.data.45b.Texas
+│       │   │   ├── [ 17M]  sm.data.45c.Texas
+│       │   │   ├── [7.7M]  sm.data.46.Utah
+│       │   │   ├── [3.6M]  sm.data.47.Vermont
+│       │   │   ├── [8.8M]  sm.data.48.Virginia
+│       │   │   ├── [1.2M]  sm.data.49.VirginIslands
+│       │   │   ├── [4.6M]  sm.data.4.Arkansas
+│       │   │   ├── [ 14M]  sm.data.50.Washington
+│       │   │   ├── [5.7M]  sm.data.51.WestVirginia
+│       │   │   ├── [ 12M]  sm.data.52.Wisconsin
+│       │   │   ├── [4.1M]  sm.data.53.Wyoming
+│       │   │   ├── [ 36M]  sm.data.54.TotalNonFarm.All
+│       │   │   ├── [5.5M]  sm.data.55.TotalNonFarmStateWide.All
+│       │   │   ├── [ 25M]  sm.data.56.TotalPrivate.Current
+│       │   │   ├── [8.7M]  sm.data.57.GoodsProducing.Current
+│       │   │   ├── [6.7M]  sm.data.58.ServiceProviding.Current
+│       │   │   ├── [8.7M]  sm.data.59.PrivateSevcProviding.Current
+│       │   │   ├── [7.9M]  sm.data.5a.California
+│       │   │   ├── [ 12M]  sm.data.5b.California
+│       │   │   ├── [ 29M]  sm.data.5c.California
+│       │   │   ├── [2.8M]  sm.data.60.MiningAndLogging.Current
+│       │   │   ├── [6.5M]  sm.data.61.MiningLoggingConstr.Current
+│       │   │   ├── [9.1M]  sm.data.62.Construction.Current
+│       │   │   ├── [ 11M]  sm.data.63.Manufacturing.Current
+│       │   │   ├── [ 12M]  sm.data.64.DurableGoods.Current
+│       │   │   ├── [7.7M]  sm.data.65.NonDurableGoods.Current
+│       │   │   ├── [8.6M]  sm.data.66.TradeTransUtilities.Current
+│       │   │   ├── [9.6M]  sm.data.67.WholesaleTrade.Current
+│       │   │   ├── [ 18M]  sm.data.68.RetailTrade.Current
+│       │   │   ├── [ 11M]  sm.data.69.TransUtilities.Current
+│       │   │   ├── [9.4M]  sm.data.6.Colorado
+│       │   │   ├── [9.1M]  sm.data.70.Information.Current
+│       │   │   ├── [ 18M]  sm.data.71.FinancialActivities.Current
+│       │   │   ├── [ 23M]  sm.data.72.ProfBusSrvc.Current
+│       │   │   ├── [ 22M]  sm.data.73.EduHealthSrvc.Current
+│       │   │   ├── [ 20M]  sm.data.74.LeisureAndHospitality.Current
+│       │   │   ├── [9.0M]  sm.data.75.OtherServices.Current
+│       │   │   ├── [ 33M]  sm.data.76.Government.Current
+│       │   │   ├── [7.8M]  sm.data.7.Connecticut
+│       │   │   ├── [4.1M]  sm.data.8.Delaware
+│       │   │   └── [4.5M]  sm.data.9.DC
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 12K]  sm.area
+│       │   │   ├── [ 585]  sm.contacts
+│       │   │   ├── [ 819]  sm.data_type
+│       │   │   ├── [  58]  sm.footnote
+│       │   │   ├── [ 16K]  sm.industry
+│       │   │   ├── [ 419]  sm.period
+│       │   │   ├── [  79]  sm.seasonal
+│       │   │   ├── [1.9M]  sm.series
+│       │   │   ├── [ 809]  sm.state
+│       │   │   └── [ 566]  sm.supersector
+│       │   └── [1.9M]  sm.series
+│       ├── [4.0K]  su
+│       │   ├── [4.0K]  data
+│       │   │   ├── [380K]  su.data.0.Current
+│       │   │   └── [380K]  su.data.1.AllItems
+│       │   ├── [4.0K]  map
+│       │   │   ├── [  90]  su.area
+│       │   │   ├── [  32]  su.base
+│       │   │   ├── [  51]  su.footnote
+│       │   │   ├── [ 891]  su.item
+│       │   │   ├── [  46]  su.periodicity
+│       │   │   └── [  79]  su.seasonal
+│       │   └── [4.8K]  su.series
+│       ├── [4.0K]  tu
+│       │   ├── [4.0K]  data
+│       │   ├── [4.0K]  map
+│       │   ├── [6.6K]  tu.actcode
+│       │   ├── [ 446]  tu.age
+│       │   ├── [104M]  tu.aspect
+│       │   ├── [ 217]  tu.contacts
+│       │   ├── [101M]  tu.data.0.Current
+│       │   ├── [101M]  tu.data.1.AllData
+│       │   ├── [  94]  tu.datays
+│       │   ├── [ 403]  tu.earn
+│       │   ├── [  93]  tu.ecage
+│       │   ├── [  80]  tu.ecytd
+│       │   ├── [ 318]  tu.educ
+│       │   ├── [  83]  tu.elder
+│       │   ├── [  94]  tu.eldur
+│       │   ├── [  89]  tu.elfreq
+│       │   ├── [  76]  tu.elnum
+│       │   ├── [1.1K]  tu.footnote
+│       │   ├── [ 140]  tu.hhnscc03
+│       │   ├── [ 178]  tu.lfstat
+│       │   ├── [ 382]  tu.lfstatw
+│       │   ├── [ 303]  tu.maritlstat
+│       │   ├── [ 150]  tu.mjcow
+│       │   ├── [ 597]  tu.occ
+│       │   ├── [ 170]  tu.pertype
+│       │   ├── [ 386]  tu.prhhchild
+│       │   ├── [ 420]  tu.prownhhchild
+│       │   ├── [ 148]  tu.race
+│       │   ├── [  79]  tu.seasonal
+│       │   ├── [ 23M]  tu.series
+│       │   ├── [ 106]  tu.sex
+│       │   ├── [ 129]  tu.sjmj
+│       │   ├── [ 603]  tu.stattype
+│       │   ├── [1.0K]  tu.timeday
+│       │   ├── [ 119]  tu.where
+│       │   ├── [ 536]  tu.who
+│       │   └── [ 133]  tu.work
+│       ├── [4.0K]  wd
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 23M]  wd.data.0.Current
+│       │   │   ├── [5.1M]  wd.data.10.Pulp
+│       │   │   ├── [7.6M]  wd.data.11a.Metals10-103
+│       │   │   ├── [6.4M]  wd.data.11b.Metals104-109
+│       │   │   ├── [8.1M]  wd.data.12a.Machinery11-113
+│       │   │   ├── [5.9M]  wd.data.12b.Machinery114-116
+│       │   │   ├── [8.7M]  wd.data.12c.Machinery117-119
+│       │   │   ├── [4.3K]  wd.data.12i.MachineryInputs
+│       │   │   ├── [4.3M]  wd.data.13.Furniture
+│       │   │   ├── [  72]  wd.data.14i.TransportEqInputs
+│       │   │   ├── [1.9M]  wd.data.14.Minerals
+│       │   │   ├── [1.0M]  wd.data.15.Transportation
+│       │   │   ├── [4.0M]  wd.data.16.Miscellaneous
+│       │   │   ├── [420K]  wd.data.17.TotalDurables
+│       │   │   ├── [150K]  wd.data.18.SpecialIndexes
+│       │   │   ├── [3.8M]  wd.data.20.StageofProcessing
+│       │   │   ├── [ 68K]  wd.data.21.FD-ID
+│       │   │   ├── [709K]  wd.data.23.RefinedPetroleum
+│       │   │   ├── [2.6M]  wd.data.2.FarmProducts
+│       │   │   ├── [  72]  wd.data.30i.TransportServInputs
+│       │   │   ├── [777K]  wd.data.30.Services
+│       │   │   ├── [7.5M]  wd.data.3.ProcessedFoods
+│       │   │   ├── [7.4M]  wd.data.4.Textile
+│       │   │   ├── [  72]  wd.data.51i.HealthServInputs
+│       │   │   ├── [  72]  wd.data.56i.EntertnOtherInputs
+│       │   │   ├── [2.1M]  wd.data.5.Leather
+│       │   │   ├── [2.9M]  wd.data.6.Fuels
+│       │   │   ├── [8.8M]  wd.data.7.Chemicals
+│       │   │   ├── [5.5K]  wd.data.7i.ChemicalsInputs
+│       │   │   ├── [  72]  wd.data.80.Construction
+│       │   │   ├── [  72]  wd.data.80i.ConstructnInputs
+│       │   │   ├── [4.8K]  wd.data.8i.RubberInputs
+│       │   │   ├── [1.9M]  wd.data.8.Rubber
+│       │   │   └── [3.1M]  wd.data.9.Lumber
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 347]  wd.contacts
+│       │   │   ├── [ 150]  wd.footnote
+│       │   │   ├── [1.2K]  wd.group
+│       │   │   ├── [317K]  wd.item
+│       │   │   └── [  79]  wd.seasonal
+│       │   └── [1.5M]  wd.series
+│       ├── [4.0K]  wm
+│       │   ├── [4.0K]  data
+│       │   │   └── [ 26M]  wm.data.1.AllData
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 23K]  wm.area
+│       │   │   ├── [ 31M]  wm.aspect
+│       │   │   ├── [ 861]  wm.contacts
+│       │   │   ├── [  84]  wm.datatype
+│       │   │   ├── [  98]  wm.estimate
+│       │   │   ├── [ 233]  wm.footnote
+│       │   │   ├── [  97]  wm.industry
+│       │   │   ├── [ 473]  wm.level
+│       │   │   ├── [ 33K]  wm.occupation
+│       │   │   ├── [  96]  wm.ownership
+│       │   │   ├── [  61]  wm.period
+│       │   │   ├── [  79]  wm.seasonal
+│       │   │   └── [ 305]  wm.subcell
+│       │   └── [103M]  wm.series
+│       ├── [4.0K]  wp
+│       │   ├── [4.0K]  data
+│       │   │   ├── [ 68M]  wp.data.0.Current
+│       │   │   ├── [3.6M]  wp.data.10.Pulp
+│       │   │   ├── [3.9M]  wp.data.11a.Metals10-103
+│       │   │   ├── [5.0M]  wp.data.11b.Metals104-109
+│       │   │   ├── [3.0M]  wp.data.12a.Machinery11-113
+│       │   │   ├── [4.8M]  wp.data.12b.Machinery114-116
+│       │   │   ├── [4.4M]  wp.data.12c.Machinery117-119
+│       │   │   ├── [ 62K]  wp.data.12i.MachineryInputs
+│       │   │   ├── [4.1M]  wp.data.13.Furniture
+│       │   │   ├── [178K]  wp.data.14i.TransportEqInputs
+│       │   │   ├── [4.4M]  wp.data.14.Minerals
+│       │   │   ├── [3.0M]  wp.data.15.Transportation
+│       │   │   ├── [3.7M]  wp.data.16.Miscellaneous
+│       │   │   ├── [  72]  wp.data.17.TotalDurables
+│       │   │   ├── [901K]  wp.data.18.SpecialIndexes
+│       │   │   ├── [198K]  wp.data.19.SteelMill
+│       │   │   ├── [ 84K]  wp.data.1.AllCommodities
+│       │   │   ├── [190K]  wp.data.21.Aggregates
+│       │   │   ├── [9.8M]  wp.data.22.FD-ID
+│       │   │   ├── [6.2M]  wp.data.2.FarmProducts
+│       │   │   ├── [ 63K]  wp.data.30i.TransportServInputs
+│       │   │   ├── [9.4M]  wp.data.30.Services
+│       │   │   ├── [9.6M]  wp.data.3.ProcessedFoods
+│       │   │   ├── [2.7M]  wp.data.4.Textile
+│       │   │   ├── [ 68K]  wp.data.51i.HealthServInputs
+│       │   │   ├── [ 70K]  wp.data.56i.EntertnOtherInputs
+│       │   │   ├── [1.1M]  wp.data.5.Leather
+│       │   │   ├── [3.7M]  wp.data.6.Fuels
+│       │   │   ├── [5.3M]  wp.data.7.Chemicals
+│       │   │   ├── [ 60K]  wp.data.7i.ChemicalsInputs
+│       │   │   ├── [214K]  wp.data.80.Construction
+│       │   │   ├── [1.2M]  wp.data.80i.ConstructnInputs
+│       │   │   ├── [ 63K]  wp.data.8i.RubberInputs
+│       │   │   ├── [2.1M]  wp.data.8.Rubber
+│       │   │   └── [2.4M]  wp.data.9.Lumber
+│       │   ├── [4.0K]  map
+│       │   │   ├── [ 342]  wp.contacts
+│       │   │   ├── [ 150]  wp.footnote
+│       │   │   ├── [2.0K]  wp.group
+│       │   │   ├── [225K]  wp.item
+│       │   │   ├── [ 252]  wp.period
+│       │   │   └── [  79]  wp.seasonal
+│       │   └── [1000K]  wp.series
+│       └── [4.0K]  ws
+│           ├── [ 713]  ws.contacts
+│           ├── [ 252]  ws.period
+│           └── [  79]  ws.seasonal
+└── [   0]  test.txt
+
+190 directories, 1463 files
