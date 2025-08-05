@@ -1,0 +1,368 @@
+Green Goods and Services (GGS)                                                                
+				     gg.txt
+
+
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+
+==============================================================================
+Section 1
+==============================================================================
+
+The following is a definition of:  Green Goods and Services Survey (GGS)
+	
+Survey Description:  The Green Goods and Services (GGS) program provides
+national and State estimates of GGS employment levels and rates by North
+American Industrial Classification System (NAICS) industry code and ownership.
+GGS employment is employment associated with producing green goods or 
+providing green services. GGS employment level and rate estimates are also
+published at the State level for private, local government, State government,
+and federal government ownerships at the NAICS industry sector level.
+
+At the national level, GGS employment level and rate estimates are published 
+by select NAICS industries based on the 2007 NAICS codes. These select
+industries are within a subset of 333 industries identified as being potential
+producers of green goods and services. For a list of these 333 industries,
+please visit our Web site at http://www.bls.gov/ggs.
+
+At the State level, GGS employment level and rate estimates are published by
+select sectors based on the 2007 NAICS codes. These select sectors include: 
+mining and logging; construction; manufacturing; trade; transportation;
+utilities; information; finance and insurance; professional and business
+services; educational services; arts, entertainment, and recreation; other 
+services; federal government; State government, and local government.
+
+The sample for the Green Goods and Services Survey includes approximately 
+120,000 randomly selected  establishments per year in the 50 states and the
+District of Columbia from the Quarterly Census of Employment and Wages (QCEW)
+sample frame. Most of these establishments, which include factories, offices,
+government agencies, and stores, are selected from the second quarter QCEW
+sample frame, while a small sample of new business establishments is selected
+from the third and fourth quarters. The sample is designed to estimate GGS 
+employment at both national industry and state industry sector levels of
+detail.
+
+All data series are published on a quarterly rolling-year basis, beginning
+with the fourth quarter of 2010.
+
+Data Characteristics: All published levels are rounded to the nearest unit. 
+All rates are published in percent to one decimal place.
+
+Special characteristics of the data are footnoted where necessary.
+
+Updating Schedule: The updating schedule for GGS data is yet to be determined.
+
+==============================================================================
+Section 2
+==============================================================================
+
+The following Green Goods and Services Survey files are on the BLS 
+internet in the sub-directory pub/time.series/gg:
+
+	gg.data.Current			- Most current GGS data
+	gg.data.All			- All GGS data
+	gg.area				- State codes
+	gg.contacts			- Contacts for GGS survey
+	gg.footnote			- Footnote codes
+	gg.industry			- Industry codes
+	gg.own				- Ownership codes
+	gg.periodicity			- Periodicity codes
+	gg.ratelevel			- Rate/level codes
+	gg.series			- All series and their beginning and 
+					  end dates
+	gg.txt				- General information
+	
+
+==============================================================================
+Section 3
+==============================================================================
+The FTP files are organized such that data users are provided with the
+following set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single series.  
+Additionally, the series file also contains the following series-level
+information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation 
+
+The mapping files are definition files that contain explanatory text
+descriptions that correspond to each of the various codes contained within
+each series identification code.
+
+The data file contains one line of data for each observation period pertaining
+to a specific series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (GGS uses quarterly rolling-year 
+   averages)
+d) value
+e) footnote code (if available)
+
+==============================================================================
+Section 4
+==============================================================================
+File Structure and Format: The following represents the file format used to
+define gg.series. Note that the Field Numbers are for reference only; they do
+not exist in the database.  Data files are in ASCII text format. Data elements
+are separated  by spaces; the first record of each file contains the column
+headers for the data elements stored in each field. Each record ends with a 
+new line character. 
+
+Field #/Data Element		Length		Value(Example)
+
+1.  series_id		  	23		GGUQ000002211190150010R
+
+2.  seasonal			1		U
+
+3.  periodicity_code	 	1		Q
+
+4.  area_code			5		00000
+
+5.  industry_code		6		221119
+
+6.  altenergy_code		2		01
+
+7.  own_code			1		5
+
+8.  sizeclass_code		1	 	0
+
+9.  dataelement_code		2		01
+
+10. futureuse_code		1		0
+
+11. ratelevel_code		1		R
+
+12. footnote_codes		2		It varies
+
+13. begin_year		  	4		2010
+
+14. begin_period	  	2		Q04		
+				
+15. end_year		  	4		2011		
+
+16. end_period		  	2		Q01
+
+
+The series_id (GGUQ000002211190150010R) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		GG
+seasonal (code)		=		U
+periodicity_code	=		Q
+area_code		=		00000
+industry_code		=		221119
+alt_energy_code		=		01
+own_code		=		5
+size_code		=		0
+data_element_code	=		01
+futureuse_code		=		0
+ratelevel_code		=		R
+
+
+==============================================================================
+Section 5
+==============================================================================
+File Structure and Format: The following represents the file format used to
+define the gg.data files. (See Section 2.) Note that the field numbers are for
+reference only; they do not exist in the database. Data files are in ASCII 
+text format. Data elements are separated by spaces; the first record of each
+file contains the column headers for the data elements stored in each field.  
+Each record ends with a new line character.  
+
+The above-referenced data files have the following format:
+
+Field #/Data Element	Length		Value(Example)
+
+1. series_id		  23		GGUQ000002211190150010R
+
+2. year			   4		2010
+
+3. period		   3		Q03
+
+4. value		  12		955712
+
+5. footnote_codes	  10		It varies
+
+
+The series_id (GGUQ000002211190150010R) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		GG
+seasonal (code)		=		U
+periodicity_code	=		Q
+area_code		=		00000
+industry_code		=		221119
+alt_energy_code		=		01
+own_code		=		5
+size_code		=		0
+data_element_code	=		01
+futureuse_code		=		0
+ratelevel_code		=		R
+
+==============================================================================
+Section 6
+==============================================================================
+File Structure and Format: The following represents the file format used to
+define each mapping file. Note that the field numbers are for reference only; 
+they do not exist in the database. Mapping files are in ASCII text format. 
+Data elements are separated by tabs; the first record of each file contains 
+the column headers for the data elements stored in each field. Each record
+ends with a new line character.  
+
+
+File Name:  gg.area
+
+Field #/Data Element		Length		Value(Example)
+
+1.  area_code			5		34000
+
+2.  area_text			100		New Jersey
+
+
+File Name:  gg.dataelement
+
+Field #/Data Element		Length		Value(Example)
+
+1.  data_element_code		02		01
+
+2.  data_element_text		100		GGS employment
+
+
+File Name:  gg.footnote
+
+Field #/Data Element		Length		Value(Example)
+
+1.  footnote_codes		1		5
+
+2.  footnote_text		250		Data not available.
+
+
+File Name:  gg.industry
+
+Field #/Data Element		Length		Value(Example)
+
+1.  industry_code		6		334300
+
+2.  industry_text		100		Audio and video equipment mfg.
+
+
+File Name:  gg.own
+
+Field #/Data Element		Length		Value(Example)
+
+1.  own_code			1		2
+
+2.  own_text			100		State government
+
+
+File Name:  gg.periodicity
+
+Field #/Data Element		Length		Value(Example)
+
+1.  periodicity_code		1		Q
+
+2.  periodicity_text		9		Quarterly rolling year
+
+
+File Name:  gg.ratelevel
+
+Field #/Data Element		Length		Value(Example)
+
+1.  ratelevel_code		1		R
+
+2.  ratelevel_text		5		Rate
+
+
+
+
+==============================================================================
+Section 7
+==============================================================================
+GREEN GOODS AND SERVICES SURVEY (GGS) DATABASE ELEMENTS
+
+Data Element	Length	Value(Example)			Description
+
+begin_period	  3	Q01-Q04			Identifies first data 
+			Ex: Q02=12-month	observation within the first 
+			period ending in June.	year for which data is 
+			(Q=Quarterly rolling-	available for a given series.
+			year period.)
+				
+begin_year	  4	YYYY			Identifies first year for
+			Ex: 2010		which data is available for a
+						given series.
+
+dataelement_code  2	01			Code identifying type of 
+						data.
+
+dataelement_text  100	Text			Description of type of data.
+			Ex: GGS employment
+
+end_period	  3	Q01-Q04			Identifies last data 
+			Ex: Q02=12-month	observation within the last
+			period ending in June.	year for which data is 
+			(Q=Quarterly rolling-	available for a given series.
+			year period.)
+				
+end_year	  4	YYYY			Identifies last year for 
+			Ex: 2010		which data is available for a
+						given series.
+
+footnote_codes	  10	It varies		Identifies footnotes for the
+						data series.
+
+footnote_text	  100	Text			Contains the text of the 
+						footnote.
+
+industry_code	  6	551114			Code identifying industry.
+
+industry_text	  120	Text			Name of industry.
+			Ex: Manufacturing
+				
+period		  3	Q01-Q04			Identifies period for which
+			Ex: Q02=12-month	data is observed. 
+			period ending in June.	
+			(Q=Quarterly rolling-
+			year period.)
+				
+ratelevel_code	  1	R			Code identifying rate or 
+						level.
+
+ratelevel_text	  100	Text			Decription of ratelevel_code.
+			Ex: Rate
+
+seasonal	  1	S=Seasonally		Code identifying whether the
+			  Adjusted 		data are seasonally adjusted.
+			U=Unadjusted
+
+series_id	  23	GGUQ00000221119015001	Code identifying the specific 
+			0R			series.
+
+value		  12	Ex: 103623		Data value for series.
+
+year		  4	YYYY			Identifies year of 
+			Ex: 2010		observation.	
+
+
+
+
+
+

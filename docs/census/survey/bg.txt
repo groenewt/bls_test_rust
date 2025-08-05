@@ -1,0 +1,393 @@
+	Collective Bargaining Series - State and Local Government (BG)
+				    bg.txt
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  COLLECTIVE BARGAINING SERIES - 
+				   STATE AND LOCAL GOVERNMENT (BG)
+
+Survey Description:  This series summarizes wage-rate changes in major
+collective bargaining units (those with 1,000 workers or more) in State and
+local governments where:  (1)  A labor organization is recognized as the
+bargaining agent for a group of workers; (2)  the settlements are embodied
+in signed, mutually binding contracts; and (3)  wages are determined by
+collective bargaining.  Wage-rate change data are measured for units of
+1,000 workers or more; compensation measures are compiled for settlements
+of 5,000 workers or more.
+
+Summary Data Available:
+
+Wage Rate Changes:  Two types of information are presented.  "Settlement"
+data measure the net impact of increases, decreases, and no change in wage
+rates as a result of new settlements reached during the reference period.  
+Changes scheduled during the first 12 months after the contract effective 
+date (first-year) and all changes over the contract term expressed as an 
+annual rate (over the life) are presented.  Data on "wage rate changes under
+all major agreements" include increases, decreases, and no change in the 
+reference period stemming from settlements in that period, from earlier 
+settlements with changes deferred to the period, and from COLA adjustments.
+
+Compensation Changes:  These data measure changes (increases, decreases, and
+no change) in employee compensation (wages and benefits) resulting from 
+settlements negotiated in the reference period covering 5,000 workers or 
+more.  Both changes occurring within 12 months of the contract effective 
+date (first year) and all changes that will occur over the contract term 
+expressed as an annual rate (over the life) are presented.  "Compensation 
+changes" measure changes in the costs for employee compensation including 
+specified lump-sum payments and reflects both the size and timing of 
+compensation rate changes.
+
+Frequency of Observations:  Data are presented semiannually and by calendar
+year.
+
+Data Characteristics:  All percent changes are stored with one decimal
+place.  All employment measures are in millions.
+
+Updating Schedule:  Updates are available in February and August.
+
+References:  BLS Handbook of Methods, Chapter 7, "Negotiated Wage and 
+	     Benefit Changes", Bulletin 2285 (1988).
+==================================================================================
+Section 2
+==================================================================================
+The following Collective Bargaining Series (State and Local Government) files are 
+on the BLS internet in the sub-directory pub/time.series/bg:
+
+
+	bg.alteration		- Alteration codes	mapping file
+	bg.contacts		- Contacts for bg survey 
+	bg.data.1.AllData	- All data
+	bg.duration		- Duration codes	mapping file
+	bg.measure		- Measure codes		mapping file
+	bg.period		- Period codes		mapping file
+	bg.sector		- Sector codes		mapping file
+	bg.selection		- Selection codes	mapping file
+	bg.series		- All series and their beginning and end dates
+	bg.txt			- General information
+	bg.unit			- Unit codes		mapping file
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+bg.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  13		BGU01111001
+
+2.  measure_code	  2		00
+
+3.  unit_code		  1		1
+
+4.  alteration_code	  1		1
+
+5.  sector_code		  1		1
+
+6.  contract_duration	  1		0
+
+7.  contract_selection	  2		00
+
+8.  seasonal		  1		U		
+
+9.  begin_year		  4		1984
+
+10. begin_period	  3		Q02
+
+11. end_year		  4		1995
+
+12. end_period		  3		Q02
+					
+
+
+The series_id (BGU01111001) can be broken out into:
+
+Code					Value(Example)
+
+survey abbreviation	=		BG
+seasonal (code) 	=		U
+measure_code		=		01
+unit_code		=		1
+alteration_code		=		1
+sector_code		=		1
+contract_duration	=		0
+contract_selection	=		01
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character. 
+
+
+File Name:  bg.data.1.AllData
+
+The above-named data file has the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  13		BGU01111001 	      	
+
+2. year			   4		1984	
+
+3. period		   3		Q01		
+
+4. value		  12      	3.9	
+
+5. cont_break		   1		N 
+
+6. status		   1 		F	
+				 
+7. footnote_exists	   1		N
+				
+
+The series_id (BGU01111001) can be broken out into:
+
+Code					Value(Example)
+
+survey abbreviation	=		BG
+seasonal (code) 	=		U
+measure_code		=		01
+unit_code		=		1
+alteration_code		=		1
+sector_code		=		1
+contract_duration	=		0
+contract_selection	=		01
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character.  
+
+
+File Name:  bg.alteration	
+
+Field #/Data Element		Length		Value(Example)
+
+1. alteration_code		1		1
+	
+2. alteration_text		50		Text
+
+
+File Name:  bg.duration
+
+Field #/Data Element		Length		Value(Example)
+
+1. contract_duration		1		0
+
+2. contract_duration_text	50		Text
+
+
+File Name:  bg.measure
+
+Field #/Data Element		Length		Value(Example)
+
+1. measure_code			2		01
+
+2. measure_text			90		Text
+
+
+File Name:  bg.period
+
+Field #/Data Element		Length		Value(Example)
+
+1. period			3		Q01
+	
+2. period_abbr			5		QTR2
+
+3. period_name			20		Text
+
+
+File Name:  bg.sector
+
+Field #/Data Element		Length		Value(Example)
+
+1. sector_code			1		1
+
+2. sector_name			40		Text
+
+
+File Name:  bg.selection
+
+Field #/Data Element		Length		Value(Example)
+
+1. contract_selection		2		01
+
+2. contract_selection_text	80		Text
+
+
+File Name:  bg.unit
+
+Field #/Data Element		Length		Value(Example)
+
+1. unit_code			1		1
+		
+2. unit_text			20		Text
+
+=========================================================================================
+Section 7
+=========================================================================================
+COLLECTIVE BARGAINING SERIES - STATE AND LOCAL GOVERNMENT (BG)
+			       DATABASE ELEMENTS
+
+
+Data Element	Length		Value(Example)			Description
+
+alteration_code	1		1			Code identifying the type of
+							change measured by the observation.
+						
+alteration_text	50		Text			Description of type of change 
+				Ex: Changes (net 	measured by the observation.
+				increases, and no 	
+				change)
+
+begin_period	3		Q03			Identifies first data observation
+				Ex: Q03=3rd Quarter	within the first year for which
+				(Q=Quarterly, Q05=	data is available for a given
+				 Annual Average)	time series.							
+				
+begin_year	4		1975			Identifies first year for which
+							data is available for a given
+							time series.
+						
+cont_break	1		Y=Continuity break	Identifies point at which data 
+				N=No break		within a series are no longer 
+							comparable.
+
+contract_	1		0			Code identifying the length
+duration						of the contract.
+
+contract_	50		Text			Description of the length of
+duration_text			Ex: All	contracts	contract.
+				
+contract_	2		01			Code identifying the contracts 
+selection						negotiated in the period.
+						
+contract_	80		Text			Description of contracts 
+selection_text			Ex: All contracts	negotiated in the period.
+				negotiated in periods
+
+end_period	3		Q05			Identifies last data observation
+				Ex: Q05=Annual Average	within the last year for which
+				(Q=Quarterly, Q05=	data is available for a given
+				 Annual Average)	time series.
+				
+end_year	4		1980			Identifies last year for which
+							data is available for a given
+							time series.
+						
+footnote_exists	1		N=No footnote		Identifies whether a footnote 
+				Y=Footnote		exists for the data series. 
+							(To see footnote, refer to 
+							publication.)
+
+measure_code	2		01			The measure identifier.
+
+measure_text	90		Text			Name of element being
+				Ex: Settlements, 1st	measured by the observation.
+				compensation.
+				
+period_abbr	5		QTR2			Abbreviation of period name.
+				
+period		3		Q01			Identifies period for which
+ 				Ex: Q01=1st Quarter	data is observed. 
+				(Q=Quarterly, Q05=	
+				 Annual Average)	
+
+period_name	20		Text			Full name of period to which
+			 	Ex: First half 		the data observation refers.
+				 	
+seasonal	1		S=Seasonally		Code identifying whether the
+				  Adjusted		data are seasonally adjusted.
+				U=Unadjusted  	
+
+sector_code	1		1			Code identifying the sector
+							of the economy.
+
+sector_name	40		Text			Name of economic sector to
+				Ex: State and local	which data refer.
+				government
+				
+series_id	13		BGU01111001	 	Code identifying the specific 
+							series.
+
+status		1		F=Final data		Code identifying whether data 
+				P=Premliminary data	are preliminary or final.
+			 	  			
+unit_code	1		1			Code identifying the unit
+							of measurement.
+
+unit_text	20		Text			Name of unit of measurement
+				Ex: Mean (in percents)	for observation.
+					
+value		12		Data value		Observation for the series.
+
+year		4		1990			Identifies year of observation.
+				
+			
+
+	
+
+
+
+
+	

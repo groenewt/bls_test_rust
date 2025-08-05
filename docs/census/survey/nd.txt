@@ -1,0 +1,385 @@
+			Producer Price Index (ND)
+				nd.txt
+
+Section Listing
+
+1. Survey definition
+2. Files listed in the survey directory.
+3. Time series, series file, data file, and mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data element dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  PRODUCER PRICE INDEX REVISION-DISCONTINUED SERIES (ND)
+
+Survey Description:  The Producer Price Index Revision-Current Series indexes reflect
+price movements for the net output of producers organized according to the 
+North American Industry Classification System (NAICS).  The ND dataset is compatible 
+with a wide assortment of NAICS-based economic time series including:  productivity, 
+production, employment, wages, and earnings.  
+
+The PPI universe consists of the output of all industries in the goods-producing 
+sectors of the U.S. economy- mining, manufacturing, agriculture, fishing, and 
+forestry- as well as natural gas, electricity, construction, and goods competitive
+with those made in the producing sectors, such as waste and scrap materials. In
+addition, as of January 2011, the PPI program covered more than three-quarters of the
+service sector's output, publishing data for selected industries in the following 
+industry sectors: wholesale and retail trade; transportation and warehousing;
+information; finance and insurance; real estate brokering, rental, and leasing; 
+professional, scientific, and technical services; administrative, support, and waste 
+management services; health care and social assistance; and accommodation.
+
+To the extent possible, prices used in constructing the indexes are the 
+actual revenue or net transaction prices producers receive for sales of
+their outputs.  Scientific (probability) sampling techniques are 
+used to select reporting establishments, products, and transactions for all
+types and volumes of output (not just volume-sellers).
+
+Coverage includes roughly 500 mining and manufacturing industries and approximately 
+150 services industries.  The PPI is meant to measure changes in prices
+received by domestic producers, import products are not priced in the survey. 
+
+BLS collects over 100,000 price quotations each month covering over 600 industries
+and over 6,000 products and product categories.
+
+Frequency of Observations:  Monthly in most cases.
+
+Annual Averages:  Annual averages are available.
+
+Data Characteristics:  All indexes through June 2021 are stored with one decimal 
+place. Indexes after June 2021 are stored with three decimal places.
+
+Updating Schedule:  With the release of July 2004 indexes, the PPI produced a 
+separate dataset for discontinued NAICS-based indexes.  PPI indexes currently 
+in estimation and classified under NAICS reside in the ND dataset.  
+
+
+References:	BLS Handbook of Methods, Chapter 14, "Producer Prices", 
+		Online at https://www.bls.gov/opub/hom/pdf/homch14.pdf
+
+==================================================================================
+Section 2
+==================================================================================
+
+The following Producer Price Index files are on the BLS internet in the 
+sub-directory pub/time.series/nd:
+
+       	
+nd.data.0.Current-Most recent data available for all discontinued indexes 
+nd.data.01.Aggregates- Select cross-industry combinations
+nd.data.05.ForestryandLogging- (subsector 113)Forestry and logging
+nd.data.1.OilAndGas- (subsector 211)Oil and gas extraction
+nd.data.2.Mining- (subsector 212)Mining (except oil and gas)
+nd.data.3.MiningSupport- (subsector 213)Support activities for mining
+nd.data.4.Food- (subsector 311)Food manufacturing
+nd.data.5.BeverageTobacco- (subsector 312)Beverage and tobacco product mfg
+nd.data.6.Textile- (subsector 313)Textile mills 
+nd.data.7.TextileProduct- (subsector 314)Textile product mills
+nd.data.8.Apparel- (subsector 315)Apparel manufacturing
+nd.data.9.Leather- (subsector 316)Leather and allied product manufacturing
+nd.data.10.Wood- (subsector 321)Wood product manufacturing
+nd.data.11.Paper- (subsector 322)Paper manufacturing
+nd.data.12.Printing- (subsector 323)Printing and related support activities
+nd.data.13.PetroleumCoalProducts- (subsector 324)Petroleum and coal products mfg
+nd.data.14.Chemicals- (subsector 325)Chemical manufacturing 
+nd.data.15.PlasticsRubberProducts- (subsector 326)Plastics and rubber products mfg
+nd.data.16.NonmetallicMineral- (subsector 327)Nonmetallic mineral product mfg
+nd.data.17.PrimaryMetal- (subsector 331)Primary metal manufacturing 
+nd.data.18.FabricatedMetalProduct- (subsector 332)Fabricated metal product mfg
+nd.data.19.Machinery- (subsector 333)Machinery manufacturing
+nd.data.20.ComputerProduct- (subsector 334)Computer and electronic product mfg 
+nd.data.21.ElectricalMachinery- (subsector 335)Electrical equip, appliance, and
+	component mfg
+nd.data.22.TransportationEquipment- (subsector 336)Transportation equipment mfg
+nd.data.23.Furniture- (subsector 337)Furniture and related product mfg
+nd.data.24.Miscellaneous- (subsector 339)Miscellaneous manufacturing 
+nd.data.25.MotorVehicleDealers- (subsector 441) Motor vehicle and parts dealers
+nd.data.26.FurnitureStores- (subsector 442)Furniture and home furnishings stores
+nd.data.27.ElectronicsStores- (subsector 443)Electronics and appliance stores
+nd.data.28.BuildingGardenStores- (subsector 444)Building material and garden
+	equipment and supplies dealers
+nd.data.29.FoodBeverageStores- (subsector 445)Food and beverage stores
+nd.data.30.HealthStores- (subsector 446)Health and personal care stores
+nd.data.31.GasolineStations- (subsector 447)Gasoline stations
+nd.data.32.ClothingStores- (subsector 448)Clothing and clothing accessories stores
+nd.data.33.SportsMusicStores- (subsector 451)Sporting goods, hobby, book, and music
+	stores
+nd.data.34.GeneralStores- (subsector 452)General merchandise stores
+nd.data.35.NonstoreRetailers- (subsector 454)Nonstore retailers
+nd.data.36.AirTransportation- (subsector 481)Air transportation
+nd.data.37.RailTransportation- (subsector 482)Rail transportation
+nd.data.38.WaterTransportation- (subsector 483)Water transportation
+nd.data.39.TruckTransportation- (subsector 484)Truck transportation
+nd.data.40.PipelineTransportation- (subsector 486)Pipeline transportation
+nd.data.42.TransportationSupport- (subsector 488)Support activites for transportation
+nd.data.43.PostalService- (subsector 491)Postal service
+nd.data.44.CouriersAndMessengers- (subsector 492)Couriers and messengers	
+nd.data.45.WarehousingStorage- (subsector 493)Warehousing and storage
+nd.data.46.Utilities- (subsector 221)Utilities
+nd.data.47.AmbulatoryHealthCareServices- (subsector 621)Ambulatory health care
+	services
+nd.data.50.Hospitals- (subsector 622)Hospitals
+nd.data.51.NursingResidentialCareFacil- (subsector 623)Nursing and residential care
+	facilities
+nd.data.53.Publishing- (subsector 511)Publishing industries (except internet)
+nd.data.54.Broadcasting- (subsector 515)Broadcasting (except internet)
+nd.data.55.Telecommunications- (subsector 517)Telecommunications
+nd.data.56.ISPsSearchPortandDataProcess- (subsector 518)Internet search providers,
+	web search portals, and data processing services
+nd.data.57.Finance- (subsector 523)Securities, commodity contracts, and other
+	financial investements and related activities
+nd.data.58.InsuranceCarriers- (subsector 524)Insurance carriers and related activities
+nd.data.59.RealEstate- (subsector 531)Real estate
+nd.data.62.RentalandLeasingServices- (subsector 532)Rental and leasing services
+nd.data.63.ProfessionalandTechnicalServ- (subsector 541)Professional, scientific,
+	and technical services
+nd.data.67.AdministrativeandSupportServ- (subsector 561)Administrative and support
+	services
+nd.data.70.WasteMgtandRemediationServ- (subsector 562)Waste management and 
+	remediation services
+nd.data.71.Accommodation- (subsector 721)Accommodation
+nd.data.72.RecyclableMaterials- (industry 423930)Recyclable materials wholesalers
+nd.data.73.MiscellaneousStoreRetailers- (subsector 453)Miscellaneous store retailers
+nd.data.74.PremiumsforPropandCasualtyIns- (code 924126) Premiums for property and 
+	casualty insurance
+nd.data.75.Construction- (sector 23)Construction and material inputs to contstruction
+nd.data.76.WholesaleTrade- (sector 42)Wholesale trade
+nd.data.77.Recreation- (subsector 713)Amusement and recreation industries
+nd.contacts- Contacts for nd survey 
+nd.footnote- Footnote codes key
+nd.industry- Industry titles for nd industry codes
+nd.period- Period abbreviation key
+nd.product- Industry and product titles to nd codes
+nd.series- List of all series codes, titles, and their beginning and end dates
+nd.txt- General information
+
+=================================================================================
+Section 3
+=================================================================================
+The time series, series file, data file, and mapping file definitions and relationships
+are detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+nd.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by spaces; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		 30		NDU1133101133105
+
+2.  industry_code	  6		113310
+
+3.  product_code	 15		1133105
+
+4.  seasonal		  1		U		
+						
+5.  base_date		  6  		198112
+					
+6.  series_title        256             PPI industry data for Logging-Pulpwood, not seasonally adjusted, discontinued
+
+7.  begin_year		  4		1981
+
+8.  begin_period	  3		M12		
+				
+9.  end_year		  4		1991
+		
+10.  end_period		  3		M05		
+					
+The series_id (NDU11330011330041300) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		ND
+seasonal (code) 	=		U
+industry_code		=		113310
+product_code		=		1133105
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by spaces; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+The nd.data file is partitioned into a number of separate files:  See Section 2
+
+The above-referenced data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  30		NDU11330011330041300
+
+2. year			   4		1994	
+
+3. period		   3		M01		
+
+4. value		  12      	82.0	 	
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (NDU11330011330041300) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		ND
+seasonal (code) 	=		U
+industry_code		=		113310
+product_code		=		1133105
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+
+File Name:  nd.footnote
+
+Field #/Data Element		Length		Value(Example)
+
+1. footnote_code		2		P
+
+2. footnote_text		200		Text
+
+
+File Name:  nd.industry
+
+Field #/Data Element		Length		Value(Example)
+
+1.  industry_code		6		113300
+
+2.  industry_name		100		Text
+
+
+File Name:  nd.product
+
+Field #/Data Element		Length		Value(Example)
+
+1.  industry_code		6		113300
+
+2.  product_code		15		11330041300
+						
+3.  product_name		100		Text
+
+=========================================================================================
+Section 7
+=========================================================================================
+PRODUCER PRICE INDEX REVISION (ND) DATABASE ELEMENTS
+
+
+Data Element	Length	        Value(Example)			Description
+
+begin_period	3		M01-M13			Identifies first data observation
+				Ex: MO6=June 		within the first year for which 
+				(M=Monthly, M13=Annual	data is available for a given
+				Avg)			time series.
+
+begin_year	4		YYYY			Identifies first year for which 
+				Ex: 1975	  	data is available for a given 
+							time series.
+
+base_date	6		YYYYMM			The base year used in
+				Ex: 198412 (year=1984,	calculating the index.
+				month=12,i.e. December)	
+
+end_period	3		M01-M13			Identifies last data observation
+				Ex: M06=June		within the last year for which
+				(M=Monthly, M13=Annual	data is available for a given 
+				Avg)			time series.
+				
+end_year	4		YYYY			Identifies last year for which 
+				Ex: 1980		data is available for a given
+							time series.
+
+footnote_code	2		P			Identifies footnote for the data 
+							series.
+
+footnote_codes	10		It varies		Identifies footnotes for the data 
+							series.	
+
+footnote_text	200		Text			Contains the text of the footnote.
+
+industry_code	6		113300			NAICS code for the industry.
+
+industry_name	100		Text			Name of the industry.
+				Ex: Natural and
+				processed cheese
+
+period_abbr	5		Period name 		Abbreviation of period name.
+				abbreviation
+				Ex: JUN
+
+period		3		M01-M13			Identifies period for which
+				Ex: M06=June		data is observed.
+				(M=Monthly, M13=Annual	
+				Avg)	
+				
+
+period name	20		Text			 Full name of period to which
+				Ex: June		 the data observation refers.
+					
+product_code	15		Ex: 11330041300		 Code identifying the product 
+							 to which the data 
+							 observation refers.
+					
+product_name	100		Text			 Name of the product to which
+				Ex: cheddar cheese	 the data observation refers.
+
+seasonal	1		S=Seasonally		 Code identifying whether the
+				Adjusted		 data are seasonally adjusted.
+				U=Unadjusted  		
+
+series_id	30		Code series identifier	 Code identifying the specific 
+				Ex:NDU11330011330041300	 series.
+
+value		12		Index			 Price index for item.
+				Ex: 82.0
+
+year		4		YYYY			 Identifies year of observation.
+				Ex: 1990		
+			

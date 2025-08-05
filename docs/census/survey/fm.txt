@@ -1,0 +1,151 @@
+Marital and family labor force statistics from the Current Population Survey (FM)
+				     fm.txt
+  
+
+Section Listing
+
+1. Survey Description
+2. Key Concepts and Definitions
+3. Data Available
+
+
+
+================================================================================
+Section 1--Survey Description
+================================================================================
+
+The Current Population Survey (CPS), frequently referred to as the household survey, is a monthly survey of about 60,000 eligible households. 
+The CPS provides information about the civilian noninstitutional population age 16 years and over. All persons are classified as employed, 
+unemployed, or not in the labor force. (See definitions of these and other key concepts in Section 2.)
+
+The CPS estimates are available by various demographic characteristics, including age, sex, race, Hispanic or Latino ethnicity, and 
+marital status. Numerous cross-tabulations of labor force variables by demographic and labor force characteristics are available. 
+
+The survey is conducted by the U.S. Census Bureau for the Bureau of Labor Statistics. Each month, typically during the calendar week including 
+the 19th day, Census interviewers contact households by telephone and in person and ask questions regarding the labor market activity 
+of household members during the previous calendar week which included the 12th day of the month. 
+
+Statistics based on the CPS are subject to both sampling and nonsampling error. When a sample, rather than an entire population, is surveyed, 
+there is a chance that the sample estimates may differ from the true population values they represent. The exact difference, or sampling error, 
+varies depending on the particular sample selected, and this variability is measured by the standard error of the estimate. There is about a 
+90-percent chance, or level of confidence, that an estimate based on a sample will differ by no more than 1.6 standard errors from the true 
+population value because of sampling error. Nonsampling error can occur for many reasons, including the failure to sample a segment of the 
+population, inability to obtain information for all respondents in the sample, inability or unwillingness of respondents to provide correct 
+information, and errors made in the collection or processing of data. 
+
+
+
+References:	BLS Handbook of Methods, Chapter 1, "Labor force data derived from the Current Population Survey." 
+		http://www.bls.gov/opub/hom/homch1_a.htm.
+		Additional technical documentation is available at http://www.bls.gov/cps/documentation.htm.
+
+
+
+
+================================================================================
+Section 2--Key Concepts and Definitions
+================================================================================
+
+Civilian noninstitutional population.
+The civilian noninstitutional population includes all persons 16 years of age and older residing in the 50 States and the District of Columbia 
+who are not confined to institutions (for example, correctional facilities or residential nursing and mental health care facilities) and 
+who are not on active duty in the Armed Forces.
+
+
+Employed.
+Employed persons are those who, during the survey reference week, (a) did any work at all as paid civilians; (b) worked in their own business 
+or profession or on their own farm; (c) worked 15 hours or more as unpaid workers in a business or farm operated by a family member; or (d) were 
+temporarily absent from their jobs because of illness, vacation, bad weather, or another reason, whether or not they were paid for the time off.
+
+
+Unemployed.
+Unemployed persons are those who had no employment during the survey week, were available for work at that time, and made specific efforts to 
+find employment sometime in the prior 4 weeks. Persons temporarily laid off from their former jobs and awaiting recall did not need to be looking for work 
+to be classified as unemployed.
+
+
+Civilian labor force.
+The civilian labor force comprises all persons classified as employed or unemployed.
+
+
+Participation rate.
+The civilian labor force participation rate represents the civilian labor force as a percent of the civilian noninstitutional population.
+
+
+Employment-population ratio.
+The employment-population ratio represents the proportion of the population that is employed.
+
+
+Full-time workers.
+Full-time workers are those who usually work 35 hours or more per week (at all jobs).
+
+
+Part-time workers.
+Part-time workers are those who usually work less than 35 hours per week (at all jobs).
+
+
+Not in the labor force.
+Persons who are not employed or unemployed are classified as not in the labor force.  This group reflects persons who are neither working nor 
+actively seeking work.  Many who are not in the labor force are retired, going to school, or taking care of family members.  
+
+
+Marital status.
+Married, spouse present, refers to husbands and wives living together in the same household, even though one may be temporarily absent on business, 
+on vacation, on a visit, in a hospital, or for other reasons. 
+Other marital status includes persons who are never-married; married, spouse absent; separated; widowed; or divorced. 
+Separated includes persons with legal separations, those living apart with intentions of obtaining a divorce, and other people permanently or 
+temporarily separated because of marital discord.
+Married, spouse absent, includes married people living apart because either the husband or wife was employed and living at a considerable distance 
+from home, was serving away from home in the Armed Forces, had moved to another area, or had a different place of residence for any other reason 
+except separation as defined above.
+
+
+Children.  
+Data on children refer to own children under age 18 that live in the household. Included are sons, daughters, stepchildren, and adopted children of 
+the husband, wife, or person maintaining the family. Not included are nieces, nephews, grandchildren, other related children, and all unrelated 
+children living in the household.
+
+
+Race.
+White, Black or African American, and Asian are terms used to describe the race of persons. Persons in these categories are those who selected 
+that race group only. Data for the remaining race categories--American Indian or Alaska Native, Native Hawaiian or Other Pacific Islander, and 
+persons who selected more than one race category--are included in totals but are not shown separately because the number of survey respondents 
+was too small to develop estimates of sufficient quality for publication. In the survey process, race is determined by the household respondent.
+
+
+Hispanic or Latino ethnicity.
+This term refers to persons who identified themselves in the survey as being Spanish, Hispanic, or Latino. Persons whose ethnicity is identified 
+as Hispanic or Latino may be of any race.  
+
+
+
+
+================================================================================
+Section 3--Data Available
+================================================================================
+
+The marital and family labor force statistics (FM) database from the Current Population Survey reflects data published each year in the news release, 
+"Employment Characteristics of Families."
+
+At the present time, only data for persons are available in the FM database.  Person data include employment status by marital status and presence and age of own children. 
+For example, the FM database includes the labor force participation rate of mothers with children under age 6 (series FMUP1378865).
+
+Data series for families, including the number of families by family type and employment and unemployment of family members, will be added in the future.
+
+The data are annual averages of information collected monthly in the survey.  The annual averages are calculated from not seasonally adjusted monthly data.
+At present, the FM database has data beginning with 2009 annual averages.
+
+
+The FM database is one of several databases containing estimates from the CPS. Other data from the CPS, including monthly estimates of employment and 
+unemployment and quarterly data on earnings, are available at http://www.bls.gov/cps/data.htm.
+
+
+References: The current Employment Characteristics of Families news release as well as archived editions and other information on families and marital
+status are available at http://www.bls.gov/cps/demographics.htm#families.
+
+
+
+
+
+
+

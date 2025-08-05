@@ -1,0 +1,438 @@
+Occupational Requirements Survey (ORS)
+					     or.txt 
+
+Section listing
+
+1. Survey definition
+2. Download files listed in the survey directory
+3. Series file, data file, mapping file definitions, and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data element dictionary
+
+===================================================================================================
+Section 1 : Survey definition
+===================================================================================================
+
+The Occupational Requirements Survey (ORS) is an establishment-based survey conducted by the U.S. 
+Bureau of Labor Statistics (BLS). The ORS publishes job-related information regarding physical 
+demands; environmental conditions; education, training, and experience; as well as cognitive and 
+mental requirements.  
+
+ORS estimate characteristics: The ORS includes job requirements necessary to perform critical tasks
+in support of critical job functions. Critical job functions must be integral to a job and form the
+primary factors of pay. Education in the ORS provides the minimum education required to perform a
+job, not the education attainment of the worker. For example, a job may require a bachelor's degree,
+but workers performing the job may have more advanced degrees, such as a doctoral degree (Ph.D.).
+For the purposes of ORS, the requirement is a bachelor's degree. The distinction is significant
+because the objective is to measure job requirements not the characteristics of the workers.
+
+Classification systems: Establishments are classified using the 2022 North American Industry 
+Classification System (NAICS). Occupations are classified using the 2018 Standard Occupation 
+Classification (SOC) system. 
+
+Sample: The sample responding information is available in the latest ORS news release technical 
+note available at www.bls.gov/news.release/ors.nr0.htm.
+
+Summary estimates available: Published estimates are for civilian workers (private industry and 
+state and local government workers), occupational groups, and 6-digit occupations. Due to 
+publication criteria or data unavailability, not all elements are available for each occupation, 
+or occupational group. 
+
+Update schedule: Estimates are updated annually for each reference year and considered 
+preliminary until final reference year estimates are published. The final estimates combine results 
+from multiple sample groups.
+
+Additional information can be found at www.bls.gov/ors.
+
+===================================================================================================
+Section 2 : Download files listed in the survey directory
+===================================================================================================
+
+The following Occupational Requirement Survey files are available at:
+https://download.bls.gov/pub/time.series/or/
+
+	or.additive			- related elements sum together			mapping file
+	or.aspect			- all standard errors					data file
+	or.category			- related estimates grouped in categories		mapping file
+	or.contacts			- contact information					N/A
+	or.data.1.AllData		- all estimates						data file
+	or.datatype			- measurement type of estimate			mapping file
+	or.estimate			- specific element estimated				mapping file
+	or.footnote			- footnote codes						mapping file
+	or.industry			- industry 							mapping file
+	or.job_characteristic	- worker and establishment characteristics 	mapping file
+	or.occupation		- occupation						mapping file
+	or.ownership		- ownership							mapping file
+	or.requirement		- main requirement type					mapping file
+	or.seasonal			- seasonal codes						mapping file
+	or.series			- all series and titles					series file
+	or.txt			- general information					N/A
+
+===================================================================================================
+Section 3 : Series file, data files, mapping file definitions, and relationships
+===================================================================================================
+
+The download files are organized such that ORS users are provided with the following:
+
+a)  a series file (only one series file per survey)
+b)  data files
+c)  mapping files
+
+The series file contains a unique series identification code that identifies a single series and 
+columns of codes that define the series. Additionally, the series file also contains the following 
+series-level information:
+
+a) the period and year corresponding to the first data observation. 
+b) the period and year corresponding to the most recent data observation. 
+
+Note: a period value of A01 corresponds to annual data
+
+The data file contains one line of data for each observation period pertaining to a specific 
+series. Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed 
+d) value
+e) footnote code (if available)
+
+The mapping files are definition files that contain explanatory text descriptions that correspond 
+to each of the various codes used to define each series identification code.
+
+===================================================================================================
+Section 4 : Series file format and field definitions
+===================================================================================================
+
+File structure and format: The following represents the file format used to define the or.series 
+file. Note the field numbers are for reference only, they do not exist in the database. Data 
+elements are separated by tabs. The first record of each file contains the column headers for the 
+data elements stored in each field. Each record ends with a new line character. 
+
+Field #/data element			Length		Value (example)
+
+1. series_id		  		20		ORUV1000000000001029
+
+2. seasonal					1		U
+
+3. ownership_code	  			1 		1
+
+4. industry_code 	  			4		0000
+
+5. occupation_code 	  		3		000
+
+6. SOC_code					8		00000000
+
+7. job_characteristic_code	  	3		000
+
+8. estimate_code				5		01029
+
+9. datatype_code				2		01
+
+10. category_code	   			3		073
+				
+11. additive_code		   		3		A73
+
+12. requirement_code			1		V
+
+13. series_title				256		Percent of civilian workers that required a  
+								bachelor's degree as the minimum education level
+
+14. footnote_codes			10		p
+
+15. begin_year				4		2024
+
+16. begin_period				3		A01
+
+17. end_year				4		2024
+
+18. end_period				3		A01
+
+The series_id (ORUV1000000000001029) can be broken out into:
+
+Code							Value (example)
+
+Survey abbreviation			=		OR
+Seasonal(code)				=		U
+Requirement_code				=		V
+Ownership_code				=		1
+Industry_code				=		0000
+Occupation_code				=		000
+Job_characteristic_code			=		000
+Estimate_code				=		01029
+
+===================================================================================================
+Section 5 : Data file format and field definitions
+===================================================================================================
+
+File structure and format: The following represents the file format used to define each data file. 
+Note that the field numbers are for reference only; they do not exist in the database. Data 
+elements are separated by tabs. The first record of each file contains the column headers for the 
+data elements stored in each field. Each record ends with a new line character. 
+
+The or.data file is partitioned into two separate files:
+
+	1.  or.data.1.AllData		- All estimates
+	2.  or.aspect			- All standard errors
+	
+
+File name:	or.data.1.Alldata
+
+Field #/data element			Length		Value (example)
+
+1. series_id		  		20		ORUC1000025M00001205
+
+2. year			  		4		2024
+
+3. period		   			3		A01
+
+4. value		  			12      	16.6
+
+5. footnote_codes	  			10		<blank>
+
+File name:	or.aspect
+
+Field #/data element			Length		Value (example)
+
+1. series_id		  		20		ORUC1000025M00001205
+
+2. year			   		4		2024
+
+3. period		   			3		A01
+
+4. aspect		   			2		E
+
+5. value		  			12      	4.2
+
+6. footnote_codes	  			10		<blank>
+				
+===================================================================================================
+Section 6 : Mapping file formats and field definitions
+===================================================================================================
+
+File structure and format: The following represents the file format used to define each mapping 
+file. Note that the field numbers are for reference only; they do not exist in the database. Data 
+elements are separated by tabs. The first record of each file contains the column headers for the 
+data elements stored in each field. Each record ends with a new line character.
+
+File name:  or_map.additive
+
+Field #/data element			Length		Value (example)
+
+1. Additive_code				3		073
+
+2. Additive_text				200		Minimum education level
+
+3. Display_level				2		0
+
+4. Selectable				1		T
+
+5. Sort_sequence				5		100
+
+File name:  or.category
+
+Field #/data element			Length		Value (example)
+
+1. Category_code				3		092
+
+2. Category_text				200		Telework
+
+3. Display_level				2		0
+
+4. Selectable				1		T
+
+5. Sort_sequence				5		6
+
+File name:  or.datatype
+
+Field #/data element			Length		Value (example)
+
+1. Datatype_code				2		01
+
+2. Datatype_text				100		Percentage
+
+3. Display_level				2		0
+
+4. Selectable				1		T
+
+5. Sort_sequence				5		1
+
+File name:  or_map.estimate
+
+Field #/data element			Length		Value (example)
+
+1. Estimate_code				5		01029
+
+2. Estimate_text				200		Percent of workers that required a bachelor's 
+								degree as the minimum education level
+	
+3. Display_level	 			2		0
+
+4. Selectable	 			1		T
+
+5. Sort_sequence				5		324
+
+File name:  or_map.footnote
+
+Field #/data element			Length		Value (example)
+
+1. Footnote_code				2		1
+	
+2. Footnote_text				200		Estimate is less than 0.5 percent.
+
+File name:  or_map.industry
+
+Field #/data element			Length		Value (example)
+
+1. Industry_code				4		0000
+
+2. Industry_text				200		All Workers
+	
+3. Display_level				2		0
+
+4. Selectable				1		T
+	
+5. Sort_sequence				5		1
+
+File name:  or_map.job_characteristic
+
+Field #/data element			Length		Value (example)
+
+1. Job_characteristic_code		3		000
+
+2. Job_characteristic_text		100		All workers
+
+3. Display_level				2		1
+
+4. Selectable				1		T
+
+5. Sort_sequence				5		1
+
+File name:  or_map.occupation
+
+Field #/data element			Length		Value (example)
+
+1. Occupation_code			3		000
+
+2. SOC_code					8		00000000
+	
+3. Occupation_text			200		All workers
+	
+6. Display_level				2		0
+
+7. Selectable				1		T
+
+8. Sort_sequence				5		1
+
+File name:  or_map.ownership
+
+Field #/data element			Length		Value (example)
+
+1. Ownership_code				1		1
+
+2. Ownership_text				100		Civilian
+	
+3. Display_level				2		0
+
+4. Selectable				1		T
+
+5. Sort_sequence				5		1
+
+File name:  or_map.requirement
+
+Field #/data element			Length		Value (example)
+
+1. Requirement_code			4		C
+
+2. Requirement_text			100		Cognitive and mental
+
+3. display_level				2		0
+
+4. selectable				1		T
+
+5. sort_sequence				5		1
+
+===================================================================================================
+Section 7 : Data element dictionary
+===================================================================================================
+
+Occupational Requirements Survey (ORS) database elements
+
+
+Data element				Length		Description
+
+additive_code				3		Group of related estimates that sum together
+							
+additive_text				200		Describes the additive code
+							
+aspect_type					1		Identifies the type of additional data
+								provided for the series id (Example: E
+								represents standard error)
+							
+category_code				3		Related estimates grouped into categories
+
+category_text				200		Describes the category code
+
+datatype_code 				2		Measurement type used for estimate
+
+datatype_text				100		Describes the datatype code
+
+display_level				2		Establishes the element hierarchy 
+							
+estimate_code				5		Specific element being estimated
+
+estimate_text				200		Describes the estimate code
+
+footnote_codes				10		Footnote codes for those that apply to the
+								series
+							
+footnote_text				200		Describes the footnote code
+
+industry_code				4		Identifies the industry sector for the
+								estimate, as classified by the North 
+								American Industry Classification System 
+								(NAICS) (example: all workers)
+
+industry_text				200		Describes the industry code
+
+job_characteristic_code			3		Worker and establishment characteristic
+								code
+
+job_characteristic_text					Describes the job characteristic code
+
+occupation_code				3		The 3-digit occupation group code 
+								representing the 2-digit occupational
+								group, 6-digit occupation, or all workers
+
+occupation_text				200		Describes the occupation code
+
+ownership_code				1		Estimated ownership group (example: civilian)
+
+ownership_text				100		Describes the ownership code
+
+requirement_code				1		Occupational requirement type: C, E, P, V, R
+
+requirement_text				100		Describes the requirement code: cognitive 
+								and mental (C), environmental (E),
+								physical (P), education, training, and
+								experience (including specific vocational
+								preparation) (V), and response rate (R)
+
+seasonal_code				1		Seasonality indicator (U)
+
+seasonal_text				100		Describes the seasonal code (example: not 
+								seasonally adjusted is U)
+
+selectable	  				2		Identifies whether variables are selectable
+
+series_id					20		Unique identifier for each series
+
+series_title				256		Text description of the series
+
+SOC_code					8		The 6-digit code referring to the 2018 SOC 
+								occupations, 2-digit occupational group, or
+								all workers
+
+sort_sequence 	  			5		Denotes the order in which variables are
+								displayed

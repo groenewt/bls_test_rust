@@ -1,0 +1,389 @@
+	Consumer Price Index - Urban Wage Earners and Clerical Workers (MW)
+				 	mw.txt
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  CONSUMER PRICE INDEX - Urban Wage Earners 
+				   and Clerical Workers (MW)
+
+Survey Description:  The Consumer Price Index (CPI) is a statistical measure
+of change, over time, of the prices of goods and services in major 
+expenditure groups--such as food, housing, apparel, transportation, and 
+medical care--typically purchased by urban consumers.  Essentially, it 
+compares the cost of a sample "market basket" of goods and services in a 
+specific month relative to the cost of the same "market basket" in an 
+earlier reference period.  This reference period is designated as the base 
+period.
+
+The CPI introduced by the BLS in 1987 includes indexes for two 
+populations; urban wage earners and clerical workers (MW), and all urban 
+consumers (MU).  
+
+Both MW and the MU utilize expenditure weights based upon data tabulated 
+from three years (1982, 1983, and 1984) of the Consumer Expenditure Survey 
+and show, for every item and area combination available, the CPI data 
+through December 1997.  For selected items at the US level, and 
+for the All Items index at the region, size class and local area, overlap 
+indexes for January through June 1998 calculated using the old (pre 1998 
+revision) item and weight structure will be included.  No additional updates 
+to this database will be made after June 1998 data are included.
+
+To construct the two indexes, prices for about 100,000 items and data on 
+about 8,300 housing units are collected in a sample of 91 urban places.  
+Comparison of indexes for individual CMSA's or cities show only the relative
+change over time in prices between locations.  These indexes cannot be used
+to measure interarea differences in price levels or living costs.
+
+Summary Data Available:  U.S. average indexes for both populations are 
+available for about 350 consumer items and groups of items.  In addition, 
+over 100 of the indexes have been adjusted for seasonality.  The indexes 
+are monthly with some beginning in 1913. Semi-annual indexes have been 
+calculated for about 100 items for comparison with semi-annual areas 
+mentioned below.
+
+Area indexes for both populations are available for 27 urban places.  For 
+each area, indexes are published for about 65 items and groups.  The indexes
+are published monthly for five areas, bimonthly for ten areas, and 
+semi-annually for 12 urban areas.
+
+Regional indexes for both populations are available for four regions with 
+about 95 items and groups per region.  Beginning with January 1987, indexes
+are monthly, with some beginning as early as 1966.  Semi-annual indexes 
+have been calculated for about 100 items for comparison with semi-annual 
+areas mentioned above.  Semi-annual indexes have been calculated for about 
+60 items in the 27 urban places for comparison with semi-annual areas.
+
+City-size indexes for both populations are available for four size classes 
+with about 95 items and groups per class.  Beginning with January 1987, 
+indexes are monthly and most begin in 1977.  Semi-annual indexes have been 
+calculated for about 100 items for comparison with semi-annual areas 
+mentioned below.
+
+Region/city-size indexes for both populations are available cross classified
+by region and city-size class.  For each of 13 cross calculations, about 60
+items and groups are available.  Beginning with January 1987, indexes are 
+monthly and most begin in 1977.  Semi-annual indexes have been calculated 
+for about 60 items in the 27 urban places for comparison with semi-annual 
+areas.
+
+Frequency of Observations:  U.S. city average indexes, some area indexes, 
+and regional indexes, city-size indexes, and region/city-size indexes for 
+both populations are monthly.  Other area indexes for both populations are 
+bimonthly or semi-annual.
+
+Annual Averages:  Annual averages are available for all unadjusted series 
+in the MW and MU.
+
+Base Periods:  Most indexes have a base period of 1982-1984 = 100.  Other 
+indexes, mainly those which have been added to the CPI program since 1982, 
+are based more recently.  The base period value is 100.0, except for the 
+"Purchasing Power" values (AAOR and SAOR) where the base period value is 
+1.000.
+
+Data Characteristics:  Indexes are stored to one decimal place, except for 
+the "Purchasing Power" values which are stored to three decimal places.
+
+Updating Schedule:  Updates become available near the 15th of the month 
+following the reference month.
+
+References:  BLS Handbook of Methods, Chapter 19, "Consumer Price Index", 
+	     BLS Bulletin 2285, April 1988.
+==================================================================================
+Section 2
+==================================================================================
+The following Consumer Price Index (Urban Wage Earners and Clerical Workers) files 
+are on the BLS internet in the sub-directory pub/time.series/mw:
+
+
+	The mw.data file is partitioned into a number of separate files:
+
+	
+	mw.data.0.Current			-  All current year-to-date
+	mw.data.1.AllItems			-  All items (item_code AA0, SA0)
+	mw.data.2.Summaries			-  Summaries (item_code SA0, SA1, 
+					   	   SA2, SA3, SA4, SA5, SA6, SA7, 
+					   	   SAS, SAC)
+	mw.data.3.AsizeNorthEast		-  A-size areas in Northeast 
+				   	   	   (area_code A1...)
+	mw.data.4.AsizeNorthCentral		-  A-size areas in North Central 
+				   	           (area_code A2...)
+	mw.data.5.AsizeSouth			-  A-size areas in South 
+					           (area_code A3...)
+	mw.data.6.AsizeWest			-  A-size areas in West 
+					    	   (area_code A4...)
+	mw.data.7.OtherNorthEast		-  All other Northeast 
+				  	       	   (area_code 01, B1, C1)
+	mw.data.8.OtherNorthCentral		-  All other North Central 
+				  	   	   (area_code 02, B2, C2, D2)
+	mw.data.9.OtherSouth			-  All other South 
+				  	   	   (area_code 03, B3, C3, D3)
+	mw.data.10.OtherWest			-  All other West (area_code 04, C4)
+	mw.data.11.USFoodBeverage		-  All US Food and Beverage 
+					   	   (area_code 0000, item_code SA1, 
+					   	   SE0, SE1, SE20)
+	mw.data.12.USHousing			-  All US Housing (area_code 0000, 
+				   	   	   item_code SA2, SE21-SE35)
+	mw.data.13.USApparel			-  All US Apparel (area_code 0000, 
+				   	   	   item_code SE36-44, SS37-39)
+	mw.data.14.USTransportation		-  All US Transportation (area_code
+					   	   0000, item_code SA4, SE45-53, SS47)
+	mw.data.15.USMedical			-  All US Medical (area_code 0000, 
+				   	   	   item_code SA5, SE54-57)
+	mw.data.16.USEntertainment		-  All US Entertainment (area_code 
+					   	   0000, item_code SA6, SE59-62)
+	mw.data.17.USOtherGoodsServices 	-  All US Other Goods and Services 
+				   	   	   (area_code 0000, item_code SA7, 
+					   	   SE63-68)
+	mw.data.18.USCommoditiesServicesSpecial	-  All US Commodity and Services and
+					   	   Special (area_code 0000, item_code 
+						   SA0, SAC, SAN, SAS)
+	mw.data.19.PopulationSize		-  All population-size (area_code
+					   	   A000, B000, C000, D000)
+	mw.area					-  Area codes		mapping file
+	mw.contacts				-  Contacts for BLS mw survey 
+	mw.item					-  Item codes 		mapping file
+	mw.series				-  All series and their beginning and 
+	mw.txt					-  General Information
+						   end dates
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+mw.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		MWSR0000SA0
+
+2.  area_code		  4		0000
+
+3.  item_code		  8		SA0
+
+4.  seasonal		  1		S
+
+5.  periodicity_code	  1		R
+
+6.  base_code		  1		S  
+
+7.  base_period		  20		1982-84=100
+
+8.  begin_year		  4		1947
+
+9.  begin_period	  3		M01
+					
+10. end_year		  4		1997
+
+11. end_period		  3		M12
+
+
+The series_id (MWSR0000SA0) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		MW
+seasonal (code) 	=		S
+area_code		=		0000
+item_code		=		SAO
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character. 
+
+The mu.data file as been partitioned into a number of files: See Section 2
+
+The above-referenced data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		MWSR0000SA0      	 	      	
+
+2. year			   4		1995	
+
+3. period		   3		M01		
+
+4. value		  12      	148.00	
+				 
+5. footnote_codes	  10		It varies
+				
+The series_id (MWSR0000SA0) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		MW
+seasonal (code) 	=		S
+area_code		=		0000
+item_code		=		SAO
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+
+File Name:  mw.area
+
+Field #/Data Element		Length		Value(Example)
+
+1.  area_code			4		0100
+
+2.  area_name			30		Text
+
+
+File Name:  mw.item
+
+Field #/Data Element		Length		Value(Example)
+
+1.  item_code			8		AA0
+		
+2.  item_name			100		Text
+
+=========================================================================================
+Section 7
+=========================================================================================
+CONSUMER PRICE INDEX (MW) DATABASE ELEMENTS
+
+Data Element	Length		Value(Example)			Description
+
+area_code	4		A100			Unique code used to identify
+					  		a specific geographic area.
+					
+area_name	30		Text			Name of specific geographic
+				Ex: MIAMI, FLA		area.
+				
+base_code	1		S=Standard		Code identifying the type of
+				reference base		base period used in index.
+				A=Alternate
+				reference base	
+
+base_period	20		Identifies the 		The actual base period used
+				base period		in calculating the index.
+				Ex: 1982-1984=100	
+				    
+begin_period	3		A01, M01-M13		Identifies first data observation
+				or S01-S03		within the first year for which 
+				Ex: MO6=June		data is available for a given
+				(A=Annually,M=Monthly,	time series.
+				M13=Annual Avg,S=Semi-
+				Annually,S03=Annual Avg)
+				
+begin_year	4		YYYY			Identifies first year for which
+				Ex: 1975		data is available for a given
+							time series.
+						
+end_period	3		A01, M01-M13		Identifies last data observation 
+				or S01-S03		within the last year for which 
+				Ex: M06=June		data is available for a given
+				(A=Annually,M=Monthly,	time series.
+				M13=Annual Avg,S=Semi-
+				Annually,S03=Annual Avg)
+				
+end_year	4		YYYY			Identifies last year for which 
+				Ex: 1980		data is available for a given
+							time series.
+						
+footnote_codes	10		It varies		Identifies footnotes for the data 
+							series.	
+
+item_code	8		AA0			Identifies item for which 
+							data observations pertain.
+
+item_name	100		Text			Full names of items.
+				
+
+period_abbr	5		Period name 		Abbreviation of period name.
+				abbreviation
+				Ex: JUN
+
+period		3		A01, M01-M13		Identifies period for which 
+				or S01-S03		data is observed. 
+				Ex: M06=June		
+				(A=Annually,M=Monthly,	
+				M13=Annual Avg,S=Semi-
+				Annually,S03=Annual Avg)
+
+period_name	20		Text			Full name of period to which
+				Ex: June		the data observation refers.
+					
+periodicity_	1		S=Semi-Annual		Frequency of data observation.
+code				R=Regular	
+
+seasonal	1		S=Seasonally		Code identifying whether the
+				  Adjusted 		data are seasonally adjusted.
+				U=Unadjusted	
+
+series_id	17		Code series		Code identifying the specific 
+				identifier		series.
+				Ex: MWSR0000SA0
+				
+value		12		Index			Price index for item.
+	   
+
+year		4		YYYY			Identifies year of observation.
+				Ex: 1990	
+				
+
+
+
+
+
+	

@@ -1,0 +1,340 @@
+
+		National Compensation Survey (NC)
+			   nc.txt
+
+Section Listing
+
+1.  Survey Definition
+2.  FTP files listed in the survey directory
+3.  Time series, series file, data file, & mapping file definitions and 
+    relationships.
+4.  Series file format and field definitions
+5.  Data file format and field definitions
+6.  Mapping file formats and field definitions
+7.  Data Element Dictionary
+=======================================================================
+Section 1
+=======================================================================
+
+The following is a definition of: National Compensation Survey (NC)
+
+Survey Description:  The National Compensation Survey (NCS) program 
+produces information on wages by occupation for many metropolitan areas 
+and also for the Nation as a whole.  Wage rates for different work 
+levels within occupation groups also are published.  Data are available 
+for private industry, State and local governments, full-time workers, 
+part-time workers, and other workforce characteristics.
+
+The Bureau of Labor Statistics (BLS) selects a sample of 
+establishments in both the private sector and State and local 
+governments in over 150 metropolitan areas and non-metropolitan 
+counties throughout the United States.  Data are collected from all 
+establishments in a specified area over a period of a few months.  NCS 
+data are used by both private companies and government agencies to help 
+set pay and to compare their wages with those of other employers.  The 
+data are a major component of the pay-setting process for Federal 
+Government employees.  Economic and academic researchers also are 
+interested in the findings.
+ 
+Summary Data Available:  The NCS Wage System presents mean hourly wage 
+data for all workers in an occupation (private industry and State and 
+local government combined).  Currently, data may be obtained for over 
+85 geographical areas.  Future plans include providing data on a 
+National level as well as by the 9 census divisions as they are defined 
+by BLS.
+
+Data Characteristics: Hourly wages are stored to two decimal places.
+
+=======================================================================
+Section 2
+=======================================================================
+
+The following National Compensation Survey files are on the BLS
+internet in the sub-directory pub/time.series/nc:
+
+	nc.area				- area codes	mapping file
+        nc.contacts			- Contacts for NC survey
+        nc.data.1.AllData		- All data
+	nc.mogocc			- mogocc codes	mapping file
+	nc.level			- level codes	mapping file
+	nc.occupation			- occupation codes mapping file
+	nc.series			- All series and their 
+					  beginning and end dates
+	nc.state			- state codes	mapping file
+	nc.starea			- starea codes  mapping file
+	nc.txt				- General information
+
+=======================================================================
+Section 3
+=======================================================================
+
+The definition of a time series, its relationship to and the 
+interrelationship among series, data and mapping files is detailed 
+below:
+
+A time series refers to a set of data observed over an extended period 
+of time over consistent time intervals (i.e. monthly, quarterly, semi-
+annually, annually). BLS time series data are typically produced at 
+monthly intervals and represent data ranging from a specific consumer 
+item in a specific geographical area whose price is gathered monthly to 
+a category of worker in a specific industry whose employment rate is 
+being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the 
+following set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a 
+series identification code that serves to uniquely identify a single 
+time series. Additionally, the series file also contains the following 
+series-level information:
+
+a)  the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data 
+observation. 
+
+The mapping files are definition files that contain explanatory text 
+descriptions that correspond to each of the various codes contained 
+within each series identification code.
+
+The data file contains one line of data for each observation period 
+pertaining to a specific time series.  Each line contains a reference
+to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual 
+averages)
+d) value
+e) footnote code (if available)
+
+
+=======================================================================
+Section 4
+=======================================================================
+
+File Structure and Format: The following represents the file format used 
+to define nc.series.  Note the Field Numbers are for reference only; 
+they do not exist in the database.  Data files are in ASCII text format.  
+Data elements are separated by spaces; the first record of each file 
+contains the column headers for the data elements stored in each field.  
+Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id       	17		NCU0099570000000
+
+2.  state_code      	2 		00		
+
+3.  area_code       	4		9957	
+
+4.  mog_code        	2		00
+
+5.  occupation_code 	3		000
+
+6.  level_code		2		00
+
+7.  footnote_codes  	10		00
+
+8.  begin_year      	4		1997	
+					
+9.  begin_period    	3		M09
+
+10. end_year        	4		2000
+
+11. end_period      	3        	M07
+
+
+The series_id (NCU5306633300003) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		NC
+seasonal (code)		=		U
+state_code		=		53
+starea_code		=		0663
+mog_code		=		33
+occupation_code		=		000
+level_code		=		03
+
+
+=======================================================================
+Section 5
+=======================================================================
+
+File Structure and Format: The following represents the file format 
+used to define each data file.  Note that the field numbers are for 
+reference only; they do not exist in the database.  Data files are 
+in ASCII text format.  Data elements are separated by spaces; the 
+first record of each file contains the column headers for the data 
+elements stored in each field.  Each record ends with a new line 
+character. 
+
+The nc.data file is partitioned into two separate files: 
+
+	1. nc.data.0.Current	- All current year-to-date data
+	2. nc.data.1.AllData	- All data
+
+
+Both of the above data files have the following format:
+
+Field #/Data Element	Length	    	Value(Example)		
+
+1. series_id		   17		NC
+
+2. year			   4		1999	
+
+3. period		   3		M01		
+
+4. value		  12      	0.238	
+
+5. footnote_codes	  10		It varies
+				
+
+The series_id (NCU5306633300003) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		NC
+seasonal (code)		=		U
+state_code		=		53
+starea_code		=		0663
+mogocc_code		=		33000
+level_code		=		03
+
+=======================================================================
+Section 6
+=======================================================================
+
+File Structure and Format:  The following represents the file format 
+used to define each mapping file. Note that the field numbers are for 
+reference only; they do not exist in the database.  Mapping files are 
+in ASCII text format.  Data elements are separated by tabs; the first 
+record of each file contains the column headers for the data elements 
+stored in each field.  Each record ends with a new line character. 
+
+File Name:  nc.area
+
+Field #/Data Element		Length		Value(Example)
+
+1. area_code			4		A100
+
+2. area_name			80		Text
+
+
+File Name:  nc.level
+
+Field #/Data Element		Length		Value(Example)
+
+1. level_code			2		02
+
+2. level_text			60		Text
+
+
+File Name:  nc.mogocc
+
+Field #/Data Element		Length		Value(Example)
+
+1. mogocc_code			5		01000
+
+2. occupation_text		60		Text
+
+
+File Name:  nc.period
+
+Field #/Data Element		Length		Value(Example)
+
+1. period			3		M01
+
+2. period_abbr			5		JAN
+
+3. period_name			20		Text
+
+
+File Name:  nc.starea
+
+Field #/Data Element		Length		Value(Example)
+
+1. state_code			2		01
+
+2. area_code			4		0096
+
+3. area_text			60		Text
+
+
+File Name:  nc.state
+
+Field #/Data Element		Length		Value(Example)
+
+1. state_code			2		01
+
+2. state_name			20		Text
+
+=======================================================================
+Section 7
+=======================================================================
+
+National Compensation Survey (NC) DATABASE ELEMENTS
+
+Data Element	Length	   Value(Example)		Description
+
+area_code	   4	   Ex: 0096		 Unique code used to 
+					         identify a specific 
+				  		 geographic area.
+				  		 
+area_name	  80	   Text		         Name for specific area.
+
+area_text	  60	   Text		         Description of area.
+
+
+begin_period	  3	   M02			 Identifies first data observation
+			   Ex: M02=Feb		 within the first year for which
+			   (M=Monthly, M13= 	 data is available for a given time
+			   Annual Avg)		 series.					
+						
+begin_year	  4	   YYYY		         Identifies first year for which
+ 			   Ex:1990		 data is available for a given time
+						 series.
+				
+footnote_codes	  10	   It varies		 Identifies footnotes for the data 
+						 series.	
+			
+level_code	  2	   02			 Level 00 - Level 15  	
+
+level_text	  60	   Text		   	 Level specification 		
+
+mog_code          2	   00			 Major Group code
+
+mogocc_code	  5	   00100 	   	 Major Group / Occupation code
+
+occupation_text	  60	   Text			 Occupation name.
+
+period_abbr	  5	   JAN			 Abbreviation of period name.
+ 					
+period		  3	   M01			 Identifies period for which data 
+ 			   Ex: M01=Jan		 is observed.
+			   (M=Monthly, M13=	
+			   Annual Avg)
+ 				
+period_name	 20	   Text			 Full name of period to which
+ 			   Ex: January		 the data observation refers.
+				
+
+series_id	  17	   Code series		 Code identifying the 
+			   Identifier		 specific series.
+			   Ex: NCU5306633300003
+			   
+state_code	  2	   01			 Code identifying the 
+						 specific series.
+
+state_name	  20	   Text			 State name.
+ 
+value		  12	   Ex: $10.124		 Hourly mean.
+
+year		   4	   YYYY			 Identifies year of	
+			   Ex: 2000		 observation.
+						
+

@@ -1,0 +1,507 @@
+// bls_processor.h - Creative BLS Processing Implementation
+#ifndef BLS_PROCESSOR_H
+#define BLS_PROCESSOR_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <pthread.h>
+#include <stdatomic.h>
+
+// ============================================================================
+// YAML-Driven Partition Configuration
+// ============================================================================
+
+typedef enum {
+    DIM_TEMPORAL,
+    DIM_GEOGRAPHIC, 
+    DIM_INDUSTRY,
+    DIM_DEMOGRAPHIC,
+    DIM_CUSTOM
+} PartitionDimension;
+
+typedef enum {
+    GROUP_INDIVIDUAL,   // Each value = separate partition
+    GROUP_RANGE,       // Group by ranges (e.g., 5-year spans)
+    GROUP_MAPPING,     // Custom mapping (e.g., states to regions)
+    GROUP_QUANTILE,    // Equal-sized buckets
+    GROUP_ADAPTIVE     // Learn from data distribution
+} GroupingType;
+
+typedef struct {
+    int level;
+    PartitionDimension dimension;
+    char field_name[64];
+    char lookup_table[64];      // Optional lookup table
+    GroupingType grouping;
+    
+    union {
+        int range_size;          // For GROUP_RANGE
+        struct {                 // For GROUP_MAPPING
+            char** keys;
+            char** values;
+            int count;
+        } mapping;
+        int bucket_count;        // For GROUP_QUANTILE
+    } params;
+    
+} PartitionLevel;
+
+typedef struct {
+    char strategy_name[32];      // "hierarchical", "adaptive", etc.
+    PartitionLevel levels[8];    // Up to 8 levels of partitioning
+    int level_count;
+    
+    // Output configuration
+    struct {
+        char structure[32];      // "nested", "flat", "hybrid"
+        char naming_pattern[256]; // e.g., "{year}/{state}/{industry}.parquet"
+        char compression[32];     // "snappy", "gzip", "lz4"
+        bool create_manifest;
+        bool include_metadata;
+    } output;
+    
+    // Optimization parameters
+    struct {
+        size_t target_partition_size_mb;
+        size_t max_partition_size_mb;
+        size_t min_records;
+        bool balance_partitions;
+        double imbalance_threshold;  // 0.2 = 20% size variance allowed
+    } optimization;
+    
+} PartitionConfig;
+
+// ============================================================================
+// Series Analysis Engine
+// ============================================================================
+
+typedef struct {
+    char field_name[64];
+    int start_pos;
+    int length;
+    char lookup_table[128];      // Maps to lookup file
+    char* resolved_value;        // Resolved from lookup
+} SeriesComponent;
+
+typedef struct {
+    char series_id[32];
+    SeriesComponent* components;
+    int component_count;
+    
+    // Extracted key fields for partitioning
+    struct {
+        int year_begin;
+        int year_end;
+        char state_code[4];
+        char industry_code[8];
+        char data_type[4];
+        // ... other fields
+    } keys;
+    
+    // Computed partition path
+    char partition_path[256];
+    
+} SeriesEntry;
+
+typedef struct {
+    SeriesEntry* entries;
+    size_t entry_count;
+    size_t capacity;
+    
+    // Multi-dimensional indexes for fast lookup
+    void* hash_index;           // By series_id
+    void* spatial_index;        // By geographic codes
+    void* temporal_index;       // By time periods
+    void* industry_index;       // By industry codes
+    
+    // Statistics for partition planning
+    struct {
+        int distinct_years;
+        int distinct_states;
+        int distinct_industries;
+        size_t total_series;
+        double avg_series_per_year;
+        double avg_series_per_state;
+        
+        // Data distribution analysis
+        int* year_histogram;
+        int* state_histogram;
+        int* industry_histogram;
+    } stats;
+    
+} SeriesIndex;
+
+// ============================================================================
+// Smart Partition Planning
+// ============================================================================
+
+typedef struct PartitionNode {
+    char dimension[32];
+    char value[64];
+    int level;
+    
+    struct PartitionNode** children;
+    int child_count;
+    
+    // Leaf nodes contain partition info
+    bool is_leaf;
+    struct {
+        char partition_id[128];
+        char output_path[256];
+        SeriesEntry** series_list;
+        size_t series_count;
+        size_t estimated_size_mb;
+        size_t actual_size_mb;
+    } partition_info;
+    
+} PartitionNode;
+
+typedef struct {
+    PartitionNode* root;
+    int total_partitions;
+    
+    // Fast partition lookup
+    void* partition_map;        // series_id -> partition mapping
+    
+    // Partition list for processing
+    PartitionNode** partition_list;
+    
+    // Balance metrics
+    struct {
+        double balance_score;   // 0.0 to 1.0
+        size_t min_size_mb;
+        size_t max_size_mb;
+        size_t avg_size_mb;
+        double std_dev_mb;
+    } metrics;
+    
+} PartitionPlan;
+
+// ============================================================================
+// Processing Pipeline
+// ============================================================================
+
+typedef struct {
+    char survey_code[8];
+    PartitionConfig* partition_config;
+    SeriesIndex* series_index;
+    PartitionPlan* partition_plan;
+    
+    // File handles
+    struct {
+        FILE* series_file;
+        FILE** data_files;
+        int data_file_count;
+        FILE** lookup_files;
+        int lookup_file_count;
+    } files;
+    
+    // Processing state
+    enum {
+        STATE_INIT,
+        STATE_LOADING_CONFIG,
+        STATE_ANALYZING_SERIES,
+        STATE_PLANNING_PARTITIONS,
+        STATE_PROCESSING_DATA,
+        STATE_WRITING_OUTPUT,
+        STATE_COMPLETE,
+        STATE_ERROR
+    } state;
+    
+    // Progress tracking
+    struct {
+        atomic_size_t records_processed;
+        atomic_size_t bytes_read;
+        atomic_size_t bytes_written;
+        atomic_int partitions_complete;
+        time_t start_time;
+        time_t estimated_completion;
+    } progress;
+    
+} ProcessingPipeline;
+
+// ============================================================================
+// Main Processing Functions
+// ============================================================================
+
+// Initialize pipeline with survey code
+ProcessingPipeline* init_pipeline(const char* survey_code) {
+    ProcessingPipeline* pipeline = calloc(1, sizeof(ProcessingPipeline));
+    strcpy(pipeline->survey_code, survey_code);
+    pipeline->state = STATE_INIT;
+    pipeline->progress.start_time = time(NULL);
+    return pipeline;
+}
+
+// Load YAML configuration with partition strategy
+PartitionConfig* load_partition_config(const char* yaml_path) {
+    PartitionConfig* config = calloc(1, sizeof(PartitionConfig));
+    
+    // Parse YAML to extract partition hierarchy
+    // This would use libyaml in real implementation
+    
+    // Example: 3-level hierarchy
+    config->level_count = 3;
+    
+    // Level 1: Temporal
+    config->levels[0].level = 1;
+    config->levels[0].dimension = DIM_TEMPORAL;
+    strcpy(config->levels[0].field_name, "year");
+    config->levels[0].grouping = GROUP_RANGE;
+    config->levels[0].params.range_size = 5;  // 5-year groups
+    
+    // Level 2: Geographic  
+    config->levels[1].level = 2;
+    config->levels[1].dimension = DIM_GEOGRAPHIC;
+    strcpy(config->levels[1].field_name, "state_code");
+    config->levels[1].grouping = GROUP_MAPPING;
+    // Would load state->region mapping from YAML
+    
+    // Level 3: Industry
+    config->levels[2].level = 3;
+    config->levels[2].dimension = DIM_INDUSTRY;
+    strcpy(config->levels[2].field_name, "industry_code");
+    config->levels[2].grouping = GROUP_MAPPING;
+    // Would load industry->supersector mapping from YAML
+    
+    // Output configuration
+    strcpy(config->output.structure, "nested");
+    strcpy(config->output.naming_pattern, "{year_range}/{region}/{supersector}/data.parquet");
+    strcpy(config->output.compression, "snappy");
+    config->output.create_manifest = true;
+    
+    // Optimization
+    config->optimization.target_partition_size_mb = 128;
+    config->optimization.max_partition_size_mb = 512;
+    config->optimization.balance_partitions = true;
+    
+    return config;
+}
+
+// Analyze series file to build index and statistics
+SeriesIndex* analyze_series_file(ProcessingPipeline* pipeline) {
+    pipeline->state = STATE_ANALYZING_SERIES;
+    
+    SeriesIndex* index = calloc(1, sizeof(SeriesIndex));
+    index->capacity = 10000;
+    index->entries = calloc(index->capacity, sizeof(SeriesEntry));
+    
+    char line[1024];
+    while (fgets(line, sizeof(line), pipeline->files.series_file)) {
+        if (index->entry_count >= index->capacity) {
+            index->capacity *= 2;
+            index->entries = realloc(index->entries, 
+                                    index->capacity * sizeof(SeriesEntry));
+        }
+        
+        SeriesEntry* entry = &index->entries[index->entry_count];
+        
+        // Parse series entry based on YAML-defined pattern
+        parse_series_line(line, entry, pipeline->partition_config);
+        
+        // Update statistics
+        update_series_statistics(index, entry);
+        
+        index->entry_count++;
+    }
+    
+    // Build indexes for fast lookup
+    build_series_indexes(index);
+    
+    // Analyze data distribution
+    analyze_data_distribution(index);
+    
+    return index;
+}
+
+// Create intelligent partition plan based on series analysis
+PartitionPlan* create_partition_plan(ProcessingPipeline* pipeline) {
+    pipeline->state = STATE_PLANNING_PARTITIONS;
+    
+    PartitionPlan* plan = calloc(1, sizeof(PartitionPlan));
+    
+    // Build partition tree based on configuration
+    plan->root = build_partition_tree(pipeline->partition_config, 
+                                      pipeline->series_index);
+    
+    // Assign series to partitions
+    for (size_t i = 0; i < pipeline->series_index->entry_count; i++) {
+        SeriesEntry* series = &pipeline->series_index->entries[i];
+        PartitionNode* partition = find_partition_for_series(plan->root, 
+                                                            series, 
+                                                            pipeline->partition_config);
+        
+        // Add series to partition
+        add_series_to_partition(partition, series);
+        
+        // Check if partition needs splitting
+        if (partition->partition_info.estimated_size_mb > 
+            pipeline->partition_config->optimization.max_partition_size_mb) {
+            split_partition(plan, partition);
+        }
+    }
+    
+    // Balance partitions if requested
+    if (pipeline->partition_config->optimization.balance_partitions) {
+        balance_partition_sizes(plan);
+    }
+    
+    // Create flat list of partitions for processing
+    collect_partitions(plan->root, &plan->partition_list, &plan->total_partitions);
+    
+    // Calculate metrics
+    calculate_partition_metrics(plan);
+    
+    return plan;
+}
+
+// Process data files using partition plan
+void process_data_files(ProcessingPipeline* pipeline) {
+    pipeline->state = STATE_PROCESSING_DATA;
+    
+    // Create thread pool for parallel processing
+    int num_threads = sysconf(_SC_NPROCESSORS_ONLN);
+    pthread_t* threads = malloc(num_threads * sizeof(pthread_t));
+    
+    // Create partition processors
+    typedef struct {
+        PartitionNode* partition;
+        ProcessingPipeline* pipeline;
+        FILE* output_file;
+        size_t records_written;
+    } PartitionProcessor;
+    
+    PartitionProcessor* processors = calloc(pipeline->partition_plan->total_partitions,
+                                           sizeof(PartitionProcessor));
+    
+    // Initialize processors
+    for (int i = 0; i < pipeline->partition_plan->total_partitions; i++) {
+        processors[i].partition = pipeline->partition_plan->partition_list[i];
+        processors[i].pipeline = pipeline;
+        
+        // Create output file for partition
+        char output_path[512];
+        build_output_path(output_path, processors[i].partition, pipeline);
+        processors[i].output_file = fopen(output_path, "wb");
+    }
+    
+    // Process each data file
+    for (int f = 0; f < pipeline->files.data_file_count; f++) {
+        FILE* data_file = pipeline->files.data_files[f];
+        
+        char line[4096];
+        while (fgets(line, sizeof(line), data_file)) {
+            // Parse data record
+            DataRecord record;
+            parse_data_record(line, &record);
+            
+            // Find target partition
+            PartitionNode* target = find_partition_by_series(
+                pipeline->partition_plan,
+                record.series_id
+            );
+            
+            // Route to appropriate processor
+            for (int i = 0; i < pipeline->partition_plan->total_partitions; i++) {
+                if (processors[i].partition == target) {
+                    write_record_to_partition(&processors[i], &record);
+                    processors[i].records_written++;
+                    break;
+                }
+            }
+            
+            pipeline->progress.records_processed++;
+        }
+    }
+    
+    // Finalize all partitions
+    for (int i = 0; i < pipeline->partition_plan->total_partitions; i++) {
+        finalize_partition_output(&processors[i]);
+        fclose(processors[i].output_file);
+        pipeline->progress.partitions_complete++;
+    }
+    
+    free(processors);
+    free(threads);
+}
+
+// Generate output manifest
+void generate_manifest(ProcessingPipeline* pipeline) {
+    pipeline->state = STATE_WRITING_OUTPUT;
+    
+    char manifest_path[512];
+    sprintf(manifest_path, "output/%s/manifest.json", pipeline->survey_code);
+    
+    FILE* manifest = fopen(manifest_path, "w");
+    
+    fprintf(manifest, "{\n");
+    fprintf(manifest, "  \"survey\": \"%s\",\n", pipeline->survey_code);
+    fprintf(manifest, "  \"processing_date\": \"%s\",\n", get_iso_timestamp());
+    fprintf(manifest, "  \"statistics\": {\n");
+    fprintf(manifest, "    \"total_records\": %zu,\n", 
+            (size_t)pipeline->progress.records_processed);
+    fprintf(manifest, "    \"total_series\": %zu,\n", 
+            pipeline->series_index->entry_count);
+    fprintf(manifest, "    \"partition_count\": %d\n", 
+            pipeline->partition_plan->total_partitions);
+    fprintf(manifest, "  },\n");
+    
+    // Write partition details
+    fprintf(manifest, "  \"partitions\": [\n");
+    for (int i = 0; i < pipeline->partition_plan->total_partitions; i++) {
+        write_partition_manifest_entry(manifest, 
+                                      pipeline->partition_plan->partition_list[i],
+                                      i == pipeline->partition_plan->total_partitions - 1);
+    }
+    fprintf(manifest, "  ]\n");
+    fprintf(manifest, "}\n");
+    
+    fclose(manifest);
+    
+    pipeline->state = STATE_COMPLETE;
+}
+
+// Main processing function
+int process_bls_survey(const char* survey_code) {
+    printf("Processing BLS Survey: %s\n", survey_code);
+    
+    // Initialize pipeline
+    ProcessingPipeline* pipeline = init_pipeline(survey_code);
+    
+    // Load configuration
+    char config_path[256];
+    sprintf(config_path, "configs/surveys/%s.yml", survey_code);
+    pipeline->partition_config = load_partition_config(config_path);
+    
+    // Open files
+    open_survey_files(pipeline);
+    
+    // Stage 1: Analyze series
+    printf("Stage 1: Analyzing series file...\n");
+    pipeline->series_index = analyze_series_file(pipeline);
+    printf("  Found %zu series\n", pipeline->series_index->entry_count);
+    
+    // Stage 2: Plan partitions
+    printf("Stage 2: Planning partitions...\n");
+    pipeline->partition_plan = create_partition_plan(pipeline);
+    printf("  Created %d partitions\n", pipeline->partition_plan->total_partitions);
+    printf("  Balance score: %.2f\n", pipeline->partition_plan->metrics.balance_score);
+    
+    // Stage 3: Process data
+    printf("Stage 3: Processing data files...\n");
+    process_data_files(pipeline);
+    printf("  Processed %zu records\n", (size_t)pipeline->progress.records_processed);
+    
+    // Stage 4: Generate manifest
+    printf("Stage 4: Generating output manifest...\n");
+    generate_manifest(pipeline);
+    
+    // Cleanup
+    cleanup_pipeline(pipeline);
+    
+    printf("Processing complete!\n");
+    return 0;
+}
+
+#endif // BLS_PROCESSOR_H

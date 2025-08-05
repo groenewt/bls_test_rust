@@ -1,0 +1,563 @@
+
+				CPS Union (LU)
+				     lu.txt
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+
+================================================================================
+Section 1
+================================================================================
+
+Section 1 (Union)
+
+Survey Description:  The Current Population Survey (CPS) is a sample survey of
+the population 16 years of age and over.  The survey is conducted each month by
+the U.S. Census Bureau for the Bureau of Labor Statistics and provides comprehensive 
+data on the labor force, the employed, and the unemployed, classified by such 
+characteristics as age, sex, race, family relationship, marital status, occupation, 
+and industry attachment.  The information is collected by trained interviewers 
+from a sample of about 60,000 households located in 754 sample areas.  These areas 
+are chosen to represent all counties and independent cities in the United States, 
+with coverage in 50 States and the District of Columbia.  The data collected 
+are based on the activity or status reported for the calendar week including 
+the 12th of the month.  
+
+Summary Data Available:  Union data are available for all workers, members of
+unions and represented by unions, with data available by age, race, Hispanic 
+or Latino ethnicity, sex, occupation, industry, state, and full- or part-time status.  
+Median weekly earnings data are also available for members of unions, represented by 
+unions and non-union with data available by age, race, Hispanic or Latino ethnicity, 
+sex, occupation, industry and full- or part-time status.  
+
+Frequency of Observations:  The union membership and earnings data are collected 
+from one-quarter of the CPS monthly sample and are limited to wage and salary workers.  
+All self-employed workers are excluded.  
+
+Annual Averages:  Annual averages are available for all series.  
+
+Data Characteristics:  Earnings data are measured in weekly earnings for full-time 
+wage and salary workers. 
+
+Median earnings figures indicate the value that divides the earnings distribution 
+into two equal parts, one part having values above the median and the other having 
+values below the median.  The medians shown are calculated by linear interpolation 
+of the $50 centered interval within which each median falls.  Data expressed in 
+constant dollars are deflated by the Consumer Price Index for All Urban Consumers (CPI-U).  
+
+Updating Schedule:  Updates are usually available with the issuance of the union 
+membership news release.
+
+References:  Employment and Earnings, U.S. Department of Labor, Bureau of Labor Statistics
+
+==================================================================================
+Section 2
+==================================================================================
+
+The following CPS Union files are on the BLS internet in the sub-directory pub/time.series/lu:
+
+       	
+	lu.contacts			  -  Contacts for lu survey
+	lu.ages				  -  Age codes mapping file
+	lu.class			  -  Class of Worker codes mapping file
+	lu.data.0.Current		  -  All current year-to-date data
+	lu.data.1.AllData		  -  All data
+	lu.earn				  -  Earnings codes mapping file
+	lu.education			  -  Education codes mapping file
+	lu.fips				  -  Federal Information Processing Standards codes mapping file
+	lu.indy				  -  industry codes mapping file
+	lu.lfst				  -  Labor Force Status codes mapping file
+	lu.occupation			  -  Occupation codes mapping file
+	lu.orig				  -  Ethnic Origin codes mapping file
+	lu.pcts				  -  Percent codes mapping file
+	lu.periodicity			  -  Periodicity codes mapping file
+	lu.race				  -  Race codes mapping file
+	lu.seasonal			  -  Seasonal codes mapping file
+	lu.seq				  -  Sequence codes mapping file
+	lu.series			  -  All series and their beginning and end dates
+	lu.sexs				  -  Sexes codes mapping file
+	lu.stype			  -  Seasonal Type codes mapping file
+	lu.tdata			  -  Time Data codes mapping file
+	lu.txt				  -  General information
+	lu.unin				  -  Union codes mapping file
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+lu.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by spaces; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		LUU0202882000
+
+2.  seasonal_code	  1		U
+
+3.  stype_code		  1		0
+
+4.  lfst_code	   	  2		20
+
+5.  seq_code		  5		28820
+
+6.  fips_code		  2		00		
+						
+7.  begin_year		  4		1939
+
+8.  begin_period	  3		A01			
+				
+9.  end_year		  4		2002	
+
+10.  end_period		  3		A01			
+					
+
+The series_id (LUU0202882000) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		LU
+seasonal (code) 	=		U
+stype_code		=		0
+lfst_code		=		20
+seq_code		=		28820
+fips_code		=		00
+
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by spaces; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+The lu.data file is partitioned into two separate files:  
+
+	1.  lu.data.0.Current	- All current year-to-date data
+	2.  lu.data.1.AllData	- All data
+
+The above-referenced data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		LUU0202882000
+
+2. year			   4		1988	
+
+3. period		   3		A01		
+
+4. value		  12      	103623	 	
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (LUU0202882000) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		LU
+seasonal (code) 	=		U
+stype_code		=		0
+lfst_code		=		20
+seq_code		=		28820
+fips_code		=		00
+
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character.  
+				
+File Name:  lu.ages
+
+Field #/Data Element		Length		Value(Example)
+
+1.  ages_code			2		00
+
+2.  ages_text			100		Text
+
+
+File Name:  lu.class
+
+Field #/Data Element		Length		Value(Example)
+
+1. class_code			2		03
+
+2. class_text			100		Text
+
+
+File Name:  lu.earn
+
+Field #/Data Element		Length		Value(Example)
+
+1.  earn_code			2		01
+
+2.  earn_text			100		Text
+
+
+File Name:  lu.education
+
+Field #/Data Element		Length		Value(Example)
+
+1.  education_code		2		00
+						
+2.  education_text		100		Text
+
+
+File Name:  lu.fips
+
+Field #/Data Element		Length		Value(Example)
+
+1.  fips_code			2		00
+						
+2.  fips_text			100		Text
+
+
+File Name:  lu.indy
+
+Field #/Data Element		Length		Value(Example)
+
+1.  indy_code			4		0000
+						
+2.  indy_text			100		Text
+
+
+File Name:  lu.lfst
+
+Field #/Data Element		Length		Value(Example)
+
+1.  lfst_code			2		00
+						
+2.  lfst_text			100		Text
+
+
+File Name:  lu.occupation
+
+Field #/Data Element		Length		Value(Example)
+
+1.  occupation_code		4		0000
+						
+2.  occupation_text		100		Text
+
+
+File Name:  lu.orig
+
+Field #/Data Element		Length		Value(Example)
+
+1.  orig_code			2		01
+						
+2.  orig_text			100		Text
+
+
+File Name:  lu.pcts
+
+Field #/Data Element		Length		Value(Example)
+
+1.  pcts_code			2		01
+						
+2.  pcts_text			100		Text
+
+
+File Name:  lu.periodicity
+
+Field #/Data Element		Length		Value(Example)
+
+1.  periodicity_code		1		A
+						
+2.  periodicity_text		100		Text
+
+
+File Name:  lu.race
+
+Field #/Data Element		Length		Value(Example)
+
+1.  race_code			2		00
+						
+2.  race_text			100		Text
+
+
+File Name:  lu.seasonal
+
+Field #/Data Element		Length		Value(Example)
+
+1.  seasonal_code		1		U
+						
+2.  seasonal_text		30		Text
+
+
+File Name:  lu.seq
+
+Field #/Data Element		Length		Value(Example)
+
+1.  seq_code			5		28820
+						
+2.  seq_text			255		Text
+
+
+File Name:  lu.sexs
+
+Field #/Data Element		Length		Value(Example)
+
+1.  sexs_code			1		1
+						
+2.  sexs_text			100		Text
+
+
+File Name:  lu.stype
+
+Field #/Data Element		Length		Value(Example)
+
+1.  stype_code			1		1
+						
+2.  stype_text			100		Text
+
+
+File Name:  lu.tdata
+
+Field #/Data Element		Length		Value(Example)
+
+1.  tdata_code			2		01
+						
+2.  tdata_text			100		Text
+
+
+File Name:  lu.unin
+
+Field #/Data Element		Length		Value(Example)
+
+1.  unin_code			1		1
+						
+2.  unin_text			100		Text
+
+=========================================================================================
+Section 7
+=========================================================================================
+CPS Union (LU) DATABASE ELEMENTS
+
+Data Element	Length		Value(Example)			Description
+
+
+ages_code	2		00			Code identifying age groups.
+
+
+ages_text	100		Text			Text identifying age groups.
+				ex. 16 to 17 years
+
+			
+begin_period	3		A01			Identifies first data observation
+				Q01-Q05			within the first year for which
+				(A=Annual		data is available for a given time series.
+				Q=Quarterly, Q05=
+				Annual Avg)
+
+begin_year	4		YYYY			Identifies first year for which 
+				Ex: 1976		data is available for a given
+							time series.
+
+
+class_code	2		03			Code identifying the class of worker.
+
+
+class_text	100		Text			Contains text for class of workers.
+				Ex: State Wage and
+				Salary Workers
+
+
+earn_code	2		01			Code identifying the type of earnings.
+
+
+earn_text	100		Text			Contains text for earnings type.
+				Ex: Workers paid
+				hourly rates	
+				
+
+education_code	2		00			Code identifying type of education.
+
+
+education_text	100		Text			Text indicating status of education.
+				Ex. No education, total
+
+
+end_period	3		A01			Identifies first data observation
+				Q01-Q05			within the first year for which
+				(A=Annual		data is available for a given time series.
+				Q=Quarterly, Q05=
+				Annual Avg)
+				
+end_year	4		YYYY			Identifies last year for which 
+				Ex: 1992		data is available for a given
+							time series.
+							
+fips_code	2		00			Identifies Federal Information Processing
+							Standards codes for states.
+
+
+fips_text	100		Text			Text indicating fips codes for states.
+				Ex. Alabama
+	
+							
+indy_code	4		0000			Code identifying type of industry.
+
+							
+indy_text	100		Text			Name of industry.
+				Ex: Construction
+
+
+lfst_code	2		00			Code identifying Labor Force Status.
+
+
+lfst_text	100		Text			Text identifying Labor Force Status.
+				Ex. Civilian Labor 
+				Force
+
+
+occupation_code	4		0000			Code identifying type of occupation.
+
+				
+occupation_text	100		Text			Text indicating type of occupation.
+				Ex. Chief executives
+
+
+orig_code	2		01			Code identifying ethnic origin.
+
+
+orig_text	100		Text			Names of ethnicity types.
+				Ex. Puerto Rican
+
+
+pcts_code	2		01			Code identifying percent types.
+
+
+pcts_text	100		Text			Text indicating percent types.
+				Ex. Percent of 
+				total employed
+
+
+period_abbr	5		Period name 		Abbrevation of period name.
+				abbreviation
+
+
+period		3		A01			Identifies period for which
+				(A= Annual Data)	data is observed.
+
+
+period_name	20		Text			Full name of period to which 
+				Ex: June		the data observation refers.
+
+
+periodicity_code 1		A	 		Abbreviation of period name.
+				
+
+periodicity_text 100		Text			Identifies period for which
+				Ex. Annual		data is observed.
+
+
+race_code	2		01			Code identifying race.
+
+
+race_text	100		Text			Text indicating race.
+				Ex. White 
+				
+
+seasonal	1		S=Seasonally		Code identifying whether the
+				  Adjusted 		data are seasonally adjusted.
+				U=Unadjusted
+
+
+seq_code	5		28518			Code identifying seperate quartiles.
+				
+
+seq_text	255		Text			Text referring to the seperate quartiles.
+
+
+series_id	17		LEU0202851800		Code identifying the specific 
+							series.
+
+
+sexs_code	1		1			Code identifying sexes.
+
+
+sexs_text	100		Text			Text indicating type of sex.
+				Ex. Men
+
+
+stype_code	1		1			Code identifying seasonal type.
+
+
+stype_text	100		Text			Text identifying seasonal type.
+				Ex. Seasonally adjusted
+				series
+
+
+tdata_code	2		02			Code identifying time data.
+
+
+tdata_text	100		Text			Text identifying time data.
+				Ex.Average weeks
+
+
+unin_code	1		1			Code identifying union status.
+
+
+unin_text	100		Text			Text indicating union status.
+				Ex. Members of unions
+
+
+value		12		103623			Data value for series.
+
+
+year		4		YYYY			Identifies year of observation.
+				Ex: 1990		
+

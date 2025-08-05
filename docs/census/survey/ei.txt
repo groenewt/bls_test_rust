@@ -1,0 +1,302 @@
+				International Price Index (EI)
+					ei.txt
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  INTERNATIONAL PRICE INDEX (EI)
+
+Summary Data Available:  LABSTAT contains merchandise import and export 
+index time series based on several classification systems and selected 
+import and export services indexes.  Full coverage of merchandise imports 
+began in February 1983 and full coverage of merchandise exports began in 
+1984.
+
+Frequency of Observations:  Prior to 1974, data was collected in June only. 
+From 1974 through 1992, all data was published quarterly.  Beginning in 
+1993, two-digit price data is available on a monthly basis through the 
+International Price Index press release, while more detailed information 
+is available through supplemental tables.
+
+Data Characteristics:  Indexes and percentage changes are calculated to one 
+decimal place.
+
+Update Schedule:  Monthly data may be revised in each of the
+three months after original publication.
+
+References:	BLS Handbook of Methods
+
+==================================================================================
+Section 2
+==================================================================================
+
+The following International Price Index files are on the BLS internet in the 
+sub-directory pub/time.series/ei:
+
+	ei.contacts			 -  Contacts for ei survey
+	ei.data.0.Current		 -  All current year-to-date ei data
+	ei.data.01.BEAImport		 -  BEA End Use Import 
+					    (index code IR)
+	ei.data.02.BEAExport		 -  BEA End Use Export 
+					    (index code IQ)
+	ei.data.03.NAICSImport		 -  NAICS Import 
+					    (index code IZ)
+	ei.data.04.NAICSExport		 -  NAICS Export 
+					    (index code IY)
+	ei.data.05.HarmonizedImport	 -  Harmonized Import
+					    (index code IP)
+	ei.data.06.HarmonizedExport	 -  Harmonized Export
+					    (index code ID)
+	ei.data.07.LocalityofOrigin	 -  Locality of Origin
+					    (index code CO)
+	ei.data.08.LocalityofDestination -  Locality of Destination
+					    (index code CD)
+	ei.data.09.TermsofTrade		 -  Terms of Trade
+					    (index code CT)
+	ei.data.10.ServicesImport	 -  Services Import
+					    (index code IV)
+	ei.data.11.ServicesExport	 -  Services Export
+					    (index code IH)
+	ei.data.12.ServicesInbound	 -  Services Inbound
+					    (index code IC)
+	ei.data.13.ServicesOutbound	 -  Services Outbound
+					    (index code IS)
+	ei.footnote			 -  Footnotes applicable to ei data
+	ei.index			 -  Index codes mapping file
+	ei.period			 -  Period codes mapping file
+	ei.series			 -  All series and their beginning and end dates
+	ei.txt				 -  General Information
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation
+c) the base period for which the series begins
+d) the series title, which provides a detailed description of the series. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+ei.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  30		EIUCOCANMANU
+
+2.  seasonal		   1		U
+
+3.  index_code		   2		CO
+
+4.  series_name	   	 100		Text		
+
+5.  base_period    	  35		2000 = 100	
+
+6.  series_title	 256		Text	
+
+7.  footnote_code	  10		Text	
+						
+8.  begin_year	   	   4		1990	
+						
+9.  begin_period	   3		M12
+					
+10. end_year		   4		2002
+
+11. end_period	   	   3		M03	
+					
+				
+The series_id (EIUCOCANMANU) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		EI
+seasonal(code)		=		U
+index_code		=		CO
+series_name		=		CANMANU
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+The ei.data file is partitioned into several separate files:  See Section 2
+
+All of the above-referenced data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		EIUCOCANMANU
+
+2. year			   4		1995	
+
+3. period		   3		M01		
+
+4. value		  12      	97.7	
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (EIUCOCANMANU) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		EI
+seasonal(code)		=		U
+index_code		=		CO
+series_name		=		CANMANU
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character.   
+
+File Name:  ei.index
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  index_code		  	2		IM
+
+2.  index_name			50         	Text
+											
+
+File Name:  ei.period
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  period			3		M01		
+						
+2.  period_abbr			5		JAN	
+				 		
+3.  period_name			20		January	
+
+=========================================================================================
+Section 7
+=========================================================================================
+INTERNATIONAL PRICE INDEX (EI) DATABASE ELEMENTS
+
+Data Element	 Length		Value(Example)			Description
+
+base_period	35		2000=100		Identifies the particular time
+				2012=100		period used as a benchmark for
+							the series.
+
+begin_period	3		M01-M13 or		Identifies first data observation
+				Q01-Q05			within the first year for which
+				Ex: M06=June		data is available for a given
+				(M=Monthly, M13=Annual	time series.
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+
+begin_year	4		YYYY			Identifies first year for which
+				Ex: 1975		data is available for a given
+							time series.
+							
+end_period	3		M01-M13 or		Identifies last data observation
+				Q01-Q05			within the last year for which 
+				Ex: Q02=2nd Quarter	data is available for a given 
+				(M=Monthly, M13=Annual	time series.
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+
+end_year	4		YYYY			Identifies last year for which 
+				Ex: 1980		data is available for a given
+							time series.
+							
+footnote_codes	10		Varies			Identifies footnotes for the data 
+							series.	
+							
+index_code	2		Ex. IZ=NAICS Import	Code identifying index.
+				    Price Indexes 
+
+index_name	50		Text			Name of index.
+				
+
+period_abbr	5		Period name 		Abbreviation of period name.
+				abbreviation
+				Ex: JUN
+
+period		3		M01-M13 or		Identifies period for which
+				Q01-Q05			data is observed. 
+				Ex: M06=June		
+				(M=Monthly, M13=Annual
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+				
+period_name	20		Text			Full name of period to which
+				Ex: June		the data observation refers.
+				
+seasonal	1		S=Seasonally		Code identifying whether the
+				  Adjusted		data are seasonally adjusted.
+				U=Unadjusted
+
+series_id	17		EIUCOCANMANU		Code identifying the specific 
+							series.
+							
+series_name    100		Text			Identifies the name of the series.
+				Ex:All Commodities
+
+series_title   256		Text			Describes the series.
+				
+value		12		Index			Price index for item.
+				Ex. 97.7
+				
+year		4		YYYY			Identifies year of observation.
+				Ex: 1990	
+			
+
+
+

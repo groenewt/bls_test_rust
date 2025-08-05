@@ -1,0 +1,406 @@
+		Collective Bargaining Series - Private Sector (BP)
+				   bp.txt
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  COLLECTIVE BARGAINING SERIES - PRIVATE SECTOR (BP)
+
+Survey Description:  This series summarizes wage-rate changes in major 
+collective bargaining agreements (covering 1,000 workers or more) for 
+production and related workers in manufacturing and nonsupervisory workers 
+in nonmanufacturing.  Compensation (wages and benefits) changes are measured
+for agreements covering 5,000 workers or more.
+
+Summary Data Available:
+
+Wage-Rate Changes:  "Settlements" data measure specified net increases, 
+decreases, and zero change in wage rates resulting from settlements 
+negotiated in the reference period.  Changes occurring within 12 months of 
+the contract effective date ("first-year") and all changes that occur over 
+the contract term expressed as an annual rate ("over the life") are 
+presented.  Data on "wage-rate changes under all major agreements" include 
+increases, decreases and zero change in wage rates during the reference 
+period for all workers in the series, regardless of the contract settlement 
+date.  Included are changes stemming from settlements reached in the 
+calendar year, from agreements reached in a prior year with changes deferred
+to the reference period, and from COLA clauses.  Lump-sum payments are 
+excluded from "settlements" data and from "wage-rate changes under all major 
+agreements".
+
+Compensation Changes:  These data reflect changes (net increases, decreases,
+and zero change) in employee compensation (wages and benefits) resulting 
+from settlements covering 5,000 workers or more which were negotiated in the
+reference period.  The "compensation rate" change measures net increases, 
+decreases, and zero change in compensation rates per work hour resulting 
+from contract settlements.  Lump-sum payments are excluded.  Changes 
+occurring within 12 months of the contract effective date ("first year") and
+all changes that occur over the contract term expressed as an annual rate 
+("over the life") are presented.  The "compensation cost" change measures 
+net increases, decreases, and zero change in the costs for employee 
+compensation per work hour, including specified lump-sum payments, and 
+reflects the timing of compensation rate changes.  Changes that occur over 
+the contract term are expressed as an annual rate ("over the life").
+
+Frequency of Observations:  Data are presented by quarter, calendar year and
+for 4-quarter periods that may extend into each of 2 calendar years.
+
+Data Characteristics:  All percent changes are stored with one decimal 
+place.  All employment measures are in millions.
+
+Updating Schedule:  Updates are available about 4 weeks after the end of 
+each calendar quarter.
+
+References:	BLS Handbook of Methods, Chapter 7, "Negotiated Wage and 
+		Benefit Changes", Bulletin 2285 (1988).
+==================================================================================
+Section 2
+==================================================================================
+The following Collective Bargaining Series (Private Sector) files are on the BLS 
+internet in the sub-directory pub/time.series/bp:
+
+
+	bp.alteration		- Alteration codes	mapping file
+	bp.contacts		- Contacts for bp survey 
+	bp.data.1.AllData	- All Data
+	bp.duration		- Duration codes	mapping file
+	bp.industry		- Industry codes	mapping file
+	bp.measure		- Measure codes		mapping file
+	bp.period		- Period codes		mapping file
+	bp.periodicity		- Periodicity codes	mapping file
+	bp.selection		- Selection codes	mapping file
+	bp.series		- All series and their beginning and end dates
+	bp.txt			- General information
+	bp.unit			- Unit codes		mapping file
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+bp.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  13		BPU0114101001
+
+2.  measure_code	  2		01
+
+3.  unit_code		  1		1
+
+4.  periodicity_code	  1		1 
+
+5.  alteration_code	  1		1
+
+6.  industry_code	  2		01
+
+7.  contract_duration	  1		0
+
+8.  contract_selection	  2		01
+
+9.  seasonal		  1		U		
+
+10. begin_year		  4		1983
+
+11. begin_period	  3		Q01
+
+12. end_year		  4		1995
+
+13. end_period		  3		Q04
+
+
+The series_id (BPU0114101001) can be broken out into:
+
+Code					Value(Example)
+
+survey abbreviation	=		BP
+seasonal (code) 	=		U
+measure_code		=		01
+unit_code		=		1
+periodicity_code	=		4
+alteration_code		=		1
+industry_code		=		01
+contract_duration	=		0
+contract_selection	=		01
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+File Name:  bp.data.1.AllData
+
+The above-named data file has the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  13		BPU0114101001 	      	
+
+2. year			   4		1995	
+
+3. period		   3		Q01		
+
+4. value		  12      	2.3	
+
+5. cont_break		   1		N 
+
+6. status		   1 		F	
+				 
+7. footnote_exists	   1		N
+				
+
+The series_id (BPU0114101001) can be broken out into:
+
+Code					Value(Example)
+
+survey abbreviation	=		BP
+seasonal (code) 	=		U
+measure_code		=		01
+unit_code		=		1
+periodicity_code	=		4
+alteration_code		=		1
+industry_code		=		01
+contract_duration	=		0
+contract_selection	=		01
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+
+
+File Name:  bp.alteration	
+
+Field #/Data Element		Length		Value(Example)
+
+1. alteration_code		1		1
+	
+2. alteration_text		50		Text
+
+
+File Name:  bp.duration
+
+Field #/Data Element		Length		Value(Example)
+
+1. contract_duration		1		0
+
+2. contract_duration_text	50		Text
+
+
+File Name:  bp.industry
+
+Field #/Data Element		Length		Value(Example)
+
+1. industry_code		2		01
+
+2. industry_name		40		Text
+
+
+File Name:  bp.measure
+
+Field #/Data Element		Length		Value(Example)
+
+1. measure_code			2		01
+
+2. measure_text			90		Text
+
+
+File Name:  bp.period
+
+Field #/Data Element		Length		Value(Example)
+
+1. period			3		Q01
+	
+2. period_abbr			5		QTR1
+
+3. period_name			20		Text
+
+
+File Name:  bp.periodicity
+
+Field #/Data Element		Length		Value(Example)
+
+1. periodicity_code		1		1
+
+2. periodicity_text		40		Text
+
+
+File Name:  bp.selection
+
+Field #/Data Element		Length		Value(Example)
+
+1. contract_selection		2		01
+
+2. contract_selection_text	80		Text
+
+
+File Name:  bp.unit
+
+Field #/Data Element		Length		Value(Example)
+
+1. unit_code			1		1
+		
+2. unit_text			20		Text
+=========================================================================================
+Section 7
+=========================================================================================
+COLLECTIVE BARGAINING SERIES - PRIVATE SECTOR (BP) DATABASE ELEMENTS
+
+
+Data Element	Length		Value(Example)			Description
+
+alteration_code	1		1			Code identifying the type of
+							change measured by the observation.
+							
+alteration_text	50		Text			Description of type of change
+				Ex: Increases only 	measured by the observation.
+					
+begin_period	3		A01			Identifies first data observation
+				Ex: A01=Annual data	within the first year for which 
+				(Q=Quarterly, A=Annual)	data is available for a given
+							time series.
+				
+begin_year	4		1975			Identifies first year for which
+							data is available for a given
+							time series.
+							
+cont_break	1		Y=Continuity break	Identifies point at which
+				N=No break		data within a series are no
+							longer comparable.
+
+contract_	1		0			Code identifying the length
+duration						of the contract.
+
+contract_	50		Text			Description of the length
+duration_text			Ex: All contracts	of contract.			
+				
+contract_	2		01			Code identifying the contracts 
+selection						negotiated in the period.
+							
+contract_	80		Text			Description of contracts
+selection_text			Ex: All contracts	negotiated in the period. 
+				in period. 	
+				
+end_period	3		Q04			Identifies last data observation   
+				Ex: Q04=Fourth quarter	within the last year for which
+				(Q=Quarterly, A=Annual)	data is available for a given
+							time series.
+				
+end_year	4		1980			Identifies last year for which 
+							data is available for a given
+							time series.
+							
+footnote_exists	1		N=No footnote		Identifies whether a footnote 
+				Y=Footnote		exists for the data series.  
+							(To see footnote, refer to 
+							publication.)
+
+industry_code	2		01			Code identifying the industry.
+							
+industry_name	40		Text			Name of the industry.
+				Ex: All industries
+					
+measure_code	2		01			The measure identifier.
+
+measure_text	90		Text			Name of element being
+				Ex: Settlements, 1st	measured by the observation.
+				Year Compensation.
+			 	
+period_abbr	5		QTR1			Abbreviation of period name. 
+ 				
+period		3		Q01			Identifies period for which
+				Ex: Q01=First Quarter	data is observed. 
+				(Q=Quarterly, A=Annual)	
+					
+period_name	20		Text			Full name of period to which
+ 				Ex: 1st Quarter		the data observation refers.
+					
+periodicity_	1		1			Code identifying the frequency 
+code 							of the observation. 
+						
+periodicity_	40		Text			Frequency of the observation.
+text 				Ex: Four quarters 		
+				ending
+
+seasonal	1		S=Seasonally		Code identifying whether the 
+				  Adjusted		data are seasonally adjusted.
+			 	U=Unadjusted		
+
+series_id	13		BPU0114101001		Code identifying the specific 
+					 		series.
+
+status		1		F=Final data		Code identifying whether data 
+				P=Premliminary data 	are preliminary or final.
+				  			
+unit_code	1		1			Code identifying the unit
+							of measurement.
+
+unit_text	20		Text			Name of unit of measurement 
+ 				Ex: Mean (in percent)	for observation.
+					
+value		12		Data value		Observation for the series. 
+
+year		4		1990			Identifies year of observation.	
+			
+
+
+
+
+	

@@ -1,0 +1,631 @@
+			Major Sector Total Factor Productivity (MP)
+				     mp.txt
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+8. Code Changes
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of (as of 9/07/2022):
+MAJOR SECTOR TOTAL FACTOR PRODUCTIVITY (MP) 
+
+Description: Total factor productivity measures describe the relationship
+between output in real terms and the inputs involved in its production.  The
+total factor productivity indexes for private business and private nonfarm
+business are derived by dividing an output index by an index of labor input
+and capital services.  Labor input and capital services are combined using
+chained superlative Tornqvist aggregation, applying weights that represent
+each component's share of total costs. The chained superlative Tornqvist index
+uses changing weights; the share in each year is averaged with the preceding
+year's share.  The total factor productivity indexes are derived by dividing
+an output index by an index of the combined inputs of labor, capital services,
+energy, non-energy materials, and purchased business services.  The output
+index for manufacturing is computed using a chained superlative index
+(Tornqvist) of three-digit NAICS industry outputs. Industry output is measured
+as sectoral output, the total value of goods and services leaving the industry.
+
+This file contains TFP data on the following three major sectors; private 
+business, private non-farm business, and total manufacturing.  These sectors are 
+coded as private business = 4900, private nonfarm business = 4910, and 
+manufacturing = 9900. There is also available nondurable manufacturing = 9910, 
+durable manufacturing = 9920, and two-digit level manufacturing = 5000-5850.
+There is also available non-manufacturing industries = 0011-0081.
+
+Private business includes all activities measured in the national accounts 
+with the exception of general government, the output of paid employees of 
+private households and nonprofit institutions, the "rest of the world" 
+sector, the gross housing product of owner-occupied dwellings, the 
+statistical discrepancy, and government enterprises.
+
+Private nonfarm business further excludes the farm sector.
+
+For each sector, measures of industry analytic ratios (e.g., total factor
+productivity, output per hour) are available as well as the basic data 
+(e.g., hours, capital services) on which they are based.  Data are obtained
+and derived from the following sources:  Current Employment Statistics 
+program (BLS), Current Population Survey (BLS), Work Survey (BLS), Censuses
+and Annual Surveys of Manufactures (Census Bureau), National Income and 
+Product Accounts (BEA), and the Land Stock Data from the Department of 
+Agriculture.
+
+Summary Data Available:  There are 3 major sectors,  20 major industries, and 61 two-digit industries available on the LABSTAT database.
+All measures start in 1987.
+
+Frequency of Observations:  Series are available on an annual basis.
+
+Base Period:  Indexes have a base
+period of 2012 = 100.  
+
+Data Characteristics:  Indexes are stored to three decimal places. 
+
+Updating Schedule:  Updates are performed annually as data becomes available. 
+Traditionally, all revisions to source data are reflected in the following
+release.
+
+References:	BLS Handbook of Methods, located at https://www.bls.gov/productivity/handbook-of-methods.htm
+
+		"Technical Information About the BLS Multifactor Productivity
+		Measures" located at https://www.bls.gov/productivity/technical-notes/.
+
+
+==================================================================================
+Section 2
+==================================================================================
+The following Major Sector Total Factor Productivity files are on the BLS 
+internet in the sub-directory pub/time.series/mp:
+
+
+	mp.contacts		- Contacts for MP survey 
+	mp.data.1.AllData	- All data
+	mp.duration		- Duration codes		mapping file
+	mp.footnote		- Footnote codes		mapping file
+	mp.measure		- Measure codes			mapping file
+	mp.period		- Period codes			mapping file
+	mp.sector		- Sector codes			mapping file
+	mp.series		- All series and their beginning and end dates
+	mp.txt			- General information
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+mp.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		17		MPU4900012
+
+2.  sector_code		4		4900
+
+3.  measure_code	2		01
+
+4.  duration		1		2
+
+5.  footnote_codes	10		02
+
+6.  begin_year		4		1987
+
+7.  begin_period	3		A01
+
+8.  end_year		4		2010
+
+9.  end_period		3		A01
+
+
+The series_id (MPU4900012) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		MP
+seasonal (code) 	=		U
+sector_code		=		4900
+measure_code		=		01
+duration-code		=		2
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+File Name:  mp.data.1.AllData
+
+The above-named data file has the following format:
+
+Field #/Data Element	Length		Value(Example)
+
+1. series_id		17		MPU4900012 
+
+2. year			4		1987
+
+3. period		3		A01
+
+4. value		12      	81.318
+
+5. footnote_codes	10		02
+
+The series_id (MPU490001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		MP
+seasonal (code) 	=		U
+sector_code		=		4900
+measure_code		=		01
+duration_code		=		2
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+
+
+File Name:  mp.duration
+
+Field #/Data Element		Length		Value(Example)
+
+1.  duration_code		1		2
+
+2.  duration_text		100		Text
+
+3   display level		2		0
+
+4   select table		1		T
+
+5   sort_sequence		5		1	
+
+
+File Name:  mp.footnote
+
+Field #/Data Element		Length		Value(Example)
+
+1. footnote_code		2		01
+
+2. footnote_text		200		Text
+
+
+File Name:  mp.measure
+
+Field #/Data Element		Length		Value(Example)
+
+1.  measure_code		2		01
+
+2.  measure_text		70		Text
+
+3   display level		2		0
+
+4   select table		1		T
+
+5   sort_sequence		5		1	
+
+
+File Name:  mp.period
+
+Field #/Data Element		Length		Value(Example)
+
+1.  period			3		A01
+
+2.  period_abbr			6		Annual
+
+3.  period_name			20		Text
+
+
+File Name:  mp.seasonal
+
+Field #/Data Element            Length          Value(Example)
+
+1. seasonal_code                1               U
+
+2. seasonal_text                30              Text
+
+
+File Name:  mp.sector
+
+Field #/Data Element		Length		Value(Example)
+
+1. sector_code			4		4900
+
+2. sector_name			100		Text
+
+3. display_level                2               0
+
+4. selectable                   1               T
+
+5. sort_sequence                5               1
+
+=========================================================================================
+Section 7
+=========================================================================================
+MAJOR SECTOR TOTAL FACTOR PRODUCTIVITY (MP) DATABASE ELEMENTS
+
+
+Data Element	Length		Value(Example)			Description
+
+
+base_year	4		YYYY			Identifies the base year for the
+				Ex:  2012		index presented
+
+
+begin_period	3		A01=Annual		Identifies first data observation
+							within the first year for which
+							data is available for a given
+							time series.
+
+begin_year	4		YYYY			Identifies first year for which
+				Ex: 1987		data is available for a given
+							time series. Subject to change.
+
+
+duration_code   1               Ex: 2                   Identifies whether data are a 
+                                                        levels, indexes, or percent changes
+
+duration_text   100             Text                    Names levels. indexes, or percent changes
+                                Ex: Indexes = 100.000
+				
+				
+end_period	3		A01=Annual		Identifies last data observation
+							within the last year for which
+							data is available for a given
+							time series.
+
+end_year	4		YYYY			Identifies last year for which
+				Ex. 2022		data is available for a given
+							time series.
+
+
+footnote_code	2		02			Identifies footnote for the data 
+							series.
+
+footnote_text	100		Text			Contains the text of the footnote.
+				Ex. Real Value-Added	
+				Output divided by
+				combined inputs 
+
+
+measure_code	2		01			Identifies specific factor 
+							measured by the index.
+
+measure_text	70		Text			Name of specific factor 
+				Ex: Total Factor 	measured in the index.
+				Productivity
+
+
+period_abbr	3		Period name 		Abbreviation of period name.
+				abbreviation
+				Ex: ANN
+
+period		5		A01=Annual		Identifies period for which 
+							data is observed.
+
+period_name	20		Text			Full name of period to which
+				Ex: Annual		the data observation refers.
+
+					
+seasonal_code   1               U=Not seasonally	Identifies whether the data are
+                                adjusted		seasonally adjusted.
+
+seasonal_text   30              Text                    Names seasonal adjustment status.
+				Ex: Not seasonally
+				adjusted
+
+
+sector_code	4		4900			Unique code identifying the
+							sector of economy to which 
+							data refer.
+
+sector_name	75		Text			Name of economic sector to 
+				Ex: Private Business	which data refer.
+				sector
+
+selectable	1		T=Selectable		Identifies items that may be 
+				F=Not selectable	selected in query tools (T) or 
+							items that are titles only and not
+							selectable (F).
+
+series_id	17		Series identifier	Unique code identifying the
+				Ex: MPU4900012 		specific series.
+
+sort_sequence	5		ex: 1			Identifies order that items will 
+							appear in single-screen query tool
+							and informs hierarchical structure
+							of data when combined with 
+							display_level information.
+
+value		12		Ex: 84.318		Data value for the series
+
+
+year		4		YYYY			Identifies year of observation.
+				Ex: 1987
+=========================================================================================
+Section 8
+=========================================================================================
+CODE 
+       ____________________________________________________________________________________________________________________
+
+
+
+This information is on the Series ID format for the MP series. 
+
+Data downloads on the BLS website are based on a unique series identifier called the "Series ID". A Series ID is generated according to predictable
+rules and generally do not change over time. A Series ID allows customers to download a particular measure or group of measures quickly and easily
+using the Series Report tool (URL https://data.bls.gov/cgi-bin/srgate ).
+
+
+____________________________________________________________________________________________________________________
+
+
+SeriesIDs:
+
+Format	
+
+Code		Text
+MPU4900042	Series ID
+MP		Major Sector Total Factor Productivity
+U		unadjusted for seasonal factors
+4900		Private Business Sector (NAICS PG)
+04		Capital Services
+2		Indexes = 100.000
+
+____________________________________________________________
+
+
+MFP.sector:
+
+Sector code and text					
+
+Code	Text						
+4900	Private Business Sector (NAICS PG)                                                                  
+4910	Private Nonfarm Business Sector (NAICS XG)                                                          
+
+____________________________________________________________________________________________________________________
+
+
+MFP.Measure:
+
+code	measure code and text										duration code and text	
+Code  Text												Code Text
+01 Total factor productivity										2 Indexes = 100.000
+01 Total factor productivity										3 % Change Year Ago
+02 Real value-added output										2 Indexes = 100.000
+02 Real Value-added output										3 % Change Year Ago
+03 Combined inputs											2 Indexes = 100.000
+03 Combined inputs											3 % Change Year Ago
+04 Capital inputs											2 Indexes = 100.000
+04 Capital inputs											3 % Change Year Ago
+05 Labor input												2 Indexes = 100.000
+05 Labor input												3 % Change Year Ago
+06 Labor productivity											2 Indexes = 100.000
+06 Labor productivity											3 % Change Year Ago
+07 Capital productivity 										2 Indexes = 100.000
+07 Capital productivity 										3 % Change Year Ago
+08 Capital intensity											2 Indexes = 100.000
+08 Capital intensity											3 % Change Year Ago
+09 Labor composition											2 Indexes = 100.000
+09 Labor composition											3 % Change Year Ago
+10 Value-added output, billions of current dollars							1 Levels 
+11 Capital costs, billions of current dollars								1 Levels 
+12 Labor Compensation, current dollars									1 Levels 
+13 Capital Share											1 Levels 
+14 Labor Share												1 Levels 
+15 Contribution of Capital Intensity to labor productivity 						2 Indexes = 100.000
+15 Contribution of Capital Intensity to labor productivity 						3 % Change Year Ago
+16 Contribution of information processing equipment (IPE) intensity to labor productivity 		2 Indexes = 100.000
+16 Contribution of information processing equipment (IPE) intensity to labor productivity 		3 % Change Year Ago
+17 Contribution of capital input excluding IPP and IPE intensity to labor productivity			2 Indexes = 100.000
+17 Contribution of capital input excluding IPP and IPE intensity to labor productivity			3 % Change Year Ago
+18 Contribution of labor composition to labor productivity                				2 Indexes = 100.000
+18 Contribution of labor composition to labor productivity               				3 % Change Year Ago
+19 Contribution of research and development (R&D) intensity to labor productivity			2 Indexes = 100.000
+19 Contribution of research and development (R&D) intensity to labor productivity			3 % Change Year Ago
+20 Contribution of intellectual property products (IPP) excluding R&D intensity to labor productivity	2 Indexes = 100.000
+20 Contribution of intellectual property products (IPP) excluding R&D intensity to labor productivity	3 % Change Year Ago
+
+
+____________________________________________________________________________________________________________________
+
+
+KLEMS.sector:
+
+sector code and text							
+Code	Text								
+
+0011	Agriculture, forestry, fishing, and hunting (NAICS 11)                                              
+0021	Mining (NAICS 21)                                                                                   
+0022	Utilities (NAICS 22)                                                                                
+0023	Construction (NAICS 23)                                                                             
+0042	Wholesale trade (NAICS 42)                                                                          
+0044	Retail trade (NAICS 44,45)                                                                          
+0048	Transportation and warehousing (NAICS 48-49)                                                        
+0051	Information (NAICS 51)                                                                              
+0052	Finance and insurance (NAICS 52)                                                                    
+0053	Real estate and rental and leasing (NAICS 53)                                                       
+0054	Professional, scientific, and technical services (NAICS 54)                                         
+0055	Management of companies and enterprises (NAICS 55)                                                  
+0056	Administrative and waste management services (NAICS 56)                                             
+0061	Educational services (NAICS 61)                                                                     
+0062	Health care and social assistance (NAICS 62)                                                        
+0071	Arts, entertainment, and recreation (NAICS 71)                                                      
+0072	Accommodation and food services (NAICS 72)                                                          
+0081	Other services, except government (NAICS 81)                                                        
+0111	Crop & animal production (Farms) (NAICS 111,112)                                                    
+0113	Forestry, fishing, and related activities (NAICS 113-115)                                           
+0211	Oil and gas extraction (NAICS 211)                                                                  
+0212	Mining, except oil and gas (NAICS 212)                                                              
+0213	Support activities for mining (NAICS 213)                                                           
+0481	Air transportation (NAICS 481)                                                                      
+0482	Rail transportation (NAICS 482)                                                                     
+0483	Water transportation (NAICS 483)                                                                    
+0484	Truck transportation (NAICS 484)                                                                    
+0485	Transit and ground passenger transportation (NAICS 485)                                             
+0486	Pipeline transportation (NAICS 486)                                                                 
+0487	Other transportation and support activities (NAICS 487,488,492)                                     
+0493	Warehousing and storage (NAICS 493)                                                                 
+0511	Publishing industries, except internet (includes software) (NAICS 511)                              
+0512	Motion picture and sound recording industries (NAICS 512)                                           
+0515	Broadcasting and telecommunications (NAICS 515,517)                                                 
+0518	Data processing, internet publishing, and other information services (NAICS 518,519)                
+0521	Federal reserve banks, credit intermediation, and related activities (NAICS 521,522)                
+0523	Securities, commodity contracts, and other financial investments and related activities (NAICS 523) 
+0524	Insurance carriers and related activities (NAICS 524)                                               
+0525	Funds, trusts, and other financial vehicles (NAICS 525)                                             
+0531	Real estate (NAICS 531)                                                                             
+0532	Rental and leasing services and lessors of nonfinancial and intangible assets (NAICS 532,533)       
+0561	Administrative and support services (NAICS 561)                                                     
+0562	Waste management and remediation services (NAICS 562)                                               
+0621	Ambulatory health care services (NAICS 621)                                                         
+0622	Hospitals and nursing and residential care facilities (NAICS 622,623)                               
+0624	Social assistance (NAICS 624)                                                                       
+0711	Performing arts, spectator sports, museums, and related activities (NAICS 711,712)                  
+0713	Amusements, gambling, and recreation industries (NAICS 713)                                         
+0721	Accommodation (NAICS 721)                                                                           
+0722	Food services and drinking places (NAICS 722)                                                       
+4244	Trade (NAICS 42,44-45)                                                                              
+5000	Wood products (NAICS 321)                                                                           
+5050	Nonmetallic mineral products (NAICS 327)                                                            
+5100	Primary metal products (NAICS 331)                                                                  
+5150	Fabricated metal products (NAICS 332)                                                               
+5200	Machinery (NAICS 333)                                                                               
+5250	Computer and electronic products (NAICS 334)                                                        
+5253	Finance, insurance, real estate, and leasing (NAICS 52-53)                                          
+5300	Electrical equipment, appliances, and components (NAICS 335)                                        
+5360	Motor vehicles, bodies and trailers, and parts (NAICS 3361-3363)                                    
+5370	Other transportation equipment (NAICS 3364-3369)                                                    
+5400	Furniture and related products (NAICS 337)                                                          
+5411	Legal services (NAICS 5411)                                                                         
+5412	Miscellaneous professional, scientific, and technical services (NAICS 5412-5414,5416-5419)          
+5415	Computer systems design and related services (NAICS 5415)                                           
+5450	Miscellaneous manufacturing (NAICS 339)                                                             
+5456	Professional and business services (NAICS 54-56)                                                    
+5481	Services (NAICS 54-81)                                                                              
+5500	Food and beverage and tobacco products (NAICS 311,312)                                              
+5550	Textile mills and textile product mills (NAICS 313,314)                                             
+5600	Apparel and leather and applied products (NAICS 315,316)                                            
+5650	Paper products (NAICS 322)                                                                          
+5700	Printing and related support activities (NAICS 323)                                                 
+5750	Petroleum and coal products (NAICS 324)                                                             
+5800	Chemical products (NAICS 325)                                                                       
+5850	Plastics and rubber products (NAICS 326)                                                            
+6162	Educational services, health care, and social assistance (NAICS 61-62)                              
+7172	Arts, entertainment, recreation, accommodation, and food services (NAICS 71-72)                     
+9900	Manufacturing Sector (NAICS MN)                                                                     
+9910	Nondurable Manufacturing Sector (NAICS ND)                                                          
+9920	Durable Manufacturing Sector (NAICS DM)                                                             
+
+
+	____________________________________________________________________________________________________________________
+
+
+KLEMS.measure:
+
+
+code	measure code and text										duration code and text
+Code Text												Code	Text	
+01  Total factor productivity										2 Indexes = 100.000
+01  Total factor productivity										3 % Change Year Ago
+03  Combined inputs											2 Indexes = 100.000
+03  Combined inputs											3 % Change Year Ago
+04  Capital inputs											2 Indexes = 100.000
+04  Capital inputs											3 % Change Year Ago
+06  Labor productivity											2 Indexes = 100.000
+06  Labor productivity											3 % Change Year Ago
+07  Capital productivity										2 Indexes = 100.000
+07  Capital productivity										3 % Change Year Ago
+08  Capital intensity											3 % Change Year Ago
+08  Capital intensity											2 Indexes = 100.000
+51  Real sectoral output										2 Indexes = 100.000
+51  Real sectoral output										3 % Change Year Ago
+55  Energy input											2 Indexes = 100.000
+55  Energy input											3 % Change Year Ago
+56  Materials input											2 Indexes = 100.000
+56  Materials inputs											3 % Change Year Ago
+57  Purchased services input										2 Indexes = 100.000
+57  Purchased services input										3 % Change Year Ago
+61  Value of production, billions of current dollars							1 Levels 	
+62  Capital payments, billions of current dollars 							1 Levels 	
+63  Labor cost, billions of current dollars								1 Levels 	
+64  Energy cost, billions of current dollars								1 Levels 	
+65  Materials cost, billions of current dollars								1 Levels 	
+66  Purchased services cost, billions of current  							1 Levels 	
+67  Capital share											1 Levels 	
+68  Labor share												1 Levels 	
+69  Energy share											1 Levels 	
+70  Materials share											1 Levels 	
+71  Purchased services share										1 Levels 	
+15  Contribution of capital Intensity to labor productivity 						2 Indexes = 100.000
+15  Contribution of capital Intensity to labor productivity 						3 % Change Year Ago
+16  Contribution of information processing equipment (IPE) intensity to labor productivity 		2 Indexes = 100.000
+16  Contribution of information processing equipment (IPE) intensity to labor productivity 		3 % Change Year Ago
+17  Contribution of capital input excluding IPP and IPE intensity to labor productivity			2 Indexes = 100.000
+17  Contribution of capital input excluding IPP and IPE intensity to labor productivity			3 % Change Year Ago
+18  Contribution of labor composition to labor productivity						2 Indexes = 100.000
+18  Contribution of labor composition to labor productivity						3 % Change Year Ago
+19  Contribution of research and development (R&D) intensity to labor productivity			2 Indexes = 100.000
+19  Contribution of research and development (R&D) intensity to labor productivity			3 % Change Year Ago
+20  Contribution of intellectual property products (IPP) excluding R&D intensity to labor productivity	2 Indexes = 100.000
+20  Contribution of intellectual property products (IPP) excluding R&D intensity to labor productivity	3 % Change Year Ago
+74  Contribution of energy intensity to labor productivity 						2 Indexes = 100.000
+74  Contribution of energy intensity to labor productivity 						3 % Change Year Ago
+76  Contribution of materials intensity to labor productivity 						2 Indexes = 100.000
+76  Contribution of materials intensity	to labor productivity 						3 % Change Year Ago
+77  Contribution of purchased services Intensity to labor productivity 					2 Indexes = 100.000
+77  Contribution of purchased services Intensity to labor productivity 					3 % Change Year Ago
+78  Contribution of intermediate inputs to labor productivity 						2 Indexes = 100.000
+78  Contribution of iIntermediate inputs to labor productivity 				        	3 % Change Year Ago
+

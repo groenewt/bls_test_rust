@@ -1,0 +1,305 @@
+
+				Employer Costs for Employee Compensation(CC)
+					cc.txt
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  EMPLOYER COSTS FOR EMPLOYEE COMPENSATION (CC)
+
+Survey Description:  The Employer Costs for Employee Compensation (ECEC) is a measure
+of the cost of labor.  The compensation series includes wages and salaries plus employer
+costs for individual employee benefits.  Employee benefit costs are calculated 
+as cents-per-hour-worked for individual benefits ranging from employer payments for 
+Social Security to paid time off for holidays.
+
+The survey covers all occupations in the civilian economy, which includes 
+the total private economy (excluding farms and households), and the public 
+sector (excluding the Federal government).  Statistics are published for 
+the private and public sectors separately, and the data are combined in a 
+measure for the civilian economy.
+
+The data are collected from a probability sample of about 30,000 occupations
+with 7,200 sample establishments in private industry and about 3,750 
+occupations within 800 sample establishments in State and local 
+governments.  The sample establishments are classified in industry 
+categories based on the 1987 Standard Industrial Classification (SIC), as 
+defined by the U.S. Office of Management and Budget.  Within an 
+establishment, specific job categories are selected to represent broader 
+occupational definitions.  Since March 1995, the jobs have been classified 
+according to the 1990 Census of Occupations. 
+
+Summary Data Available:  For private industry workers, data are 
+available for total compensation costs, for wages and salaries alone, and 
+for individual benefit costs alone.  Data are available by major occupational
+and industry groups, as well as by region and bargaining status.  Information
+is available from 1986 to the present for most of these series.   
+
+For State and local governments and the civilian economy (State and local 
+governments plus private industry), data are available for major occupational 
+and selected industry series.  The data for these series are provided from
+1991 to present.
+
+Frequency of Observations:  Data are available annually from 1986 to 1991.  
+Data will become available quarterly beginning in June 2002.
+
+Data Characteristics:  All costs per hour worked are stored to the nearest
+penny.  All percents are stored with one decimal place.
+
+Updating Schedule:  Updates are available about eight weeks following the end
+of the reference quarter.  Reference quarters end in March, June, September,
+and December.
+
+==================================================================================
+Section 2
+==================================================================================
+
+The following Employer Costs for Employee Compensation files are on the BLS internet in the 
+sub-directory pub/time.series/ec:
+
+       cc.benefit		- Benefits codes		mapping file
+       cc.costfactor		- Cost factor codes		mapping file
+       cc.data.0.Current	- All current year-to-date data
+       cc.data.1.AllData	- All data 
+       cc.industryocc		- Industry occupational code   	mapping file
+       cc.sector		- Sector codes  		mapping file
+       cc.series		- All series and their beginning and end dates
+       cc.txt			- General information
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+cc.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value (Example)		
+
+1.  series_id		  17		CCU010000100000P
+
+2.  sector_code		   1		0
+
+3.  benefit_code	   5		10000
+
+4.  industryocc_code	   6		100000	
+						
+5.  costfactor_code	   1		P	
+						
+6.  footnote_codes	  10		It varies
+
+7.  begin_year		   4		1994
+
+8.  begin_period	   3		Q05		
+				
+9.  end_year		   4		2001		
+
+10. end_period		   3		Q05		
+
+
+The series_id (CCU010000100000P) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		CC
+seasanol (code)		=		U
+sector_code		=		0
+benefit_code		=		10000
+industryocc_code	=		100000
+costfactor_code		=		P
+
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character. 
+
+The cc.data file is partitioned into two separate files:  
+
+	1.  cc.data.0.Current	- All current year-to-date data
+	2.  cc.data.1.AllData	- All data
+
+Both of the above data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		CCU010000100000P
+
+2. year			   4		1994	
+
+3. period		   3		Q05		
+
+4. value		  12      	11.06
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (CCU010000100000P) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		CC
+seasonal (code)		=		U
+sector_code		=		0
+benefit_code		=		10000
+industryocc_code	=		100000
+costfactor_code		=		P
+
+
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+
+File Name:  cc.benefit
+
+Field #/Data Element		Length		Value(Example)	
+
+1.  benefit_code		5		20000
+
+2.  benefit_title		50         	Text
+						
+				
+File Name:  cc.costfactor
+
+Field #/Data Element		Length		Value(Example)			
+
+1.  costfactor_code	  	1		D	
+
+2.  costfactor_text		50		Text
+						
+
+File Name:  cc.industryocc
+
+Field #/Data Element		Length		Value(Example)			
+
+1.  industryocc_code	  	6		000001
+
+2.  industryocc_title		50		Text
+						
+
+File Name:  cc.sector
+
+Field #/Data Element		Length		Value(Example)			
+
+1.  sector_code			1		1		
+			
+2.  sector_title		50		Text	
+				 		
+						
+=========================================================================================
+Section 7
+=========================================================================================
+EMPLOYER COSTS FOR EMPLOYEE COMPENSATION (CC) DATABASE ELEMENTS
+
+
+Data Element		Length	Value(Example)			Description
+
+begin_period		3	Q01-Q05			Identifies first data observation
+				Ex: Q01=1st Quarter	within the first year for which 
+				(Q=Quarterly, Q05=	data is available for a given 
+				Annual Avg)	        time series.
+
+begin_year		4	YYYY			Identifies first year for which 
+				Ex: 1985		data is available for a given 
+                                                	time series.
+						
+benefit_code		5	20000			Benefit code.
+
+benefit_title		50     	Text			Benefit title.
+
+costfactor_code	 	1	D			Cost factor code.
+
+costfactor_text		50	Text			Cosr factor title.
+
+end_period		3	Q01-Q05			Identifies last data observation
+				Ex: Q01=1st Quarter	within the last year for which
+				(Q=Quarterly, Q05=	 data is available for a given
+				Annual Avg)             time series.
+				
+end_year		4	YYYY			Identifies last year for which 
+				Ex: 1990		data is available for a given 
+                                                	time series.
+
+footnote_codes		10      It varies		It varies
+		
+
+industryocc_code 	6	000001			Industry occupational code.
+
+industryocc_title 	50	Text			Industry occupational TITLE.
+
+sector_code		1	1			Sector code.	
+			
+sector_title		50	Text			Sector title.	
+				 		
+series_id		17	Series identifier	Code identifying the specific 
+				Ex.CCU010000100000P	series.
+
+value			12	Variable		Data value for series.
+	  			
+
+year			4	YYYY			Identifies year of observation.
+				Ex: 1990	
+
+
+
+

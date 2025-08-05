@@ -1,0 +1,620 @@
+		Employment, Hours, and Earnings--National (EE)
+				     ee.txt
+
+******************************************************************************************
+SPECIAL NOTICE:  The Current Employment Statistics program will publish National data on a 
+North American Industry Classification System (NAICS) basis beginning with the release of 
+May 2003 data in June 2003.  With the release of May 2003 data, SIC-based data will no 
+longer be produced or published.  Please see http://www.bls.gov/ces/cesnaics.htm 
+for further details.  
+******************************************************************************************
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  EMPLOYMENT, HOURS, AND EARNINGS--NATIONAL (EE)
+
+Survey Description:  The Current Employment Statistics Program provides 
+employment, paid hours, and earnings information on a national basis in 
+considerable industrial detail.  The Bureau of Labor Statistics cooperates 
+with State agencies in collecting data each month from a sample of 
+establishments in all nonfarm activities including government.
+
+The data include series for total employment, number of women employed, 
+number of production or nonsupervisory workers, average hourly earnings, 
+average weekly hours, average weekly earnings, and average weekly overtime 
+hours in manufacturing industries.
+
+A sample of about 375,000 employer units with over 40 percent of total 
+payroll employment is utilized for this monthly mail survey.  For hours and 
+earnings of production or nonsupervisory workers in private, nonagricultural
+industries, the sample contains about 300,000 employer units.
+
+All employment, hours and earnings series are classified according to the 
+1987 Standard Industrial Classification (SIC).  The industry code used in 
+the survey corresponds to the SIC code, except in those cases where more 
+than one SIC has been combined.
+
+Summary Data Available:  For all employees, women, and production or 
+nonsupervisory workers, over 1,600 published monthly employment series are 
+available.  The series for all employees include over 600 industries at 
+various levels of aggregation.
+
+Over 1,750 published monthly series for production workers' average weekly 
+earnings, average hourly earnings, average weekly hours, and, in 
+manufacturing, average weekly overtime hours are available.
+
+Hours and earnings data are available for about 475 industries.
+
+Most series begin in 1947, 1958, 1972, 1982, or 1988, although some are 
+available from 1909 to the present.
+
+Employment by industry division is available since 1919.
+
+For industry divisions and major groups, about 200 series of seasonally 
+adjusted data are available.
+
+Over 100 special derivative series such as indexes and constant dollar 
+series are also available.
+
+Frequency of Observations:  Monthly in almost all cases; quarterly averages 
+available for total employment, average weekly hours, and average overtime 
+hours, seasonally adjusted (datatypes 81, 82, and 83).
+
+Annual Averages:  Annual averages are available for all series which are 
+unadjusted for seasonality.
+
+Data Characteristics:  Earnings are measured in dollars and are stored with 
+two decimal places (three prior to 1957).  Average weekly and overtime hours
+are measured in hours and are stored with one decimal place.
+
+Employment is measured in thousands of workers and is stored with one 
+decimal place for two-digit SIC and lower-level industries when not adjusted
+for seasonality; other employment data are stored with no decimal place.
+
+Special characteristics of the data are footnoted where necessary.
+
+Updating Schedule:  Updates are usually available on the third Friday 
+following the reporting week (week containing the 12th) in the reference 
+month.  These updates contain first closing estimates for the reference 
+month, second closing estimates for the month preceding the reference month,
+and third closing estimates for the month two months prior to the reference 
+month.
+
+References:	BLS Handbook of Methods, Chapter 2, "Employment, hours, and
+		earnings from the establishment survey", Bulletin 2285 
+		(1992).
+==================================================================================
+Section 2
+==================================================================================
+
+The following Employment, Hours, and Earnings--National files are on the BLS 
+internet in the sub-directory pub/time.series/ee:
+
+       	
+	ee.data.1.CurrentSeasAE		  -  Seasonal, All Employees (data_type_code 
+				     	     = 01), 1988-Present
+	ee.data.2.CurrentSeasPWWW	  -  Seasonal, Women and Production Workers 
+				     	     (data_type_code = 02, 03), 1988-Present
+	ee.data.3.CurrentSeasOther	  -  Seasonal, Other, 1988-Present
+	ee.data.4.HistorySeasAE		  -  Seasonal, All Employees (data_type_code = 
+				     	     01), Pre-1988
+	ee.data.5.HistorySeasPWWW	  -  Seasonal, Women and Production Workers 
+				      	     (data_type_code = 02, 03), Pre-1988
+	ee.data.6.HistorySeasOther	  -  Seasonal, Other, Pre-1988
+	ee.data.7.TotsAECurr		  -  Unseasonal, Total, Tot priv, Goods 
+				     	     prod, Mining, Construction (division  
+				     	     00, 10, 20), All Employees code = 
+					     (data_type_code = 01), 1988-Present
+	ee.data.8.ManufactureAECurr	  -  Unseasonal, Manufacturing (division
+				     	     code = 30 - 32), All Employees 
+		 			     (data_type_code = 01), 1988-Present
+	ee.data.9.ServiceProdTPUAECurr	  -  Unseasonal, Service prod, TPU (division 
+				     	     code = 39, 40-42), All Employees 
+				     	     (data_type_code = 01), 1988-Present
+	ee.data.10.TradeAECurr		  -  Unseasonal, Trade (division code = 
+				     	     50-53, 60), All Employees 
+				     	     (data_type_code = 01), 1988-Present
+	ee.data.11.FireAECurr		  -  Unseasonal, FIRE (industry code = 
+				     	     70-73), All Employees (data_type_code = 
+				     	     01), 1988-Present
+	ee.data.12.ServicesAECurr	  -  Unseasonal, Services (division code = 
+				     	     80), All Employees (data_type_code = 01),
+				     	     1988-Present
+	ee.data.13.GovtAECurr		  -  Unseasonal, Government (division code = 
+				     	     90-95), All Employees (data_type_code = 
+				     	     01), 1988-Present
+	ee.data.14.TotsWWPWCurr		  -  Unseasonal, Total, Tot priv, Goods prod,
+				     	     Mining, Construction (division code = 
+				     	     00, 10, 20), Women, Production Workers 
+				     	     (data_type_code = 02, 03), 1988-Present
+	ee.data.15.ManufactureWWPWCurr	  -  Unseasonal, Manufacturing (division
+				     	     code = 30 - 32), Women, Production  
+				     	     Workers (data_type_code = 02, 03), 
+				     	     1988-Present
+	ee.data.16.ServiceProdTPUWWPWCurr -  Unseasonal, Service prod, TPU (division 
+				     	     code = 39, 40-42), Women, Production 
+				     	     Workers (data_type_code = 02, 03), 
+				     	     1988-Present
+	ee.data.17.TradeWWPWCurr	  -  Unseasonal, Trade (division code = 50-53, 
+					     60), Women, Production Workers 
+					     (data_type_code = 02, 03), 1988-Present
+	ee.data.18.FireWWPWCurr		  -  Unseasonal, FIRE (division code = 70-73), 
+					     Women, Production Workers 
+				     	     (data_type_code = 02, 03), 1988-Present
+	ee.data.19.ServicesWWPWCurr	  -  Unseasonal, Services (division code = 80), 
+					     Women, Production Workers 
+				     	     (data_type_code = 02, 03), 1988-Present
+	ee.data.20.GovtWWCurr		  -  Unseasonal, Government (division code = 
+					     90-95), Women, (data_type_code = 02), 
+					     1988-Present
+	ee.data.21.TotsAHECurr		  -  Unseasonal, Total private, Goods prod, 
+				     	     Mining, Construction (division code = 
+				     	     00, 10, 20), Avg Hourly Earnings 
+				     	     (data_type_code = 06), 1988-Present
+	ee.data.22.ManufactureAHECurr	  -  Unseasonal, Manufacturing (division 
+				     	     code = 30 - 32), Avg Hourly Earnings,
+				     	     Hourly Earnings Excluding Overtime 
+				     	     (data_type_code = 06, 60), 1988-Present
+	ee.data.23.ServiceProdTPUAHECurr  -  Unseasonal, Service prod, TPU (division 
+				     	     code = 39, 40-42), Avg Hourly Earnings 
+				     	     (data_type_code = 06), 1988-Present
+	ee.data.24.TradeAHECurr		  -  Unseasonal, Trade (division code = 
+				     	     50-53, 60), Avg Hourly Earnings 
+				     	     (data_type_code = 06), 1988-Present
+	ee.data.25.FireAHECurr		  -  Unseasonal, FIRE (division code = 
+				     	     70-73), Avg Hourly Earnings 
+				     	     (data_type_code = 06), 1988-Present
+	ee.data.26.ServicesAHECurr	  -  Unseasonal, Services (division code = 80), 
+					     Avg Hourly Earnings (data_type_code = 06), 
+					     1988-Present
+	ee.data.27.TotsAWCurr		  -  Unseasonal, Total private, Goods prod, 
+				     	     Mining, Construction (division code = 
+				     	     00, 10, 20), Avg Weekly Hours, Avg 
+				     	     Weekly Earnings (data_type_code = 04, 
+				     	     05), 1988-Present
+	ee.data.28.ManufactureAWCurr	  -  Unseasonal, Manufacturing (division 
+				     	     code = 30 - 32), Avg Weekly Hours, Avg 
+				     	     Weekly Earnings, Avg Weekly Overtime
+				     	     Hours (data_type_code = 04, 05, 07), 
+				     	     1988-Present
+	ee.data.29.ServiceProdTPUAWCurr	  -  Unseasonal, Service prod, TPU (division 
+				     	     code = 39, 40-42), Avg Weekly Hours, 
+				     	     Avg Weekly Earnings (data_type_code = 04, 
+					     05), 1988-Present
+	ee.data.30.TradeAWCurr		  -  Unseasonal, Trade (division code = 50-53, 
+					     60), Avg Weekly Hours, Avg Weekly Earnings 
+					     (data_type_code = 04, 05), 1988-Present
+	ee.data.31.FireAWCurr		  -  Unseasonal, FIRE (division code = 70-73), 
+					     Avg Weekly Hours, Avg Weekly Earnings 
+					     (data_type_code = 04, 05), 1988-Present
+	ee.data.32.ServicesAWCurr	  -  Unseasonal, Services (division code = 80), 
+					     Avg Weekly Hours, Avg Weekly Earnings 
+					     (data_type_code = 04, 05), 1988-Present
+	ee.data.33.TotsOtherCurr	  -  Unseasonal, Total private, Goods prod, 
+				     	     Mining, Construction (division code = 
+				     	     00, 10, 20), Other, Index of Aggregate
+				     	     Weekly Hours, Index of Aggregate Weekly
+				     	     Payrolls, Diffusion Index (12-month)
+				     	     (data_type_code = 40, 45, 68), 1988-Present
+	ee.data.34.ManufactureOtherCurr	  -  Unseasonal, Manufacturing (division 
+				     	     code = 30 - 32), Other, Index of
+				     	     Aggregate Weekly Hours, Index of
+				     	     Aggregate Weekly Payrolls, Diffusion
+				     	     Index (12-month) (data_type_code = 
+				     	     40, 45, 68) 1988-Present
+	ee.data.35.ServiceProdTPUOtherCurr-  Unseasonal, Service prod, TPU (division 
+				     	     code = 39, 40-42), Other, Index of
+				     	     Aggregate Weekly Hours, Index of
+				     	     Aggregate Weekly Payrolls
+				     	     (data_type_code = 40, 45) 1988-Present
+	ee.data.36.TradeOtherCurr	  -  Unseasonal, Trade (division code = 
+				     	     50-53, 60), Other, Index of Average
+				     	     Weekly Hours, Index of Aggregate Weekly
+				     	     Payrolls (data_type_code = 40, 45)
+				     	     1988-Present
+	ee.data.37.FireOtherCurr	  -  Unseasonal, FIRE (division code = 
+				     	     70-73), Other, Index of Aggregate
+				     	     Weekly Hours, Index of Aggreage Weekly
+				     	     Payrolls (data_type_code = 40, 45)
+				     	     1988-Present
+	ee.data.38.ServicesOtherCurr	  -  Unseasonal, Services (division code = 80), 
+					     Other, Index of Aggregate Weekly Hours, 
+					     Index of Aggregate Weekly Payrolls 
+					     (data_type_code = 40, 45), 1988-Present
+	ee.data.39.TotsAEHist		  -  Unseasonal, Total, Tot priv, Goods 
+				     	     prod, Mining, Construction (division
+				     	     code = 00, 10, 20), All Employees 
+				     	     (data_type_code = 01), Pre-1988
+	ee.data.40a.ManufactureAEHist	  -  Unseasonal, Manufacturing (division 
+				     	     code = 30 - 32), All Employees 
+				     	     (data_type_code = 01), Pre-1988
+	ee.data.40b.ManufactureAEHist	  -  Unseasonal, Manufacturing (division 
+				     	     code = 30 - 32), All Employees 
+				     	     (data_type_code = 01), Pre-1988			     	     
+	ee.data.41.ServiceProdTPUAEHist	  -  Unseasonal, Service prod, TPU (division
+				     	     code = 39, 40-42), All Employees 
+				     	     (data_type_code = 01), Pre-1988
+	ee.data.42.TradeAEHist		  -  Unseasonal, Trade (division code = 50-53, 
+					     60), All Employees (data_type_code = 01), 
+					     Pre-1988
+	ee.data.43.FireAEHist		  -  Unseasonal, FIRE (division code = 70-73), 
+					     All Employees (data_type_code = 01), Pre-1988
+	ee.data.44.ServicesAEHist	  -  Unseasonal, Services (division code = 80), 
+					     All Employees (data_type_code = 01), Pre-1988
+	ee.data.45.GovtAEHist		  -  Unseasonal, Government (division code 
+				     	     = 90-95), All Employees (data_type_code = 
+					     01), Pre-1988
+	ee.data.46.TotsWWPWHist		  -  Unseasonal, Total, Tot priv, Goods, prod, 
+					     Mining, Construction (division code = 00, 10, 
+					     20), Women, Production Workers 
+					     (data_type_code = 02, 03), Pre-1988
+	ee.data.47a.ManufactureWWPWHist	  -  Unseasonal, Manufacturing (division code = 
+					     30 - 32), Women, Production Workers 
+					     (data_type_code = 02, 03), Pre-1988
+	ee.data.47b.ManufactureWWPWHist	  -  Unseasonal, Manufacturing (division code = 
+					     30 - 32), Women, Production Workers 
+					     (data_type_code = 02, 03), Pre-1988
+	ee.data.48.ServiceProdTPUWWPWHist -  Unseasonal, Service prod, TPU (division
+				     	     code = 39, 40-42), Women, Production Workers 
+					     (data_type_code = 02, 03), Pre-1988
+	ee.data.49.TradeWWPWHist	  -  Unseasonal, Trade (division code = 50-53, 
+					     60), Women, Production Workers
+					     (data_type_code = 02, 03), Pre-1988
+	ee.data.50.FireWWPWHist		  -  Unseasonal, FIRE (division code = 70-73), 
+					     Women, Production Workers(data_type_code = 
+				             02, 03), Pre-1988
+	ee.data.51.ServicesWWPWHist	  -  Unseasonal, Services (division code = 80), 
+					     Women, Production Workers (data_type_code = 
+					     02, 03), Pre-1988
+	ee.data.52.GovtWWHist		  -  Unseasonal, Government (division code 
+				     	     = 90-95), Women, Production Workers 
+				     	     (data_type_code = 02, 03), Pre-1988
+	ee.data.53.TotsAHEHist		  -  Unseasonal, Total private, Goods prod, 
+				     	     Mining, Construction (division code 
+				     	     = 00, 10, 20), Avg Hourly Earnings 
+				     	     (data_type_code = 06), Pre-1988
+	ee.data.54a.ManufactureAHEHist	  -  Unseasonal, Manufacturing (division 
+				     	     code = 30 - 32), Avg Hourly Earnings,
+				     	     Hourly Earnings Excluding Overtime 
+				     	     (data_type_code = 06, 60), Pre-1988
+	ee.data.54b.ManufactureAHEHist	  -  Unseasonal, Manufacturing (division 
+				     	     code = 30 - 32), Avg Hourly Earnings,
+				     	     Hourly Earnings Excluding Overtime 
+				     	     (data_type_code = 06, 60), Pre-1988
+	ee.data.55.ServiceProdTPUAHEHist  -  Unseasonal, Service prod, TPU (division
+				     	     code = 39, 40-42), Avg Hourly Earnings 
+				     	     (data_type_code = 06), Pre-1988
+	ee.data.56.TradeAHEHist		  -  Unseasonal, Trade (division code = 
+				     	     50-53, 60), Avg Hourly Earnings 
+				     	     (data_type_code = 06), Pre-1988
+	ee.data.57.FireAHEHist		  -  Unseasonal, FIRE (division code = 
+				    	     70-73), Avg Hourly Earnings 
+				     	     (data_type_code = 06), Pre-1988
+	ee.data.58.ServicesAHEHist	  -  Unseasonal, Services (division code =
+				     	     80), Avg Hourly Earnings 
+				     	     (data_type_code = 06), Pre-1988
+	ee.data.59.TotsAWHist		  -  Unseasonal, Total private, Goods prod, 
+				     	     Mining, Construction (division code 
+				     	     = 00, 10, 20), Avg Weekly Hours, Avg 
+				     	     Weekly Earnings (data_type_code = 04, 
+				     	     05), Pre-1988
+	ee.data.60a.ManufactureAWHist	  -  Unseasonal, Manufacturing (division 
+				     	     code = 30 - 32), Avg Weekly Hours, 
+				     	     Avg Weekly Earnings (data_type_code 
+				     	     = 04, 05, 07), Pre-1988
+	ee.data.60b.ManufactureAWHist	  -  Unseasonal, Manufacturing (division 
+				     	     code = 30 - 32), Avg Weekly Hours, 
+				     	     Avg Weekly Earnings (data_type_code 
+				     	     = 04, 05, 07), Pre-1988
+	ee.data.61.ServiceProdTPUAWHist	  -  Unseasonal, Service prod, TPU (division
+				     	     code = 39, 40-42), Avg Weekly Hours, 
+				     	     Avg Weekly Earnings (data_type_code 
+				     	     = 04, 05), Pre-1988
+	ee.data.62.TradeAWHist		  -  Unseasonal, Trade (division code 
+				             = 50-53, 60), Avg Weekly Hours, Avg 
+				     	     Weekly Earnings (data_type_code = 04, 
+				     	     05), Pre-1988
+	ee.data.63.FireAWHist		  -  Unseasonal, FIRE (division code 
+				     	     = 70-73), Avg Weekly Hours, Avg Weekly 
+				     	     Earnings (data_type_code = 04, 05),
+				     	     Pre-1988
+	ee.data.64.ServicesAWHist	  -  Unseasonal, Services (division code 
+				     	     = 80), Avg Weekly Hours, Avg Weekly 
+				     	     Earnings (data_type_code = 04, 05), 
+				     	     Pre-1988
+	ee.data.65.TotsOtherHist	  -  Unseasonal, Total private, Goods prod, 
+				     	     Mining, Construction (division code 
+				     	     = 00, 10, 20), Other, Index of 
+				     	     Aggregate Weekly Hours, Index of 
+				     	     Aggregate Weekly Payrolls, Diffusion
+				     	     Index (12-month) (data_type_code =
+				     	     40, 45, 68) Pre-1988
+	ee.data.66.ManufactureOtherHist	  -  Unseasonal, Manufacturing (division 
+				     	     code = 30 - 32), Other, Index of
+				     	     Aggregate Weekly Hours, Index of
+				     	     Aggregate Weekly Payrolls, Diffusion
+				     	     Index (12-month) (data_type_code =
+				     	     40, 45, 68) Pre-1988
+	ee.data.67.ServiceProdTPUOtherHist-  Unseasonal, Service prod, TPU (division
+				     	     code = 39, 40-42), Other, Index of
+				     	     Aggregate Weekly Hours, Index of
+				     	     Aggregate Weekly Payrolls
+				     	     (data_type_code = 40, 45) Pre-1988
+	ee.data.68.TradeOtherHist	  -  Unseasonal, Trade (division code 
+				     	     = 50-53, 60), Other, Index of Aggregate
+				     	     Weekly Hours, Index of Aggregate
+				     	     Weekly Payrolls (data_type_code =
+				     	     40, 45) Pre-1988
+	ee.data.69.FireOtherHist	  -  Unseasonal, FIRE (division code 
+				     	     = 70-73), Other, Index of Aggregate
+				     	     Weekly Hours, Index of Aggregate
+				     	     Weekly Payrolls (data_type_code = 
+				     	     40, 45) Pre-1988
+	ee.data.70.ServicesOtherHist	  -  Unseasonal, Services (division code 
+				     	     = 80), Other, Index of Aggregate Weekly 
+					     Hours, Index of Aggreate Weekly Payrolls 
+					     (data_type_code = 40, 45) Pre-1988
+	ee.data.71.WeeklyEarnings	  -  Unseasonal, All, Real Average Hourly
+				     	     Earnings, Real Average Weekly Earnings
+				     	     (data_type_code = 49, 51) 1988-Present
+	ee.data.72.WeeklyEarningsHist	  -  Unseasonal, All, Real Average Hourly 
+				     	     Earnings, Real Average Weekly Earnings
+				             (data_type_code = 49, 51) Pre-1988
+	ee.contacts			  -  Contacts for ee survey 
+	ee.datatype			  -  Data_type_code 		mapping file
+	ee.doc				  -  General information
+	ee.footnote			  -  Footnote codes		mapping file
+	ee.industry			  -  Industry codes		mapping file
+	ee.period			  -  Period codes		mapping file
+	ee.series			  -  All series and their beginning and end dates
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+ee.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by spaces; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		EES00000001
+
+2.  industry_code	  6		005000
+
+3.  data_type_code	  2		01
+
+4.  seasonal	   	  1		S or U		
+						
+5.  begin_year		  4		1939
+
+6.  begin_period	  3		M01			
+				
+7.  end_year		  4		2002	
+
+8.  end_period		  3		M02			
+					
+
+The series_id (EES00000001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		EE
+seasonal (code) 	=		S
+industry_code		=		000000
+data_type_code		=		01
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by spaces; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+The ee.data file is partitioned into a number of separate files:  See Section 2
+
+The above-referenced data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		EES00000001
+
+2. year			   4		1988	
+
+3. period		   3		M01		
+
+4. value		  12      	103623	 	
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (EES00000001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		EE
+seasonal (code) 	=		S
+industry_code		=		000000
+data_type_code		=		01
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character.  
+				
+File Name:  ee.datatype
+
+Field #/Data Element		Length		Value(Example)
+
+1.  data_type_code		2		60
+
+2.  data_type_text		60		Text
+
+
+File Name:  ee.footnote
+Field #/Data Element		Length		Value(Example)
+
+1. footnote_code		1		C
+
+2. footnote_text		100		Text
+
+
+File Name:  ee.industry
+
+Field #/Data Element		Length		Value(Example)
+
+1.  industry_code		6		101440
+
+2.  SIC_code			13		102
+
+3.  publishing_status		2		Internal Use Only
+
+4.  industry_name		60		Text
+				
+
+File Name:  ee.period
+
+Field #/Data Element		Length		Value(Example)
+
+1.  period			3		M01
+						
+2.  period_abbr			5		JUN
+
+3.  period_name			20		Text
+=========================================================================================
+Section 7
+=========================================================================================
+EMPLOYMENT, HOURS, AND EARNINGS--NATIONAL (EE) DATABASE ELEMENTS
+
+Data Element	Length		Value(Example)			Description
+
+begin_period	3		M01-M13			Identifies first data observation
+				Q01-Q05			within the first year for which
+				Ex: M06=June		data is available for a given
+				(M=Monthly, M13=Annual	time series.
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+
+begin_year	4		YYYY			Identifies first year for which 
+				Ex: 1976		data is available for a given
+							time series.
+
+data_type_code	2		00			Code identifying the datatype 
+							of the observation.
+
+data_type_text	60		Text			Datatype name of the observation.
+				Ex: Total employment	
+				
+end_period	3		M01-M13			Identifies last data observation
+				Q01-Q04			within the last year for which
+				Ex: M06=June		data is available for a given
+				(M=Monthly, M13=Annual	time series.
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+				
+end_year	4		YYYY			Identifies last year for which 
+				Ex: 1992		data is available for a given
+							time series.
+							
+footnote_code	1		C			Identifies footnote for the data 
+							series.
+
+footnote_codes	10		It varies		Identifies footnotes for the data 
+							series.	
+							
+footnote_text	100		Text			Contains the text of the footnote.
+
+industry_code	6		101440			Code identifying industry.
+							
+industry_name	60		Text			Name of industry.
+				Ex: Grocery Stores
+				
+period_abbr	5		Period name 		 Abbreviation of period name.
+				abbreviation
+				Ex: JUN
+
+period		3		M01-M13			Identifies period for which
+				Q01-Q04			data is observed. 
+				Ex: M06=June		
+				(M=Monthly, M13=Annual
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+
+period_name	20		Text			Full name of period to which 
+				Ex: June		the data observation refers.
+				
+publishing_	2		Internal Use only	Internal Use Only
+status
+
+seasonal	1		S=Seasonally		Code identifying whether the
+				  Adjusted 		data are seasonally adjusted.
+				U=Unadjusted
+
+series_id	17		EES00000001		Code identifying the specific 
+							series.
+
+SIC_code	13		102			Standard Industrial Classification
+							code.
+
+value		12		103623			Data value for series.
+
+year		4		YYYY			Identifies year of observation.
+				Ex: 1990		
+
+
+

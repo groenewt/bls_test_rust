@@ -1,0 +1,327 @@
+
+		Department Store Inventory Price Index (LI)
+				    li.txt
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  DEPARTMENT STORE INVENTORY PRICE INDEX (LI)
+
+Survey Description:  The Department Store Inventory Price Index is an 
+inventory weighted price index of goods carried by department stores, 
+designed for use in preparing income tax returns by department stores.  
+Group indexes are used by stores employing the Last-In-First-Out (LIFO) 
+Method of Accounting in conjunction with the Retail Inventory method.  
+Treasury Decision No. 5605 (March 4, 1948) expressly permits, in accordance 
+with certain principles laid down in the decision, the use of the Elective 
+Inventory Method by Taxpayers employing the Retail Inventory Method.  The 
+Bureau of Labor Statistics (BLS) is responsible for the technical accuracy 
+of the index, but permission to use this index and the way in which it is 
+used in tax returns is solely within the jurisdiction of the Internal 
+Revenue Service.
+
+The "DOLLAR-VALUE" LIFO Method described in the IRS regulations permits 
+valuation of Base Year Costs in terms of total dollars rather than the 
+quantity and price of the individual items.  It is in this frame that the 
+index is useful.  It makes possible the application of average price changes
+to an individual store's department totals.  Historical data are available 
+for Groups 1-20, the Store Total, Soft Goods and Durable Goods from January 
+1941 to the present.  Data are available for Groups 21, 22, 23, and the 
+Miscellaneous category from January 1986 to the present.  Data were 
+calculated for January and July only from 1941 through 1980, and monthly 
+thereafter.  Indexes are presented on a national basis for the Store Total 
+and for 23 Groups of Departments.  Three special combinations of Goods:  
+Soft Goods, Durable Goods, and Miscellaneous have also been prepared.  
+"Soft" Goods include Piece Goods, Apparel, and Notions.  "Durables" include 
+Furniture, House Furnishings, and Appliances.  "Miscellaneous" includes 
+Recreation and Education, Home Improvements, and Automotive Accessories.  
+The Store Total includes all Departments in the Store, both listed in the 
+Groups and those not specifically listed.  However, Food, Candy, Liquor, 
+and Contract Departments are excluded.
+
+The LIFO Marketbasket is derived entirely from the Consumer Price Index (CW 
+and CU).  Price data collected for CW and CU items in all kinds of stores 
+are used for the Department Store Inventory Indexes without change.  This 
+provides a considerable saving in cost and is considered an acceptable 
+procedure for the LIFO Index, since prices for the same item in different 
+types of stores are directly competitive.  Furthermore, authority to use the
+LIFO Index in income tax returns has been granted to department stores 
+broadly defined to include specialty stores.
+
+Frequency of Observations:  All data are monthly; annual averages are not 
+available.
+
+Base Periods:  January 1941 = 100 for all series except SL00021, SL00022, 
+SL00023, and SLMISC which are January 1986 = 100.
+
+Data Characteristics:  Indexes are stored to one decimal place.
+
+Updating Schedule:  Updates become available near the 15th of the month 
+following the reference month.
+
+==================================================================================
+Section 2
+==================================================================================
+
+The following Department Store Inventory Price Index files are on the BLS internet 
+in the sub-directory pub/time.series/li:
+  	
+	li.area			-  Area codes		mapping file
+	li.contacts		-  Contacts for li survey 
+	li.data.0.Current	-  All current year-to-date data
+	li.data.1.AllData	-  All data
+	li.footnote		-  Footnote codes	mapping file
+	li.item			-  Item codes		mapping file
+	li.period		-  Period codes		mapping file
+	li.series		-  All series and their beginning and end dates
+	li.txt			-  General information
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+li.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by spaces; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		LIUR0000SL00001
+
+2.  area_code	  	  4		0000
+
+3.  item_code	  	  8		SL00001 
+
+4.  periodicity_code	  1		R		
+						
+5.  base_period		  20  		JANUARY 1941 = 100
+					
+6.  begin_year		  4		1941
+
+7.  begin_period	  3		M01		
+				
+8.  end_year		  4		2002		
+
+9.  end_period		  3		M03		
+					
+The series_id (LIUR0000SL00001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		LI
+seasonal (code) 	=		U
+area_code		=		0000
+periodicity_code	=		R
+item_code		=		SL00001
+==================================================================================
+Section 5
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by spaces; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+
+The li.data file is partitioned into two separate files:  
+
+	1.  li.data.0.Current	-  All current year-to-date data
+	2.  li.data.1.AllData	-  All data
+
+Both of the above data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		LIUR0000SL00001
+
+2. year			   4		1941	
+
+3. period		   3		M01		
+
+4. value		  12      	100.0	 	
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (LIUR0000SL00001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		LI
+seasonal (code) 	=		U
+area_code		=		0000
+periodicity_code	=		R
+item_code		=		SL00001
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+ 
+
+File Name:  li.area
+
+Field #/Data Element		Length		Value(Example)
+
+1.  area_code			4		0000
+
+2.  area_name			30		Text
+
+
+File Name:  li.footnote
+
+Field #/Data Element		Length		Value(Example)
+
+1. footnote_code		1		R
+
+2. footnote_text		100		Text
+
+
+File Name:  li.item		
+
+Field #/Data Element		Length		Value(Example)
+
+1.  item_code			8		SL00001 
+
+2.  item_name			100		Text
+
+
+File Name:  li.period
+
+Field #	/Data Element		Length		Value(Example)
+
+1.  period			3		M01
+
+2.  period_abbr			5		JAN
+
+3.  period_name			20		Text
+
+=========================================================================================
+Section 7
+=========================================================================================
+DEPARTMENT STORE INVENTORY PRICE INDEX (LI) DATABASE ELEMENTS
+
+
+Data Element	Length		Value(Example)			Description
+
+area_code	4		0000			Unique code used to identify
+							a specific geographic area.
+					
+area_name	30		Text			Name of specific geographic 
+				Ex: MIAMI, FLA		area.
+				
+
+base_period	40		Identifies the base	The actual base period used
+				period			in calculating the index.
+				Ex: January 1941=100
+				    	
+begin_period	3		M01-M13			Identifies first data observation
+				Ex: MO3=March		within the first year for which 
+				(M=Monthly, M13=Annual	data is available for a given		
+				Avg)			time series.
+				
+begin_year	4		YYYY			Identifies first year for which 
+				Ex: 1975		data is available for a given 
+							time series.
+							
+end_period	3		M01-M13			Identifies last data observation 
+				Ex: M03=March		within the last year for which
+				(M=Monthly, M13=Annual	data is available for a given 
+				Avg)			time series.
+				
+
+end_year	4		YYYY			Identifies last year for which data 
+				Ex: 1980		is available for a given time
+							series.
+							
+footnote_code	1		R			Identifies footnote for the data 
+							series.
+
+footnote_codes	10		It varies		Identifies footnotes for the data 
+							series.	
+							
+footnote_text	100		Text			Contains the text of the footnote.
+
+
+item_code	8		SL00001 		Identifies item for which 
+							data observations pertain.
+
+item_name	100		Text			Full names of items.		
+
+period_abbr	5		Period name  		Abbreviation of period name.
+				abbreviation
+				Ex: MAR
+
+period		3		M01-M13			Identifies period for which 
+				Ex: M03=March		data is observed. 
+				(M=Monthly, M13=Annual	
+				Avg)
+				
+period_name	20		Text			Full name of period to which
+				Ex: March		the data observation refers.
+				
+periodicity_	1		S=Semi-Annual		Frequency of data 
+code				R=Regular		observation.
+
+series_id	17		LIUR0000SL00001		Code identifying the 
+							specific series.
+
+value		12		Index			Price index for item.
+	  			Ex: 100.0
+
+year		4		YYYY			Identifies year of observation.
+				Ex: 1990		
+
+
+

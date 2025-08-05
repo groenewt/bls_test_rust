@@ -1,0 +1,141 @@
+				CPS Earnings (LE)
+				     le.txt
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+
+================================================================================
+Section 1
+================================================================================
+
+Section 1 (Earnings)
+
+Survey Description:  The Current Population Survey (CPS) is a sample survey of 
+the population 16 years of age and over.  The survey is conducted each month by
+the U.S. Census Bureau for the Bureau of Labor Statistics and provides comprehensive
+data on the labor force, the employed, and the unemployed, classified by such
+characteristics as age, sex, race, family relationship, marital status, occupation,
+and industry attachment. The information is collected by trained interviewers
+from a sample of about 60,000 households located in 754 sample areas. These areas
+are chosen to represent all counties and independent cities in the United States,
+with coverage in 50 States and the District of Columbia. The data collected
+are based on the activity or status reported for the calendar week including
+the 12th of the month.  
+
+Summary Data Available:  Earnings data are available for all workers, with data
+available by age, race, Hispanic or Latino ethnicity, sex, occupation, usual
+full- or part-time status, educational attainment, and other characteristics.  
+
+Frequency of Observations:  Quarterly averages, not seasonally adjusted.
+
+Annual Averages:  Annual averages are available for all series.  
+
+Data Characteristics:  The earnings data are collected from one-quarter of the
+CPS monthly sample and are limited to wage and salary workers. All self-employed
+workers are excluded.  Most series pertain to workers who usually work full time
+on their sole or primary job.  
+
+Data represent earnings before taxes and other deductions, and include any overtime
+pay, commissions, or tips usually received (at the main job, in the case of multiple
+jobholders). Earnings reported on a basis other than weekly (for example, annual,
+monthly, hourly) are converted to weekly.  The term "usual" is as perceived by the
+respondent. If the respondent asks for a definition of usual, interviewers are 
+instructed to define the term as more than half the weeks worked during the past
+4 or 5 months. Data refer to wage and salary workers (excluding all self-employed 
+persons regardless of whether their businesses were incorporated).  
+
+Median earnings figures indicate the value that divides the earnings distribution into
+two equal parts, one part having values above the median and the other having values
+below the median. The medians shown are calculated by linear interpolation of the $50
+centered interval within which each median falls. Data expressed in constant dollars
+are deflated by the Consumer Price Index for All Urban Consumers (CPI-U).  
+
+Updating Schedule:  Updates are usually available with the issuance of the quarterly 
+usual weekly earnings news release. Annual average data are available in the fourth
+quarter news release.
+
+
+References:  Employment and Earnings, U.S. Department of Labor, Bureau of Labor Statistics
+
+==================================================================================
+Section 2
+==================================================================================
+
+The following CPS Earnings files are on the BLS internet in the sub-directory pub/time.series/le:
+
+       	
+	le.contacts			  -  Contacts for LE survey
+	le.ages				  -  Age codes mapping file
+	le.cert				  -  Certification and licensing status codes mapping file
+	le.class			  -  Class of Worker codes mapping file
+	le.data.0.Current		  -  All current year-to-date data
+	le.data.1.AllData		  -  All data
+	le.earn				  -  Earnings codes mapping file
+	le.education			  -  Education codes mapping file
+	le.fips				  -  Federal Information Processing Standards codes mapping file
+	le.indy				  -  industry codes mapping file
+	le.lfst				  -  Labor Force Status codes mapping file
+	le.occupation			  -  Occupation codes mapping file
+	le.orig				  -  Ethnic Origin codes mapping file
+	le.pcts				  -  Percent codes mapping file
+	le.periodicity			  -  Periodicity codes mapping file
+	le.race				  -  Race codes mapping file
+	le.seasonal			  -  Seasonal codes mapping file
+	le.seq				  -  Sequence codes mapping file
+	le.series			  -  All series and their beginning and end dates
+	le.sexs				  -  Sexes codes mapping file
+	le.stype			  -  Seasonal Type codes mapping file
+	le.tdata			  -  Time Data codes mapping file
+	le.txt				  -  General information
+	le.unin				  -  Union codes mapping file
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+
+=================================================================================
+
+

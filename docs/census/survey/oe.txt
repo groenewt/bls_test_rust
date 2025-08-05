@@ -1,0 +1,408 @@
+				Occupational Employment and Wage Statistics (OE)
+					oe.txt
+
+Section Listing
+
+1.  Survey Definition
+2.  FTP files listed in the survey directory
+3.  Time series, series file, data file, & mapping file definitions and relationships
+4.  Series file format and field definitions
+5.  Data file format and field definitions
+6.  Mapping file formats and field defintions
+7.  Data Element Dictionary
+
+===================================================================================
+Section 1
+===================================================================================
+
+The following is a definition of:  Occupational Employment and Wage Statistics (OE)
+
+Survey Description:  The Occupational Employment and Wage Statistics (OEWS) program conducts a 
+semi-annual mail survey designed to produce estimates of employment and wages for specific 
+occupations. The OEWS program collects data on wage and salary workers in nonfarm establishments 
+in order to produce employment and wage estimates for about 800 occupations. Data from 
+self-employed persons are not collected and are not included in the estimates. The OEWS program 
+produces these occupational estimates by geographic area and by industry. Estimates based on 
+geographic areas are available at the National, State, Metropolitan, and Nonmetropolitan Area levels. The Bureau 
+of Labor Statistics produces occupational employment and wage estimates for over 450 industry 
+classifications at the national level. The industry classifications correspond to the sector, 
+3-, 4-, and 5-digit North American Industry Classification System (NAICS) industrial groups. 
+
+Summary Data Available:  Cross-industry estimates are available by Nation, State, and
+metropolitan area for about 800 occupations.  Industry specific estimates are available
+at the National level for over 450 industries.  
+
+Data Characteristics:  Annual wage estimates are rounded to the nearest dollar and are stored 
+with no decimal place.  
+
+Hourly wage estimates are rounded to the nearest cent and are stored with two decimal places. 
+
+Employment estimates are rounded to the nearest ten and are stored with no decimal place.
+
+Percent relative standard errors are rounded to the nearest tenth and are stored with one decimal 
+place.
+
+Special characteristics of the data are footnoted where necessary. 
+
+Updating Schedule:  The OEWS estimates are updated annually, normally in March.
+
+====================================================================================
+Section 2
+====================================================================================
+The following Average Price Data files are on the BLS internet in the sub-directory 
+pub/time.series/oe:
+
+	oe.data.1.AllData		- All year-to-date data
+	oe.data.0.Current		- All current year-to-date data
+	oe.area				- Area codes		mapping file
+	oe.areatype			- Area type		mapping file
+	oe.datatype			- Data type		mapping file
+	oe.footnote			- Footnote codes	mapping file
+	oe.industry			- Industry 		mapping file
+	oe.occupation			- occupation		mapping file
+	oe.release			- release		mapping file
+	oe.seasonal			- seasonal info		mapping file
+	oe.sector			- Sector info		mapping file
+	oe.series			- All series and their beginning and end Dates
+	oe.txt				- General information
+	
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define
+oe.series.  Note the Field Numbers are for reference only; they do not exist in the
+database.  Data files are in ASCII text format.  Data elements are separated by 
+spaces; the first record of each file contains the column headers for the data 
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  series_id		  	30		OEUM000040000000000000001
+
+2.  seasonal		 	1		U
+
+3.  areatype_code	  	1 		M
+
+4.  industry_code 	  	6		000000
+
+5.  occupation_code 	  	6		000000 
+    
+6.  datatype_code	  	2		01
+
+7.  state_code	  		2		01
+
+8.  area_code		 	7		0000400
+
+9.  sector_code			6		11--12
+
+10.  series_title		2KB		Employment for All Occupations in All Industries in Albany, GA
+
+11.  footnote_codes		10		1
+
+12.  begin_year		   	4		1980
+
+13. begin_period	   	3		A01		
+				
+14.  end_year		   	4		2002		
+
+15.  end_period		   	3		A01
+
+
+The series_id (OEUM000040000000000000001) can be broken out into:
+
+Code					Value(Example)
+
+survey abbreviation	=		OE
+seasonal(code)		=		U
+areatype-code		=		M
+area_code		=		0000400
+industry_code		=		000000
+occupation_code		=		000000 
+datatype_code		=		01
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by spaces; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+The oe.data file is partitioned separate files:  
+
+	1.  oe.data.1.AllData		- All year-to-date data
+	2.  oe.data.0.Current		- All current year-to-date data
+	
+
+Both of the above data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  30		OEUM000040000000000000001
+
+2. year			   4		1980	
+
+3. period		   3		S01		
+
+4. value		  12      	56290				 
+
+5. footnote_codes	  10		2
+				
+
+The series_id (OEUM000040000000000000001) can be broken out into:
+
+Code					Value(Example)
+
+survey abbreviation	=		OE
+seasonal(code)		=		U
+area_code		=		0000400
+industry_code		=		000000
+occupation_code		=		000000 
+datatype_code		=		01
+============================================================================
+Section 6
+============================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+
+File Name:  oe.areatype
+
+Field #/Data Element		Length		Value(Example)
+
+1. areatype_code		1		M
+
+2. areatype_name		100		National
+
+File Name:  oe_area
+
+Field #/Data Element		Length		Value(Example)
+
+1. state_code			2		01
+
+2. area_code			7		7800000
+
+3. areatype_code		1		S
+
+4. area_name 			100		National
+
+
+File Name:  oe.industry
+
+Field #/Data Element		Length		Value(Example)
+
+1. industry_code		6		999300
+
+2. industry_name		100		Cross-industry, Private Ownership Only
+
+3. display_level		2		2
+
+4. selectable			1		T
+
+5. sort_sequence		5		444
+
+
+File Name:  oe.occupation
+
+Field #/Data Element		Length		Value(Example)
+
+1. occupation_code		6		537199
+
+2. occupation_name		100		All Occupations
+
+3. display_level		1		1
+
+4. selectable			1		T
+
+5. sort_sequence		5		888
+
+
+File Name:  oe.datatype
+
+Field #/Data Element		Length		Value(Example)
+
+1. datatype_code		2		15
+
+2. datatype_name		100		Employment
+
+
+File Name:  oe_sector
+
+Field #/Data Element		Length		Value(Example)
+
+1. sector_code 			6		92-100
+
+2. sector_name			100		Mining
+
+
+File Name:  oe_footnote
+
+Field #/Data Element		Length		Value(Example)
+
+1. footnote_code		1		7
+
+2. footnote_text		200		Estimate not released.
+
+
+File Name:  oe_release
+
+Field #/Data Element		Length		Value(Example)
+
+1. release_date			7		2004S01
+
+2. description			100		May 2004
+
+
+==============================================================================
+Section 7
+==============================================================================
+
+Occupational Employment and Wage Statistics (OEWS) DATABASE ELEMENTS
+
+
+Data Element	Length		Value(Example)			Description
+
+areatype_code		1		S		Identifies whether an estimate is 
+							for the National, State or metropolitan
+							area level.
+
+areatype_text		100		National	Identifies what areatype_code stand for.
+
+area_code		7		7800000		Unique code used to identify
+							a specific geographic area.
+
+area_text 		100		National	Name of specific geographic
+							area.
+
+begin_period		3		A01		Identifies first data observation
+					Annual		within the first year for which
+							data is available for a given time
+							series.					
+						
+begin_year		4		1990		Identifies first year for which
+ 							data is available for a given time
+							series.
+							
+end_period		3		A01		Identifies last data observation 
+ 					Annual		within the last year for which
+							data is available for a given time
+							series.
+						
+end_year		4		2000		Identifies las year for which data
+ 							is available for a given time
+							series.
+							
+footnote_code		10		1		Identifies footnote for the data 
+							series.
+							
+footnote_text		100	Estimate not released.	Contains the text of the footnote.
+
+series_id		30  OEUM000040000000000000001	Code identifying the specific 
+ 							series.
+
+value			12		5333		Value of the estimate corresponding with 
+							the series_id.	
+	    
+year			4		1990		Identifies year of observation.        	
+
+
+industry_code		6		999300		Unique code used to identify a specific 
+							industry.
+
+industry_text		100		Mining		Name of specific industry.
+
+display_level		2		2
+
+selectable		1		T
+
+sort_sequesnce		5		444		Order in which the choice of estimates 
+							are presented to the user.
+
+occupation_code		6		537199		Unique code used to identify a specific 
+							occupation.
+
+occupation_text		100	All Occupations		Name of a specific occupation.
+
+period			3		A01		Identifies period for which data is
+ 							observed.
+						
+datatype_code		2		15		Unique code used to identify which type
+							of data corresponds with the estimate.
+
+datatype_name		100		Employment	Identifies what the datatype_code 
+							stands for.
+
+footnote_code		1		1		Unique code used to identify a specific 
+							footnote.	
+
+sector_code 		6		92-100		Unique code used to identify a specific 
+							industry sector.
+
+sector_name		100		Mining		Name of specific industry sector.
+
+seasonal		1		U		Identifies whether the estimate is 
+							seasonal or not.
+
+seasonal_text		30		Text		Identifies what the seasonal code stands
+							for.
+
+footnote_code		1		7		Unique code used to identify a specific 
+							footnote.
+
+footnote_text		200		Text		The explanation corresponding with the 
+							footnote code.
+
+state_code		2		72		Unique code used to identify a specific 
+							State.
+
+release_date		7		2004S01		Date the estimate was released.
+
+release_text		100		May 2004	Year and period for the estimates.
+
+
+
+		
+
+
+				
+
+					
+
+
+				
+

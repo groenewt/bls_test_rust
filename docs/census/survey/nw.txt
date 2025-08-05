@@ -1,0 +1,304 @@
+
+		National Compensation Survey (NW)
+			   NW.txt
+
+Section Listing
+
+1.  Survey Definition
+2.  FTP files listed in the survey directory
+3.  Time series, series file, data file, & mapping file definitions and 
+    relationships.
+4.  Series file format and field definitions
+5.  Data file format and field definitions
+6.  Mapping file formats and field definitions
+=======================================================================
+Section 1
+=======================================================================
+
+The following is a definition of: National Compensation Survey (NW)
+
+Survey Description:  The National Compensation Survey (NCS) program 
+produces information on wages by occupation for many metropolitan areas 
+and also for the Nation as a whole.  Wage rates for different work 
+levels within occupation groups also are published.  Data are available 
+for private industry, State and local governments, full-time workers, 
+part-time workers, and other workforce characteristics.
+
+The Bureau of Labor Statistics (BLS) selects a sample of 
+establishments in both the private sector and State and local 
+governments in over 150 metropolitan areas and non-metropolitan 
+counties throughout the United States.  Data are collected from all 
+establishments in a specified area over a period of a few months.  NCS 
+data are used by both private companies and government agencies to help 
+set pay and to compare their wages with those of other employers.  The 
+data are a major component of the pay-setting process for Federal 
+Government employees.  Economic and academic researchers also are 
+interested in the findings.
+ 
+Summary Data Available:  The NCS Wage query presents mean hourly wage 
+data for all workers in an occupation (private industry and State and 
+local government combined).  Currently, data may be obtained for over 
+85 geographical areas, on a National level, and by the 9 census divisions 
+as they are defined by BLS.
+
+Data Characteristics: Hourly wages are stored to two decimal places.
+
+=======================================================================
+Section 2
+=======================================================================
+
+The following National Compensation Survey files are on the BLS
+internet in the sub-directory pub/time.series/NW:
+
+        nw.contacts			- Contacts for NW survey
+        nw.data.1.AllData		- All data
+	nw.series			- All series and their 
+	nw.starea			- starea codes  mapping file
+	nw.ownership			- ownership codes mapping file
+	nw.estimate_id			- estimate identification codes mapping file
+	nw.industry			- industry codes mapping file
+	nw.occupation			- occupation codes mapping file
+	nw.subcell_id			- characteristic group codes mapping file
+	nw.datatype_id			- characteristic group  codes mapping file
+	nw.level			- level codes mapping file
+	nw.txt				- General information
+=======================================================================
+Section 3
+=======================================================================
+
+The definition of a time series, its relationship to and the 
+interrelationship among series, data and mapping files is detailed 
+below:
+
+A time series refers to a set of data observed over an extended period 
+of time over consistent time intervals (i.e. monthly, quarterly, semi-
+annually, annually). BLS time series data are typically produced at 
+monthly intervals and represent data ranging from a specific consumer 
+item in a specific geographical area whose price is gathered monthly to 
+a category of worker in a specific industry whose employment rate is 
+being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the 
+following set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a 
+series identification code that serves to uniquely identify a single 
+time series. Additionally, the series file also contains the following 
+series-level information:
+
+a)  the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data 
+observation. 
+
+The mapping files are definition files that contain explanatory text 
+descriptions that correspond to each of the various codes contained 
+within each series identification code.
+
+The data file contains one line of data for each observation period 
+pertaining to a specific time series.  Each line contains a reference
+to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual 
+averages)
+d) value
+e) footnote code (if available)
+
+
+=======================================================================
+Section 4
+=======================================================================
+
+File Structure and Format: The following represents the file format used 
+to define nw.series.  Note the Field Numbers are for reference only; 
+they do not exist in the database.  Data files are in ASCII text format.  
+Data elements are separated by spaces; the first record of each file 
+contains the column headers for the data elements stored in each field.  
+Each record ends with a new line character. 
+
+Field #/Data Element			Length		Value(Example)		
+
+1.  series_id       		       	30		NWU371674020200000000002505000
+
+2.  state_code      			2 		37		
+
+3.  area_code       			5		16740	
+
+4.  ownership_code      		1		2
+
+5.  Estimate ID Code			2		02
+
+6.  Industry Code			4		0000
+
+7.  Occupation Code			6		000000
+
+8.  Subcell ID Code			2		25
+
+9.  Data Type Code			2		05
+
+10. Work Level/Supervisory Code		2		00
+
+11. Filler Codeseasonal (code)		1		0
+
+12. Footnote_codes  			10		00
+
+13. Begin_year      			4		2004	
+					
+14. Begin_period    			3		M09
+
+15. End_year        			4		2008
+
+16. End_period      			3        	M07
+
+
+The series_id (NWU371674020200000000002505000) can be broken out into:
+
+Code					Value
+
+survey abbreviation		=	NW
+State Code			=	37
+Area Code			=	16740
+Ownership Code			=	2
+Estimate ID Code		=	02
+Industry Code			=	0000
+Occupation Code			=	000000
+Subcell ID Code			=	25
+Data Type Code			=	05
+Work Level/Supervisory Code	=	00
+Filler Codeseasonal (code)	=	0
+
+
+=======================================================================
+Section 5
+=======================================================================
+
+File Structure and Format: The following represents the file format 
+used to define each data file.  Note that the field numbers are for 
+reference only; they do not exist in the database.  Data files are 
+in ASCII text format.  Data elements are separated by spaces; the 
+first record of each file contains the column headers for the data 
+elements stored in each field.  Each record ends with a new line 
+character. 
+
+The NW.data file is partitioned into two separate files: 
+
+	1. NW.data.0.Current	- All current year-to-date data
+	2. NW.data.1.AllData	- All data
+
+
+Both of the above data files have the following format:
+
+Field #/Data Element		Length	    	Value(Example)		
+
+1. series_id			30		NW
+
+2. reference year		4		2005	
+
+3. reference period	 	3		M06		
+
+4. estimate value		12      	22.67	
+
+5. published		 	1		P
+
+6. footnote_codes		10		varies
+				
+
+The series_id (NWU371674020200000000002505000) can be broken out into:
+
+Code					Value
+
+survey abbreviation		=	NW
+State Code			=	37
+Area Code			=	16740
+Ownership Code			=	2
+Estimate ID Code		=	02
+Industry Code			=	0000
+Occupation Code			=	000000
+Subcell ID Code			=	25
+Data Type Code			=	05
+Work Level/Supervisory Code	=	00
+Filler Codeseasonal (code)	=	0
+
+=======================================================================
+Section 6
+=======================================================================
+
+File Structure and Format:  The following represents the file format 
+used to define each mapping file.   Mapping files are 
+in ASCII text format.  Data elements are separated by tabs; the first 
+record of each file contains the column headers for the data elements 
+stored in each field.  Each record ends with a new line character. 
+
+Note: The field numbers are for reference only; they do not exist in the database.
+
+File Contents: state codes, area codes, and area titles.
+File Name:  nw.starea 
+Field #/Data Element			Length		Value(Example)
+1. State_code				2		00
+2. Area_code	    	   		5		99999
+3. Area_text				100		All United States
+
+File Contents: sector of the economy = Ownership
+File Name:  nw.ownership
+Field #/Data Element			Length		Value(Example)
+1. Ownership_code			1		3
+2. Ownership_text			100		Government
+
+	
+File Contents: estimate identification field
+File Name:  nw.estimate_id
+Field #/Data Element			Length		Value(Example)
+1. Estimate_code			2		13
+2. Estimate_text			100		Individual Benefits
+
+File Contents: major industry group
+File Name:  nw.industry
+Field #/Data Element			Length		Value(Example)
+1. Industry_code			6		100000
+2. Industry_text			100		All Industries
+
+
+File Contents: Standard Occupation Classification codes and titles  
+File Name:  nw.occupation
+Field #/Data Element			Length		Value(Example)
+1. Occupation_code			6		100000
+2. Occupation_text			100		All Occupations
+3. Detailed_occupation			1		?
+
+
+File Contents: major characteristics group
+File Name:  nw.subcell_id
+Field #/Data Element			Length		Value(Example)
+1. Subcell_code				2		13
+2. Subcell_text				100		Union
+
+
+File Contents: major characteristics group 
+File Name:  nw.datatype_id
+Field #/Data Element			Length		Value(Example)
+1. Datatype_code			2		20
+2. Datatype_text			100		Percent Participation (duplicated totals)
+
+
+File Contents: Level/supervisory group
+File Name:  nw.level
+Field #/Data Element			Length		Value(Example)
+1. Worklevel_supervisory_code		2		20
+2. Worklevel_supervisory_text		100		Level 11 not supervisory
+
+File Contents: footnote text
+File Name:  nw.footnote
+Field #/Data Element			Length		Value(Example)
+1. Footnote_code			2		p
+2. Footnote_text			200		Preliminary
+
+The format of the footnote mapping file is simple.  
+It is the footnote symbol followed by a tab, then the footnote text.	
+Where the footnote text is especially lengthy, a hyperlink shall be 
+provided in the footnote text which links to a special HTM file 
+providing the full text of the footnote.

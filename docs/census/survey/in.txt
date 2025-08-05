@@ -1,0 +1,452 @@
+            International Labor Statistics (IN)
+                        in.txt
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+
+(To print, set page layout to portrait with half inch side margins and set the font 
+to a non-proportional font, such as courier or courier new.)
+
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  INTERNATIONAL LABOR STATISTICS (IN)
+
+Survey Description:  The Bureau of Labor Statistics (BLS) collects and publishes 
+statistical information to compare labor conditions and developments in the United States 
+and selected foreign economies.  All of the measures are based on data from the 
+statistical agencies of the foreign economies covered or from international 
+organizations.  The Bureau does not initiate surveys or data collection programs abroad.
+
+The statistical concepts and methods used in different countries are developed primarily 
+to meet domestic rather than international needs.  When there are substantial conceptual 
+differences, BLS adjusts the data to improve comparability or describes the differences 
+so users will not draw misleading conclusions.  In adjusting data for greater 
+comparability, BLS must depend on the availability of relevant information, and in some 
+instances it is necessary to make estimates based on incomplete data.  Therefore it is 
+possible to achieve only approximate statistical comparability among countries.
+
+The following are summary descriptions of the three general International Labor 
+Statistics (IN) series available on LABSTAT: labor force, productivity, and consumer 
+price indexes (CPI).  Adjustments for comparability of concepts are made for the first 
+two series.  For the CPI, however, no adjustments are made except to convert the indexes 
+to a common base year.
+
+Labor Force
+
+Labor force, employment, unemployment, and related measures are adjusted as closely as 
+possible to U.S. concepts, with the exception of lower age limits and the treatment of 
+layoffs, for which no adjustments are made.  In addition, for some countries, no 
+adjustment is made for deviations from U.S. concepts in the treatment of unpaid family 
+workers, persons waiting to start a new job, and passive job seekers (for example, 
+persons only reading newspaper ads as their method of job search).  In the United States, 
+job search must be "active," such as placing or answering advertisements, and simply 
+reading ads is not enough to qualify as active search.  Canada and the European countries 
+classify passive jobseekers as unemployed. An adjustment is made to exclude them in 
+Canada, but not in the European countries where the phenomenon is less prevalent.  These 
+"unadjusted" differences are believed to have a negligible effect on the comparisons. 
+
+Measures shown are on a civilian basis, and the population figures used to compute the 
+employment to population ratios and labor force participation rates refer to the working-
+age population.  Labor force, employment, unemployment, and related measures for Canada 
+are the official adjusted to U.S. concepts figures prepared by Statistics Canada; the 
+adjusted measures for all other countries are computed by BLS.  No adjustments are made 
+for Australia.  Annual measures are currently obtained from monthly or quarterly 
+household surveys for all countries.  Quarterly unemployment rates for most countries are 
+also derived from labor force surveys.  For some countries, quarterly rates are 
+calculated by applying annual adjustment factors to current administrative data and 
+therefore should be viewed as less precise indicators of unemployment under U.S. concepts 
+than the annual figures.  For up to date information on adjustments and breaks in series, 
+see the Country Notes of "Comparative Civilian Labor Force Statistics, Ten Countries" at 
+ftp://ftp.bls.gov/pub/special.requests/ForeignLabor/flslforc.txt.
+
+Productivity
+
+Indexes of manufacturing productivity, unit labor costs, and related measures are 
+computed using basic series on manufacturing output, aggregate labor input, and aggregate 
+compensation.  Labor productivity is defined as real output per hour worked.  Unit labor 
+costs are defined as the cost of labor input required to produce one unit of output.  
+They are computed as compensation in nominal terms divided by real output.  The Bureau of 
+Labor Statistics constructs trends of manufacturing labor productivity, hourly 
+compensation costs, and unit labor costs from three basic aggregate measures - output, 
+total labor hours, and total compensation. The hours and compensation measures refer to 
+employees (wage and salary earners) in Belgium and Taiwan.  For all other economies, the 
+measures refer to all employed persons, including employees, self-employed persons, and 
+unpaid family workers. For all of the economies, the term "hours" refers to hours worked.
+
+In general, the measures relate to total manufacturing as defined by the International 
+Standard Industrial Classification (ISIC).  For the United States and Canada the 
+definition followed is that of the North American Industry Classification System (NAICS).  
+The measures for France include parts of mining.  For most countries, data for the most 
+recent years are based on the United Nations System of National Accounts 1993 (SNA 93). 
+For other countries and years, data were compiled according to previously used systems.  
+To obtain historical time series, BLS may link together data series which were compiled 
+and published according to different accounting systems by the countries' statistical 
+agencies.
+
+For most countries, the output measures are real value added in manufacturing from 
+national accounts. However, output for Japan prior to 1970 and for the Netherlands prior 
+to 1960 are indexes of industrial production. The manufacturing value added measures for 
+the United Kingdom are essentially identical to their indexes of industrial production. 
+The output measure for manufacturing in the United States is the chain-weighted index of 
+real gross product originating (deflated value added), introduced by the Bureau of 
+Economic Analysis (BEA) of the U.S. Department of Commerce in August 1996.  Because these 
+value added output data for U.S. manufacturing industries are not available for years 
+prior to 1977, the comparative U.S. measures of output, output per hour, and unit labor 
+costs begin with 1977. 
+
+Hours worked data are used to measure labor input for productivity. For the United 
+States, the hours worked data are taken from the BLS major sector productivity program.  
+The aggregate hours worked series used for France (from 1970 forward), Canada, Denmark, 
+Norway, and Sweden are series published with the national accounts.  For the former West 
+Germany after 1959 and Germany from 1991, BLS uses aggregate hours worked, which were 
+developed by a research institute of the German Ministry of Labor for use with the 
+national accounts employment figures.  For the United Kingdom from 1992, an annual index 
+of total manufacturing hours is used.  For all other countries, the U.K. before 1992, and 
+the former West Germany before 1959, BLS constructs its own estimates of aggregate hours, 
+using employment figures published with the national accounts, or other comprehensive 
+employment series, and estimates of average annual hours worked.  The Italian hours 
+worked series is based on estimates by the Bank of Italy.
+
+The compensation (labor cost) measures are from national accounts data. Compensation 
+includes employer expenditures for legally required insurance programs and contractual 
+and private benefit plans, in addition to all payments made in cash or in kind directly 
+to employees. When data for the self-employed are not available, total compensation is 
+estimated by assuming the same average compensation for the self-employed as for 
+employees. Labor cost is defined as compensation plus employment taxes minus employment 
+subsidies, i.e. the cost to employers of hiring labor. For most countries labor cost is 
+the same as compensation. However, for Australia, Canada, France, and Sweden, 
+compensation is increased to account for important taxes on payroll or employment. For 
+the United Kingdom, compensation is reduced between 1967 and 1991 to account for 
+subsidies.
+
+Consumer Price Indexes
+
+The consumer price indexes are the official indexes of each country.  They reflect price 
+changes in the market basket of goods and services purchased by the whole population or 
+by a particular population group.  Two indexes are included for Italy and the 
+Netherlands.  The indexes relate to the whole population for Australia, Austria, Belgium, 
+Canada, Denmark, France, Germany, Italy (index 1), Japan (except agricultural and single 
+person households), Norway, Sweden, Switzerland, and the United Kingdom (except pensioner 
+and high income households); middle-income worker households in Italy (index 2) and 
+Spain, and urban consumers in the United States.  No adjustments are made except to 
+convert them to a common base.  In particular, adjustments are not made for differences 
+in the treatment of homeownership costs or seasonal foods.  
+
+Summary Data Available:  The LABSTAT database provides data prepared by the Division of 
+Foreign Labor Statistics.
+
+Labor force, employment, unemployment, and related statistics, adjusted to approximate 
+U.S. concepts, are available on an annual basis for ten countries beginning with 1959, 
+except for Australia (1964) and the Netherlands (1973); unemployment rates are available 
+on a quarterly basis, seasonally adjusted, for nine countries for the most recent 
+quarters of the present year and two prior years. Data for Germany after unification 
+begin with 1991; data for the former West Germany end with 1990.
+
+Indexes of manufacturing productivity, labor costs, and related measures are available on 
+an annual basis for 15 economies, in most cases, beginning with 1950.  Separate index 
+series are calculated for Germany and for the former West Germany. Data for Germany after 
+unification begin with 1991; data for the former West Germany end with 1998.
+
+Consumer price indexes for all items are available on an annual basis usually beginning 
+with 1950 for 16 countries.  Data for Germany after unification begin with 1991; data for 
+the former West Germany are not available online.
+
+Frequency of Observations:  Data are annual and quarterly for the unemployment rates, and 
+annual for all other series.
+
+Data Characteristics:  The International Labor Statistics include indexes, rates or 
+ratios, and quantity levels.  The type of measure is indicated in the series title.
+
+      * Indexes are stored to one decimal place.
+      * Index bases for consumer prices are 1982-84 = 100.
+      * Index bases for manufacturing productivity, labor costs, and 
+        related measures are 1992 = 100.
+      * Rates and ratios are expressed as percents with one decimal place.
+      * Quantity levels are measured in thousands (e.g. civilian 
+        labor force) and are stored with no decimal places.
+
+Updating Schedule:  The three general series groups are updated according to the 
+following approximate schedules:
+
+      *  Labor force statistics are updated once or twice yearly; 
+         Seasonally adjusted quarterly unemployment rates are 
+         updated quarterly.
+      *  Indexes of manufacturing productivity, labor costs, and related 
+         measures are updated twice a year.
+      *  Consumer price indexes are updated annually.
+
+References:      BLS Handbook of Methods, Chapter 12.
+
+==================================================================================
+Section 2
+==================================================================================
+The following International Labor Statistics files are on the BLS internet in the 
+sub-directory pub/time.series/in:
+
+      in.contacts            - Contacts for in survey 
+      in.country             - Country codes          mapping file
+      in.data.0.Current      - All current year-to-date data
+      in.data.1.AllData      - All data
+      in.group               - Group codes            mapping file
+      in.period              - Period codes           mapping file
+      in.series              - All series and their beginning and end dates
+      in.suffix              - Type codes             mapping file
+      in.txt                 - General information
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship among 
+series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time over 
+consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price is 
+gathered monthly to a category of worker in a specific industry whose employment rate is 
+being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following set of 
+files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series identification 
+code that serves to uniquely identify a single time series.  Additionally, the series 
+file contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation 
+
+The mapping files are definition files that contain explanatory text descriptions that 
+correspond to each of the various codes contained within each series identification code.
+
+The data file contains one line of data for each observation period pertaining to a 
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13 and Q05 indicate annual averages)
+d) value
+e) footnote code (if available)
+
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+in.series.  Note that the Field Numbers are for reference only; they do not exist in the 
+database.  Data files are in ASCII text format.  Data elements are separated by tabs; the 
+first record of each file contains the column headers for the data elements stored in 
+each field.  Each record ends with a new line character. 
+
+Field #/Data Element      Length            Value(Example)            
+
+1.  series_id              17                  INS0022AU0       
+
+2.  group_code              4                  0022
+
+3.  country_code            2                  AU
+
+4.  suffix_code             1                  1
+
+5.  seasonal                1                  S
+
+6.  begin_year              4                  1990
+
+7.  begin_period            3                  Q01
+
+8.  end_year                4                  2000
+
+9.  end_period              3                  Q04
+
+
+The series_id (INS0022AU0) can be broken out into:
+
+Code                                     Value
+
+survey abbreviation         =             IN
+seasonal (code)             =             S
+group_code                  =             0022
+country_code                =             AU
+suffix_code                 =             0
+
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define each 
+data file.  Note that the field numbers are for reference only; they do not exist in the 
+database.  Data files are in ASCII text format.  Data elements are separated by tabs; the 
+first record of each file contains the column headers for the data elements stored in 
+each field.  Each record ends with a new line character.  
+
+The in.data file is partitioned into two separate files:
+
+      1.  in.data.0.Current      - All current year-to-date data
+      2.  in.data.1.AllData      - All data
+
+Both of the above-named data files have the following format:
+
+Field #/Data Element      Length           Value(Example)            
+
+1. series_id               17              INS0022AU0                   
+
+2. year                     4              1995      
+
+3. period                   3              Q01            
+
+4. value                   12              8.8      
+                         
+5. footnote_codes          10              It varies
+                        
+
+The series_id (INS0022AU0) can be broken out into:
+
+Code                                    Value
+
+survey abbreviation         =            IN
+seasonal (code)             =            S
+group_code                  =            0022
+country_code                =            AU
+suffix_code                 =            0
+
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define each 
+mapping file. Note that the field numbers are for reference only; they do not exist in 
+the database.  Mapping files are in ASCII text format.  Data elements are separated by 
+tabs; the first record of each file contains the column headers for the data elements 
+stored in each field.  Each record ends with a new line character. 
+
+
+File Name:  in.country
+
+Field #/Data Element            Length            Value(Example)
+
+1.  country_code                 2                  AT
+            
+2.  country_name                20                  Text
+
+
+File Name:  in.group
+
+Field #/Data Element            Length            Value(Example)
+
+1.  group_code                   4                 0002
+
+2.  group_name                  60                 Text
+
+
+File Name:  in.period
+
+Field #/Data Element            Length            Value(Example)
+
+1.  period                       3                 Q01
+
+2.  period_abbr                  5                 JAN
+
+3.  period_name                 20                 Text
+
+
+File Name:  in.suffix
+
+Field #/Data Element            Length            Value(Example)
+
+1.  suffix_code                  1                 1
+
+2.  suffix_text                 90                 Text
+
+=========================================================================================
+Section 7
+=========================================================================================
+INTERNATIONAL LABOR STATISTICS (IN) DATABASE ELEMENTS
+
+
+Data Element      Length         Value(Example)       Description
+
+begin_period       3             A01                 Identifies first data observation
+                                 or Q01-Q05          within the first year for which
+                                 Ex: QO1=First       data is available for a given
+                                 quarter             time series.
+                                 (A=Annually,
+                                 Q=Quarterly,
+                                 Q05=Annual Avg)
+                        
+begin_year         4             YYYY                Identifies first year for which
+                                 Ex: 1975            data is available for a given
+                                                     time series.
+                                    
+country_code       2             AT                  Code identifying the country 
+                                                     to which the data refer.
+                                          
+country_name      20             Text                Name of the country to which
+                                 Ex: Austria         the data refer.
+                        
+end_period         3             A01,                Identifies last data observation
+                                 or Q01-Q05          within the last year for which
+                                 Ex: Q01=First       data is available for a given
+                                 quarter             time series.
+                                 (A=Annually,
+                                 Q=Quarterly,
+                                 Q05=Annual Avg)
+
+end_year           4             YYYY                Identifies last year for which 
+                                 Ex: 1980            data is available for a given
+                                                     time series.
+                                    
+footnote_codes    10             It varies           Identifies footnotes for the
+                                                     data series.      
+
+group_code         4             0002                Code identifying type of 
+                                                     data in the series.
+
+group_name        60             Text                Name of type of data in the
+                                 Ex: Unemployment    series.
+                                 Rate
+
+period_abbr        5             Period name         Abbreviation of period name.
+                                 abbreviation
+                                 Ex: QTR1
+
+period             3             A01,                Identifies period for which
+                                 or Q01-Q05          data is observed. 
+                                 (A=Annually,
+                                 Q=Quarterly,
+                                 Q05=Annual Avg)
+                                 Ex: Q01=First quarter
+
+period_name       20             Text                Full name of period to which
+                                 Ex: June            the data observation refers.
+
+seasonal           1             S=Seasonally        Code identifying whether the
+                                 Adjusted            data are seasonally adjusted.
+                                 U=Unadjusted      
+ 
+series_id         17             INS0022AU0          Code identifying the specific 
+                                                     series.
+
+suffix_code        1             1                   Code identifying a subgroup
+                                                     or status of the data series.
+
+suffix_text       90             Text                Description of the suffix 
+                                 Ex: All             code.
+                                 Households(CPI)
+
+value             12             Index,rate,or       Data observation.
+                                 quantity Ex: 8.8 
+
+year               4             YYYY                Identifies year of observation.
+                                 Ex: 1990            
+ 

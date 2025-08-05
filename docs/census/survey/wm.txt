@@ -1,0 +1,511 @@
+Modeled Wage Estimates (WM)
+wm.txt
+
+Section Listing
+
+1.  Survey definition
+2.  Download files listed in the survey directory
+3.  Series file, data files, and mapping files definitions and relationships
+4.  Series file format and field definitions
+5.  Data file formats and field definitions
+6.  Mapping file formats and field definitions
+7.  Data element dictionary
+=======================================================================
+Section 1: Survey definition
+=======================================================================
+
+The following is a definition of: Modeled Wage Estimates (WM)
+
+Survey Description:  The Occupational Employment and Wage Statistics (OEWS) 
+and National Compensation Survey (NCS) programs have produced estimates by 
+borrowing from the strength and breadth of each survey to provide more 
+details on occupational wages than either program provides individually.
+Modeled Wage Estimates provide annual estimates of average hourly 
+wages for occupations by selected job characteristics and within 
+geographical location. The job characteristics include bargaining status 
+(union and nonunion), part- and full-time work status, incentive- and 
+time-based pay, and work levels (1-15 and unable to be leveled and grouped 
+work levels of entry, intermediate and experienced) by occupation. Grouped 
+work level estimates were created from meaningful group level distinctions 
+within an occupation, consisting of either two groups for entry and 
+experienced levels or three groups for entry, intermediate and experienced 
+levels.
+
+Direct estimates are based on survey responses only from the particular 
+geographic area to which the estimate refers. In contrast, Modeled Wage 
+Estimates use survey responses from larger areas to fill in information 
+for smaller areas where the sample size is not sufficient to produce 
+direct estimates. Modeled Wage Estimates require the assumption that the 
+patterns to responses in the larger area hold in the smaller area.
+
+The sample size for the NCS is not large enough to produce direct estimates 
+by area, occupation, and job characteristic for all of the areas for which 
+the OEWS publishes estimates by area and occupation. The NCS sample consists 
+of 6 private industry panels with approximately 3,300 establishments sampled 
+per panel and 1 state and local government panel with approximately 1,600 
+sampled state and local government units. The OEWS full six-panel sample 
+consists of 1.1 million establishments. 
+
+The sample establishments are classified in industry categories based on the 
+North American Industry Classification System (NAICS). Within an 
+establishment, specific job categories are selected to represent broader 
+occupational definitions. Jobs are classified according to the Standard 
+Occupational Classification (SOC) system; in a few cases, classification 
+reflects aggregation to an OEWS-specific occupational grouping.
+
+Summary Data Available: Average hourly wage estimates for civilian workers 
+in occupations by job characteristic and work levels. These data are available 
+at the national, state, metropolitan, and nonmetropolitan area levels.
+
+Frequency of Observations: Data are available on an annual basis, 
+and released shortly after the OEWS annual release for the same reference 
+year. 
+
+Data Characteristics: All hourly wages are published to the nearest cent.
+
+=======================================================================
+Section 2: Download files listed in the survey directory
+=======================================================================
+
+The following Modeled Wage Estimates files are on the BLS
+internet in the sub-directory pub/time.series/wm:
+
+    File Name             Contents                          File Type
+    wm.series             - all series and                  series file
+                            their beginning 
+                            and end dates
+    wm.data.1.AllData     - all estimates                   data file
+    wm.aspect             - all relative standard errors    data file
+    wm.area               - area codes                      mapping file
+    wm.datatype           - datatype codes                  mapping file
+    wm.estimate           - estimate codes                  mapping file
+    wm.footnote           - footnote codes                  mapping file
+    wm.industry           - industry codes                  mapping file
+    wm.level              - work level codes                mapping file
+    wm.occupation         - occupation codes                mapping file
+    wm.ownership          - ownership section codes         mapping file
+    wm.period             - period codes                    mapping file
+    wm.seasonal           - seasonal codes                  mapping file
+    wm.subcell            - job characteristic codes        mapping file
+    wm.contacts           - contacts for WM survey          N/A
+    wm.txt                - general information for         N/A
+                            WM survey
+
+=======================================================================
+Section 3: Series file, data files, and mapping files definitions and 
+relationships
+=======================================================================
+
+The interrelationship among series, data, and mapping files is detailed 
+below:
+
+The download files are organized such that data users are provided with 
+three types of files:
+
+a) a series file (only one series file per survey)
+b) data files
+c) mapping files
+
+
+The series file contains a unique series identification code that identifies 
+a single series and columns of codes that define the series. 
+Additionally, the series file also contains the following series-level 
+information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+
+The data files contain one line of data for each observation period 
+pertaining to a specific series identification code.
+
+
+The mapping files are definition files that contain explanatory text 
+descriptions that correspond to each of the various codes used to define 
+each series identification code.
+
+=======================================================================
+Section 4: Series file format and field definitions
+=======================================================================
+
+File Structure and Format: The following represents the file format used
+to define the wm.series file. Note that the Field Numbers are for 
+reference only; they do not exist in the database. Series files are in ASCII 
+text format. Data elements are separated by tabs; the first record of each 
+file contains the column headers for the data elements stored in each field.
+Each record ends with a new line character.
+
+Field #/Data Element      Length      Value(Example)
+
+1.      series_id         29          WMU00107401020000001300002700
+
+2.      seasonal          1           U
+
+3.      area_code         7           0010740
+
+4.      ownership_code    1           1
+
+5.      estimate_code     2           02
+
+6.      industry_code     6           000000
+
+7.      occupation_code   6           130000
+
+8.      subcell_code      2           27
+
+9.      datatype_code     2           30
+
+10.     level_code        2           00
+
+11.     series_title      256         Average hourly wage for incentive-based
+                                      business and financial operations
+                                      occupations, in Albuquerque, NM
+
+12.     footnote_codes    10          1
+
+13.     begin_year        4           2019
+
+14.     begin_period      3           A01
+
+15.     end_year          4           2017
+
+16.     end_period        3           A01
+
+
+
+The series_id (WMU00107401020000001100002700) can be broken out into:
+
+Code                         Value(Example)
+
+survey abbreviation  =       WM
+seasonal (code)      =       U
+area_code            =       0010740
+ownership_code       =       1
+estimate_code        =       02
+industry_code        =       000000
+occupation_code      =       130000
+subcell_code         =       27
+level_code           =       00
+
+
+=======================================================================
+Section 5: Data file formats and field definitions
+=======================================================================
+
+File Structure and Format: The following represents the file format 
+used to define each data file. Note that the field numbers are for 
+reference only; they do not exist in the database. Data files are 
+in ASCII text format. Data elements are separated by tabs; the 
+first record of the file contains the column headers for the data 
+elements stored in each field.  Each record ends with a new line 
+character.
+
+WM data are partitioned into two separate data files:
+
+       1. wm.data.1.AllData         - All estimates
+       2. wm.aspect                 - All relative standard errors
+       
+       
+File Name: wm.data.1.AllData
+Field #/Data Element	Length       Value(Example)
+
+1.      series_id       29           WMU00107401020000001300002700
+
+2.      year            4            2017
+
+3.      period          3            A01
+
+4.      value           12           29.76
+
+5.      footnote_codes  10           1
+
+
+File Name: wm.aspect
+Field #/Data Element	Length       Value(Example)
+
+1.      series_id       29           WMU00107401020000001300002700
+
+2.      year            4            2017
+
+3.      period          3            A01
+
+4.      aspect_type     2            R0
+
+5.      value           12           Not available
+
+6.      footnote_codes  10           2
+
+
+=======================================================================
+Section 6: Mapping file formats and field definitions
+=======================================================================
+
+File Structure and Format:  The following represents the file format 
+used to define each mapping file. Note that the field numbers are for 
+reference only; they do not exist in the database. Mapping files are 
+in ASCII text format. Data elements are separated by tabs; the first 
+record of each file contains the column headers for the data elements 
+stored in each field. Each record ends with a new line character.
+
+NOTE: Mapping files contain three additional fields which are not 
+referenced below: display_level, selectable, and sort_sequence. 
+These fields are used for BLS purposes and may be ignored.
+
+File Name:  wm.area
+
+Field #/Data Element      Length      Value(Example)
+
+1.      area_code         7           0010740
+
+2.      area_text         100         Albuquerque, NM
+
+
+File Name:  wm.datatype
+
+Field #/Data Element      Length      Value(Example)
+
+1.      datatype_code     2           30
+
+2.      datatype_text     100         Mean
+
+
+File Name:  wm.estimate
+
+Field #/Data Element      Length      Value(Example)
+
+1.      estimate_code     2           02
+
+2.      estimate_text     100         Average hourly wage
+
+
+File Name:  wm.footnote
+
+Field #/Data Element      Length      Value(Example)
+
+1.      footnote_code     10          2
+
+2.      footnote_text     200         BLS is currently developing an approach to 
+				      calculate the relative standard errors due 
+				      to implementation of modeled-based estimates 
+				      (MB3) used by the Occupational Employment and
+				      Wage Statistics (OEWS).
+
+File Name:  wm.industry
+
+Field #/Data Element      Length      Value(Example)
+
+1.      industry_code     6           000000
+
+2.      industry_text     100         All industries
+
+
+File Name:  wm.level
+
+Field #/Data Element      Length      Value(Example)
+
+1.      level_code        2           00
+
+2.      level_text        100         All levels
+
+
+File Name:  wm.occupation
+
+Field #/Data Element      Length      Value(Example)
+
+1.      occupation_code   6           130000
+
+2.      occupation_text   100         Business and financial operations 
+                                      occupations
+
+
+File Name:  wm.ownership
+
+Field #/Data Element      Length      Value(Example)
+
+1.      ownership_code    1           1
+
+2.      ownership_text    100         Civilian workers
+
+
+File Name:  wm.period
+
+Field #/Data Element      Length      Value(Example)
+
+1.      period            3           A01
+
+2.      period_abbr       5           ANN
+
+3.      period_name       20          Annual
+
+
+File Name:  wm.seasonal
+
+Field #/Data Element      Length      Value(Example)
+
+1.      seasonal          1           U
+
+2.      seasonal_text     30          Not seasonally adjusted
+
+
+File Name:  wm.subcell
+
+Field #/Data Element      Length      Value(Example)
+
+1.      subcell_code      2           27
+
+2.      subcell_text      100         Time-based pay
+
+
+=======================================================================
+Section 7: Data element dictionary
+=======================================================================
+Modeled Wage Estimates (WM) DATABASE ELEMENTS
+
+Data Element       Length    Value(Example)       Description
+
+area_code          7         0010740              Identifies the geographic
+                                                  area for the estimate
+
+
+area_text          100       Albuquerque, NM      Description of area
+                                                  code
+
+
+aspect_type        2         R0                   Identifies the type of
+                                                  additional data provided
+                                                  for the series id 
+                                                  (Example: R0 represents
+                                                  relative standard error)
+
+
+begin_period       3         A01                  Identifies first data 
+                                                  observation within the 
+                                                  first year for which data 
+                                                  is available for a given 
+                                                  series
+
+
+begin_year         4         2017                 Identifies first year for 
+                                                  which data is available 
+                                                  for a given series
+
+
+datatype_code      2         30                   Identifies measurement type
+
+
+datatype_text      100       Mean                 Description of measurement
+                                                  code
+
+
+end_period         3         A01                  Identifies last data 
+                                                  observation within the 
+                                                  last year for which data 
+                                                  is available for a given 
+                                                  series
+
+
+end_year           4         2017                 Identifies last year for 
+                                                  which data is available 
+                                                  for a given series
+
+
+estimate_code      2         02                   Identifies the type and 
+                                                  unit of measure for the 
+                                                  estimate
+
+
+estimate_text      100       Average hourly       Description of the estimate
+                             wages                code
+
+
+footnote_codes     10        1                    Identifies footnotes for 
+                                                  the series or observations
+
+
+footnote_text      200       Data not available   Description of the footnote
+                                                  code
+
+
+industry_code      6         000000               Identifies the industry 
+                                                  sector for the estimate, as 
+                                                  classified by the North 
+                                                  American Industry Classification
+                                                  System (NAICS)
+
+
+industry_text      100       All industries       Description of industry code
+
+
+level_code         2         00                   Identifies the work level for 
+                                                  the estimate
+
+
+level_text         100       All levels           Description of work level code
+
+
+occupation_code    6         130000               Identifies the occupational
+                                                  group, or family of jobs,
+                                                  for the estimate as classified
+                                                  by the Standard Occupational
+                                                  Classification (SOC) system
+
+
+occupation_text    100       Business and         Description of occupation code
+                             financial operations
+                             occupations
+
+
+ownership_code     1         1                    Identifies the sector represented
+                                                  by the estimate
+
+
+ownership_text     100       Civilian workers     Description of the ownership code
+
+
+period             3         A01                  Identifies period for the data
+                                                  observation, which may be monthly,
+                                                  quarterly, or annual
+
+
+period_abbr        5         ANN                  Abbreviation of the period name
+
+
+period_name        20        Annual               Description of the period code
+
+
+seasonal           1         U                    Seasonality indicator code
+
+
+seasonal_text      30        Not seasonally       Description of the seasonal code
+                             adjusted
+
+
+series_id          29        WMU001074010200      Unique code identifying the 
+                             00001300002700       specific series
+
+
+series_title       256       Average hourly       Description of the series id
+                             wage for business 
+                             and financial 
+                             operations 
+                             occupations, time-
+                             based pay, in 
+                             Albuquerque, NM
+
+
+subcell_code       2         27                   Job characteristic code
+                                                  identifying the attributes of 
+                                                  workers within an occupational 
+                                                  group for the estimate
+
+
+subcell_text      100        Time-based pay       Description of job 
+                                                  characteristic code
+
+
+value             12         29.76                Value of the estimate or relative
+                                                  standard error corresponding
+                                                  with the series id
+
+
+year              4          2017                 Identifies year of observation

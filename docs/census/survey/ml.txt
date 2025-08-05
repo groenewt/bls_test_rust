@@ -1,0 +1,401 @@
+			Mass Layoff Statistics (ML)
+				ml.txt
+
+Section Listing
+
+1.  Survey Definition
+2.  FTP files listed in the survey directory
+3.  Time series, series file, data file, & mapping file definitions and 
+    relationships
+4.  Series file format and field definitions
+5.  Data file format and field definitions
+6.  Mapping file formats and field definitions
+7.  Data Element Dictionary
+
+========================================================================
+Section 1
+========================================================================
+
+The following is a definition of:  Mass Layoff Statistics (ML)
+
+Survey Description:  The Mass Layoff Statistics program is a Federal-State 
+cooperative statistical effort which uses a standardized, automated approach 
+to identify, describe, and track the effects of major job cutbacks, using 
+data from each State's unemployment insurance database. 
+
+Private sector nonfarm establishments which have at least 50 initial claims 
+for unemployment insurance (UI) filed against them during a consecutive 
+5-week period are contacted by State agencies to determine whether those 
+separations are of at least 31 days duration, and, if so, information is 
+obtained on the total number of persons separated, the reasons for these 
+separations, and recall expectations. 
+
+Establishments are identified according to industry classification and 
+location, and unemployment insurance claimants are identified by such 
+demographic characteristics as age, race, sex, ethnic group, and place of 
+residence. The program yields information on an individual's entire spell 
+of unemployment, to the point when regular unemployment insurance benefits 
+are exhausted. It provides databases of establishments and claimants, both 
+of which are used for further research and analysis. 
+
+Summary Data Available:  Monthly data report summary information on 
+establishments which have at least 50 initial claims for unemployment 
+insurance (UI) filed against them during a 5-week period. Data are 
+available for 50 States, the District of Columbia, and Puerto Rico, as 
+well as by industry. 
+
+Quarterly data report on private sector nonfarm establishments which have 
+at least 50 initial claims filed against them during a 5-week period and 
+where the employer indicates that 50 or more people were separated from 
+their jobs for at least 31 days. Information is obtained on the total number 
+of persons separated; the reasons for separation; worksite closures; recall 
+expectations; and socioeconomic characteristics on UI claimants such 
+as gender, age, race, and residency. These characteristics are collected 
+at two points in time; when an initial claim is filed and when the claimant 
+exhausts regular UI benefits. In between these points, the unemployment 
+status of claimants is tracked through the monitoring of certifications 
+for unemployment (continued claims) filed under the regular State UI program. 
+Data are available for 50 States, the District of Columbia, and Puerto Rico,
+as well as by industry.
+
+Frequency of Observations:  Monthly, quarterly, and annual data are 
+available for 50 States, the District of Columbia, and Puerto Rico. Monthly 
+data are available since April 1995; quarterly data since second quarter 
+1995. 
+
+Data Characteristics:  Data are reported to the nearest whole number.
+
+Updating Schedule:  Mass layoff statistics are updated monthly.  Additional 
+updates for extended mass layoffs are published quarterly and annually. 
+
+========================================================================
+Section 2
+========================================================================
+
+The following Mass Layoff Statistics files are on the BLS internet in the 
+sub-directory pub/time.series/ml:
+
+	ml.contacts			- Contacts for ML survey  
+	ml.data.0.Current		- All current year-to-date data
+	ml.data.1.AllData		- All data
+	ml.dataelement			- Dataelement codes 	(mapping file)
+	ml.dataseries			- dataseries codes
+	ml.footnote			- Footnote codes 	(mapping file)
+	ml.industrybase			- Industry classification codes(mapping file)
+	ml.irc				- IRC (Industry/Reason)
+					  Characteristic)codes 	(mapping file)
+	ml.period			- Period codes		(mapping file)
+	ml.series			- Series codes
+	ml.srd				- State/Region/Division Code
+	ml.txt				- General information
+	
+============================================================================
+Section 3
+============================================================================
+
+The definition of a time series, its relationship to and the interrelationship 
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of 
+time over consistent time intervals (i.e. monthly, quarterly, semi-annually, 
+annually).  BLS time series data are typically produced at monthly intervals 
+and represent data ranging from a specific consumer item in a specific 
+geographic area whose price is gathered monthly to a category of worker in 
+a specific industry whose employment rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the 
+following set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level 
+information:
+
+a)  the period and year corresponding to the first data observation
+b)  the period and year corresponding to the most recent data observation.
+
+The mapping files are definition files that contain explanatory text 
+descriptions that correspond to each of the various codes contained within 
+each series identification code.
+
+The data file contains one line of data for each observation period 
+pertaining to a specific time series.  Each line contains a reference to 
+the following:
+
+a)  series identification code
+b)  year in which data is observed
+c)  period for which data is observed (M13, Q05, and s03 indicate annual 
+    averages)
+d)  value
+e)  footnote code (if available)
+
+============================================================================
+Section 4
+============================================================================
+
+File Structure and Format:  The following represents the file format used 
+to define ml.series.  Note the Field Numbers are for reference only; they 
+do not exist in the database.  Data files are in ASCII text format.  Data 
+elements are separated by spaces; the first record of each file contains 
+the column headers for the data elements stored in each field.  Each record 
+ends with a new line character.
+
+Field #/Data Element		Length			Value(Example)
+
+1.  series_id			  17			MLUMD10NN0001003
+
+2.  dataseries_code		   1			M
+
+3.  srd_code			   3			D10
+
+4.  industryb_code		   1			N
+
+5.  irc_code			   5			N0001
+
+6.  dataelement_code		   3			003
+
+7.  footnote_codes		  10			1
+
+8.  begin_year			   4			1995
+
+9.  begin_period		   3			M02
+
+10. end_year			   4			2002
+
+11. end_period			   3			M04
+
+The series_id (MLUMD10NN0001003) can be broken out into:
+
+Code				=			Value
+
+survey abbreviation		=			ML
+seasonal adjustment code	=			U
+dataseries_code			=		 	M
+srd_code			=			D10
+industryb_code			=			N
+irc_code			=			N0001
+dataelement_code		=			003
+
+============================================================================
+Section 5
+============================================================================
+
+File Structure and Format:  The following represents the file format used 
+to define each data file.  Note that the field numbers are for reference 
+only; they do not exist in the database.  Data files are in ASCII text 
+format.  Data elements are separated by spaces; the first record of each 
+file contains the column headers for the data elements stored in each field.  
+Each record ends with a new line character.
+
+The ml.data file is partitioned into two separate files:
+
+	1.  ml.data.0.Current	= All current year-to-date data
+	2.  ml.data.1.AllData	= All data
+
+Both of the above data files have the following format:
+
+Field #/Data Element		Length		Value(Example)
+
+1.  series_id			  17		MLUMD10NN0001003
+
+2.  year			   4		1998
+
+3.  period			   3		M01
+
+4.  value			  12		2360
+
+5.  footnote_codes		  10		1
+
+The series_id (MLUMD10NN0001003) can be broken out into:
+
+Code				=			Value
+
+survey abbreviation		=			ML
+seasonal adjustment code	=			U
+dataseries_code			=		 	M
+srd_code			=			D01
+industryb_code			=			N
+irc_code			=			N0001
+dataelement_code		=			003
+
+============================================================================
+Section 6
+============================================================================
+
+File Structure and Format:  The following represents the file format used 
+to define each mapping file.  Note that the field numbers are for reference 
+only; they do not exist in the database.  Mapping files are in ASCII text 
+format.  Data elements are separated by tabs; the first record of each file 
+contains the column headers for the data elements stored in each field.  
+Each record ends with a new line character.
+
+
+File Name:  ml.dataelement
+
+Field #/Data Element		Length			Value(Example)
+
+1.  dataelement_code		   3			003
+
+2.  dataelement_text		 100			Text
+
+
+File Name:  ml.dataseries
+
+Field #/Data Element		Length			Value(Example)
+
+1.  dataseries_code		   1			M
+
+2.  dataseries_text		 100			Text
+
+
+File Name:  ml.footnote
+
+Field #/Data Element		Length			Value(Example)
+
+1.  footnote_code		   1			1
+
+2.  footnote_text		 100			Text
+
+
+File Name:  ml.industrybase
+
+Field #/Data Element		Length			Value(Example)
+
+1.  industryb_code 		   1			N
+
+2.  industryb_text 		 100			Text
+
+
+File Name:  ml.irc 
+
+Field #/Data Element		Length			Value(Example)
+
+1.  irc_code			   5			C0001
+
+2.  irc_text			 100			Text
+
+
+File Name:  ml.period
+
+Field #/Data Element		Length			Value(Example)
+
+1. period			3			M01
+
+2. period_abbr			5			JAN
+	
+3. period_name			20			Text
+
+
+File Name:  ml.srd
+
+Field #/Data Element		Length			Value(Example)
+
+1.  srd_code			   3			D10
+
+2.  srd_text			 100			Text
+
+============================================================================
+Section 7
+============================================================================
+
+MASS LAYOFF STATISTICS (ML) DATABASE ELEMENTS
+
+Data Element	  Length	Value(Example)		Description
+
+begin_period		3	M01-M12,	   	Identifies first data
+			  	Q01-Q04			observation within the 
+			 	Ex: M06=June		first year for which data
+			  	(M=Monthly,		are available for a given
+			  	Q=Quarterly)		time series.
+
+begin_year		4	YYYY			Identifies first year for
+			  	Ex: 1994		which data are available
+							for a given time series.
+
+dataelement_code	3	003-006			Code identifying the
+							dataelement of the observation.
+
+dataelement_text	100	Text			Dataelement name of the 
+				Ex: Initial claimants	observation.
+
+
+dataseries_code		1	M=Monthly		Identifies whether the
+				Q=Quarterly		series contains Monthly
+							or Quarterly data.
+
+dataseries_text		100	M=Monthly	 	Text.
+				Q=Quarterly
+				
+end_period		3	M01-M12			Identifies last data
+				Q01-Q05			observation within the last
+				Ex: M06=June		year for which data are
+				(M=Monthly		available for a given time
+				Q=Quarterly)		series.
+
+end_year		4	YYYY			Identifies last year for 
+				Ex: 1998		which data are available
+							for a given time series.
+
+footnote_code		 1	1, 2, r, p		Identifies footnote for the 
+				(r=revised		data series.
+				p= preliminary)
+				
+footnote_codes		10	1			Identifies footnotes for the 
+							data series.
+
+footnote_text		100	Text of footnote	Contains the text of 
+				Ex: 1=The event		the footnote.
+				realization rate is
+				the percentage of 
+				total mass layoff 
+				events lasting more
+				than 30 days.
+				
+industryb_code 		   1	N=NAICS			Identifies industry 
+				S=SIC			classification code.
+
+industryb_text 		 100	Text			Contains text description
+							of industry classification
+							code.
+
+irc_code		5	C0001-C0004; 		Indicates industry, reason,
+				N0001-N0047		and characteristics.
+				R0000-R0090; 
+				S0001-S0052
+
+irc_text		100	Text of irc code	Contains text description
+				Ex: I01=Total all	of irc code.
+				industries
+
+
+period_abbr		5	JAN			Abbreviation of period name.
+ 					
+period			3	M01-M12			Identifies period for which
+				Q01-Q04			data is observed.
+				Ex: M06=June
+				(M=Monthly,
+				Q=Quarterly)
+ 				
+period_name		20	Text			Full name of period to which
+ 				Ex: January		the data observation refers.
+series_id		17	Series identifier	Unique series identifier.
+				Ex: MLUMD10NN0001003
+
+srd_code		3	D01-D49, S00-S72	State, Region, and Division
+							Codes
+
+srd_txt			100	Text of srd code	Identifies the State, 
+				Ex: D10=Northeast	Region, or Division for
+							which data is observed.
+
+value			12	Data value		Data value for series
+
+year			4	YYYY			Identifies year of 
+				Ex: 1998		observation
+
+
+

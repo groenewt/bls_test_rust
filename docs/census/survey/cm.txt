@@ -1,0 +1,478 @@
+Employer Costs for Employee Compensation(CM)
+cm.txt
+
+Section Listing
+
+1. Survey definition
+2. Download files listed in the survey directory
+3. Time series, series file, data file, and mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data element definition
+
+
+=======================================================================================
+Section 1: Survey Definition
+=======================================================================================
+
+The following is a definition of: Employer Costs for Employee Compensation (CM)
+
+Survey Description: The Employer Costs for Employee Compensation (ECEC) is a measure
+of the cost of labor. The compensation series includes wages and salaries plus employer
+costs for individual employee benefits. Employee benefit costs are calculated as cost-
+per-hour-worked for individual benefits ranging from employer payments for Social 
+Security to paid time off for holidays.
+
+The survey covers all occupations in the civilian economy, which includes the total 
+private economy (excluding farms and households), and the public sector (excluding the 
+federal government). Statistics are published for the private and public sectors 
+separately, and the data are combined in a measure for the civilian economy.
+
+The data are collected from a probability sample of about 27,200 occupations with 6,600 
+sample establishments in private industry and about 8,000 occupations within 1,400 
+state and local government establishments. The sample establishments are classified in 
+industry categories based on the North American Industrial Classification System 
+(NAICS). Within an establishment, specific job categories are selected to represent 
+broader occupational definitions. Jobs are classified according to the Standard 
+Occupational Classification (SOC) system. 
+
+Summary Data Available: For private industry workers, data are 
+available for total compensation costs, for wages and salaries alone, and 
+for individual benefit costs alone. Data are available by major occupational
+and industry groups, as well as by census region, census division, and bargaining 
+status. Annual estimates of the 15 largest metropolitan areas are published for the 
+March reference for total compensation, wages and salaries, as well as total benefits.
+
+For state and local government and civilian workers data are available for major 
+occupational and selected industry series. 
+
+Frequency of Observations: Data are available on a quarterly basis.
+
+Data Characteristics: All costs per hour worked are published to the nearest
+cent. All percents are published to one decimal place (including relative standard 
+errors).
+
+Updating Schedule: Updates are available about ten weeks following the end
+of the reference period. Reference periods are the months of March, June, September,
+and December.
+
+=======================================================================================
+Section 2: Download files listed in the survey directory
+=======================================================================================
+
+The following Employer Costs for Employee Compensation files are on the BLS internet 
+site at https://download.bls.gov/pub/time.series/cm:
+
+        File Name               Contents                        File Type
+	cm.series		- all series and 		series file		
+				their beginning and 
+				end dates
+	cm.data.1.AllData	- all estimates			data file
+	cm.data.0.Current	- All most recent reference 	data file
+       				period data
+       	cm.aspect		- all relative standard errors	data file
+	cm.area			- geographic codes		mapping file   
+	cm.datatype		- datatype codes		mapping file
+      	cm.estimate		- estimate codes		mapping file
+	cm.footnote		- footnote codes		mapping file
+       	cm.industry		- industry codes	   	mapping file
+       	cm.occupation		- occupation codes		mapping file
+       	cm.owner		- ownership (sector) codes  	mapping file
+       	cm.seasonal		- seasonal codes		mapping file
+	cm.subcell		- subcell category codes	mapping file
+	cm.contacts		- contacts for cm survey	N/A
+       	cm.txt			- general information for 
+       				CM survey			N/A
+
+=======================================================================================
+Section 3: Series file, data files, and mapping files definitions and relationships
+=======================================================================================
+
+The interrelationship among series, data, and mapping files is detailed below:
+
+The series file contains a unique series identification code that identifies a single 
+time series and columns of codes that define the series. Additionally, the series file 
+also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation
+
+The download files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  data files
+c)  mapping files
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes used to define each series
+identification code.
+
+=======================================================================================
+Section 4: Series file format and field definitions
+=======================================================================================
+
+File Structure and Format: The following represents the file format used to define the 
+cm.series file. Note that the Field Numbers are for reference only; they do not exist 
+in the database. Data element are separated by tabs; the first record of each file 
+contains the column headers for the data elements stored in each field. Each record 
+ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		CMU1010000100000P
+
+2.  seasonal		   1		U
+
+3.  owner_code		   1		1
+
+4.  industry_code	   6		000000
+
+5.  occupation_code	   6		000000	
+						
+6.  subcell_code	   2		00	
+						
+7.  area_code		   5		99999
+
+8.  datatype_code	   1		P
+
+9.  estimate_code	   2 		01		
+
+10. series_title	   250		(descriptive label text)
+
+11. footnote_codes	   10		3
+
+12. begin_year		   4		2008
+
+13. begin_period	   3		Q01		
+				
+14. end_year		   4		2012		
+
+15. end_period		   3		Q04		
+
+
+The series_id (CMU1010000100000P) can be broken out into:
+
+Code					Value(Example)
+
+survey abbreviation	=		CM
+seasonal (code)		=		U
+owner_code		=		1
+industry_code		=		0000
+occupation_code		=		100
+subcell_code 		=		00
+datatype_code		=		P
+
+==================================================================================
+Section 5: Data file formats and field definitions
+==================================================================================
+
+File Structure and Format: The following represents the file format used to define
+each data file. Note that the field numbers are for reference only; they do not 
+exist in the database. Data files are in ASCII text format. Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field. Each record ends with a new line character. 
+
+The cm.data file is partitioned into three separate files:  
+
+	1.  cm.data.0.Current	- Most recent reference period estimates
+	2.  cm.data.1.AllData	- All estimates
+	3.  cm.aspect		- All relative standard errors
+
+File Name: cm.data.0.Current
+Field #/Data Element	Length       Value(Example)
+
+1.      series_id       17           CMU203S000000000D
+
+2.      year            4            2018
+
+3.      period          3            Q01
+
+4.      value           12           9.83
+
+5.      footnote_codes  10           E
+
+File Name: cm.data.1.AllData
+Field #/Data Element	Length       Value(Example)
+
+1.      series_id       17           CMU203S000000000P
+
+2.      year            4            2018
+
+3.      period          3            Q01
+
+4.      value           12           29.7
+
+5.      footnote_codes  10           E
+
+
+File Name: cm.aspect
+Field #/Data Element	Length       Value(Example)
+
+1.      series_id       17           CMU203S000000000D
+
+2.      year            4            2018
+
+3.      period          3            Q01
+
+4.      aspect_type     2            R0
+
+5.      value           12           3.4
+
+6.      footnote_codes  10           <blank>
+
+=======================================================================================
+Section 6: Mapping file formats and field definitions
+=======================================================================================
+
+File Structure and Format: The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database. Mapping files are in ASCII text format. Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field. Each record ends with a new line character. 
+
+NOTE: Mapping files contain three additional fields which are not 
+referenced below: display_level, selectable, and sort_sequence. 
+These fields are used for BLS purposes and may be ignored.
+
+File Name:  cm.area
+
+Field #/Data Element		Length		Value(Example)			
+
+1.  area_code			5		99999		
+			
+2.  area_text			100		National
+
+3.  display_level		2		0
+
+4.  selectable			1		T
+
+5.  sort_sequence		5		1
+
+File Name:  cm.datatype
+
+Field #/Data Element		Length		Value(Example)			
+
+1.  subcell_code		1		D		
+			
+2.  subcell_text		100		Cost per hour worked
+
+3.  display_level		2		0
+
+4.  selectable			1		T
+
+5.  sort_sequence		5		39	
+
+File Name:  cm.estimate
+
+Field #/Data Element		Length		Value(Example)			
+
+1.  subcell_code		2		03		
+			
+2.  subcell_text		100		Total Benefits
+
+3.  display_level		2		1
+
+4.  selectable			1		T
+
+5.  sort_sequence		5		3
+
+File Name:  cm.footnote
+
+Field #/Data Element		Length		Value(Example)			
+
+1.  footnote_code		3		b		
+			
+2.  footnote_text		200		Less than .05 percent
+
+File Name:  cm.industry
+
+Field #/Data Element		Length		Value(Example)			
+
+1.  industry_code	  	6		622000	
+
+2.  industry_text		100		Hospitals
+						
+3.  display_level		2		4
+
+4.  selectable			1		T
+
+5.  sort_sequence		5		1625
+
+File Name:  cm.occupation
+
+Field #/Data Element		Length		Value(Example)			
+
+1.  occupation_code	  	6		414300
+
+2.  occupation_text		100		Sales and office occupations
+						
+3.  display_level		2		1
+
+4.  selectable			1		T
+
+5.  sort_sequence		5		760
+
+File Name:  cm.owner
+
+Field #/Data Element		Length		Value(Example)	
+
+1.  owner_code			1		2
+
+2.  owner_text			100         	Private industry workers
+
+3.  display_level		2		0
+
+4.  selectable			1		T
+
+5.  sort_sequence		5		2
+
+File Name:  cm.period
+
+Field #/Data Element      Length      Value(Example)
+
+1.      period            3           Q01
+
+2.      period_abbr       5           QTRLY
+
+3.      period_name       20          Quarterly
+
+
+File Name:  cm.seasonal
+
+Field #/Data Element      Length      Value(Example)
+
+1.      seasonal          1           U
+
+2.      seasonal_text     30          Not seasonally adjusted
+
+File Name:  cm.subcell
+
+Field #/Data Element		Length		Value(Example)			
+
+1.  subcell_code		2		25		
+			
+2.  subcell_text		100		Full Time
+
+3.  display_level		2		2
+
+4.  selectable			1		T
+
+5.  sort_sequence		5		31
+
+=======================================================================
+Section 7: Data element dictionary
+=======================================================================
+Employer Costs for Employee Compensation (CM) database elements
+
+Data Element       Length    Value(Example)       Description
+
+area_code          5         99999                Identifies the geographic
+                                                  area for the estimate		
+
+area_text          100       United States        Description of area
+                             (National)           code
+
+aspect_type        2         R0                   Identifies the type of
+                                                  additional data provided
+                                                  for the series id 
+                                                  (Example: R0 represents
+                                                  relative standard error)
+
+begin_period       3         Q01                  Identifies first data 
+                                                  observation within the 
+                                                  first reference quarter 
+                                                  for which data is available 
+                                                  for a given series
+
+begin_year         4         2004                 Identifies first year for 
+                                                  which data is available 
+                                                  for a given series
+
+datatype_code      1         D                   Identifies measurement type
+
+datatype_text      100       Cost of             Description of measurement
+			     compensation        code       
+                                                  
+end_period         3         Q04                  Identifies last data 
+                                                  observation within the 
+                                                  last reference quarter for 
+                                                  which data is available for 
+                                                  a given series
+
+end_year           4         2018                 Identifies last year for 
+                                                  which data is available 
+                                                  for a given series
+
+estimate_code      2         01                   Identifies the type and 
+                                                  unit of measure for the 
+                                                  estimate
+
+estimate_text      100       Total compensation  Description of the estimate
+                                                 code
+
+footnote_codes     10        A                    Identifies footnotes for 
+                                                  the series or observations
+
+
+footnote_text      200       Data not available   Description of the footnote
+                                                  code
+
+industry_code      6         000000               Identifies the industry 
+                                                  sector for the estimate, as 
+                                                  classified by the North 
+                                                  American Industry Classification
+                                                  System (NAICS)
+
+industry_text      100       All industries       Description of industry code
+
+occupation_code    6         291111               Identifies the occupational
+                                                  group, or family of jobs,
+                                                  for the estimate as classified
+                                                  by the Standard Occupational
+                                                  Classification (SOC) system. Numbering
+                                                  conventions may differ from SOC.
+
+occupation_text    100       Registered nurses    Description of occupation code
+
+ownership_code     1         1                    Identifies the sector represented
+                                                  by the estimate
+
+ownership_text     100       Civilian workers     Description of the ownership code
+
+
+period             3         Q01                  Identifies period for the data
+                                                  observation (usually quarterly)
+
+period_abbr        5         QTRLY                Abbreviation of the period name
+
+period_name        20        Quarterly            Description of the period code
+
+seasonal           1         U                    Seasonality indicator code
+
+seasonal_text      30        Not seasonally       Description of the seasonal code
+                             adjusted
+
+series_id          17        CMU1010000000000D    Unique code identifying the 
+                            			  specific series
+
+series_title       256       All Civilian Total   Description of the series id
+                             compensation for All 
+                             occupations; Cost per 
+                             hour worked 
+
+subcell_code       2         23                   Job characteristic code
+                                                  identifying the attributes of 
+                                                  workers or establishments for 
+                                                  the estimate
+
+subcell_text      100        Union workers        Description of job 
+                                                  characteristic code
+
+value             12         29.76                Value of the estimate or relative
+                                                  standard error corresponding
+                                                  with the series id
+
+year              4          2018                 Identifies year of observation                                                  
+                                                 

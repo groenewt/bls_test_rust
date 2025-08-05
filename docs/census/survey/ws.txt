@@ -1,0 +1,285 @@
+			Work Stoppage Data (WS)
+				ws.txt
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  WORK STOPPAGE DATA (WS)
+
+Survey Description:  The series covers all work stoppages--strikes and 
+lockouts--involving 1,000 workers or more and lasting one full shift or 
+longer.  The Bureau does not attempt to differentiate between strikes and 
+lockouts.  The series does not measure the indirect or secondary effect of 
+stoppages on other establishments whose employees are idled by material 
+shortages or lack of services.  For the series, a stoppage is considered 
+to be ended when the number of workers involved dips below 1,000.
+
+The series presents annual data from 1947 through 1981 and annual and 
+monthly data thereafter; it is not comparable with the one terminated in 
+1981 that covered stoppages involving six workers or more.
+
+Summary Data Available:  The number of stoppages beginning in the period.
+
+The number of stoppages in effect in the period, comprising those that 
+began in the period and those that began earlier and continued into the 
+period.
+
+The number of workers directly involved in stoppages beginning in the 
+period.
+
+Thte number of workers directly involved in stoppages in effect in the 
+period.
+
+The total number of workdays lost by workers directly involved in the 
+stoppages in effect in the period.
+
+Total workdays lost in the stoppages in effect, as a percent of the number 
+of workdays in the period multiplied by total national employment in the 
+period.  (Private household, forestry, and fishery employees are excluded 
+from total national employment.)
+
+Frequency of Observations:  Monthly in all cases.
+
+Annual Averages:  Annual data are available.
+
+Data Characteristics:  All percent changes are stored with one decimal 
+place.
+
+
+Updating Schedule:  Updates become available about 3 weeks after the end of
+each month.  All monthly figures are preliminary until final monthly and 
+annual figures are issued in February.
+
+References:	BLS Handbook of Methods, Chapter 27, "Work Stoppages", 
+		Bulletin 1910 (1976).
+==================================================================================
+Section 2
+==================================================================================
+The following Work Stoppage Index files are on the BLS internet in the 
+sub-directory pub/time.series/ws:
+
+
+	ws.contacts		- Contacts for ws survey 
+	ws.data.1.AllData	- All data
+	ws.footnote		- Footnote codes	mapping file
+	ws.measure		- Measure codes		mapping file
+	ws.period		- Period codes		mapping file
+	ws.series		- All series and their beginning and end dates
+	ws.txt			- General information
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+ws.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		WSU100
+
+2.  measure_code	  3		001
+
+3.  seasonal		  1		U				
+
+4.  begin_year		  4		1947
+
+5.  begin_period	  3		M13		
+				
+6.  end_year		  4		2002		
+
+7.  end_period		  3		M01		
+					
+The series_id (WSU001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		WS
+seasonal (code) 	=		U
+measure_code		=		001
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+File Name:  ws.data.1.AllData
+
+The above-named data file has the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		WSU001      	
+
+2. year			   4		1947	
+
+3. period		   3		M13		
+
+4. value		  12      	25,720	 	
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (WSU001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		WS
+seasonal (code) 	=		U
+measure_code		=		001
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character.  
+
+File Name:  ws.footnote
+
+Field #/Data Element		Length		Value(Example)
+
+1. footnote_code		1		1
+
+2. footnote_text		100		Text
+
+
+File Name:  ws.measure
+
+Field #/Data Element		Length		Value(Example)
+
+1.  measure_code		3		001
+
+2.  measure_text		100		Text
+
+File Name:  ws.period
+
+Field #/Data Element		Length		Value(Example)
+
+1.  period			3		M01
+
+2.  period_abbr			5		JAN
+
+3.  period_name			20		Text
+=========================================================================================
+Section 7
+=========================================================================================
+WORK STOPPAGE DATA (WS) DATABASE ELEMENTS
+
+
+Data Element	Length		Value(Example)			Description
+
+begin_period	3		M01-M13			Identifies first data observation
+				Ex: M01=Jan		within the first year for which
+				(M=Monthly, M13=Annual	data is available for a given
+				Avg)			time series.
+
+begin_year	4		YYYY			Identifies first year for which
+				Ex: 1975		data is available for a given
+							time series.
+							
+end_period	3		M01=M13			Identifies last data observation 
+				Ex: M01=Jan		within the last year for which
+				(M=Monthly, M13=Annual	data is available for a given
+				Avg)			time series.	
+
+end_year	4		YYYY			Identifies last year for which 
+				Ex: 1980		data is availabe for a given
+							time series.
+
+footnote_code	1		Ex: 1			Identifies footnote for the data 
+							series.
+
+footnote_codes	10		It varies		Identifies footnotes for the data 
+							series.	
+							
+footnote_text	100		Text			Contains the text of the footnote.
+
+measure_code	3		Ex:001			Code identifying the number
+							of stoppages in the period.
+
+measure_text	100		Text			Description of number of 
+				Ex: Number of work	work stoppages measured by
+				work stoppages  	the observation.
+				beginning in the period
+				
+period_abbr	5		Period name		Abbreviation of period name.
+			 	abbreviation
+				Ex: JAN
+
+period		3		M01-M13			Identifies period for which
+				Ex: M01=Jan		data is observed. 
+				(M=Monthly, M13=Annual	
+				Avg)				
+
+period_name	20		Text			Full name of period to which
+				Ex: January		the data observation refers.
+					
+seasonal	1		S=Seasonally		Code identifying whether the
+				  Adjusted		data are seasonally adjusted.
+				U=Unadjusted			
+
+series_id	17		Code series identifier	Code identifying the specific 
+				Ex: WSU100		series.
+
+value		12		Data Value		Observation for the series.
+				Ex: 25,720
+				
+year		4		YYYY			Identifies year of observation.
+				Ex: 1990		
+				

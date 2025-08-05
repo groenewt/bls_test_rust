@@ -1,0 +1,398 @@
+		CENSUS OF FATAL OCCUPATIONAL INJURIES (1992-2002) (CF)
+				cf.txt
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and    
+   relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of: CENSUS OF FATAL OCCUPATIONAL INJURIES (1992-2002) (CF)
+
+Survey Description:   
+
+The Bureau of Labor Statistics (BLS) Census of Fatal Occupational Injuries 
+(CFOI)
+program collects data on fatal occupational injuries that is comprehensive, 
+timely, and verifiable.  All groups of employees are included in CFOI, including 
+private sector workers, government workers, self-employed, and family 
+businesses.  The program is a cooperative venture between the BLS and State 
+agencies.  The State agencies collect, code, and verify fatality data which are 
+collected from workers' compensation reports, death certificates, accident 
+reports and news media, as well as from Federal agency sources provided by BLS.  
+All 50 States and the District of Columbia are represented in the CFOI data.
+
+The data are ultimately sent to BLS for tabulation of national occupational 
+fatality numbers.  BLS provides detailed data on case characteristics such as 
+the event or exposure leading to the fatality, the source of the fatality, and 
+worker activity at the time of the incident.  Event or exposure and source codes 
+are based on the BLS Occupational Injury and Illness Classification structure 
+which can be viewed at our Web site at http://www.bls.gov/oshhome.htm .  BLS 
+also tabulates the number of occupational fatalities by demographic attributes 
+such as age, sex, race, ethnic origin,and occupation.  (Occupation 
+classifications are based on the 1990 Bureau of the Census Occupational 
+Classification System.)  These tabulations may be summarized by major industry 
+groups or by detailed industry (based on the 1987 Standard Industrial 
+Classification Manual.)  A distinction is made between private sector and 
+government industries.  
+
+Summary data available:  The Census of Fatal Occupational Injuries data series 
+started in 1992.
+
+Frequency of observations:  All data are annual.
+
+Data characteristics:  All figures are actual numbers of fatalities.
+
+Updating schedule:  Updates to the data become available approximately 8 months 
+following the close of the reference year.
+
+
+================================================================================
+Section 2
+================================================================================
+
+The following CENSUS OF FATAL OCCUPATIONAL INJURIES (1992-2002) files is on the BLS internet 
+in the sub-directory pub/time.series/cf:
+
+       cf.case			- Case codes       	mapping file
+       cf.category		- Category codes   	mapping file
+       cf.category2		- Category codes   	mapping file
+       cf.contacts		- Contacts for CFOI
+       cf.data.0.Current	- All current year-to-date data
+       cf.data.1.AllData	- All data 
+       cf.datatype		- Datatype codes      	mapping file
+       cf.event 		- Event codes 	        mapping file
+       cf.footnote 		- Footnote codes 	mapping file
+       cf.industry 		- Industry codes 	mapping file
+       cf.occupation 		- Occupation codes 	mapping file
+       cf.series		- All series with beginning and end dates
+       cf.source        	- Source codes 		mapping file	
+       cf.txt			- General information
+	
+================================================================================
+Section 3
+================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (e.g. monthly, quarterly, semi-annually, 
+annually). BLS time series data are typically produced at monthly intervals and 
+represent data ranging from a specific consumer item in a specific geographical 
+area whose price is gathered monthly to a category of worker in a specific 
+industry whose employment rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level 
+information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text 
+descriptions that correspond to each of the various codes contained within each 
+series identification code.
+
+The data file contains one line of data for each observation period pertaining 
+to a specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (A01 annual)
+d) value
+e) footnote code (if available)
+================================================================================
+Section 4
+================================================================================
+File Structure and Format: The following represents the file format used to 
+define cf.series.  Note that the Field Numbers are for reference only; they do 
+not exist in the database.  Data files are in ASCII text format.  Data elements 
+are separated by tabs; the first record of each file contains the column headers 
+for the data elements stored in each field.  Each record ends with a new line 
+character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		CFU00000080
+
+2.  category_code	   2		00
+
+3.  datatype_code	   1		8
+
+4.  case_code	           1		9		
+						
+5.  industry_code	   4		0100	
+						
+6.  event_code		   4		639X
+
+7.  source_code		   4		98XX
+
+8.  occupation_code	   4		0040
+
+9.  begin_year		   4		1992	
+
+9.  begin_period	   3		A01
+				
+9.  end_year		   4		2000		
+
+10. end_period		   3		A01		
+
+
+The series_id (CFU00000080) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		CF
+seasonal(code)		=		U
+category_code		=		00
+datatype_code		=		0
+case_code		=		0
+industry_code		=		0080
+
+
+
+
+
+================================================================================
+Section 5
+================================================================================
+File Structure and Format: The following represents the file format used to 
+define each data file.  Note that the field numbers are for reference only; they 
+do not exist in the database.  Data files are in ASCII text format.  Data 
+elements are separated by tabs; the first record of each file contains the 
+column headers for the data elements stored in each field.  Each record ends 
+with a new line character. 
+
+The cf.data file is partitioned into two separate files:  
+
+	1.  cf.data.0.Current	- All current year-to-date data
+	2.  cf.data.1.AllData	- All data
+
+Both of the above data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		CFU00000080
+
+2. year			   4		1996	
+
+3. period		   3		A01		
+
+4. value		  12      	6202	
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (CFU00000080) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		CF
+seasonal(code)		=		U
+category_code		=		00
+datatype_code		=		0
+casep_code		=		0
+industry_code		=		0080
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to 
+define each mapping file. Note that the field numbers are for reference only; 
+they do not exist in the database.  Mapping files are in ASCII text format.  
+Data elements are separated by tabs; the first record of each file contains the 
+column headers for the data elements stored in each field.  Each record ends 
+with a new line character. 
+
+File Name:  cf.case
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  case_code		  	1		9
+
+2.  case_text			100         	Text
+						
+				
+File Name:  cf.category
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  case_code		  	1		9
+
+2.  category_code		2		AA		
+
+3.  category_text		100		Text
+						
+
+File Name:  cf.category2
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  category_code		2		AB		
+
+2.  category_text		100		Text
+						
+
+File Name:  cf.datatype
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  datatype_code	  	1		8
+
+2.  datatype_text		100		Text
+						
+
+File Name:  cf.event
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  event_code	  		4		639X
+
+2.  event_text			100		Text
+
+
+File Name:  cf.footnote
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  footnote_code	  	1		C
+
+2.  footnote_text		100		Text
+
+
+File Name:  cf.industry
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  industry_code	  	4		0119
+
+2.  industry_text		100		Text
+
+
+File Name:  cf.occupation
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  occupation_code	  	4		0030
+
+2.  occupation_text		100		Text
+
+
+File Name:  cf.source
+
+Field #/Data Element		Length		Value(Example)		
+
+1.  source_code	  		4		98XX
+
+2.  source_text			100		Text
+
+================================================================================
+Section 7
+================================================================================
+CENSUS OF FATAL OCCUPATIONAL INJURIES (CF) DATABASE ELEMENTS
+
+
+Data Element	Length	    Value(Example)		Description
+
+ begin_year	     4		1992	            Identifies first year for 
+						    which data are available.
+
+begin_period	     3		A01		    Identifies first data 
+						    observation within the first 
+						    year for which data are 
+						    available.
+
+category_code	     2		00		    The code identifies the 	
+						    category of the observation.
+
+category_text	   100		Text		    Describes the category of the
+						    observation.
+ 
+case_code	     1	      	S	            The code identifies the type 
+						    of case for which data are 
+						    available.
+
+case_text	   100		Text		    Describes case for which data 
+						    are available.
+
+datatype_code	     1		 8	            Code identifying the 	
+						    datatype of the observation.
+
+datatype_text	   100		Text		    Describes the datatype of the
+					            observation.
+
+end_year	     4		2000		    Identifies last year for 
+						    which data are available.
+
+end_period	     3		A01		    Identifies last data 
+						    observation within the first 
+					    	    year for which data are
+						    available. 
+
+event_code	     4		639X		    Names the event which 
+                               	    		    resulted in the reported       
+	                                            injury.
+						
+event_text	   100		Text		    Describes the event which 
+                               	    		    resulted in the reported       
+	                                            injury.
+ 
+footnote_code	     1		639X		    Identifies footnote for 
+						    the data series.
+
+footnote_codes	    10		It varies	    Identifies footnotes for 
+						    the data series.
+
+footnote_text	   100		Text		    Contains the text of the 
+						    footnote.
+
+industry_code	     4		0100	            The code identifies the 	
+						    industry for which data are 
+						    observed.
+						    
+industry_text	   100          Text		    Describes the industry for 
+						    which data are observed.
+						    						
+occupation_code	     4		0040	            The code identifies the 
+						    occupation of the person     
+						    experiencing the injury.
+
+occupation_text	   100		Text		    Describes the occupation of 
+						    the person experiencing the 
+						    injury.
+						    
+source_code	     4		98XX		    The code identifies the 
+					    	    source of injury.
+					    	    
+source_text	   100          Text		    Describes the 
+					    	    source of injury.
+
+series_id	    17		CFU00000080 	    Code identifying the 
+						    specific series.
+
+value		    12		Variable	    Data value for series.
+
+year		     4		1990		    Identifies year of 
+			        		    observation. 
+
+
+
+
+
+

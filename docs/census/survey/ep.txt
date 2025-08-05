@@ -1,0 +1,62 @@
+              EMPLOYMENT PROJECTIONS     (Survey = EP)
+
+
+Series identification codes for this data have the form:
+
+                          EP U OOOOOO IIIIII
+
+where
+
+    EP = prefix for Employment Projections data
+    U = unadjusted for seasonality (only annual averages available)
+    OOOOOO = Occupation code with hyphens removed
+    IIIIII = Industry code
+
+
+                                EXAMPLE
+
+EP U 516041 451110
+
+EP			Survey:		Employment Projections				
+U			Seasonality:	Only annual averages available
+516041			Occupation:     Shoe and leather workers and repairers
+451110	   		Industry:       Sporting goods stores
+
+
+
+
+                            SURVEY DESCRIPTION
+
+Bureau of Labor Statistics projections of industry and occupational employment
+are developed in a series of six interrelated steps, each of which is based on 
+a different procedure or model and assumptions: labor force, aggregate economy,
+final demand (GDP) by consuming sector and product, industry output, industry 
+employment, and employment and openings by occupation. The results produced by
+each step are key inputs to following steps, and the sequence may be repeated 
+multiple times to allow feedback and to ensure consistency. Further detail is 
+presented in Chapter 13 of the BLS Handbook of Methods.
+
+
+                          SUMMARY DATA AVAILABLE
+
+The Employment Projections program develops employment, projected 
+employment, employment change, job openings, education, training, and wage
+data for each detailed National Employment Matrix occupation. Employment, projected 
+employment, and employment change data are also available for summary occupations.
+
+
+                                 NOTES
+
+Updates:
+
+     The database is updated twice per year; wages are updated in April and projections are updated in September.
+   
+Further Information:
+
+     See the Employment Projections website for additional data:
+      https://www.bls.gov/emp
+
+
+Contact -   Employment Projections program
+            Bureau of Labor Statistics
+            (202) 691-5700

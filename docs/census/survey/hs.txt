@@ -1,0 +1,402 @@
+	Occupational Injuries and Illnesses Incidences Rate Data (HS)
+				    hs.txt
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  OCCUPATIONAL INJURIES AND ILLNESSES INCIDENCES 
+				   RATE DATA (HS)
+
+Survey Description:  The occupational injury and illness incidence rate is 
+an annual measure of incidence of work-related injuries and illnesses and 
+is in the form of the number of injuries and illnesses, or lost workdays per 
+100 full-time employees.  For this purpose, 200,000 employee hours 
+represent 100 employee years.
+
+Data collected through the annual survey are based on records which employer
+s maintain under the Occupational Safety and Health Act.  The data include 
+all cases resulting from work accidents or exposure in the work environment 
+which result in death, nonfatal illness, or nonfatal injury which involves 
+medical treatment (beyond first aid), loss of consciousness, restriction of 
+work or motion, or transfer to another job.
+
+Virtually the entire private sector is covered by the survey, except self-
+employed individuals, farms with fewer than 11 employees, employers 
+regulated by other Federal safety and health laws, and Federal, State, and 
+local government agencies.  Data conforming to definitions of recordable 
+occupational injuries and illnesses for coal, metal and nonmetal mining, 
+and railroad transportation are provided by the Mine Safety and Health 
+Administration, U.S. Department of Labor, and the Federal Railroad 
+Administration, U.S. Department of Transportation.
+
+The incidence rates are produced for industries which are based on the 1987 
+Standard Industrial Classification (SIC).  The survey sample design uses 
+stratified random sample with a Neyman allocation.  The characteristics used
+to stratify the units are the States, SIC code, and employment.  The 
+sampling ratios at the various employment size classes range from all units 
+above a certain size class selected with certainty through declining 
+proportions in each smaller employment-size class.  The data for all 
+reporting units in each industry are expanded by the inverse of the sampling
+ratio, and benchmarked to the appropriate employment level in each industry.
+  
+Since 1978, about 280,000 sample units were selected nationwide to 
+participate in the annual survey.
+
+Summary Data Available:  The incidence rates are calculated for three 
+categories:  (1)  injury and illness combined, (2)  injury only; and 
+(3)  illness only.
+
+
+The incidence rates for each category are available at the 2-digit SIC 
+industry level in agriculture, forestry, and fishing, the 3-digit level in 
+oil and gas extraction, construction, transportation and public utilities, 
+wholesale and retail trade, and finance, insurance, and real estate, and 
+services; and the 4-digit level in manufacturing.
+
+Estimates of incidence rates for industries are also made for various 
+severity classifications.  For each industry, the incidence rates are 
+available for total recordable cases, nonfatal cases without lost workdays,
+lost workday cases, and lost workdays.  Lost workday cases include both 
+cases involving days away from work and cases involving restricted working 
+activity.  The incidence rates are available for both cases, and also for 
+both types of lost workdays.
+
+The estimating procedure generates occupational injury and illness estimates
+for approximately 835 SIC codes.  This dataset, however, excludes estimates 
+for several industry codes if one of the following situations occurred:
+
+   1.	Estimates for the industry were based on reports from fewer than 
+	three companies.  Moreover, if three or more companies reported data 
+	for the industry, one firm could employ no more than 50 percent of 
+	the workers, or two companies combined could employ no more than 75 
+	percent.
+
+   2.	Annual average employment for the industry was fewer than 10,000.  
+	However, estimates for an industry with an annual average employment 
+	of less than 10,000 were published if the majority of the employment
+	was reported in the survey.
+
+   3.	The relative standard error on lost workday cases for the industry 
+	at 1 standard error was more than 15 percent in manufacturing and 
+	20 percent in nonmanufacturing.
+
+   4.	The benchmark factor for the industry was less than 0.90 or greater 
+	than 1.49.
+
+Data for an unpublished industry were included in the total for the broader
+industry level of which it is a part.
+
+
+Calculation of Incidence Rates:
+
+   1.	The incidence rates represent the number of injuries and/or 
+	illnesses or lost workdays per 100 full-time workers and were 
+	calculated as:  (N/EH) x 200,000.
+
+	where:
+
+	N = number of injuries and/or illnesses or lost workdays.
+
+	EH = total hours worked by all employees during the calendar year.
+
+	     200,000 = base for 100 full-time equivalent workers 
+	     (working 40 hours/week, 50 weeks/year).
+
+   2.	Average lost workdays are calculated as:
+
+	Total lost workdays/total lost workday cases.
+
+Frequency of Observations:  All data are annual.
+
+Data Characteristics:  Rates are stored to one decimal place.
+
+References:	BLS Handbook of Methods, Chapter 14, "Occupational Safety 
+		and Health Statistics", Part I, BLS Bulletin 2285, April
+		1988.
+==================================================================================
+Section 2
+==================================================================================
+The following Occupational Injuries and Illnesses Incidences Rate Data files are 
+on the BLS internet in the sub-directory pub/time.series/hs:
+
+
+	hs.case.type		- Case type codes		mapping file
+	hs.contacts		- Contacts for hs survey 
+	hs.data.1.1976to1980	- All data from 1976 - 1980
+	hs.data.2.1981to1984	- All data from 1981 - 1984
+	hs.data.3.1985to1988	- All data from 1985 - 1988
+	hs.data.type		- Data type codes		mapping file
+	hs.division		- Division codes		mapping file
+	hs.industry		- Industry codes		mapping file
+	hs.period		- Period codes			mapping file	
+	hs.series		- All series and their beginning and end dates
+	hs.txt			- General information
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+hs.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		HSU30204517
+
+2.  division_code	  2		30
+
+3.  industry_code	  4		2045
+
+4.  data_type_code	  1		1
+
+5.  case_type_code	  1		7
+
+6.  begin_year		  4		1976
+
+7.  begin_period	  3		A01
+
+8.  end_year		  4		1988
+
+9.  end_period		  3		A01
+					
+
+
+The series_id (HSU00000001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		HS
+seasonal (code) 	=		U
+division_code		=		00
+industry_code		=		0000
+data_type_code		=		0
+case_type_code		=		1
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character. 
+
+
+File Name:  bg.data.1.AllData
+
+The above-named data file has the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		HSU00000001 	      	
+
+2. year			   4		1976	
+
+3. period		   3		A01		
+
+4. value		  12      	0.3	
+
+5. footnote_codes	  10		It varies
+				
+
+The series_id (HSU00000001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		HS
+seasonal (code) 	=		U
+division_code		=		00
+industry_code		=		0000
+data_type_code		=		0
+case_type_code		=		1
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character.  
+
+
+File Name:  hs.case.type
+
+Field #/Data Element		Length		Value(Example)
+
+1. case_type_code		1		1
+
+2. case_type_text		55		Text
+
+
+File Name:  hs.data.type	
+
+Field #/Data Element		Length		Value(Example)
+
+1. data_type_code		1		1
+	
+2. data_type_text		30		Text
+
+
+File Name:  hs.division
+
+Field #/Data Element		Length		Value(Example)
+
+1. division_code		2		09
+
+2. division_name		50		Text
+
+
+File Name:  hs.industry
+
+Field #/Data Element		Length		Value(Example)
+
+1. division_code		2		09
+		
+2. industry_code		4		0100
+
+3. industry_name		50		Text
+
+
+File Name:  hs.period
+
+Field #/Data Element		Length		Value(Example)
+
+1. period			3		A01
+	
+2. period_abbr			5		ANN
+
+3. period_name			20		Text
+
+=========================================================================================
+Section 7
+=========================================================================================
+OCCUPATIONAL INJURIES AND ILLNESSES INCIDENCES RATE DATA (HS) 
+DATABASE ELEMENTS
+
+
+Data Element	Length		Value(Example)			Description
+
+begin_period	3		A01=Annual		Identifies first data observation
+							within the first year for which
+							data is available for a given
+				 			time series.							
+				
+begin_year	4		YYYY			Identifies first year for which
+				Ex: 1980		data is available for a given
+							time series.
+
+case_type_code	1		1			Code identifying type of cases
+							to which the incidence rate 
+							applies.
+
+case_type_text	55		Text			Name identifying the type of
+				Ex: Injury, illness	cases to which the incidence
+							rate refers.
+					
+data_type_code	1		1			Code identifying the data type 
+							to which the incidence rate
+							refers.
+
+data_type_text	30		Text			Name identifying the data type
+							to which the incidence rate
+							refers.
+
+division_code	2		09			Code identifying the major
+							industry divisions.
+
+division_name	50		Text			Name of the major industry
+				Ex: Services		division.
+
+end_period	3		A01=Annual		Identifies last data observation
+							within the last year for which
+							data is available for a given
+				 			time series.
+				
+end_year	4		YYYY			Identifies last year for which
+				Ex: 1980		data is available for a given
+							time series.
+
+footnote_codes	10		It varies		Identifies footnotes for the data 
+							series.	
+							
+industry_code	4		0100			SIC code identifying industry.
+
+industry_name	50		Text			Name of industry to which data
+							pertain.
+				
+period_abbr	5		Period name		Abbreviation of period name.
+				abbreviation	
+				Ex: A01
+
+period		3		A01=Annual		Identifies period for which
+ 							data is observed. 
+				
+period_name	20		Text			Full name of period to which
+			 	Ex: Annual 		the data observation refers.
+				 	
+series_id	17		HSU00000001	 	Code identifying the specific 
+							series.
+
+value		12		Data value		Observation for the series.
+
+year		4		YYYY			Identifies year of observation.
+				Ex: 1990	
+			
+
+	
+
+
+
+
+	

@@ -1,0 +1,471 @@
+		State and Area Employment, Hours and Earnings (SA)
+					sa.txt
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  STATE AND AREA EMPLOYMENT, HOURS AND EARNINGS (SA)
+
+Survey Description:  The Current Employment Statistics survey, as a joint 
+Federal-State undertaking, generates State and area, as well as national, 
+statistics on employment, hours, and earnings.
+
+State agencies collect data each month from a sample of establishments in 
+all nonagricultural activities including government.  From these data, a 
+large number of series on employment, hours, and earnings in considerable 
+industrial detail are published monthly by each of the 50 States, the 
+District of Columbia, Puerto Rico, and the Virgin Islands.
+
+Those industries which reflect significant economic activities are selected
+for publication.
+
+All employment, hours, and earnings series, State and area as well as 
+national, are classified according to the 1987 Standard Industrial 
+Classification (SIC).
+
+Summary Data Available:  For total payroll employment, over 12,000 series of
+monthly data are available; they cover each State and about 290 major 
+labor areas, most of which are Metropolitan Statistical Areas (MSAs).  Many 
+of these series begin in 1939.
+
+There are about 12,000 monthly series covering production or nonsupervisory 
+workers' average weekly earnings, average weekly hours, and average hourly 
+earnings, for each State and about 240 major labor areas, that begin in 1947
+or later.
+
+In the largest States, up to 200 industries are reported.
+
+Some industry detail at the 4-digit SIC level is available for recent years.
+
+Frequency of Observations:  All data are monthly.
+
+Annual Averages:  Annual averages are available.
+
+Data Characteristics:  Employment is measured in thousands of workers and is
+stored with one decimal place.  Earnings are measured in dollars and are 
+stored with two decimal places.  Average weekly hours are measured in hours 
+and are stored with one decimal place.
+
+Updating Schedule:  Updates are usually available 10 to 12 weeks following 
+the survey week (the week containing the 12th) in the reference month.
+
+References:	BLS Handbook of Methods, Chapter 2, "Employment, hours and 
+		earnings from the establishment survey", Bulletin 2285 
+		(1988).
+==================================================================================
+Section 2
+==================================================================================
+The following State and Area Employment, Hours and Earnings files are on the BLS 
+internet in the sub-directory pub/time.series/sa:
+
+       	sa.data.0.Current	  - All current year-to-date
+ 	sa.data.1a.Alabama	  - (state code= 01) AL=ALABAMA, Origin-1983
+ 	sa.data.1b.Alabama	  - (state code=01) AL=ALABAMA, 1984-Present
+ 	sa.data.2.Alaska	  - (state code=02) AK=ALASKA
+ 	sa.data.3.Arizona	  - (state code=04) AZ=ARIZONA
+ 	sa.data.4a.Arkansas	  - (state code=05) AR=ARKANSAS, Origin-1983
+ 	sa.data.4b.Arkansas	  - (state code=05) AR=ARKANSAS, 1984-Present
+ 	sa.data.5a.California	  - (state code=06) CA=CALIFORNIA, Origin-1965
+ 	sa.data.5b.California	  - (state code=06) CA=CALIFORNIA, 1966-1973
+ 	sa.data.5c.California	  - (state code=06) CA=CALIFORNIA, 1974-1977
+ 	sa.data.5d.California	  - (state code=06) CA=CALIFORNIA, 1978-1981
+ 	sa.data.5e.California	  - (state code=06) CA=CALIFORNIA, 1982-1987
+ 	sa.data.5f.California	  - (state code=06) CA=CALIFORNIA, 1988-1990
+ 	sa.data.5g.California	  - (state code=06) CA=CALIFORNIA, 1991-Present
+ 	sa.data.6.Colorado	  - (state code=08) CO=COLORADO
+ 	sa.data.7a.Connecticut	  - (state code=09) CT=CONNECTICUT, Origin-1983
+ 	sa.data.7b.Connecticut	  - (state code=09) CT=CONNECTICUT, 1984-Present
+ 	sa.data.8.Delaware	  - (state code=10) DE=DELAWARE
+ 	sa.data.9.DC		  - (state code=11) DC=DISTRICT OF COLUMBIA
+ 	sa.data.10a.Florida	  - (state code=12) FL=FLORIDA, Origin-1979
+ 	sa.data.10b.Florida	  - (state code=12) FL=FLORIDA, 1980-1986
+ 	sa.data.10c.Florida	  - (state code=12) FL=FLORIDA, 1987-Present
+ 	sa.data.11a.Georgia	  - (state code=13) GA=GEORGIA, Origin-1983
+ 	sa.data.11b.Georgia	  - (state code=13) GA=GEORGIA, 1984-Present
+ 	sa.data.12.Hawaii	  - (state code=15) HI=HAWAII
+ 	sa.data.13.Idaho	  - (state code=16) ID=IDAHO
+ 	sa.data.14a.Illinois	  - (state code=17) IL=ILLINOIS, Origin-1980
+ 	sa.data.14b.Illinois	  - (state code 17) IL=ILLINOIS, 1981-1987
+ 	sa.data.14c.Illinois	  - (state code 17) IL=ILLINOIS, 1988-Present
+ 	sa.data.15a.Indiana	  - (state code=18) IN=INDIANA, Origin-1983
+ 	sa.data.15b.Indiana	  - (state code=18) IN=INDIANA, 1984-Present
+ 	sa.data.16.Iowa	  	  - (state code=19) IA=IOWA
+ 	sa.data.17.Kansas	  - (state code=20) KS=KANSAS
+ 	sa.data.18.Kentucky	  - (state code=21) KY=KENTUCKY
+ 	sa.data.19a.Louisiana	  - (state code=22) LA=LOUISIANA, Origin-1983
+ 	sa.data.19b.Louisiana	  - (state code=23) LA=LOUISIANA, 1984-Present
+ 	sa.data.20.Maine	  - (state code=23) ME=MAINE
+ 	sa.data.21.Maryland	  - (state code=24) MD=MARYLAND
+ 	sa.data.22a.Massachusetts - (state code=25) MA=MASSACHUSETTS, Origin-1983
+ 	sa.data.22b.Massachusetts - (state code=25) MA=MASSACHUSETTS, 1984-Present
+ 	sa.data.23a.Michigan	  - (state code=26) MI=MICHIGAN, Origin-1976
+ 	sa.data.23b.Michigan	  - (state code=26) MI=MICHIGAN, 1977-1986
+ 	sa.data.23c.Michigan	  - (state code=26) MI=MICHIGAN, 1987-1990
+ 	sa.data.23d.Michigan	  - (state code=26) MI=MICHIGAN, 1991-Present
+ 	sa.data.24.Minnesota	  - (state code=27) MN=MINNESOTA
+ 	sa.data.25.Mississippi	  - (state code=28) MS=MISSISSIPPI
+ 	sa.data.26a.Missouri	  - (state code=29) MO=MISSOURI, Origin-1983
+ 	sa.data.26b.Missouri	  - (state code=29) MO=MISSOURI, 1984-Present
+ 	sa.data.27.Montana	  - (state code=30) MT=MONTANA
+ 	sa.data.28.Nebraska	  - (state code=31) NE=NEBRASKA
+ 	sa.data.29.Nevada	  - (state code=32) NV=NEVADA
+ 	sa.data.30.NewHampshire   - (state code=33) NH=NEW HAMPSHIRE
+ 	sa.data.31a.NewJersey	  - (state code=34) NJ=NEW JERSEY, Origin-1978
+ 	sa.data.31b.NewJersey	  - (state code=34) NJ=NEW JERSEY, 1979-1986
+ 	sa.data.31c.NewJersey	  - (state code=34) NJ=NEW JERSEY, 1987-Present
+ 	sa.data.32.NewMexico	  - (state code=35) NM=NEW MEXICO
+ 	sa.data.33a.NewYork	  - (state code=36) NY=NEW YORK, Origin-1962
+ 	sa.data.33b.NewYork	  - (state code=36) NY=NEW YORK, 1963-1967
+ 	sa.data.33c.NewYork	  - (state code=36) NY=NEW YORK, 1968-1971
+ 	sa.data.33d.NewYork	  - (state code=36) NY=NEW YORK, 1972-1975
+ 	sa.data.33e.NewYork	  - (state code=36) NY=NEW YORK, 1976-1979
+ 	sa.data.33f.NewYork	  - (state code=36) NY=NEW YORK, 1980-1983
+ 	sa.data.33g.NewYork	  - (state code=36) NY=NEW YORK, 1984-1987
+ 	sa.data.33h.NewYork	  - (state code=36) NY=NEW YORK, 1988-1990
+ 	sa.data.33i.NewYork	  - (state code=36) NY=NEW YORK, 1991-Present
+ 	sa.data.34a.NorthCarolina - (state code=37) NC=NORTH CAROLINA, Origin-1983
+ 	sa.data.34b.NorthCarolina - (state code=37) NC=NORTH CAROLINA, 1984-Present
+ 	sa.data.35.NorthDakota    - (state code=38) ND=NORTH DAKOTA
+ 	sa.data.36a.Ohio	  - (state code=39) OH=OHIO, Origin-1971
+ 	sa.data.36b.Ohio	  - (state code=39) OH=OHIO, 1972-1977
+ 	sa.data.36c.Ohio	  - (state code=39) OH=OHIO, 1978-1981
+ 	sa.data.36d.Ohio	  - (state code=39) OH=OHIO, 1982-1985
+ 	sa.data.36e.Ohio	  - (state code=39) OH=OHIO, 1986-1989
+ 	sa.data.36f.Ohio	  - (state code=39) OH=OHIO, 1990-Present
+ 	sa.data.37.Oklahoma	  - (state code=40) OK=OKLAHOMA
+ 	sa.data.38a.Oregon	  - (state code=41) OR=OREGON, Origin-1983
+ 	sa.data.38b.Oregon	  - (state code=41) OR=OREGON, 1984-Present
+ 	sa.data.39a.Pennsylvania  - (state code=42) PA=PENNSYLVANIA, Origin-1973
+ 	sa.data.39b.Pennsylvania  - (state code=42) PA=PENNSYLVANIA, 1974-1977
+ 	sa.data.39c.Pennsylvania  - (state code=42) PA=PENNSYLVANIA, 1978-1981
+ 	sa.data.39d.Pennsylvania  - (state code=42) PA=PENNSYLVANIA, 1982-1984
+ 	sa.data.39e.Pennsylvania  - (state code=42) PA=PENNSYLVANIA, 1985-1987
+ 	sa.data.39f.Pennsylvania  - (state code=42) PA=PENNSYLVANIA, 1988-1990
+ 	sa.data.39g.Pennsylvania  - (state code=42) PA=PENNSYLVANIA, 1991-Present
+ 	sa.data.40.PuertoRico	  - (state code=43) PR=PUERTO RICO
+ 	sa.data.41.RhodeIsland	  - (state code=44) RI=RHODE ISLAND
+ 	sa.data.42a.SouthCarolina - (state code=45) SC=SOUTH CAROLINA, Origin-1983
+ 	sa.data.42b.SouthCarolina - (state code=45) SC=SOUTH CAROLINA, 1984-Present
+ 	sa.data.43.SouthDakota	  - (state code=46) SD=SOUTH DAKOTA
+ 	sa.data.44a.Tennessee	  - (state code=47) TN=TENNESSEE, Origin-1983
+ 	sa.data.44b.Tennessee	  - (state code=47) TN=TENNESSEE, 1984-Present
+ 	sa.data.45a.Texas	  - (state code=48) TX=TEXAS, Origin-1977
+ 	sa.data.45b.Texas	  - (state code=48) TX=TEXAS, 1978-1983
+ 	sa.data.45c.Texas	  - (state code=48) TX=TEXAS, 1984-1987
+ 	sa.data.45d.Texas	  - (state code=48) TX=TEXAS, 1988-1990
+ 	sa.data.45e.Texas	  - (state code=48) TX=TEXAS, 1991-Present
+ 	sa.data.46.Utah	  	  - (state code=49) UT=UTAH
+ 	sa.data.47.Vermont	  - (state code=50) VT=VERMONT
+ 	sa.data.48a.Virginia	  - (state code=51) VA=VIRGINIA, Origin-1979
+ 	sa.data.48b.Virginia	  - (state code=51) VA=VIRGINIA, 1980-1986
+ 	sa.data.48c.Virginia	  - (state code=51) VA=VIRGINIA, 1987-Present
+ 	sa.data.49.VirginIslands  - (state code=52) VI=VIRGIN ISLANDS
+ 	sa.data.50.Washington	  - (state code=53) WA=WASHINGTON
+ 	sa.data.51a.WestVirginia  - (state code=54) WV=WEST VIRGINIA, Origin-1983
+ 	sa.data.51b.WestVirginia  - (state code=54) WV=WEST VIRGINIA, 1984-Present
+ 	sa.data.52a.Wisconsin	  - (state code=55) WI=WISCONSIN, Origin-1983
+ 	sa.data.52b.Wisconsin	  - (state code=55) WI=WISCONSIN, 1984-Present
+ 	sa.data.53.Wyoming	  - (state code=56) WY=WYOMING
+	sa.area			  - Area codes			mapping file						
+	sa.contacts		  - Contacts for SA survey  
+	sa.data_type		  - Data type codes		mapping file
+	sa.detail		  - Detail codes		mapping file
+	sa.footnote		  - Footnote codes		mapping file
+	sa.industry		  - Industry codes		mapping file
+	sa.period		  - Period codes		mapping file
+	sa.series		  - All series and their beginning and end dates
+	sa.state		  - State codes			mapping file
+	sa.txt			  - General information
+	
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+sa.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		SAS0100000000001
+
+2.  state_code		  2		01
+
+3.  area_code		  4		0000
+
+4.  industry_code	  6		200001		
+
+5.  detail_code		  1		0
+
+6.  data_type_code	  1		1
+
+7.  seasonal		  1		S				
+
+8.  benchmark_year	  4  		2001
+					
+9.  begin_year		  4		1982
+
+10. begin_period	  3		M01		
+				
+11. end_year		  4		2002		
+
+12. end_period		  3		M03		
+					
+The series_id (SAS0100000000001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		SA
+seasonal (code) 	=		S
+state_code		=		01
+area_code		=		0000
+industry_code		=		000000
+data_type_code		=		1
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character. 
+
+The sa.data file is partitioned into a number of separate files:  See Section 2
+
+The above-referenced data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		SAS0100000000001
+
+2. year			   4		1995	
+
+3. period		   3		M01		
+
+4. value		  12      	1791.0	 	
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (SAS0100000000001) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		SA
+seasonal (code) 	=		S
+state_code		=		01
+area_code		=		0000
+industry_code		=		000000
+data_type_code		=		1
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+
+File Name:  sa.area
+
+Field #/Data Element		Length		Value(Example)
+
+1.  area_code			4		0040
+
+2.  area_name			40		Text
+
+
+File Name:  sa.data_type	Length		Value(Example)
+
+Field #/Data Element
+
+1.  data_type_code		1		1
+
+2.  data_type_text		50		Text
+
+
+
+File Name:  sa.detail
+
+Field #/Data Element		Length		Value(Example)
+
+1.  detail_code			1		1
+
+2.  detail_name			80		Text
+
+
+File Name:  sa.footnote
+
+Field #/Data Element		Length		Value(Example)
+
+1. footnote_code		1		1
+
+2. footnote_text		100		Text
+
+
+File Name:  sa.industry
+	
+Field #/Data Element		Length		Value(Example)
+
+1.  industry_code		6		000015
+
+2.  industry_name		50		Text
+
+
+File Name:  sa.period
+
+Field #/Data Element		Length		Value(Example)
+
+1.  period			3		M01
+
+2.  period_abbr			5		JAN
+
+3.  period_name			20		Text
+
+
+File Name:  sa.state
+
+Field #/Data Element		Length		Value(Example)
+
+1.  state_code			2		01
+
+2.  state_name			20		Text
+=========================================================================================
+Section 7
+=========================================================================================
+STATE AND AREA EMPLOYMENT, HOURS AND EARNINGS (SA) DATABASE ELEMENTS
+
+
+Data Element	 Length		Value(Example)			Description
+
+area_code	4		Ex:0000			Code identifying the geographic
+							area to which the data refer.
+
+area_name	40		Text			Name of the geographic area
+			 	Ex: Milwaukee		to which the data refer.
+				
+begin_period	3		M01-M13			Identifies first data observation
+				Ex: M06=June 		within the first year for which
+				(M=Monthly, M13=Annual	data is available for a given 
+				Avg)			time series.
+				
+begin_year	4		YYYY			Identifies first year for which 
+				Ex: 1976		data is available for a given
+							time series.
+
+benchmark_year	4		YYYY			Identifies latest year to which 
+				Ex: 1991		the series has been benchmarked.
+
+data_type_code	1		Ex: 1			Code identifying the 
+							datatype of the observation.
+
+data_type_text	50		Text			Datatype name of the observation.
+				Ex: Production workers
+				    	
+detail_code	1		Ex: 1			Code identifying the detail code
+							of the observation.
+
+end_period	3		M01-M13			Identifies last data observation
+				Ex: M06=June		within the last year for which
+				(M=Monthly, M13=Annual	data is available for a given
+				Avg)			time series.
+				
+end_year	4		YYYY			Identifies last year for which 
+				Ex: 1992		data is available for a given
+							time series.
+							
+footnote_code	1		Ex:1			Identifies footnote for the data 
+							series.
+
+footnote_codes	10		It varies		Identifies footnotes for the data 
+							series.	
+							
+footnote_text	100		Text			Contains the text of the footnote.
+
+industry_code	6		000015			SIC code identifying industry.
+							
+industry_name	50		Text			Name of industry.
+				Ex: Grocery Stores
+				    
+period_abbr	5		Period name 		Abbreviation of period name.
+				abbreviation
+				Ex: JUN
+
+period		3		M01-M13			Identifies period for which
+				Ex: M06=June		data is observed. 
+				(M=Monthly, M13=Annual	
+				Avg)
+				
+period_name	20		Text			Full name of period to which
+				Ex:  June		the data observation refers.
+				
+
+seasonal	1		S=Seasonally		Code identifying whether the
+				  Adjusted		data are seasonally adjusted.
+				U=Unadjusted  		
+
+series_id	17		Code series identifier	Code identifying the specific 
+				Ex: SAS0100000000001	series.
+
+state_code	2		FIPS state code		Code identifying the state.
+
+state_name	20		Text			Name of the state.
+				Ex: Alabama	
+				
+value		12		Data value		Data value for series.
+				Ex: 1791.0
+				
+year		4		YYYY			Identifies year of 
+				Ex: 1993		observation.
+

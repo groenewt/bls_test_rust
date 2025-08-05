@@ -1,0 +1,295 @@
+				Employee Benfits Survey (EB)
+					eb.txt
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  EMPLOYEE BENEFITS SURVEY
+
+Survey Description:  The Employee Benefits Survey (EBS) is an annual survey
+of the incidence and provisions of selected benefits provided by employers. 
+The survey collects data from a sample of approximately 6,000 private sector
+and State and local government establishments.  The data are presented as a 
+percentage of employees who participate in a certain benefit, or as an 
+average benefit provision (for example, the average number of paid holidays 
+provided to employees per year).
+
+The survey covers paid leave benefits such as holidays and vacations, and 
+person, funeral, jury duty, military, parental, and sick leave; sickness and
+accident, long-term disability, and life insurance; medical, dental, and 
+vision care plans; defined benefit pension and defined contribution plans; 
+flexible benefits plans; reimbursement accounts; and unpaid parental leave.
+Also, data are tabulated on the incidence of several other benefits, such as
+severance pay, child-care assistance, wellness programs, and employee 
+assistance programs.
+
+Summary Data Available:  Surveys of employees in medium and large private 
+establishments conducted over the 1979-86 period included establishments 
+that employed at least 50, 100, or 250 workers, depending on the industry 
+(most service industries were excluded).  The survey conducted in 1987 
+covered only State and local governments with 50 or more employees.  The 
+surveys conducted in 1988 and 1989 included medium and large establishments
+with 100 workers or more in all private industries.  All surveys conducted 
+over the 1979-89 period excluded establishments in Alaska and Hawaii, as 
+well as part-time employees.
+
+Beginning in 1990, surveys of State and local governments and small 
+establishments are conducted in even-numbered years and surveys of medium 
+and large establishments are conducted in odd-numbered years.  The small 
+establishment survey includes all private nonfarm establishments with fewer
+than 100 workers, while the State and local government survey includes all 
+governments, regardless of the number of workers.  All three surveys include
+full- and part-time workers, and workers in all 50 States and the District 
+of Columbia.
+
+
+Data available on LABSTAT include incidence of selected benefits and the 
+average benefit amount for selected provisions, from all three surveys.
+
+Frequency of Observations:  Data are annual.
+
+Base Periods:  Not applicable.
+
+Data Characteristics:  All percent of workers are in whole percents; average
+holidays are stored with one decimal place; average employee contributions 
+to health care benefits are stored in dollars and cents; all other averages
+are whole numbers.
+
+Updating Schedule:  Updates are available annually, typically in the summer
+following the reference year of the data.
+
+References:	BLS Handbook of Methods, Chapter 9, "Employee Benefits 
+		Survey," Bulletin 2414 (1992).
+
+Contact for Further Information:	Staff Employee Benefits Survey
+					(202) 606-6222
+==================================================================================
+Section 2
+==================================================================================
+The following Employee Benefits Survey files are on the BLS internet in the 
+sub-directory pub/time.series/eb:
+
+
+	eb.contacts		- Contacts for EB survey 
+	eb.data.1.AllData	- All data
+	eb.period		- Period codes		mapping file
+	eb.series		- All series with beginning and end dates
+	eb.title		- Title codes		mapping file
+	eb.txt			- General information
+	eb.type			- Type codes		mapping file
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+eb.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		EBU401KINC0000ML
+
+2.  title_code		  11		401KINC0000
+
+3.  type_code		  2		ML			
+
+4.  begin_year		  4		1985
+
+5.  begin_period	  3		A01
+
+6.  end_year		  4		1997
+
+7.  end_period		  3		A01
+
+
+The series_id (EBU401KINC0000SL) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		EB
+seasonal (code) 	=		U
+title_code		=		401KINC0000
+type_code		=		SL
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+File Name:  eb.data.1.AllData
+
+The above-named data file has the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		EBU401KINC0000SL 	      	
+
+2. year			   4		1985	
+
+3. period		   3		A01		
+
+4. value		  12      	26	 	
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (EBU401KINC0000SL) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		EB
+seasonal (code) 	=		U
+title_code		=		401KINC0000
+type_code		=		SL
+================================================================================
+Section 6
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+
+File Name:  eb.period
+
+Field #/Data Element		Length		Value(Example)
+
+1.  period			3		A01
+
+2.  period_abbr     		5		ANN	 
+
+3.  period_name			20		Text
+
+
+File Name:  eb.title
+
+Field #/Data Element		Length		Value(Example)
+
+1.  title_code			11		401KINC0000
+
+2.  title_name			100		Text
+
+
+File Name:  eb.type
+
+Field #/Data Element		Length		Value(Example)
+
+1.  type_code			2		AP
+
+2.  type_name			50		Text
+=========================================================================================
+Section 7
+=========================================================================================
+EMPLOYEE BENEFITS SURVEY DATABASE ELEMENTS
+
+
+Data Element	Length		Value(Example)			Description
+
+
+begin_period	3		A01=Annual		Identifies the first data 
+							observation within the first
+							year for which data is 
+							available for a given time 
+							series.
+
+begin_year	4		YYYY			Identifies first year for which
+				Ex: 1992		data is available for a given
+							time series.
+						
+end_period	3		A01=Annual		Identifies last data observation
+							within the last year for which
+							data is available for a given
+							time series.
+
+end_year	4		YYYY			Identifies last year for which
+				Ex: 1997		data is available for a given
+							time series.
+						
+footnote_codes	10		It varies		Identifies footnotes for the data 
+							series.	
+							
+period		3		A01=Annual		Identifies period for which data 
+ 							is observed.
+
+period_abbr	5		JAN			Abbreviation of period name.
+ 					
+				 				
+period_name	20		Text			Full name of period to which
+ 				Ex: January		the data observation refers.
+				
+series_id	17		EBU401KINC0000SL	Code identifying the 
+							specific series.
+
+title_code	11		Title 			Code identifying title of 
+				identifier		data series.
+				Ex: LUNCHINC000 
+
+title_name	100		Text			Name of series title.
+				Ex: Incidence of paid
+				lunch time
+				
+type_code	2		Type identifier		Code identifying type of
+				ML=Med/Lge private	establishment.
+				SM=Small private
+				SL=State/Local government
+				   	
+type_name	50		Text			Name of type of establishment.	
+
+value		12		Data value		Data value for series.
+				
+year		4		YYYY			Identifies year of observation.
+				Ex: 1990	
+			

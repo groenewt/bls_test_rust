@@ -1,0 +1,428 @@
+			Occupational Injuries and Illnesses Industry Data (IS)
+						is.txt
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  OCCUPATIONAL INJURIES AND ILLNESSES 
+				   INDUSTRY DATA (IS)
+
+Survey Description:  Occupational injury and illness counts and incidence rates 
+are annual measures of the level and frequency of work-related injuries and 
+illnesses.  The rate equals the form of the number of injuries and illnesses 
+per 100 full-time employees. 
+
+Data collected through the annual survey are based on records which employers 
+maintain under the Occupational Safety and Health Act.  Data include all cases 
+resulting from accidents or exposure in the work environment that result in a 
+nonfatal illness or injury.  Some of these cases involve lost work time-- the 
+incident may result in a work absence, restriction of work or motion, or 
+transfer to another job.  Other recordable cases do not involve any lost days. 
+Recordkeeping guidelines are maintained by the Occupational Safety and Health 
+Administration.
+
+Virtually the entire private sector is covered by the survey, except 
+self-employed individuals, farms with fewer than 11 employees, and employers 
+regulated by other Federal safety and health laws.  National estimates 
+exclude Federal, State, and local government agencies, but data for selected 
+States include State and local government.  Data conforming to definitions of 
+recordable occupational injuries and illnesses for coal, metal and nonmetal 
+mining, and railroad transportation are provided by the Mine Safety and Health 
+Administration, U.S. Department of Labor, and the Federal Railroad Administration, 
+U.S. Department of Transportation.
+
+The incidence rates are produced for industries which are based on the 2012 
+North American Industry Classification System (NAICS).  The survey sample design 
+uses stratified random sample with a Neyman allocation.  The characteristics used
+to stratify the units are the States, NAICS code, and employment. The data for all 
+reporting units in each industry are expanded by the inverse of the sampling
+ratio, and benchmarked to the appropriate employment level in each industry.  
+Reports are collected from about 180,000 sample units.
+
+Summary Data Available:  Incidence rates and counts are calculated for three 
+categories for total recordable cases:  (1)  injury and illness combined, 
+(2)  injury only; and (3)  illness only.
+
+Additionally, estimates of incidence rates and case counts are also available 
+for various severity classifications.  For each injuries and illnesses in each 
+industry, the incidence rates and numbers of cases are available for total nonfatal 
+recordable cases; cases with days away from work, job transfer or restriction; 
+cases with days away from work; cases with job transfer or restriction only; and 
+other recordable cases. 
+
+Data also include rates and numbers of cases, by various illness categories:  
+skin diseases or disorders, respiratory conditions, poisonings, hearing loss, 
+and all other illnesses. 
+
+Data for an unpublished industry were included in the total for the broader 
+industry level of which it is a part.
+
+Calculation of Incidence Rates:
+
+   	The incidence rates represent the number of injuries and/or 
+	illnesses per 100 full-time workers and were calculated as:  
+
+	(N/EH) x 200,000 (20,000,000 for illness rates).
+
+	where:
+
+	N = number of injuries and/or illnesses.
+
+	EH = total hours worked by all employees during the calendar year.
+
+	     200,000 = base for 100 full-time equivalent workers 
+	     (working 40 hours/week, 50 weeks/year). 
+	
+	     20,000,000 =base for 10,000 full-time equivalent workers
+	     (working 40 hours/week, 50 weeks/year).
+
+
+Frequency of Observations:  All data are annual.
+
+Data Characteristics:  Rates are stored to one decimal place.  Number of cases are
+		       in thousands.
+
+
+References:	BLS Handbook of Methods, Chapter 9, "Occupational Safety 
+		and Health Statistics".
+
+==================================================================================
+Section 2
+==================================================================================
+The following Occupational Injuries and Illnesses Industry Data files are on the 
+BLS internet in the sub-directory pub/time.series/is:
+
+	is.area			- Area codes			mapping file
+	is.case.type		- Case type codes		mapping file
+	is.contacts		- Contacts for IS survey 
+	is.data.1.AllData	- All data
+	is.data.type		- Data type codes		mapping file
+	is.footnote		- Footnote codes		mapping file
+	is.industry		- Industry codes		mapping file
+	is.period		- Period codes			mapping file
+	is.series		- All series and their beginning and end dates
+	is.supersector		- All supersector codes		mapping file
+	is.txt			- General information
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (A01, M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+is.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCIS text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		ISU00000000001100
+
+2.  supersector_code	  3		000
+
+3.  industry_code	  6		000000
+
+4.  data_type_code	  1		0
+
+5.  case_type_code	  1		1
+
+6.  area_code		  3		100 
+
+7.  series_title	  255		Industry-level data from the Survey of Occupational Injuries and Illnesses (SOII)
+
+8.  footnote_codes	  10		Z
+
+7.  begin_year		  4		2014
+
+8.  begin_period	  3		A01
+
+9.  end_year		  4		2014
+
+10.  end_period		  3		A01
+
+
+The series_id (ISU00000000001100) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		IS
+seasonal (code) 	=		U
+supersector_code	=		000
+industry_code		=		000000
+data_type_code		=		0
+case_type_code		=		1
+area_code		=		100
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCIS text format.  Data elements are 
+separated by tabs; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character. 
+
+File Name:  is.data.1.AllData
+
+The above-named data file has the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		ISU00000000001100      	      	 	      	
+
+2. year			   4		2014	
+
+3. period		   3		A01		
+
+4. value		  12      	0.4	
+				 
+5. footnote_codes	  10		It varies
+				
+The series_id (ISU00000000001100) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		IS
+seasonal (code) 	=		U
+supersector_code	=		000
+industry_code		=		000000
+data_type_code		=		0
+case_type_code		=		1
+area_code		=		100
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCIS text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+
+
+File Name:  is.area
+
+Field #/Data Element		Length		Value(Example)
+
+1.  area_code			3		100
+	
+2.  area_name			100		Text
+
+3.  display_level		2		0
+
+4.  selectable			1		T
+
+5.  sort_sequence		5		00000
+
+
+File Name:  is.case.type
+
+Field #/Data Element		Length		Value(Example)
+
+1.  case_type_code		1		1
+	
+2.  case_type_text		100		Text
+
+
+File Name:  is.data.type
+
+Field #/Data Element		Length		Value(Example)
+
+1.  data_type_code		1		3
+
+2.  data_type_text		100		Text
+
+
+File Name:  is.footnote
+
+Field #/Data Element		Length		Value(Example)
+
+1. footnote_code		1		C
+
+2. footnote_text		100		Text
+
+
+File Name:  is.industry
+
+Field #/Data Element		Length		Value(Example)
+
+1.  supersector_code		3		000
+
+2.  industry_code		6		000000
+
+3.  industry_name		100		Text
+
+4.  display_level		2		0
+
+5.  selectable			1		T
+
+6.  sort_sequence		5		00001
+
+
+File Name:  is.period
+
+Field #/Data Element		Length		Value(Example)
+
+1.  period			3		A01
+
+2.  period_abbr			5		ANN
+
+3.  period_name			20		Text
+
+
+File Name:  is.supersector
+
+Field #/Data Element		Length		Value(Example)
+
+1.  supersector_code		3		000
+
+2.  supersector_name		100		Text
+
+3.  display_level		2		0
+
+4.  selectable			1		T
+
+5.  sort_sequence		5		00001
+=========================================================================================
+Section 7
+=========================================================================================
+OCCUPATIONAL INJURIES AND ILLNESSES INDUSTRY DATA (IS) 
+DATABASE ELEMENTS
+
+
+Data Element	Length		Value(Example)			Description
+
+area_code	3		100			Unique code used to identify 
+							a specific geographic area.
+
+area_name	100		Text			Name of specific geographic
+				Ex.Private Industry,	area.
+				National
+
+begin_period	3		A01=Annual		Identifies first observation
+							of data series by frequency 
+							and period.
+
+begin_year	4		YYYY			Identifies earliest year for
+				Ex: 2014		which data series is available.
+						
+case_type_code	1		Ex: T=Total recordable  Code identifying type of cases 
+				cases of poisoning	to which the incidence rate	
+							applies. 
+							
+case_type_text	100		Text			Name identifying the type of
+				Ex: Injury,illness	cases to which the incidence
+							rate refers.
+				
+data_type_code	1		Ex: 1=Rate of injury 	Code identifying the data type 
+				cases per 100 		to which the incidence rate 
+				full-time workers	refers.
+
+data_type_text	100		Text 			Name identifying the data 
+				Ex: Lost workdays	type to which the incidence
+				 			rate refers.
+		
+end_period	3		A01=Annual		Identifies last observation 
+							of data series by frequency 
+							and period.
+
+end_year	4		YYYY			Identifies latest year for
+				Ex: 2014		which data are available.
+
+footnote_code	1		C			Identifies footnote for the data 
+							series.
+
+footnote_codes	10		Ex: Z=Rounded to zero	Identifies footnotes for the data 
+							series.	
+							
+footnote_text	100		Text			Contains the text of the footnote.
+
+industry_code	6		Ex:000000=All	 	NAICS code identifying industry.	
+				Workers
+				
+industry_name	100		Text			Name of industry to which data 
+				Ex: Mining		pertain.
+				
+period_abbr	5		Period name		Abbreviation of period name.
+				abbreviation
+				Ex: ANN
+
+period		3		A01=Annual		Identifies period for which 
+							data is observed.
+							
+period_name	20		Text			Full name of period to which the  
+				Ex: Annual		data observation refers.
+
+rounded		1		N=Not rounded to 0	Code indicating if "0" value is 
+				Y=Rounded to 0		the result of rounding.
+					
+series_id	17		Code series identifier 	Code identifying the specific series.
+				Ex: ISU00000000001100
+
+supersector_code 3		000			Unique code use to identify the 
+							supersectors.
+
+supersector_name 100		Text			Name identifying the type of supersector.
+
+
+value		12		Data value		Industry Data.
+	   			Ex: 0.4
+
+year		4		YYYY			Identifies year of observation. 
+				Ex: 2014	
+
+
+				
+
+
+
+
+
+	

@@ -1,0 +1,464 @@
+Business Employment Dynamics (BD)
+				     bd.txt
+
+Section Listing
+
+1. Database Definition
+2. FTP files listed in the database directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+
+
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  BUSINESS EMPLOYMENT DYNAMICS
+
+Program Description:  Business Employment Dynamics statistics track changes
+in employment at the establishment level, revealing the dynamics underlying net
+changes in employment.
+
+Summary Data Available: Quarterly data on Business Employment Dynamics are
+derived from the Quarterly Census of Employment and Wages program.
+This program is the quarterly census of all establishments under State
+unemployment insurance programs, representing about 98 percent of employment on
+nonfarm payrolls.  The data include all establishments subject to the State
+unemployment insurance (UI) laws and Federal agencies subject to the
+Unemployment Compensation for Federal Employees (UCFE) program.  Major
+exclusions from UI coverage are the self-employed workers, religious
+organizations, most agricultural workers on small farms, members of the Armed
+Forces and certain small nonprofit organizations.
+
+The Business Employment Dynamics totals require that establishment data be
+linked across quarters.  This longitudinal aspect of the data allows the
+tracking of when establishments open, close, and expand or contract their
+employees.  There are four types of job flows: employment gains at opening
+establishments, employment expansions at existing establishments, employment
+losses at closing establishments, and employment contractions at existing
+establishments.  Increases in employment at opening and expanding
+establishments sum to measure job gains.  Declines in employment at closing and
+contracting establishments sum to measure job losses. The more traditional
+measure of a net change in the employment is the difference between the number
+of jobs gained and the number of jobs lost. Data on establishment births and
+deaths are also available. Establishment births are a subset of openings,
+whereas establishment deaths are a subset of closings. These additional data
+categories remove seasonal and temporary openings and closings from the entire
+sets of those two series.
+
+Currently, job flow estimates are available as levels and as rates for the
+private sector, 2 and 3 digit NAICS sectors, total private and 2-digit NAICS
+sector by state, total private by size of employment change, and firm level
+size class data.  The rates measure gross job gains and losses and their
+components as a percentage of the average of the previous and current quarter
+employment. Business Employment Dynamics statistics cover the period from
+September 1992 to the most recent quarter available.  Estimates are available
+with and without seasonal adjustments.  Seasonal adjustment is run concurrently
+and models are updated annually.
+
+Special characteristics of the data are footnoted where necessary.
+
+Updating Schedule:  Business Employment Dynamics are updated quarterly and will
+be available about six months after the end of the reference quarter. Reference
+quarters end in March, June, September, and December.
+
+==================================================================================
+Section 2
+==================================================================================
+
+The following Employment, Hours, and Earnings--National files are on the BLS 
+internet in the sub-directory pub/time.series/bd:
+
+       	
+	bd.contacts			  -  Contacts for bd data
+	bd.county			  -  County codes		mapping file 
+	bd.data.0.Current		  -  All current year-to-date data
+	bd.data.1.AllItems		  -  All items
+	bd.dataclass			  -  Data class codes		mapping file
+	bd.dataelement			  -  Data element codes		mapping file
+	bd.footnote			  -  Footnote codes
+	bd.industry			  -  Industry codes		mapping file
+	bd.msa				  -  MSA codes			mapping file
+	bd.ownership			  -  Ownership codes		mapping file
+	bd.periodicity			  -  Periodicity codes		mapping file
+	bd.ratelevel			  -  Rate level codes 		mapping file
+	bd.seasonal			  -  Seasonal adjustment code	mapping file
+	bd.series			  -  All series and their beginning and end dates
+	bd.sizeclass			  -  Sizeclass codes		mapping file
+	bd.state			  -  State codes		mapping file
+	bd.txt				  -  General information
+	bd.unitanalysis			  -  Unitanalysis codes		mapping file
+	
+	
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per data)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+bd.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by spaces; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  30		BDS0000006000200090110004LQ5   (NOTE: last two characters are intentionally left blank)
+
+2.  seasonal	   	  1		S or U (S=seasonally adjusted, U=Not seasonally adjusted)
+
+3.  msa_code		  5		00000 (Currently Business Employment Dynamics does not produce data at MSA level)
+
+4.  state_code	   	  2		00 (This is for U.S. totals - state data based on FIPs code)
+
+5.  county_code		  3		000 (Currently Business Employment Dynamics does not produce data at county level)
+
+6.  industry_code	  6		000000 (See bd.industry for industry mapping file, NOTE: State data only available at 2-digit NAICS, National at 2 or 3 digit NAICS)
+
+7.  unitanalysis_code	  1		1 (Used for both establishment and firm size class data series)
+
+8.  dataelement_code	  1		1 or 2 (1=Employment change level, 2=Number of establishments)
+
+9.  sizeclass_code	  2		01 (00 is for establishment level by industry and/or state, 01 - 09 is for firm size class, >=10 is for establishment data by size of employment change)
+
+10. dataclass_code	  2		01 (ranges from 01-08, with 07 being establishment births and 08 establishment deaths)
+
+11. ratelevel_code	  1		L or R (L=level, R=rate)
+
+12. periodicity_code	  1		Q or A (Q=quarterly, A=annual NOTE: not all data are available for annual series)
+
+13. ownership_code	  1		5 (Private sector only)
+
+14. series_title	256		It varies		
+
+15. footnote_codes       10		It varies
+
+16. begin_year		  4		1992
+
+17. begin_period	  3		Q03			
+				
+18. end_year		  4		2021 (As of last update to this file)
+
+19. end_period		  3		Q04  (As of last update to this file)
+		
+					
+The series_id (BDS0000006000200090110004LQ5) can be broken out into:
+
+Code					Value
+
+data abbreviation	=		BD
+seasonal (code) 	=		S
+msa_code		=		00000
+state_code		=		06
+county_code		=		000
+industry_code		=		200090
+unitanalysis_code	=		1
+dataelement_code	=		1
+sizeclass_code		=		00
+dataclass_code	  	=		04
+ratelevel_code		=		L
+periodicity_code	=		Q
+ownership_code		=		5
+
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by spaces; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+The bd.data file is partitioned into a number of separate files:  See Section 2
+
+The above-referenced data files have the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  30		BDS0000006000200090110004LQ5
+
+2. year			   4		2020	
+
+3. period		   3		Q02		
+
+4. value		  12      	821741	 	
+				 
+5. footnote_codes	  10		It varies
+				
+
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character.  
+				
+
+File Name:  bd.county
+
+Field #/Data Element		Length		Value(Example)
+
+1.  county_code			3		000
+
+2.  county_name			100		National
+
+
+
+File Name:  bd.dataclass
+
+Field #/Data Element		Length		Value(Example)
+
+1.  dataclass_code		2		07
+
+2.  dataclass_name		60		Establishment Births
+
+		
+
+File Name:  bd.dataelement
+
+Field #/Data Element		Length		Value(Example)
+
+1.  dataelement_code		1		2
+						
+2.  dataelement_name 		80		Number of Establishments (NOTE: Firm size class data does not include counts of the number of firms for any data class. This is because of the dynamic sizing methodology used to construct the series.)
+
+
+
+File Name:  bd.industry
+
+Field #/Data Element		Length		Value(Example)
+
+1.  industry_code		6		200090
+						
+2.  industry_name 		100		Leisure and hospitality (NOTE: For 3-digit NAICS national data the code is 300 followed by the 3-digit NAICS code - EX: 300721 = Accommodation)
+
+
+
+File Name:  bd.msa
+
+Field #/Data Element		Length		Value(Example)
+
+1.  msa_code			5		00000
+						
+2.  msa_name 			100		National
+
+
+
+File Name:  bd.ownership
+
+Field #/Data Element		Length		Value(Example)
+
+1.  ownership_code		1		5
+						
+2.  ownership_name 		30		Private Sector
+
+
+
+File Name:  bd.periodicity
+
+Field #/Data Element		Length		Value(Example)
+
+1.  periodicity_code		1		Q
+						
+2.  periodicity_name 		30		Quarterly (Annual data are available for U.S. totals at the 2-digit NAICS sector level and for each state at the Total private level. These values can be downloaded for each quarter (i.e. March to March, June to June, etc.), however the supplemental tables and charts are only updated once a year for the March to March time period.
+
+
+
+File Name:  bd.ratelevel
+
+Field #/Data Element		Length		Value(Example)
+
+1.  ratelevel_code		1		L
+
+2.  ratelevel_name 		30		Level (Rates are calculated using the value of the component for a given series as the numerator and the average of the current and prior quarter levels (either employment or establishment counts) as the denominator. The BD program does not produce data for levels, but those data can be obtained at www.bls.gov/cew
+
+
+
+File Name:  bd.sizeclass
+
+Field #/Data Element		Length		Value(Example)
+
+1.  sizeclass_code 		2		00
+						
+2.  sizeclass_name 		100		All size classes (00 is for industry and/or state data, 01 to 09 is for firm size class, >=10 is for establishment level by size of employment change)
+
+
+
+File Name:  bd.state
+
+Field #/Data Element		Length		Value(Example)
+
+1. state_code			2		06
+
+2. state_name			30		California
+
+
+
+File Name:  bd.unitanalysis
+
+Field #/Data Element		Length		Value(Example)
+
+1. unitanalysis_code		1		1
+
+2. unitanalysis_name		30		Establishment
+
+
+
+=========================================================================================
+Section 7
+=========================================================================================
+BUSINESS EMPLOYMENT DYNAMICS(BD) DATABASE ELEMENTS
+
+Data Element	Length		Value(Example)			Description
+
+begin_period	3		M01-M13			Identifies first data observation
+				Q01-Q05			within the first year for which
+				Ex: M06=June		data are available for a given
+				(M=Monthly, M13=Annual	time series.
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+
+begin_year	4		YYYY			Identifies first year for which 
+				Ex: 1992		data are available for a given
+							time series.
+
+county_code	3		000			Code identifying the county of the 
+							observation.
+
+county_name	100		Text			County name of the observation.
+				Ex. National
+
+dataclass_code	2		02			Code identifying the data class 
+							of the observation.
+
+dataclass_name	60		Text			Data class name of the observation.
+				Ex: Expansions 	
+				
+dataelement_code	1	1			Code identifying the data element 
+							of the observation.
+
+dataelement_name	80	Text			Data element name of the observation.
+				Ex: Employment  	
+				
+end_period	3		M01-M13			Identifies last data observation
+				Q01-Q04			within the last year for which
+				Ex: M06=June		data are available for a given
+				(M=Monthly, M13=Annual	time series.
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+				
+end_year	4		YYYY			Identifies last year for which 
+				Ex: 2020		data are available for a given
+							time series.
+							
+footnote_codes	10		It varies		Identifies footnotes for the data 
+							series.	
+							
+industry_code	6		000000			Code identifying industry.
+							
+industry_name	100		Text			Name of industry.
+				Ex: Grocery Stores
+
+msa_code	5		00000			Code identifying the msa's for the data 
+							observation.
+
+msa_name	100		Text			MSA name of the observation.
+				Ex. National
+
+ownership_code	1		5			Code identifying ownership of the data 
+							observation.
+
+ownership_name	30		Text			Ownership name of the observation.
+				Ex.Private Sector
+
+period		3		M01-M13			Identifies period for which
+				Q01-Q04			data is observed. 
+				Ex: M06=June		
+				(M=Monthly, M13=Annual
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+
+periodicity_code 1		Q			Code identifying the periodicity of the
+							data observation.
+
+periodicity_name 30		Text			Periodicity name of the observation.
+				Ex. Quarterly
+
+ratelevel_code	1		Ex: L			Code identifying the rate level 
+							of the observation.
+
+ratelevel_name	30		Text			Description of rate level. 
+				Ex: Level  
+
+seasonal	1		S=Seasonally		Code identifying whether the
+				  Adjusted 		data are seasonally adjusted.
+				U=Unadjusted
+
+series_id	30		BDS0000006000200090110004LQ5  	Code identifying the specific 
+								series.
+
+sizeclass_code	2		01, 13			Code identifying size class of the data
+							observation (00 is for industry and/or state data, 01 to 09 is for firm size class, >=10 is for establishment level by size of employment change).
+
+sizeclass_name	100		Text			Description of size class.
+				Ex. 1 to 4 employees, 4 jobs (indicating an establishment either gained or lost 4 jobs from the prior quarter)
+							
+state_code	2		00			Code identifying the state that the
+							observation belongs to.
+
+state_name	30		Text			State name of the observation.
+				Ex. National
+
+unitanalysis_code 1		1			Code idenifying the unit analysis of the data
+							observation.
+
+unitanalysis_name 30		Text			Unit analysis name of the observation.
+				Ex. Establishment
+
+value		12		103623			Data value for series.
+
+year		4		YYYY			Identifies year of observation.
+				Ex: 2003		

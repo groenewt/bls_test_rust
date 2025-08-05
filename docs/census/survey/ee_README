@@ -1,0 +1,80 @@
+The following Employment Cost Index files are on the BLS internet in the subdirectory 
+pub/time.series/ec:
+
+       contact.doc	- Contacts for BLS surveys
+       ec.compensation	- Comp_code mapping file
+       ec.data.0.Current- Employment Cost Index data for current year
+       ec.data.1.AllData- All Employment Cost Index data 
+       ec.doc		- General information
+       ec.group		- Group_code       mapping file
+       ec.ownership	- Ownership_code   mapping file
+       ec.period	- Period_code      mapping file
+       ec.periodicity	- Periodicity_code mapping file
+       ec.series	- All series and their beginning dates
+
+
+
+Both of the above data files (ec.data.0.Current  &  ec.data.1.AllData) have the following 
+format:
+
+       series_id              period                 
+           |                    |                   
+       ---------               ---                  
+       ECU12803Q       1993    Q01            0.3   
+                       ----                   ---   
+                         |                     |    
+                        year                 value  
+                            
+
+
+
+ The  series_id  can be broken down into:
+
+
+     Series               ownership_code    
+       |     comp_code       |                                  
+       |         |           |               
+      --         -           -               
+      EC    U    1    280    3   Q           
+            -          -         -           
+            |          |         |           
+            |       group_code   |          
+         seasonal            periodicity_code
+
+
+
+
+   CODE DEFINITIONS
+
+              
+ Series:             EC - Employment Cost Index
+  
+ seasonal:           U  - unadjusted data
+                     S  - seasonally adjusted data
+
+
+ comp_code:           1 - Total Compensation
+                      2 - Wages and salaries
+                      3 - Benefits 
+
+       
+ group_code:          Industry, occupation classification codes
+                      see  pub/time.series/ec/ec.group  for a detailed
+                      explanation of all group codes.
+
+
+ ownership_code:      1 - Civilian
+                      2 - Private
+                      3 - State and Local government
+
+
+ periodicity_code:    I - Index
+                      Q - 3 month percent change
+                      A - 12 month percent change
+
+
+ period:            Q01 - 1st Quarter
+                    Q02 - 2nd Quarter
+                    Q03 - 3rd Quarter
+                    Q04 - 4th Quarter
+                    Q05 - Annual Average (NOT USED)

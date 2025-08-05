@@ -1,0 +1,426 @@
+Job Openings and Labor Turnover Survey (JOLTS)
+				     jt.txt
+
+
+
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+
+================================================================================
+Section 1
+================================================================================
+The following is a definition of:  Job Openings and Labor Turnover Survey (JOLTS)
+
+Survey Description:  The Job Openings and Labor Turnover Survey program provides
+national estimates of rates and levels for job openings, hires, and total 
+separations.  Total separations are further broken out into quits, layoffs and
+discharges, and other separations.
+
+Unadjusted and seasonally adjusted levels and rates of all data elements are published 
+by supersector and select sector based on the North American Industry Classification 
+System (NAICS).  These supersectors and select sectors include: mining and logging; 
+construction; durable goods manufacturing; nondurable goods manufacturing; wholesale 
+trade; retail trade; transportation, warehousing, and utilities; information; finance 
+and insurance; real estate and rental and leasing; professional and business services; 
+educational services; health care and social assistance; arts, entertainment, and recreation; 
+accommodation and food services; other services; federal government; state and local 
+government education; and state and local government, excluding education.
+
+Estimates are also available for four geographic regions (Northeast, Midwest,
+South, and West).
+
+The sample for the Job Openings and Labor Turnover Survey includes randomly
+selected nonfarm establishments such as factories, offices, and stores, as
+well as federal, state, and local government entities in the 50 states and the
+District of Columbia.  The 16,000 establishments in the JOLTS survey are drawn
+from a universe of approximately nine million establishments compiled as 
+part of the Quarterly Census of Employment and Wages, or ES-202, program.
+
+All data series are available from December 2000 to present on a monthly basis.
+Annual estimates are available for all industries for hires, quits, layoffs and 
+discharges, other separations, and total separations.
+
+BLS seasonally adjusts series using the X-13-ARIMA-SEATS seasonal adjustment program.  
+Seasonal adjustment is the process of estimating and removing periodic fluctuations 
+caused by events such as weather, holidays, and the beginning and ending of the school 
+year.  Seasonal adjustment makes it easier to observe fundamental changes in the level 
+of the series, particularly those associated with general economic expansions and 
+contractions.  A concurrent seasonal adjustment methodology is used in which new 
+seasonal adjustment factors are calculated each month, using all relevant data, up to 
+and including the data for the current month.
+
+JOLTS uses moving averages as seasonal filters in seasonal adjustment.  JOLTS seasonal
+adjustment includes both additive and multiplicative seasonal adjustment models and
+REGARIMA (regression with auto-correlated errors) modeling to improve the seasonal
+adjustment factors at the beginning and end of the series and to detect and adjust for
+outliers in the series.
+
+All levels are published in thousands and all rates are published in percent to one
+decimal place.
+
+Special characteristics of the data are footnoted where necessary.
+
+Updating Schedule: First Closing estimates are usually available six weeks after
+the end of the reference month.  At the same time, second closing estimates for the month
+prior to the reference month also are released.  The month following the annual CES
+benchmark revision, all JOLTS pertinent estimates are retabulated.
+
+==================================================================================
+Section 2
+==================================================================================
+
+The following Job Openings and Labor Turnover Survey files are on the BLS 
+internet in the sub-directory pub/time.series/jt:
+
+	jt.contacts			- Contacts for JOLTS program
+	jt.data.0.Current		- Nine years of data plus year-to-date estimates
+	jt.data.1.AllItems		- All estimates
+	jt.data.2.JobOpenings		- Seasonally adjusted and Unadjusted, Job Openings
+					  levels and rates, 2000-present
+	jt.data.3.Hires			- Seasonally adjusted and Unadjusted, Hires
+					  levels and rates, 2000-present
+	jt.data.4.TotalSeparations	- Seasonally adjusted and Unadjusted, Total Separations
+					  levels and rates, 2000-present
+	jt.data.5.Quits			- Seasonally adjusted and Unadjusted, Quits
+					  levels and rates, 2000-present
+	jt.data.6.LayoffsDischarges	- Seasonally adjusted and Unadjusted, Layoffs and Discharges
+					  levels and rates, 2000-present
+	jt.data.7.OtherSeparations	- Seasonally adjusted and Unadjusted, Other Separations
+					  levels and rates, 2000-present
+	jt.area				- Metropolitan Statistical Area codes	mapping file
+	jt.dataelement			- Data element codes			mapping file
+	jt.footnote			- Footnote codes			mapping file
+	jt.industry			- Industry codes			mapping file
+	jt.period			- Period codes				mapping file
+	jt.ratelevel			- Rate/Level codes			mapping file
+	jt.seasonal			- Seasonality codes			mapping file
+	jt.sizeclass			- Establishment size codes		mapping file
+	jt.state			- State codes				mapping file
+	jt.series			- Series codes
+	jt.txt				- General information
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time 
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment 
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following 
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions 
+that correspond to each of the various codes contained within each series 
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a 
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+jt.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by spaces; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)
+
+1.  series_id		  21		JTS000000000000000JOR
+
+2.  seasonal		  1		S or U
+
+3.  industry_code	  6		000000
+
+4.  state_code		  2		00
+
+5.  area_code		  5		00000
+
+6.  sizeclass_code	  2		00
+
+7.  dataelement_code	  2		JO
+
+8.  ratelevel_code	  1		R
+
+9.  footnote_codes	  10		Text
+
+10. begin_year		  4		2000
+
+11. begin_period	  3		M12
+
+12. end_year		  4		2020
+
+13. end_period		  3		M08
+
+
+The series_id (JTS000000000000000JOR) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		JT
+seasonal (code)		=		S
+industry_code		=		000000
+state_code		=		00
+area_code		=		00000
+sizeclass_code		=		00
+dataelement_code	=		JO
+ratelevel_code		=		R
+
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define 
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by spaces; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character. 
+
+The jt.data file is partitioned into a number of separate files:  See Section 2
+
+The above-referenced data files have the following format:
+
+Field #/Data Element	Length		Value(Example)
+
+1. series_id		  21		JTS000000000000000JOR
+
+2. year			   4		2000
+
+3. period		   3		M12
+
+4. value		  12		4868
+
+5. footnote_codes	  10		It varies
+
+
+The series_id (JTS000000000000000JOR) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		JT
+seasonal (code) 	=		S
+industry_code		=		000000
+state_code		=		00
+area_code		=		00000
+sizeclass_code		=		00
+dataelement_code	=		JO
+ratelevel_code		=		R
+
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character.  
+
+
+File Name:  jt.area
+
+Field #/Data Element		Length		Value(Example)
+
+1.  area_code			5		00000
+
+2.  area_text			100		Text
+
+
+File Name:  jt.dataelement
+
+Field #/Data Element		Length		Value(Example)
+
+1.  dataelement_code		2		JO
+
+2.  dataelement_text		100		Text
+
+
+File Name:  jt.footnote
+
+Field #/Data Element		Length		Value(Example)
+
+1.  footnote_code		2		P
+
+2.  footnote_text		200		Text
+
+
+File Name:  jt.industry
+
+Field #/Data Element		Length		Value(Example)
+
+1.  industry_code		6		000000
+
+2.  industry_text		100		Text
+
+
+File Name:  jt.period
+
+Field #/Data Element		Length		Value(Example)
+
+1.  period			3		M01
+
+2.  period_abbr			5		JUN
+
+3.  period_name			20		Text
+
+
+File Name:  jt.ratelevel
+
+Field #/Data Element		Length		Value(Example)
+
+1.  ratelevel_code		1		R
+
+2.  ratelevel_text		100		Text
+
+
+File Name:  jt.seasonal
+
+Field #/Data Element		Length		Value(Example)
+
+1.  seasonal_code		2		S
+
+2.  seasonal_text		100		Text
+
+
+File Name:  jt.sizeclass
+
+Field #/Data Element		Length		Value(Example)
+
+1.  sizeclass_code		2		00
+
+2.  sizeclass_text		100		Text
+
+
+File Name:  jt.state
+
+Field #/Data Element		Length		Value(Example)
+
+1.  state_code			2		00
+
+2.  state_text			100		Text
+
+
+=========================================================================================
+Section 7
+=========================================================================================
+JOB OPENINGS AND LABOR TURNOVER SURVEY (JOLTS) DATABASE ELEMENTS
+
+Data Element	Length		Value(Example)			Description
+
+area_code	  5		Ex: 00000		Code identifying Metropolitan Statistical Area.
+
+area_text	  100		Text			Description of Metropolitan Statistical Area.
+				Ex: All areas
+
+begin_period	  3		M01-M13			Identifies first data observation
+				Q01-Q05			within the first year for which
+				Ex: M06=June		data is available for a given
+				(M=Monthly, M13=Annual	time series.
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+
+begin_year	  4		YYYY			Identifies first year for which
+				Ex: 2000		data is available for a given
+							time series.
+
+dataelement_code  2		JO			Code identifying type of data.
+
+dataelement_text  100		Text			Description of type of data.
+				Ex: Job Openings
+
+end_period	  3		M01-M13			Identifies last data observation
+				Q01-Q04			within the last year for which
+				Ex: M06=June		data is available for a given
+				(M=Monthly, M13=Annual	time series.
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+
+end_year	  4		YYYY			Identifies last year for which
+				Ex: 2019		data is available for a given
+							time series.
+
+footnote_codes	  10		It varies		Identifies footnotes for the data
+							series.
+
+footnote_text	  100		Text			Contains the text of the footnote.
+
+industry_code	  6		000000			Code identifying industry.
+
+industry_text	  100		Text			Name of industry.
+				Ex: Total nonfarm
+
+period_abbr	  5		Period name 		Abbreviation of period name.
+				abbreviation
+				Ex: JUN
+
+period		  3		M01-M13			Identifies period for which
+				Q01-Q04			data are observed. 
+				Ex: M06=June		
+				(M=Monthly, M13=Annual
+				Avg, Q=Quarterly, Q05=
+				Annual Avg)
+
+period_text	  20		Text			Full name of period to which 
+				Ex: June		the data observation refers.
+
+ratelevel_code	  1		R			Code identifying rate or level.
+
+ratelevel_text	  100		Text			Decription of ratelevel_code.
+				Ex: Rate
+
+seasonal	  1		S=Seasonally		Code identifying whether the
+				  Adjusted 		data are seasonally adjusted.
+				U=Unadjusted
+
+series_id	  21		JTS000000000000000JOR	Code identifying the specific 
+							series.
+
+sizeclass_code	  2		Ex: 00			Code identifying size class.
+
+sizeclass_text	  100		Text			Description of size class.
+				Ex: All size classes
+
+state_code	  2		Ex: 00			Code identifying state or region.
+
+state_text	  100		Text			Description of state or region.
+				Ex: Total US
+
+value		  12		Ex: 103623		Data value for series.
+
+year		  4		YYYY			Identifies year of observation.
+				Ex: 2000
+
+
+
+
+

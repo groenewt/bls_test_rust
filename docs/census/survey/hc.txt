@@ -1,0 +1,498 @@
+	Occupational Injuries and Illnesses - Characteristics Data (HC)
+				hc.txt
+
+Section Listing
+
+1.  Survey Definition
+2.  FTP files listed in the survey directory
+3.  Time series, series file, data file, & mapping file definitions and 
+    relationships
+4.  Series file format and field definitions
+5.  Data file format and field definitions
+6.  Mapping file formats and field definitions
+7.  Data Element Dictionary
+
+========================================================================
+Section 1
+========================================================================
+
+The following is a definition of:  Occupational Injuries and Illnesses - 
+characteristics data (HC)
+
+Survey Description:  Besides injury and illness counts, survey respondents 
+also are asked to provide additional information for a subset of the most 
+serious nonfatal cases logged, namely, those that involved at least 1 day 
+away from work, beyond the day of injury or onset of illness. Employers 
+answer several questions about these cases, including the demographics of 
+the worker disabled, the nature of the disabling condition, and the event 
+and source producing that condition. 
+
+Summary Data Available: Detailed breakouts of injury and illness data by
+a variety of characteristics, including age, category, event, gender,
+industry, length of service, nature, occupation, part of body, race, and
+source are available.
+
+Frequency of Observations: Monthly, quarterly, and annual data are 
+available.
+
+Data Characteristics:  Data are reported to one decimal place.
+
+Updating Schedule: OSHS Characteristics data are published annually.
+
+========================================================================
+Section 2
+========================================================================
+
+The following Occupational Injuries and Illnesses - characteristics data 
+files are on the BLS internet in the sub-directory pub/time.series/hc:
+
+	
+	hc.age				- Age codes (mapping file)
+	hc.case				- Case codes (mapping file)
+	hc.category			- Category codes (mapping file)
+	hc.category2			- Category codes (mapping file)
+	hc.contacts			- Contacts for hc survey 
+	hc.data.0.Current		- All current year-to-date data
+	hc.data.1.AllData		- All data
+	hc.event			- Event codes (mapping file)
+	hc.gender			- Gender codes (mapping file)
+	hc.industry			- Industry codes (mapping file)
+	hc.los				- LOS codes (mapping file)
+	hc.nature			- Nature codes (mapping file)
+	hc.occupation			- Occupation codes (mapping file)
+	hc.pob				- POB codes (mapping file)
+	hc.race				- Race codes (mapping file)
+	hc.series			- All series with beginning and end dates
+	hc.source			- Source codes (mapping file)
+	hc.txt				- General information
+	
+============================================================================
+Section 3
+============================================================================
+
+The definition of a time series, its relationship to and the 
+interrelationship among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of 
+time over consistent time intervals (i.e. monthly, quarterly, semi-annually,
+annually).  BLS time series data are typically produced at monthly intervals
+and represent data ranging from a specific consumer item in a specific 
+geographic area whose price is gathered monthly to a category of worker in 
+a specific industry whose employment rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the 
+following set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level 
+information:
+
+a)  the period and year corresponding to the first data observation
+b)  the period and year corresponding to the most recent data observation.
+
+The mapping files are definition files that contain explanatory text 
+descriptions that correspond to each of the various codes contained within 
+each series identification code.
+
+The data file contains one line of data for each observation period 
+pertaining to a specific time series.  Each line contains a reference to 
+the following:
+
+a)  series identification code
+b)  year in which data is observed
+c)  period for which data is observed (M13, Q05, and s03 indicate annual 
+    averages)
+d)  value
+e)  footnote code (if available)
+
+============================================================================
+Section 4
+============================================================================
+
+File Structure and Format:  The following represents the file format used 
+to define hc.series.  Note the Field Numbers are for reference only; they 
+do not exist in the database.  Data files are in ASCII text format.  Data 
+elements are separated by spaces; the first record of each file contains 
+the column headers for the data elements stored in each field.  Each record 
+ends with a new line character.
+
+Field #/Data Element		Length		Value(Example)
+
+1.  series_id			  17		HCU00000033
+
+2.  category_code		   2		00
+
+3.  datatype_code		   1		3
+
+4.  casetype_code		   1		3
+
+5.  age_code			   4		19XX
+
+6.  los_code			   4		0000
+
+7.  race_code			   4		1XXX
+
+8.  gender_code			   4		MXXX
+
+9.  pob_code			   4		00XX
+
+10. event_code			   4		010X
+
+11. source_code			   4		0110
+
+12. occupation_code		   4		0090
+
+13. nature_code			   4		011X
+
+14. industry_code		   4		0100
+
+15. footnote_codes		  10		It varies
+
+16. begin_year			   4		1992
+
+17. begin_period		   3		A01
+
+18. end_year			   4		1999
+
+19. end_period			   3		A01
+
+The series_id (HCUSH332233) can be broken out into:
+
+Code				=			Value
+
+survey abbreviation		=			HC
+seasonal adjustment code	=			U
+case category			=			SH
+detail code			=			3322
+datatype code			=			3
+case type code			=			3
+
+============================================================================
+Section 5
+============================================================================
+
+File Structure and Format:  The following represents the file format used 
+to define each data file.  Note that the field numbers are for reference 
+only; they do not exist in the database.  Data files are in ASCII text 
+format.  Data elements are separated by spaces; the first record of each 
+file contains the column headers for the data elements stored in each field.
+Each record ends with a new line character.
+
+The hc.data file is partitioned into two separate files:
+
+	1.  hc.data.0.Current	= All current year-to-date data
+	2.  hc.data.1.AllData	= All data
+
+Both of the above data files have the following format:
+
+Field #/Data Element		Length		Value(Example)
+
+1.  series_id			  17		HCUSH332233
+
+2.  year			   4		1998
+
+3.  period			   3		M01
+
+4.  value			  12		2360
+
+5.  footnote_codes		  10		It varies
+
+The series_id (HCUSH332233) can be broken out into:
+
+Code				=			Value
+
+survey abbreviation		=			HC
+seasonal adjustment code	=			U
+case category			=			SH
+detail code			=			3322
+datatype code			=			3
+case type code			=			3
+
+============================================================================
+Section 6
+============================================================================
+
+File Structure and Format:  The following represents the file format used 
+to define each mapping file.  Note that the field numbers are for reference 
+only; they do not exist in the database.  Mapping files are in ASCII text 
+format.  Data elements are separated by tabs; the first record of each file 
+contains the column headers for the data elements stored in each field.  
+Each record ends with a new line character.
+
+File Name:  hc.age
+
+Field #/Data Element		Length			Value(Example)
+
+1.  age_code			   4			14XX
+
+2.  age_text			 100			Text
+
+
+File Name:  hc.case
+
+Field #/Data Element		Length			Value(Example)
+
+1.  case_code		   	   1			N 
+
+2.  case_text		 	 100			Text
+
+
+File Name:  hc.category
+
+Field #/Data Element		Length			Value(Example)
+
+1.  case_code			   1			3
+
+2.  category_code		   2			09
+
+3.  category_text		 100			Text
+
+
+File Name:  hc.category2
+
+Field #/Data Element		Length			Value(Example)
+
+1.  category_code		   2			09
+
+2.  category_text		 100			Text
+
+
+File Name:  hc.datatype
+
+Field #/Data Element		Length			Value(Example)
+
+1.  datatype_code		   1			3
+
+2.  datatype_text		 100			Text
+
+
+File Name:  hc.event 
+
+Field #/Data Element		Length			Value(Example)
+
+1.  event_code			   4			0XXX
+
+2.  event_text			 100			Text
+
+
+File Name:  hc.gender
+
+Field #/Data Element		Length			Value(Example)
+
+1.  gender_code			   4			FXXX
+
+2.  gender_text			 100			Text
+
+
+File Name:  hc.industry
+
+Field #/Data Element		Length			Value(Example)
+
+1.  industry_code		   4			0100
+
+2.  industry_text		 100			Text
+
+
+File Name:  hc.los
+
+Field #/Data Element		Length			Value(Example)
+
+1.  los_code			   4			NRXX
+
+2.  los_text			 100			Text
+
+
+File Name:  hc.nature
+
+Field #/Data Element		Length			Value(Example)
+
+1.  nature_code			   4			00XX
+
+2.  nature_text			 100			Text
+
+
+File Name:  hc.occupation
+
+Field #/Data Element		Length			Value(Example)
+
+1.  occupation_code		   4			0030
+
+2.  occupation_text		 100			Text
+
+
+File Name:  hc.pob
+
+Field #/Data Element		Length			Value(Example)
+
+1.  pob_code			   4			0XXX
+
+2.  pob_text			 100			Text
+
+
+File Name:  hc.race
+
+Field #/Data Element		Length			Value(Example)
+
+1.  race_code			   4			2XXX
+
+2.  race_text			 100			Text
+
+
+File Name:  hc.source
+
+Field #/Data Element		Length			Value(Example)
+
+1.  source_code			   4			010X
+
+2.  source_text			 100			Text
+
+============================================================================
+Section 7
+============================================================================
+
+OCCUPATIONAL INJURIES AND ILLNESSES--CHARACTERISTICS DATA (HC) DATABASE 
+ELEMENTS
+
+Data Element		Length	Value(Example)		   Description
+
+age_code		  4	19XX	   	   Code identifying age of
+						   subjects for which data
+						   are observed.
+
+age_text		100	Text		   Identifies age of subjects
+				Ex: 20-24	   for which data are 
+						   observed.	
+
+begin_period	   	  3	M06		   Identifies first data
+				Ex: M06=June	   observation within the
+						   first year for which data
+						   are available for a given
+						   time series.
+
+begin_year		  4	1992		   Identifies first year for 
+					   	   which data are available
+						   for a given time series.
+
+case_code	   	  1	N		   Code identifying case.
+
+case_text	   	100	Text		   Describes case.
+
+casetype_code	   	  1	A		   Code identifying type of
+				Ex: A=Industry	   case for which data are
+				division or 	   available for a given time
+				length of absence  series.	
+				by age group
+				
+
+category_code		  2	09		   Code identifying industry, 
+						   event, or characteristic 
+						   for which data are 
+						   available for a given time 
+						   series.
+
+category_text	 	100	Text	   	   Names the industry, event,
+				Ex: 10=Mining,	   or characteristic for
+				NB=Fractures	   which data are available
+						   for a given time series.
+
+datatype_code	   	  1	3		   Code identifying the 
+						   datatype of the 
+						   observation.
+
+end_period	   	  3	A01		   Identifies last data
+						   observation within the 
+						   last year for which data
+						   are available for a given
+						   time series.
+
+end_year		  4	1998		   Identifies last year for
+						   which data are available
+						   for a given time series.
+
+event_code		  4	010X		   Code identifying the event
+						   which resulted in the 
+						   reported injury or 
+						   illness.
+event_text		100	Text	   	   Names the event which 
+				Ex: Fall from	   resulted in the reported
+				roof		   injury or illness.
+
+footnote_code		 10	It varies	   Identifies footnote for 
+						   the data series.
+
+gender_code	   	  4	MXXX		   Code identifying gender of
+						   person experiencing the
+						   injury or illness.
+
+gender_text	 	 100	Text	   	   Names gender of person 
+				Ex: Male	   experiencing the injury or
+						   illness.
+
+industry_code		   4	0100		   Code identifying the
+						   industry for which data
+						   are observed.
+
+industry_text	 	 100	Text 		   Names the industry for
+				Ex: Construction   which data are observed.
+
+los_code		   4	NRXX		   Code identifying the 
+						   length of service of the
+						   person experiencing the
+						   injury or illness.
+
+los_text		 100	Text	           Names the length of 
+				Ex: 1-5 years	   service of the person 
+						   experiencing the injury or
+						   illness.
+
+nature_code	   	   4	011X		   Code identifying the 
+						   nature of the injury or
+						   illness.
+
+nature_text	 	 100	Text		   Names the nature of the
+				Ex: Burns	   injury or illness.
+
+occupation_code		   4	0090		   Code identifying the 
+						   occupation of the person
+						   experiencing the injury or
+						   illness.
+
+occupation_text		 100	Text	    	   Names the occupation of
+				Ex: Dentists	   the person experiencing 
+						   the injury or illness.
+
+period		   	   3	M01		   Identifies period for which data 
+ 				Ex: M01=Jan	   is observed.
+
+pob_code		   4	00XX		   Code identifying the part
+						   of body affected.
+
+pob_text		 100	Text	   	   Names the part of body 
+				Ex: Forearm(s)	   affected.
+
+race_code		   4	1XXX		   Code identifying the race 
+						   of the person experiencing
+						   the injury or illness.
+
+race_text		 100	Text	   	   Names the race of the 
+				Ex: Hispanic	   person experiencing the
+						   injury or illness.
+
+series_id		  17	HCUSH332233	   Unique series identifier
+
+source_code	 	  4	0110		   Code identifying the 
+						   source of the injury or 
+						   illness.
+
+source_text	 	100	Text	   	   Names the source of the
+				Ex: Insecticides   injury or illness.
+
+value			12	2360		   Observation for the series.
+	    
+year			4	1998		   Identifies year of observation.        	
+				

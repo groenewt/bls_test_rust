@@ -1,0 +1,345 @@
+			Geographic Profile (GP)
+				gp.txt
+
+Section Listing
+
+1. Survey Definition
+2. FTP files listed in the survey directory.
+3. Time series, series file, data file, & mapping file definitions and relationships
+4. Series file format and field definitions
+5. Data file format and field definitions
+6. Mapping file formats and field definitions
+7. Data Element Dictionary
+================================================================================
+Section 1
+================================================================================
+
+The following is a definition of:  GEOGRAPHIC PROFILE (GP)
+
+Survey Description:  Geographic Profile series are taken from the Current 
+Population Survey (CPS;  see the Labor Force survey), conducted by the 
+Bureau of the Census, which produces information about employment and 
+unemployment in States, classified by a variety of demographic and economic
+characteristics.
+
+Data for demographic groups were not published in the Geographic Profile 
+where they did not meet BLS publication standards of reliability for the 
+particular area based on the sample in that area.  See Appendix B of the 
+Geographic Profile.  All series used in the development of the Geographic 
+Profile are included here, whether or not they were included in the 
+publication itself.
+
+The official Bureau of Labor Statistics annual average estimates for States,
+which are the basis for determining the eligibility of a State for benefits 
+under Federal economic assistance programs, are obtained directly from the 
+CPS.
+
+Summary Data Available  Presently, there are approximately 8,500 State labor
+force series available in the LABSTAT database.
+
+These series include the major labor force estimates for States as published
+in the annual Geographic Profile of Employment and Unemployment and other 
+BLS publications.
+
+Major employment status series -- civilian labor force, employed, 
+unemployed, and unemployment rate -- are defined by State, race, age, sex, 
+and occupational classification.
+
+Also available are selected series for civilian noninstitutional population 
+by State.
+
+In general, if a selected set of characteristics is available for one State,
+it is available for all States.  However, Hispanic data for 1981-82 are 
+available only for selected States (including Arizona, California, Colorado,
+Florida, Illinois, Indiana, Michigan, New Jersey, New Mexico, New York, 
+Ohio, Pennsylvania, and Texas).
+
+Frequency of Observations:  All data are annual averages.
+
+Data Characteristics:  Rates are expressed as percents with one decimal 
+place.  Levels are measured in thousands of persons and are stored with no 
+decimal places.
+
+Updating Schedule:  Updates are made once a year when the Geogrpahic Profile
+is ready for publication in late March or early April. Historical data are 
+subject to adjustment due to revisions in the State population estimates 
+made by the Bureau of the Census.  These adjustments will be incorporated 
+into LABSTAT with the regular annual update.
+
+References:	BLS Handbook of Methods, Bulletin 2285 (1988), Chapter 1,
+		"Labor force, employment, and unemployment from the Current 
+		Population Survey", and Chapter 4, "Measurement of 
+		unemployment in States and local areas".
+==================================================================================
+Section 2
+==================================================================================
+The following Geographic Profile files are on the BLS internet in the 
+sub-directory pub/time.series/gp:
+
+	gp.area			- Area codes		mapping file
+	gp.charact		- Character codes	mapping file
+	gp.contacts		- Contacts for gp survey 
+	gp.data.1.AllData	- All Data
+	gp.labor.force		- Labor force codes	mapping file
+	gp.period		- Period codes		mapping file
+	gp.series		- All series and their beginning and end dates
+	gp.state		- State codes		mapping file
+	gp.txt			- General information
+
+=================================================================================
+Section 3
+=================================================================================
+The definition of a time series, its relationship to and the interrelationship
+among series, data and mapping files is detailed below:
+
+A time series refers to a set of data observed over an extended period of time
+over consistent time intervals (i.e. monthly, quarterly, semi-annually, annually).  
+BLS time series data are typically produced at monthly intervals and represent data 
+ranging from a specific consumer item in a specific geographical area whose price 
+is gathered monthly to a category of worker in a specific industry whose employment
+rate is being recorded monthly, etc.
+
+The FTP files are organized such that data users are provided with the following
+set of files to use in their efforts to interpret data files:
+
+a)  a series file (only one series file per survey)
+b)  mapping files
+c)  data files
+
+The series file contains a set of codes which, together, compose a series 
+identification code that serves to uniquely identify a single time series.  
+Additionally, the series file also contains the following series-level information:
+
+a) the period and year corresponding to the first data observation 
+b) the period and year corresponding to the most recent data observation. 
+
+The mapping files are definition files that contain explanatory text descriptions
+that correspond to each of the various codes contained within each series
+identification code.
+
+The data file contains one line of data for each observation period pertaining to a
+specific time series.  Each line contains a reference to the following:
+
+a) a series identification code
+b) year in which data is observed
+c) period for which data is observed (M13, Q05, and S03 indicate annual averages)
+d) value
+e) footnote code (if available)
+=================================================================================
+Section 4
+=================================================================================
+File Structure and Format: The following represents the file format used to define 
+gp.series.  Note that the Field Numbers are for reference only; they do not exist 
+in the database.  Data files are in ASCII text format.  Data elements are separated 
+by tabs; the first record of each file contains the column headers for the data
+elements stored in each field.  Each record ends with a new line character. 
+
+Field #/Data Element	Length		Value(Example)		
+
+1.  series_id		  17		GPU00100000E0000 
+
+2.  area_type_code	  1		0
+
+3.  state_code		  2		01			
+
+4.  area_code		  4		5640
+
+5.  size_code		  1		0
+
+6.  labor_force_code	  1		E
+
+7.  charact_code	  4		0020
+
+8.  begin_year		  4		1981
+
+9.  begin_period	  3		A01		
+				
+10. end_year		  4		1998		
+
+11. end_period		  3		A01		
+					
+The series_id (GPU00100000E0000) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		GP
+seasonal (code) 	=		U
+area_type_code		=		0
+state_code		=		01
+area_code		=		0000
+labor_force_code	=		E
+charact_code		=		0000
+==================================================================================
+Section 5
+==================================================================================
+File Structure and Format: The following represents the file format used to define
+each data file.  Note that the field numbers are for reference only; they do not 
+exist in the database.  Data files are in ASCII text format.  Data elements are 
+separated by spaces; the first record of each file contains the column headers for 
+the data elements stored in each field.  Each record ends with a new line character.  
+
+File Name:  gp.data.1.AllData
+
+The above-named data file has the following format:
+
+Field #/Data Element	Length		Value(Example)		
+
+1. series_id		  17		GPU00100000E0000 	      	
+
+2. year			   4		1981	
+
+3. period		   3		A01		
+
+4. value		  12      	1491	 	
+				 
+5. footnote_codes	  10		It varies
+				
+
+The series_id (GPU00100000E0000) can be broken out into:
+
+Code					Value
+
+survey abbreviation	=		GP
+seasonal (code) 	=		U
+area_type_code		=		0
+state_code		=		01
+area_code		=		0000
+labor_force_code	=		E
+charact_code		=		0000
+================================================================================
+Section 6
+================================================================================
+File Structure and Format:  The following represents the file format used to define
+each mapping file. Note that the field numbers are for reference only; they do not
+exist in the database.  Mapping files are in ASCII text format.  Data elements are
+separated by tabs; the first record of each file contains the column headers for the
+data elements stored in each field.  Each record ends with a new line character. 
+
+File Name:  gp.area
+
+Field #/Data Element		Length		Value(Example)
+
+1.state_code			2		04
+
+2.area_code			4		6200
+
+3.area_name			50		Text
+
+
+File Name:  gp.charact
+
+Field #/Data Element		Length		Value(Example)
+
+1.  charact_code		4		0020
+
+2.  charact_text		50		Text
+
+
+File Name:  gp.labor.force
+
+Field #/Data Element		Length		Value(Example)
+
+1.  labor_force_code		1		P,L,E,U or R
+
+2.  labor_force_text		40		Text
+
+
+File Name:  gp.period
+
+Field #/Data Element		Length		Value(Example)
+
+1.  period			3		A01
+
+2.  period_abbr			5		ANN
+
+3.  period_name			20		Text
+
+
+File Name:  gp.state
+
+Field #/Data Element		Length		Value(Example)
+
+1.state_code			2		01
+
+2.state_name			20		Text
+
+=========================================================================================
+Section 7
+=========================================================================================
+GEOGRAPHIC PROFILE (GP) DATABASE ELEMENTS
+
+
+Data Element	Length		Value(Example)			Description
+
+area_code	4		6200		Code identifying the 
+							geographic area to which 
+							the data refer.
+
+area_name	50		Text			Name of the geographic area
+				Ex: Milwaukee		to which the data refer.
+					
+area_type_code	1		0			Unique code defining the 
+							type of area.
+
+begin_period	3		A01=Annual		Identifies first data observation
+							within the first year for which
+							data is available for a given
+							time series.
+
+begin_year	4		YYYY			Identifies first year for which
+				Ex: 1976		data is available for a given
+							time series.
+							
+charact_code	4		0020			Data characteristics; e.g.,
+							race, age, occupation.
+				
+charact_text	50		Text			Description of data 
+				Ex: 16-19 years 	characteristic.
+				years of age 
+				
+end_period	3		A01=Annual		Identifies last data observation
+							within the last year for which
+							data is available for a given
+							time series.
+
+end_year	4		YYYY			Identifies last year for which
+				Ex: 1990		data is available for a given 
+							time series.
+							
+footnote_codes	10		It varies		Identifies footnotes for the data 
+							series.	
+							
+labor_force	1		P,L,E,U or R		Identifies the sector of the
+_code							labor force measured by the
+							series.
+
+labor_force_	40		Text			Description of the labor force 
+_text				Ex: Civilian labor 	sector measured by the series.
+				force 		
+				
+period_abbr	5		Period name 		Abbreviation of period name.
+				abbreviation
+				Ex: ANN
+
+period		3		A01=Annual		Identifies period for which
+							data is observed.
+
+period_name	20		Text 			Full name of period to which
+				Ex: Annual		the data observation refers.
+					
+series_id	17		GPU00100000E0000	Code identifying the 
+							specific series.
+
+size_code	1		0			Code indicating size of area.
+							
+state_code	2		01			Code identifying the state.
+
+state_name	20		Text			Name of state.
+				Ex: Wyoming			
+				
+value		12		Data value		Observation for series.
+
+year		4		YYYY			Identifies year of observation.
+				Ex: 1992	
+			
+
