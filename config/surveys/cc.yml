@@ -1,0 +1,573 @@
+# .config/surveys/cc.yml
+# name: Employer Costs for Employee Compensation Survey Processing Configuration
+# description:
+# author: Junie
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/cc
+#         - Data files are in ASCII text format
+#         - Spaces separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/cc.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: cc #survey code
+  name: Employer Costs for Employee Compensation #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The Employer Costs for Employee Compensation (ECEC) is a measure of the cost of labor. The compensation series includes wages and salaries plus employer costs for individual employee benefits."
+  definition: "
+The following is a definition of:  EMPLOYER COSTS FOR EMPLOYEE COMPENSATION (CC)
+
+Survey Description:  The Employer Costs for Employee Compensation (ECEC) is a measure
+of the cost of labor.  The compensation series includes wages and salaries plus employer
+costs for individual employee benefits.  Employee benefit costs are calculated 
+as cents-per-hour-worked for individual benefits ranging from employer payments for 
+Social Security to paid time off for holidays.
+
+The survey covers all occupations in the civilian economy, which includes 
+the total private economy (excluding farms and households), and the public 
+sector (excluding the Federal government).  Statistics are published for 
+the private and public sectors separately, and the data are combined in a 
+measure for the civilian economy.
+
+The data are collected from a probability sample of about 30,000 occupations
+with 7,200 sample establishments in private industry and about 3,750 
+occupations within 800 sample establishments in State and local 
+governments.  The sample establishments are classified in industry 
+categories based on the 1987 Standard Industrial Classification (SIC), as 
+defined by the U.S. Office of Management and Budget.  Within an 
+establishment, specific job categories are selected to represent broader 
+occupational definitions.  Since March 1995, the jobs have been classified 
+according to the 1990 Census of Occupations. 
+
+Summary Data Available:  For private industry workers, data are 
+available for total compensation costs, for wages and salaries alone, and 
+for individual benefit costs alone.  Data are available by major occupational
+and industry groups, as well as by region and bargaining status.  Information
+is available from 1986 to the present for most of these series.   
+
+For State and local governments and the civilian economy (State and local 
+governments plus private industry), data are available for major occupational 
+and selected industry series.  The data for these series are provided from
+1991 to present.
+
+Frequency of Observations:  Data are available annually from 1986 to 1991.  
+Data will become available quarterly beginning in June 2002.
+
+Data Characteristics:  All costs per hour worked are stored to the nearest
+penny.  All percents are stored with one decimal place.
+
+Updating Schedule:  Updates are available about eight weeks following the end
+of the reference quarter.  Reference quarters end in March, June, September,
+and December.
+                "
+  characteristics:
+    frequency: quarterly
+    coverage: "The survey covers all occupations in the civilian economy, which includes the total private economy (excluding farms and households), and the public sector (excluding the Federal government)."
+    time_series_count: "Employer Costs for Employee Compensation series"
+    classification_system: "1990 Census of Occupations"
+    update_schedule: "Updates are available about eight weeks following the end of the reference quarter"
+    begin_year: 1986
+    survey_methodology: "The data are collected from a probability sample of about 30,000 occupations with 7,200 sample establishments in private industry and about 3,750 occupations within 800 sample establishments in State and local governments."
+    calculation_basis: "Employee benefit costs are calculated as cents-per-hour-worked for individual benefits"
+
+#Survey Series Information
+series:
+  path: "cc.series" #path to series file
+  use_mmap: true
+  series_size_class: Medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17
+      type: Text
+      example_value: "CCU010000100000D"
+      map_file: ""
+    sector_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "sector"
+    benefit_code:
+      length: 5
+      type: Text
+      example_value: "10000"
+      needs_mapping: true
+      map_file: "benefit"
+    industryocc_code:
+      length: 6
+      type: Text
+      example_value: "100000"
+      needs_mapping: true
+      map_file: "industryocc"
+    costfactor_code:
+      length: 1
+      type: Text
+      example_value: "D"
+      needs_mapping: true
+      map_file: "costfactor"
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: ""
+      needs_mapping: true
+      map_file: "footnote"
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1994"
+      needs_mapping: false
+      map_file: ""
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "Q05"
+      needs_mapping: false
+      map_file: ""
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2003"
+      needs_mapping: false
+      map_file: ""
+    end_period:
+      length: 3
+      type: Text
+      example_value: "Q04"
+      needs_mapping: false
+      map_file: ""
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "CCU010000100000D"
+      year:
+        length: 4
+        type: values
+        example_value: "1998"
+      period:
+        length: 3
+        type: Text
+        example_value: "Q05"
+      value:
+        length: 12
+        type: values
+        example_value: "12.82"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files:
+  lookup_config:
+    preload: [ sector, benefit, costfactor ]  # Small, frequently used
+    lazy: [ footnote, industryocc ]  # Load on demand
+    mmap: [ ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    sector:
+        file_path: "cc.sector"
+        name: Sector
+        description: "Maps sector codes to sector names"
+        index_col: "sector_code"
+        schema:
+          sector_code:
+            length: 1
+            type: str
+            example_value: "1"
+          sector_title:
+            length: 50
+            type: str
+            example_value: "All Civilian"
+          display_level:
+            length: 1
+            type: str
+            example_value: "1"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    benefit:
+        file_path: "cc.benefit"
+        name: Benefit
+        description: "Maps benefit codes to benefit names"
+        index_col: "benefit_code"
+        schema:
+          benefit_code:
+            length: 5
+            type: str
+            example_value: "10000"
+          benefit_title:
+            length: 50
+            type: str
+            example_value: "Total compensation"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    costfactor:
+        file_path: "cc.costfactor"
+        name: Cost Factor
+        description: "Maps cost factor codes to cost factor names"
+        index_col: "costfactor_code"
+        schema:
+          costfactor_code:
+            length: 1
+            type: str
+            example_value: "D"
+          costfactor_text:
+            length: 50
+            type: str
+            example_value: "Cost of compensation (Cost per hour worked)"
+
+    footnote:
+        file_path: "cc.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "A"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: "Cost per hour worked is $0.01 or less."
+
+    industryocc:
+        file_path: "cc.industryocc"
+        name: Industry Occupation
+        description: "Maps industry occupation codes to industry occupation names"
+        index_col: "industryocc_code"
+        schema:
+          industryocc_code:
+            length: 6
+            type: str
+            example_value: "000001"
+          industryocc_title:
+            length: 50
+            type: str
+            example_value: "All workers"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks due to size
+  max_threads: 4     # Increased parallelization for medium-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ cc.data.0.Current, cc.data.1.AllData ]
+      partition_strategy:
+        partion_by: "sector_code"
+        file_format: "cc.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1986
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^CC[US]\\d{15}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "Q01", "Q02", "Q03", "Q04", "Q05" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Medium
+      output_file: "cc_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Sector code mapping
+        sector_code:
+          lookup_table: "sector"
+          lookup_key: "sector_code"
+          lookup_value: "sector_title"
+          create_field: "sector_name"
+          on_missing: "UNKNOWN_SECTOR"
+          cache: true
+        
+        # Benefit code mapping
+        benefit_code:
+          lookup_table: "benefit"
+          lookup_key: "benefit_code"
+          lookup_value: "benefit_title"
+          create_field: "benefit_name"
+          on_missing: "UNKNOWN_BENEFIT"
+          cache: true
+        
+        # Industry occupation code mapping
+        industryocc_code:
+          lookup_table: "industryocc"
+          lookup_key: "industryocc_code"
+          lookup_value: "industryocc_title"
+          create_field: "industryocc_name"
+          on_missing: "UNKNOWN_INDUSTRYOCC"
+          cache: true
+        
+        # Cost factor code mapping
+        costfactor_code:
+          lookup_table: "costfactor"
+          lookup_key: "costfactor_code"
+          lookup_value: "costfactor_text"
+          create_field: "costfactor_name"
+          on_missing: "UNKNOWN_COSTFACTOR"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^CC[US]\\d{15}$"
+            action: flag
+            message: "Invalid series ID format: should be CC[U/S] followed by 15 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Sector code validation
+          - field: sector_code
+            rule: length
+            exact: 1
+            action: reject
+            message: "Sector code must be exactly 1 character"
+          
+          - field: sector_code
+            rule: pattern
+            pattern: "^[0-9]$"
+            action: flag
+            message: "Sector code should be a single digit"
+          
+          - field: sector_code
+            rule: lookup_exists
+            lookup_table: "sector"
+            action: flag
+            message: "Sector code not found in sector lookup table"
+          
+          # Benefit code validation
+          - field: benefit_code
+            rule: length
+            exact: 5
+            action: reject
+            message: "Benefit code must be exactly 5 characters"
+          
+          - field: benefit_code
+            rule: pattern
+            pattern: "^[0-9]{5}$"
+            action: flag
+            message: "Benefit code should be 5 digits"
+          
+          # Industry occupation code validation
+          - field: industryocc_code
+            rule: length
+            exact: 6
+            action: reject
+            message: "Industry occupation code must be exactly 6 characters"
+          
+          - field: industryocc_code
+            rule: pattern
+            pattern: "^[0-9]{6}$"
+            action: flag
+            message: "Industry occupation code should be 6 digits"
+          
+          # Cost factor code validation
+          - field: costfactor_code
+            rule: length
+            exact: 1
+            action: reject
+            message: "Cost factor code must be exactly 1 character"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1986
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1986 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1986
+            max: 2067
+            action: reject
+            message: "End year must be between 1986 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "Q01", "Q02", "Q03", "Q04", "Q05" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "Q01", "Q02", "Q03", "Q04", "Q05" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, sector_code, benefit_code, industryocc_code, costfactor_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, sector_code, benefit_code, industryocc_code, begin_year, end_year ]
+        output_file: "cc_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 2000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "cc_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/cc"

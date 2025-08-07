@@ -1,0 +1,766 @@
+# .config/surveys/ci.yml
+# name: Employment Cost Index Processing Configuration
+# description: Configuration for processing Employment Cost Index (CI) data
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: data/raw/bls/ci
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in the original BLS files
+#         - full doc: docs/bls/survey/ci.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: ci #survey code (ci) - see docs (docs/bls/survey/ci.txt for details)
+  name: Employment Cost Index #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The Employment Cost Index (ECI) measures the change in the cost of labor, free from the influence of employment shifts among occupations and industries."
+  definition: "
+The following is a definition of: Employment Cost Index (CI)
+
+Survey description: The Employment Cost Index (ECI) measures the change in the 
+cost of labor, free from the influence of employment shifts among occupations 
+and industries. The total compensation series includes changes in wages and 
+salaries and in employer costs for employee benefits. 
+
+The survey covers all occupations in the civilian economy, which includes the 
+total private economy (excluding farms and households), and the public sector 
+(excluding the federal government). Statistics are published for the private 
+and public sectors separately, and the data are combined in a measure for the 
+civilian economy.
+
+Sample: The sample responding information is available in the latest ECI news 
+release technical note available at www.bls.gov/news.release/eci.nr0.htm. The 
+sample establishments are classified in industry categories based on the North 
+American Industrial Classification System (NAICS). Within an establishment, 
+specific job categories are selected to represent broader occupational 
+definitions. Jobs are classified according to the Standard Occupational 
+Classification (SOC) system. 
+
+Summary data available: For private industry workers, data are available for 
+total compensation costs, for wages and salaries alone, and for total benefits 
+alone. Compensation and wage and salary change estimates are available by 
+major occupational and industry groups, as well as by census regions and 
+divisions, 15 largest metropolitan areas (by employment), time-based workers, 
+and bargaining status. 
+
+For civilian as well as state and local government workers cost changes 
+are available for major occupational and industry series.
+
+Indexes and 3-month and 12-month percent changes are available for most 
+non-seasonally adjusted series. Seasonally adjusted series have indexes and 
+3-month percent changes available.
+                "
+  characteristics:
+    frequency: quarterly
+    coverage: "The survey covers all occupations in the civilian economy, which includes the total private economy (excluding farms and households), and the public sector (excluding the federal government)."
+    time_series_count: "Approximately 20,000 series" #Estimated from file size
+    classification_system: "North American Industrial Classification System (NAICS) and Standard Occupational Classification (SOC) system"
+    update_schedule: "Updates are available about four weeks following the end of the reference month (March, June, September, and December)"
+    begin_year: 2008
+    survey_methodology: "The sample establishments are classified in industry categories based on the North American Industrial Classification System (NAICS). Within an establishment, specific job categories are selected to represent broader occupational definitions."
+    calculation_basis: "All current indexes have a base period of December 2005 = 100"
+
+#Survey Series Information
+series:
+  path: "ci.series" #path to series file
+  use_mmap: true
+  series_size_class: Small #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17
+      type: Text
+      example_value: "CIS1010000000000I"
+      map_file: ""
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "S"
+      needs_mapping: true
+      map_file: "seasonal"
+    owner_code:
+      length: 1
+      type: Text
+      example_value: "1"
+      needs_mapping: true
+      map_file: "owner"
+    industry_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "industry"
+    occupation_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "occupation"
+    subcell_code:
+      length: 3
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "subcell"
+    area_code:
+      length: 5
+      type: Text
+      example_value: "99999"
+      needs_mapping: true
+      map_file: "area"
+    periodicity_code:
+      length: 1
+      type: Text
+      example_value: "I"
+      needs_mapping: true
+      map_file: "periodicity"
+    estimate_code:
+      length: 2
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "estimate"
+    series_title:
+      length: 250
+      type: Text
+      example_value: "All civilian total compensation for all occupations; cost per hour worked"
+      needs_mapping: false
+      map_file: ""
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: "v,7"
+      needs_mapping: true
+      map_file: "footnote"
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "2008"
+      needs_mapping: false
+      map_file: ""
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "Q01"
+      needs_mapping: false
+      map_file: ""
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2018"
+      needs_mapping: false
+      map_file: ""
+    end_period:
+      length: 3
+      type: Text
+      example_value: "Q01"
+      needs_mapping: false
+      map_file: ""
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "CIU1010000110000Q"
+      year:
+        length: 4
+        type: values
+        example_value: "2018"
+      period:
+        length: 3
+        type: Text
+        example_value: "Q01"
+      value:
+        length: 12
+        type: values
+        example_value: "1.1"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+  aspect:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "CIU1010000430000A"
+      year:
+        length: 4
+        type: values
+        example_value: "2018"
+      period:
+        length: 3
+        type: Text
+        example_value: "Q01"
+      aspect_type:
+        length: 2
+        type: Text
+        example_value: "E"
+      value:
+        length: 12
+        type: values
+        example_value: "0.2"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files:
+  lookup_config:
+    preload: [ area, estimate, owner, periodicity, seasonal, subcell ]  # Small, frequently used
+    lazy: [ footnote, industry, occupation ]  # Load on demand
+    mmap: [ ]  # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    area:
+      file_path: "ci.area"
+      name: Area
+      description: "Identifies the geographic area for the estimate"
+      index_col: "area_code"
+      schema:
+        area_code:
+          length: 5
+          type: str
+          example_value: "99999"
+        area_text:
+          length: 100
+          type: Text
+          example_value: "National"
+        display_level:
+          length: 2
+          type: values
+          example_value: "0"
+        selectable:
+          length: 1
+          type: str
+          example_value: "T"
+        sort_sequence:
+          length: 5
+          type: values
+          example_value: "1"
+
+    estimate:
+      file_path: "ci.estimate"
+      name: Estimate
+      description: "Identifies the type and unit of measure for the estimate"
+      index_col: "estimate_code"
+      schema:
+        estimate_code:
+          length: 2
+          type: str
+          example_value: "01"
+        estimate_text:
+          length: 100
+          type: str
+          example_value: "Total compensation"
+        display_level:
+          length: 2
+          type: values
+          example_value: "1"
+        selectable:
+          length: 1
+          type: str
+          example_value: "T"
+        sort_sequence:
+          length: 5
+          type: values
+          example_value: "1"
+
+    footnote:
+      file_path: "ci.footnote"
+      name: Footnotes
+      description: "Identifies footnotes for the series or observations"
+      index_col: "footnote_code"
+      schema:
+        footnote_code:
+          length: 3
+          type: str
+          example_value: "a"
+        footnote_text:
+          length: 200
+          type: str
+          example_value: "Dashes indicate data not available."
+
+    industry:
+      file_path: "ci.industry"
+      name: Industry
+      description: "Identifies the industry sector for the estimate, as classified by NAICS"
+      index_col: "industry_code"
+      schema:
+        industry_code:
+          length: 6
+          type: str
+          example_value: "622000"
+        industry_text:
+          length: 100
+          type: str
+          example_value: "Hospitals"
+        display_level:
+          length: 2
+          type: values
+          example_value: "4"
+        selectable:
+          length: 1
+          type: str
+          example_value: "T"
+        sort_sequence:
+          length: 5
+          type: values
+          example_value: "1625"
+
+    occupation:
+      file_path: "ci.occupation"
+      name: Occupation
+      description: "Identifies the occupational group for the estimate as classified by SOC"
+      index_col: "occupation_code"
+      schema:
+        occupation_code:
+          length: 6
+          type: str
+          example_value: "414300"
+        occupation_text:
+          length: 100
+          type: str
+          example_value: "Sales and office occupations"
+        display_level:
+          length: 2
+          type: values
+          example_value: "1"
+        selectable:
+          length: 1
+          type: str
+          example_value: "T"
+        sort_sequence:
+          length: 5
+          type: values
+          example_value: "760"
+
+    owner:
+      file_path: "ci.owner"
+      name: Owner
+      description: "Identifies the sector represented by the estimate"
+      index_col: "owner_code"
+      schema:
+        owner_code:
+          length: 1
+          type: str
+          example_value: "2"
+        owner_text:
+          length: 100
+          type: str
+          example_value: "Private industry workers"
+        display_level:
+          length: 2
+          type: values
+          example_value: "0"
+        selectable:
+          length: 1
+          type: str
+          example_value: "T"
+        sort_sequence:
+          length: 5
+          type: values
+          example_value: "2"
+
+    periodicity:
+      file_path: "ci.periodicity"
+      name: Periodicity
+      description: "Period description"
+      index_col: "periodicity_code"
+      schema:
+        periodicity_code:
+          length: 1
+          type: str
+          example_value: "I"
+        periodicity_text:
+          length: 30
+          type: str
+          example_value: "Index number"
+        display_level:
+          length: 2
+          type: values
+          example_value: "0"
+        selectable:
+          length: 1
+          type: str
+          example_value: "T"
+        sort_sequence:
+          length: 5
+          type: values
+          example_value: "1"
+
+    seasonal:
+      file_path: "ci.seasonal"
+      name: Seasonal
+      description: "Seasonality indicator"
+      index_col: "seasonal_code"
+      schema:
+        seasonal_code:
+          length: 1
+          type: str
+          example_value: "S"
+        seasonal_text:
+          length: 30
+          type: str
+          example_value: "Seasonally adjusted"
+
+    subcell:
+      file_path: "ci.subcell"
+      name: Subcell
+      description: "Job characteristic code identifying the attributes of workers or establishments"
+      index_col: "subcell_code"
+      schema:
+        subcell_code:
+          length: 3
+          type: str
+          example_value: "23"
+        subcell_text:
+          length: 100
+          type: str
+          example_value: "Union"
+        display_level:
+          length: 2
+          type: values
+          example_value: "2"
+        selectable:
+          length: 1
+          type: str
+          example_value: "T"
+        sort_sequence:
+          length: 5
+          type: values
+          example_value: "28"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks
+  max_threads: 4     # Moderate parallelization
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: parquet
+      compression: snappy  # Good balance of speed and compression
+      
+      # Partitioning strategy
+      partitioning:
+        enabled: true
+        partition_by: [year]  # Partition by year for time-series analysis
+      
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ ci.data.0.Current, ci.data.1.AllData ]
+      
+      transformations:
+        sort_by: [series_id, year, period]
+        deduplicate: true
+        deduplicate_on: [series_id, year, period, footnote_codes]
+        
+        # Column encoding optimization for Parquet
+        encoding:
+          series_id: dictionary  # Repeated values
+          year: delta  # Sequential years
+          period: dictionary
+          value: plain  # Values vary widely
+        
+        validation:
+          # Data quality checks
+          rules:
+            - field: value
+              rule: range
+              min: -1000.0  # Reasonable range for percent changes
+              max: 1000.0
+              action: flag  # Flag but don't reject
+            
+            - field: year
+              rule: range
+              min: 1990
+              max: 2050
+              action: reject
+            
+            - field: series_id
+              rule: pattern
+              pattern: "^CI[SU][1-9]\\d{13}[IPA]$"
+              action: flag
+            
+            - field: period
+              rule: values
+              allowed: [ "Q01", "Q02", "Q03", "Q04" ]
+              action: flag
+          
+          # Completeness checks
+          required_fields: [ series_id, year, period ]
+          nullable_fields: [ value, footnote_codes ]
+        
+        # Statistics for query optimization
+        statistics:
+          enabled: true
+          columns: [ year, period, value ]
+    
+    aspect_data:
+      # Format settings for aspect data
+      format: parquet
+      compression: snappy
+      
+      # Partitioning strategy
+      partitioning:
+        enabled: true
+        partition_by: [year]
+      
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ ci.aspect ]
+      
+      transformations:
+        sort_by: [series_id, year, period, aspect_type]
+        deduplicate: true
+        deduplicate_on: [series_id, year, period, aspect_type]
+        
+        # Column encoding optimization for Parquet
+        encoding:
+          series_id: dictionary
+          year: delta
+          period: dictionary
+          aspect_type: dictionary
+          value: plain
+        
+        validation:
+          # Data quality checks
+          rules:
+            - field: value
+              rule: range
+              min: -1000.0
+              max: 1000.0
+              action: flag
+            
+            - field: aspect_type
+              rule: values
+              allowed: [ "E" ]  # E for standard error
+              action: flag
+          
+          # Completeness checks
+          required_fields: [ series_id, year, period, aspect_type ]
+          nullable_fields: [ value, footnote_codes ]
+        
+        # Statistics for query optimization
+        statistics:
+          enabled: true
+          columns: [ year, period, aspect_type, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      
+      use_mmap: true
+      series_size_class: Small
+      output_file: "ci_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Seasonal mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal_code"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_text"
+          on_missing: keep_original
+          cache: true
+        
+        # Owner code mapping
+        owner_code:
+          lookup_table: "owner"
+          lookup_key: "owner_code"
+          lookup_value: "owner_text"
+          create_field: "owner_text"
+          on_missing: "UNKNOWN_OWNER"
+          cache: true
+        
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_text"
+          create_field: "industry_text"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+        
+        # Occupation code mapping
+        occupation_code:
+          lookup_table: "occupation"
+          lookup_key: "occupation_code"
+          lookup_value: "occupation_text"
+          create_field: "occupation_text"
+          on_missing: "UNKNOWN_OCCUPATION"
+          cache: true
+        
+        # Subcell code mapping
+        subcell_code:
+          lookup_table: "subcell"
+          lookup_key: "subcell_code"
+          lookup_value: "subcell_text"
+          create_field: "subcell_text"
+          on_missing: "UNKNOWN_SUBCELL"
+          cache: true
+        
+        # Area code mapping
+        area_code:
+          lookup_table: "area"
+          lookup_key: "area_code"
+          lookup_value: "area_text"
+          create_field: "area_text"
+          on_missing: "UNKNOWN_AREA"
+          cache: true
+        
+        # Periodicity code mapping
+        periodicity_code:
+          lookup_table: "periodicity"
+          lookup_key: "periodicity_code"
+          lookup_value: "periodicity_text"
+          create_field: "periodicity_text"
+          on_missing: keep_original
+          cache: true
+        
+        # Estimate code mapping
+        estimate_code:
+          lookup_table: "estimate"
+          lookup_key: "estimate_code"
+          lookup_value: "estimate_text"
+          create_field: "estimate_text"
+          on_missing: "UNKNOWN_ESTIMATE"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: ","
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^CI[SU][1-9]\\d{13}[IPA]$"
+            action: flag
+            message: "Invalid series ID format"
+          
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1990
+            max: 2050
+            action: reject
+            message: "Begin year must be between 1990 and 2050"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1990
+            max: 2050
+            action: reject
+            message: "End year must be between 1990 and 2050"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "Q01", "Q02", "Q03", "Q04" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "Q01", "Q02", "Q03", "Q04" ]
+            action: flag
+            message: "Invalid end period value"
+        
+        # Completeness checks
+        required_fields: [ series_id, seasonal, owner_code, industry_code, occupation_code, subcell_code, area_code, periodicity_code, estimate_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ series_title, footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, seasonal, owner_code, industry_code, occupation_code, subcell_code, area_code, periodicity_code, estimate_code, begin_year, end_year ]
+        output_file: "ci_series_dict_stats.json"
+
+# Error handling & recovery
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 5000    # Stop if too many errors
+  log_errors: true
+  error_file: "ci_errors.log"
+  
+  # Checkpoint settings for medium-sized files
+  checkpoint:
+    enabled: true
+    interval_records: 100000
+    checkpoint_dir: "checkpoints/ci"

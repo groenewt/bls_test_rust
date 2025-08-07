@@ -1,0 +1,877 @@
+# .config/surveys/wm.yml
+# name: Modeled Wage Estimates Survey Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/wm
+#         - Data files are in ASCII text format
+#         - Spaces separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/wm.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: wm #survey code (ex.ap,sm,tu)- see docs (.docs/surveys/* for all surveys)
+  name: Modeled Wage Estimates #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The Occupational Employment and Wage Statistics (OEWS) and National Compensation Survey (NCS) programs have produced estimates by borrowing from the strength and breadth of each survey to provide more details on occupational wages than either program provides individually."
+  definition: "
+The following is a definition of: Modeled Wage Estimates (WM)
+
+Survey Description:  The Occupational Employment and Wage Statistics (OEWS) 
+and National Compensation Survey (NCS) programs have produced estimates by 
+borrowing from the strength and breadth of each survey to provide more 
+details on occupational wages than either program provides individually.
+Modeled Wage Estimates provide annual estimates of average hourly 
+wages for occupations by selected job characteristics and within 
+geographical location. The job characteristics include bargaining status 
+(union and nonunion), part- and full-time work status, incentive- and 
+time-based pay, and work levels (1-15 and unable to be leveled and grouped 
+work levels of entry, intermediate and experienced) by occupation. Grouped 
+work level estimates were created from meaningful group level distinctions 
+within an occupation, consisting of either two groups for entry and 
+experienced levels or three groups for entry, intermediate and experienced 
+levels.
+
+Direct estimates are based on survey responses only from the particular 
+geographic area to which the estimate refers. In contrast, Modeled Wage 
+Estimates use survey responses from larger areas to fill in information 
+for smaller areas where the sample size is not sufficient to produce 
+direct estimates. Modeled Wage Estimates require the assumption that the 
+patterns to responses in the larger area hold in the smaller area.
+
+The sample size for the NCS is not large enough to produce direct estimates 
+by area, occupation, and job characteristic for all of the areas for which 
+the OEWS publishes estimates by area and occupation. The NCS sample consists 
+of 6 private industry panels with approximately 3,300 establishments sampled 
+per panel and 1 state and local government panel with approximately 1,600 
+sampled state and local government units. The OEWS full six-panel sample 
+consists of 1.1 million establishments. 
+
+The sample establishments are classified in industry categories based on the 
+North American Industry Classification System (NAICS). Within an 
+establishment, specific job categories are selected to represent broader 
+occupational definitions. Jobs are classified according to the Standard 
+Occupational Classification (SOC) system; in a few cases, classification 
+reflects aggregation to an OEWS-specific occupational grouping.
+
+Summary Data Available: Average hourly wage estimates for civilian workers 
+in occupations by job characteristic and work levels. These data are available 
+at the national, state, metropolitan, and nonmetropolitan area levels.
+
+Frequency of Observations: Data are available on an annual basis, 
+and released shortly after the OEWS annual release for the same reference 
+year. 
+
+Data Characteristics: All hourly wages are published to the nearest cent.
+                "
+  characteristics:
+    frequency: annual
+    coverage: "National, state, metropolitan, and nonmetropolitan area levels"
+    time_series_count: "Modeled Wage Estimates series"
+    classification_system: "Standard Occupational Classification (SOC) system"
+    update_schedule: "Annual release"
+    begin_year: 2017
+    survey_methodology: "Combines data from the Occupational Employment and Wage Statistics (OEWS) and National Compensation Survey (NCS) programs"
+    calculation_basis: "Modeled estimates using survey responses from larger areas to fill in information for smaller areas"
+
+#Survey Series Information
+series:
+  path: "wm.series" #path to series file
+  use_mmap: true
+  series_size_class: Large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 29
+      type: Text
+      example_value: "WMU00107401020000001300002700"
+      map_file: ""
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "U"
+      needs_mapping: true
+      map_file: "seasonal"
+    area_code:
+      length: 7
+      type: Text
+      example_value: "0010740"
+      needs_mapping: true
+      map_file: "area"
+    ownership_code:
+      length: 1
+      type: Text
+      example_value: "1"
+      needs_mapping: true
+      map_file: "ownership"
+    estimate_code:
+      length: 2
+      type: Text
+      example_value: "02"
+      needs_mapping: true
+      map_file: "estimate"
+    industry_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "industry"
+    occupation_code:
+      length: 6
+      type: Text
+      example_value: "130000"
+      needs_mapping: true
+      map_file: "occupation"
+    subcell_code:
+      length: 2
+      type: Text
+      example_value: "27"
+      needs_mapping: true
+      map_file: "subcell"
+    datatype_code:
+      length: 2
+      type: Text
+      example_value: "30"
+      needs_mapping: true
+      map_file: "datatype"
+    level_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "level"
+    series_title:
+      length: 256
+      type: Text
+      example_value: "Average hourly wage for incentive-based business and financial operations occupations, in Albuquerque, NM"
+      needs_mapping: false
+      map_file: ""
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: "1"
+      needs_mapping: true
+      map_file: "footnote"
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "2019"
+      needs_mapping: false
+      map_file: ""
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: true
+      map_file: "period"
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2023"
+      needs_mapping: false
+      map_file: ""
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: true
+      map_file: "period"
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 29
+        type: Text
+        example_value: "WMU00107401020000001300002700"
+      year:
+        length: 4
+        type: values
+        example_value: "2023"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "29.76"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+        
+  aspect:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    file_path: "map/wm.aspect"
+    schema:
+      series_id:
+        length: 29
+        type: Text
+        example_value: "WMU00107401020000001300002700"
+      year:
+        length: 4
+        type: values
+        example_value: "2023"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      aspect_type:
+        length: 2
+        type: Text
+        example_value: "R0"
+      value:
+        length: 12
+        type: values
+        example_value: "-"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: "2"
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ area, occupation, industry ]  # Small, frequently used
+    lazy: [ footnote, datatype, estimate, level, ownership, period, seasonal, subcell ]  # Load on demand
+    mmap: [ ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    area:
+        file_path: "wm.area"
+        name: Area
+        description: "Maps area codes to area names"
+        index_col: "area_code"
+        schema:
+          area_code:
+            length: 7
+            type: str
+            example_value: "0010740"
+          area_text:
+            length: 100
+            type: Text
+            example_value: "Albuquerque, NM"
+          display_level:
+            length: 1
+            type: str
+            example_value: "1"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "576"
+
+    datatype:
+        file_path: "wm.datatype"
+        name: Data Type
+        description: "Maps datatype codes to datatype names"
+        index_col: "datatype_code"
+        schema:
+          datatype_code:
+            length: 2
+            type: str
+            example_value: "30"
+          datatype_text:
+            length: 100
+            type: str
+            example_value: "Mean"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    estimate:
+        file_path: "wm.estimate"
+        name: Estimate
+        description: "Maps estimate codes to estimate names"
+        index_col: "estimate_code"
+        schema:
+          estimate_code:
+            length: 2
+            type: str
+            example_value: "02"
+          estimate_text:
+            length: 100
+            type: str
+            example_value: "Average hourly wage"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    footnote:
+        file_path: "wm.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 10
+            type: str
+            example_value: "2"
+          footnote_text:
+            length: 200
+            type: str
+            example_value: "BLS is currently developing an approach to calculate the relative standard errors due to implementation of modeled-based estimates (MB3) used by the Occupational Employment and Wage Statistics (OEWS)."
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    industry:
+        file_path: "wm.industry"
+        name: Industry
+        description: "Maps industry codes to industry names"
+        index_col: "industry_code"
+        schema:
+          industry_code:
+            length: 6
+            type: str
+            example_value: "000000"
+          industry_text:
+            length: 100
+            type: str
+            example_value: "All industries"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    level:
+        file_path: "wm.level"
+        name: Level
+        description: "Maps level codes to level names"
+        index_col: "level_code"
+        schema:
+          level_code:
+            length: 2
+            type: str
+            example_value: "00"
+          level_text:
+            length: 100
+            type: str
+            example_value: "All levels"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    occupation:
+        file_path: "wm.occupation"
+        name: Occupation
+        description: "Maps occupation codes to occupation names"
+        index_col: "occupation_code"
+        schema:
+          occupation_code:
+            length: 6
+            type: str
+            example_value: "130000"
+          occupation_text:
+            length: 100
+            type: str
+            example_value: "Business and financial operations occupations"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    ownership:
+        file_path: "wm.ownership"
+        name: Ownership
+        description: "Maps ownership codes to ownership names"
+        index_col: "ownership_code"
+        schema:
+          ownership_code:
+            length: 1
+            type: str
+            example_value: "1"
+          ownership_text:
+            length: 100
+            type: str
+            example_value: "Civilian workers"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    period:
+        file_path: "wm.period"
+        name: Period
+        description: "Maps period codes to period names"
+        index_col: "period"
+        schema:
+          period:
+            length: 3
+            type: str
+            example_value: "A01"
+          period_abbr:
+            length: 5
+            type: str
+            example_value: "ANN"
+          period_name:
+            length: 20
+            type: str
+            example_value: "Annual"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    seasonal:
+        file_path: "wm.seasonal"
+        name: Seasonal
+        description: "Maps seasonal codes to seasonal names"
+        index_col: "seasonal"
+        schema:
+          seasonal:
+            length: 1
+            type: str
+            example_value: "U"
+          seasonal_text:
+            length: 30
+            type: str
+            example_value: "Not seasonally adjusted"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    subcell:
+        file_path: "wm.subcell"
+        name: Subcell
+        description: "Maps subcell codes to subcell names"
+        index_col: "subcell_code"
+        schema:
+          subcell_code:
+            length: 2
+            type: str
+            example_value: "27"
+          subcell_text:
+            length: 100
+            type: str
+            example_value: "Time-based pay"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks due to size
+  max_threads: 4     # Increased parallelization for medium-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ wm.data.1.AllData, wm.aspect ]
+      partition_strategy:
+        partion_by: "area_code"
+        file_format: "wm.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 2017
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^WM[SU]\\d{27}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "A01" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Large
+      output_file: "wm_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Area code mapping
+        area_code:
+          lookup_table: "area"
+          lookup_key: "area_code"
+          lookup_value: "area_text"
+          create_field: "area_name"
+          on_missing: "UNKNOWN_AREA"
+          cache: true
+        
+        # Occupation code mapping
+        occupation_code:
+          lookup_table: "occupation"
+          lookup_key: "occupation_code"
+          lookup_value: "occupation_text"
+          create_field: "occupation_name"
+          on_missing: "UNKNOWN_OCCUPATION"
+          cache: true
+        
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_text"
+          create_field: "industry_name"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+        
+        # Level code mapping
+        level_code:
+          lookup_table: "level"
+          lookup_key: "level_code"
+          lookup_value: "level_text"
+          create_field: "level_name"
+          on_missing: "UNKNOWN_LEVEL"
+          cache: true
+        
+        # Subcell code mapping
+        subcell_code:
+          lookup_table: "subcell"
+          lookup_key: "subcell_code"
+          lookup_value: "subcell_text"
+          create_field: "subcell_name"
+          on_missing: "UNKNOWN_SUBCELL"
+          cache: true
+        
+        # Ownership code mapping
+        ownership_code:
+          lookup_table: "ownership"
+          lookup_key: "ownership_code"
+          lookup_value: "ownership_text"
+          create_field: "ownership_name"
+          on_missing: "UNKNOWN_OWNERSHIP"
+          cache: true
+        
+        # Estimate code mapping
+        estimate_code:
+          lookup_table: "estimate"
+          lookup_key: "estimate_code"
+          lookup_value: "estimate_text"
+          create_field: "estimate_name"
+          on_missing: "UNKNOWN_ESTIMATE"
+          cache: true
+        
+        # Datatype code mapping
+        datatype_code:
+          lookup_table: "datatype"
+          lookup_key: "datatype_code"
+          lookup_value: "datatype_text"
+          create_field: "datatype_name"
+          on_missing: "UNKNOWN_DATATYPE"
+          cache: true
+        
+        # Seasonal mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_name"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Begin period mapping
+        begin_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "begin_period_name"
+          on_missing: keep_original
+          cache: true
+        
+        # End period mapping
+        end_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "end_period_name"
+          on_missing: keep_original
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^WM[SU]\\d{27}$"
+            action: flag
+            message: "Invalid series ID format: should be WM[S/U] followed by 27 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 29
+            action: reject
+            message: "Series ID must be exactly 29 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Area code validation
+          - field: area_code
+            rule: length
+            exact: 7
+            action: reject
+            message: "Area code must be exactly 7 characters"
+          
+          - field: area_code
+            rule: pattern
+            pattern: "^[0-9]{7}$"
+            action: flag
+            message: "Area code should be 7 digits"
+          
+          - field: area_code
+            rule: lookup_exists
+            lookup_table: "area"
+            action: flag
+            message: "Area code not found in area lookup table"
+          
+          # Occupation code validation
+          - field: occupation_code
+            rule: length
+            exact: 6
+            action: reject
+            message: "Occupation code must be exactly 6 characters"
+          
+          - field: occupation_code
+            rule: pattern
+            pattern: "^[0-9]{6}$"
+            action: flag
+            message: "Occupation code should be 6 digits"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 2017
+            max: 2067
+            action: reject
+            message: "Begin year must be between 2017 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 2017
+            max: 2067
+            action: reject
+            message: "End year must be between 2017 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, seasonal, area_code, ownership_code, estimate_code, industry_code, occupation_code, subcell_code, datatype_code, level_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ series_title, footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, area_code, occupation_code, begin_year, end_year ]
+        output_file: "wm_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 2000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "wm_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/wm"

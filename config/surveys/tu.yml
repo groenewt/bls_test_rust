@@ -1,0 +1,1320 @@
+# .config/surveys/tu.yml
+# name: American Time Use Survey Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/tu
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/tu.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: tu #survey code (ex.ap,sm,tu)- see docs (.docs/surveys/* for all surveys)
+  name: American Time Use Survey #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The American Time Use Survey (ATUS) is the Nation's first federally administered, continuous survey on time use in the United States. The goal of the survey is to measure how people divide their time among life's activities."
+  definition: "
+The following is a definition of:  AMERICAN TIME USE SURVEY (ATUS)
+
+Survey Description:  The American Time Use Survey (ATUS) is the Nation's first 
+federally administered, continuous survey on time use in the United States. The 
+goal of the survey is to measure how people divide their time among life's activities.
+
+In ATUS, individuals are randomly selected from a subset of households that have 
+completed their eighth and final month of interviews for the Current Population 
+Survey (CPS). ATUS respondents are interviewed only one time about how they spent 
+their time on the previous day, where they were, and whom they were with. The survey 
+is sponsored by the Bureau of Labor Statistics and is conducted by the U.S. Census Bureau.
+
+The major purpose of ATUS is to develop nationally representative estimates of how
+people spend their time. Many ATUS users are interested in the amount of time
+Americans spend doing unpaid, nonmarket work, which could include unpaid childcare,
+eldercare, housework, and volunteering. The survey also provides information on the
+amount of time people spend in many other activities, such as religious activities,
+socializing, exercising, and relaxing.
+
+Summary Data Available:  Time Use data are available for the civilian, noninstitutional 
+population age 15 and older and various subpopulations, with estimates available by
+age, race, sex, Hispanic or Latino ethnicity, employment status, occupation, class of 
+worker, earnings, education, day of week, and other characteristics.
+ 
+Frequency of Observations:  Most series are annual averages. Quarterly averages, not 
+seasonally adjusted, are available for a small number of data series. All series are 
+released on an annual basis.
+
+Data Characteristics:  Time use estimates are constructed for a number of different 
+activities. There are 3 main types of ATUS estimates: average hours per day, participation 
+rates on an average day, and number of persons. 
+
+All series contain estimates constructed using the 2006 weighting methodology. Some 
+series may contain data that do not match earlier published estimates from news 
+release tables that used previous weighting methods.
+
+ATUS estimates are not published unless there are a minimum number of respondents 
+representing the given population. Beginning with the 2010 data, additional publication 
+criteria are applied that include the number of respondents who reported doing a 
+specified activity and the standard error or coefficient of variation for the estimate. 
+Estimates that are suppressed are indicated with a value \"S.\" Estimates that are 
+considered \"close to zero\" or that round to zero (e.g., 0.00 for estimates of hours), 
+are indicated with a value \"Z.\" 
+
+Some, but not all data series contain estimates that use the 2010 suppression rules 
+for all years. Other series may contain estimates constructed before 2010 that used 
+earlier suppression methods. As a result, some series may contain suppressions and 
+\"close to zero\" values that were previously published in the ATUS news release tables. 
+
+Updating Schedule:  Updates are usually available with the issuance of the annual 
+American Time Use Survey news release. 
+                "
+  characteristics:
+    frequency: annual
+    coverage: "Time Use data are available for the civilian, noninstitutional population age 15 and older and various subpopulations"
+    time_series_count: "ATUS time series data" 
+    classification_system: "Activity codes, demographic characteristics, and time use categories"
+    update_schedule: "Annual release"
+    begin_year: 2003
+    survey_methodology: "Individuals are randomly selected from a subset of households that have completed their eighth and final month of interviews for the Current Population Survey (CPS)."
+    calculation_basis: "Time use estimates are constructed for different activities, including average hours per day, participation rates, and number of persons."
+
+#Survey Series Information
+series:
+  path: "tu.series" #path to series file
+  use_mmap: true
+  series_size_class: Medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 18 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "TUU10101AA01011987"
+      map_file: "" #leave blank for none
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "U"
+      needs_mapping: true
+      map_file: "seasonal" #leave blank for none
+    stattype_code:
+      length: 5
+      type: Text
+      example_value: "10101"
+      needs_mapping: true
+      map_file: "stattype" #leave blank for none
+    datays_code:
+      length: 2
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "datays" #leave blank for none
+    sex_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "sex" #leave blank for none
+    region_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "region" #leave blank for none
+    lfstat_code:
+      length: 2
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "lfstat" #leave blank for none
+    educ_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "educ" #leave blank for none
+    maritlstat_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "maritlstat" #leave blank for none
+    age_code:
+      length: 3
+      type: Text
+      example_value: "000"
+      needs_mapping: true
+      map_file: "age" #leave blank for none
+    orig_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "orig" #leave blank for none
+    race_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "race" #leave blank for none
+    mjcow_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "mjcow" #leave blank for none
+    nmet_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    where_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "where" #leave blank for none
+    sjmj_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "sjmj" #leave blank for none
+    timeday_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "timeday" #leave blank for none
+    actcode_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "actcode" #leave blank for none
+    industry_code:
+      length: 4
+      type: Text
+      example_value: "0000"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    occ_code:
+      length: 4
+      type: Text
+      example_value: "0000"
+      needs_mapping: true
+      map_file: "occ" #leave blank for none
+    prhhchild_code:
+      length: 4
+      type: Text
+      example_value: "0000"
+      needs_mapping: true
+      map_file: "prhhchild" #leave blank for none
+    earn_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "earn" #leave blank for none
+    disability_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    who_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "who" #leave blank for none
+    hhnscc03_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "hhnscc03" #leave blank for none
+    schenr_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    prownhhchild_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "prownhhchild" #leave blank for none
+    work_code:
+      length: 3
+      type: Text
+      example_value: "000"
+      needs_mapping: true
+      map_file: "work" #leave blank for none
+    elnum_code:
+      length: 3
+      type: Text
+      example_value: "000"
+      needs_mapping: true
+      map_file: "elnum" #leave blank for none
+    ecage_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "ecage" #leave blank for none
+    elfreq_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "elfreq" #leave blank for none
+    eldur_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "eldur" #leave blank for none
+    elwho_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    ecytd_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "ecytd" #leave blank for none
+    elder_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "elder" #leave blank for none
+    lfstatw_code:
+      length: 3
+      type: Text
+      example_value: "010"
+      needs_mapping: true
+      map_file: "lfstatw" #leave blank for none
+    pertype_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "pertype" #leave blank for none
+    series_title:
+      length: 200
+      type: Text
+      example_value: "Number of persons - Employed"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: ""
+      needs_mapping: true
+      map_file: "footnote" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "2003"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2024"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 18
+        type: Text
+        example_value: "TUU10101AA01011987"
+      year:
+        length: 4
+        type: values
+        example_value: "2003"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "145718"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ age, sex, race, actcode ]  # Small, frequently used
+    lazy: [ footnote, stattype, pertype, lfstat, maritlstat, educ, earn, who, timeday ]  # Load on demand
+    mmap: [ ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    actcode:
+        file_path: "tu.actcode"
+        name: Activity Code
+        description: "Maps activity codes to activity names"
+        index_col: "actcode_code"
+        schema:
+          actcode_code:
+            length: 6
+            type: str
+            example_value: "010101"
+          actcode_text:
+            length: 100
+            type: Text
+            example_value: "Sleeping"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    age:
+        file_path: "tu.age"
+        name: Age
+        description: "Maps age codes to age ranges"
+        index_col: "age_code"
+        schema:
+          age_code:
+            length: 3
+            type: str
+            example_value: "000"
+          age_text:
+            length: 100
+            type: str
+            example_value: "15 years and over"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    datays:
+        file_path: "tu.datays"
+        name: Data Years
+        description: "Maps data years codes to data years names"
+        index_col: "datays_code"
+        schema:
+          datays_code:
+            length: 2
+            type: str
+            example_value: "01"
+          datays_text:
+            length: 100
+            type: str
+            example_value: "Annual averages"
+
+    earn:
+        file_path: "tu.earn"
+        name: Earnings
+        description: "Maps earnings codes to earnings ranges"
+        index_col: "earn_code"
+        schema:
+          earn_code:
+            length: 2
+            type: str
+            example_value: "00"
+          earn_text:
+            length: 100
+            type: str
+            example_value: "All earnings levels"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    ecage:
+        file_path: "tu.ecage"
+        name: Eldercare Age
+        description: "Maps eldercare age codes to eldercare age ranges"
+        index_col: "ecage_code"
+        schema:
+          ecage_code:
+            length: 1
+            type: str
+            example_value: "0"
+          ecage_text:
+            length: 100
+            type: str
+            example_value: "All eldercare providers"
+
+    ecytd:
+        file_path: "tu.ecytd"
+        name: Eldercare Provided on Diary Day
+        description: "Maps eldercare provided on diary day codes to descriptions"
+        index_col: "ecytd_code"
+        schema:
+          ecytd_code:
+            length: 1
+            type: str
+            example_value: "0"
+          ecytd_text:
+            length: 100
+            type: str
+            example_value: "All eldercare providers"
+
+    educ:
+        file_path: "tu.educ"
+        name: Educational Attainment
+        description: "Maps educational attainment codes to educational attainment levels"
+        index_col: "educ_code"
+        schema:
+          educ_code:
+            length: 2
+            type: str
+            example_value: "00"
+          educ_text:
+            length: 100
+            type: str
+            example_value: "All educational levels"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    elder:
+        file_path: "tu.elder"
+        name: Eldercare Provider
+        description: "Maps eldercare provider codes to eldercare provider descriptions"
+        index_col: "elder_code"
+        schema:
+          elder_code:
+            length: 1
+            type: str
+            example_value: "0"
+          elder_text:
+            length: 100
+            type: str
+            example_value: "All persons"
+
+    eldur:
+        file_path: "tu.eldur"
+        name: Eldercare Duration
+        description: "Maps eldercare duration codes to eldercare duration descriptions"
+        index_col: "eldur_code"
+        schema:
+          eldur_code:
+            length: 2
+            type: str
+            example_value: "00"
+          eldur_text:
+            length: 100
+            type: str
+            example_value: "All eldercare providers"
+
+    elfreq:
+        file_path: "tu.elfreq"
+        name: Eldercare Frequency
+        description: "Maps eldercare frequency codes to eldercare frequency descriptions"
+        index_col: "elfreq_code"
+        schema:
+          elfreq_code:
+            length: 2
+            type: str
+            example_value: "00"
+          elfreq_text:
+            length: 100
+            type: str
+            example_value: "All eldercare providers"
+
+    elnum:
+        file_path: "tu.elnum"
+        name: Eldercare Number of Recipients
+        description: "Maps eldercare number of recipients codes to descriptions"
+        index_col: "elnum_code"
+        schema:
+          elnum_code:
+            length: 3
+            type: str
+            example_value: "000"
+          elnum_text:
+            length: 100
+            type: str
+            example_value: "All eldercare providers"
+
+    footnote:
+        file_path: "tu.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "C"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: ""
+
+    hhnscc03:
+        file_path: "tu.hhnscc03"
+        name: Secondary Childcare
+        description: "Maps secondary childcare codes to secondary childcare descriptions"
+        index_col: "hhnscc03_code"
+        schema:
+          hhnscc03_code:
+            length: 2
+            type: str
+            example_value: "00"
+          hhnscc03_text:
+            length: 100
+            type: str
+            example_value: "All persons"
+
+    lfstat:
+        file_path: "tu.lfstat"
+        name: Labor Force Status
+        description: "Maps labor force status codes to labor force status descriptions"
+        index_col: "lfstat_code"
+        schema:
+          lfstat_code:
+            length: 2
+            type: str
+            example_value: "01"
+          lfstat_text:
+            length: 100
+            type: str
+            example_value: "Employed"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    lfstatw:
+        file_path: "tu.lfstatw"
+        name: Labor Force Status and Work on Diary Day
+        description: "Maps labor force status and work on diary day codes to descriptions"
+        index_col: "lfstatw_code"
+        schema:
+          lfstatw_code:
+            length: 3
+            type: str
+            example_value: "010"
+          lfstatw_text:
+            length: 100
+            type: str
+            example_value: "Employed, at work"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    maritlstat:
+        file_path: "tu.maritlstat"
+        name: Marital Status
+        description: "Maps marital status codes to marital status descriptions"
+        index_col: "maritlstat_code"
+        schema:
+          maritlstat_code:
+            length: 2
+            type: str
+            example_value: "00"
+          maritlstat_text:
+            length: 100
+            type: str
+            example_value: "All marital statuses"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    mjcow:
+        file_path: "tu.mjcow"
+        name: Class of Worker
+        description: "Maps class of worker codes to class of worker descriptions"
+        index_col: "mjcow_code"
+        schema:
+          mjcow_code:
+            length: 2
+            type: str
+            example_value: "00"
+          mjcow_text:
+            length: 100
+            type: str
+            example_value: "All classes of workers"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    occ:
+        file_path: "tu.occ"
+        name: Occupation
+        description: "Maps occupation codes to occupation descriptions"
+        index_col: "occ_code"
+        schema:
+          occ_code:
+            length: 4
+            type: str
+            example_value: "0000"
+          occ_text:
+            length: 100
+            type: str
+            example_value: "All occupations"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    orig:
+        file_path: "tu.orig"
+        name: Ethnicity and Country of Origin
+        description: "Maps ethnicity and country of origin codes to descriptions"
+        index_col: "orig_code"
+        schema:
+          orig_code:
+            length: 2
+            type: str
+            example_value: "00"
+          orig_text:
+            length: 100
+            type: str
+            example_value: "All origins"
+
+    pertype:
+        file_path: "tu.pertype"
+        name: Days of Week
+        description: "Maps days of week codes to days of week descriptions"
+        index_col: "pertype_code"
+        schema:
+          pertype_code:
+            length: 2
+            type: str
+            example_value: "00"
+          pertype_text:
+            length: 100
+            type: str
+            example_value: "All days"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    prhhchild:
+        file_path: "tu.prhhchild"
+        name: Presence of Household Child
+        description: "Maps presence of household child codes to descriptions"
+        index_col: "prhhchild_code"
+        schema:
+          prhhchild_code:
+            length: 4
+            type: str
+            example_value: "0000"
+          prhhchild_text:
+            length: 100
+            type: str
+            example_value: "All persons"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    prownhhchild:
+        file_path: "tu.prownhhchild"
+        name: Presence of Own Household Child
+        description: "Maps presence of own household child codes to descriptions"
+        index_col: "prownhhchild_code"
+        schema:
+          prownhhchild_code:
+            length: 2
+            type: str
+            example_value: "00"
+          prownhhchild_text:
+            length: 100
+            type: str
+            example_value: "All persons"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    race:
+        file_path: "tu.race"
+        name: Race
+        description: "Maps race codes to race descriptions"
+        index_col: "race_code"
+        schema:
+          race_code:
+            length: 2
+            type: str
+            example_value: "00"
+          race_text:
+            length: 100
+            type: str
+            example_value: "All races"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    region:
+        file_path: "tu.region"
+        name: Region
+        description: "Maps region codes to region names"
+        index_col: "region_code"
+        schema:
+          region_code:
+            length: 2
+            type: str
+            example_value: "00"
+          region_text:
+            length: 100
+            type: str
+            example_value: "United States"
+
+    seasonal:
+        file_path: "tu.seasonal"
+        name: Seasonal Adjustment
+        description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+        index_col: "seasonal_code"
+        schema:
+          seasonal_code:
+            length: 1
+            type: str
+            example_value: "U"
+          seasonal_text:
+            length: 100
+            type: str
+            example_value: "Not seasonally adjusted"
+
+    sex:
+        file_path: "tu.sex"
+        name: Sex
+        description: "Maps sex codes to sex descriptions"
+        index_col: "sex_code"
+        schema:
+          sex_code:
+            length: 1
+            type: str
+            example_value: "0"
+          sex_text:
+            length: 100
+            type: str
+            example_value: "Both sexes"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    sjmj:
+        file_path: "tu.sjmj"
+        name: Single or Multiple Jobholder
+        description: "Maps single or multiple jobholder codes to descriptions"
+        index_col: "sjmj_code"
+        schema:
+          sjmj_code:
+            length: 1
+            type: str
+            example_value: "0"
+          sjmj_text:
+            length: 100
+            type: str
+            example_value: "All employed persons"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    stattype:
+        file_path: "tu.stattype"
+        name: Type of Estimate
+        description: "Maps type of estimate codes to type of estimate descriptions"
+        index_col: "stattype_code"
+        schema:
+          stattype_code:
+            length: 5
+            type: str
+            example_value: "10101"
+          stattype_text:
+            length: 100
+            type: str
+            example_value: "Number of persons"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    timeday:
+        file_path: "tu.timeday"
+        name: Time of Day
+        description: "Maps time of day codes to time of day descriptions"
+        index_col: "timeday_code"
+        schema:
+          timeday_code:
+            length: 2
+            type: str
+            example_value: "00"
+          timeday_text:
+            length: 100
+            type: str
+            example_value: "All day"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    where:
+        file_path: "tu.where"
+        name: Where
+        description: "Maps where codes to where descriptions"
+        index_col: "where_code"
+        schema:
+          where_code:
+            length: 2
+            type: str
+            example_value: "00"
+          where_text:
+            length: 100
+            type: str
+            example_value: "All locations"
+
+    who:
+        file_path: "tu.who"
+        name: Who
+        description: "Maps who codes to who descriptions"
+        index_col: "who_code"
+        schema:
+          who_code:
+            length: 2
+            type: str
+            example_value: "00"
+          who_text:
+            length: 100
+            type: str
+            example_value: "All persons"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    work:
+        file_path: "tu.work"
+        name: Worked on Diary Day
+        description: "Maps worked on diary day codes to descriptions"
+        index_col: "work_code"
+        schema:
+          work_code:
+            length: 3
+            type: str
+            example_value: "000"
+          work_text:
+            length: 100
+            type: str
+            example_value: "All employed persons"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks due to size
+  max_threads: 4     # Increased parallelization for medium-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ tu.data.0.Current, tu.data.1.AllData ]
+      partition_strategy:
+        partion_by: "stattype_code"
+        file_format: "tu.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 2003
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^TU[U]\\d{16}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "A01", "Q01", "Q02", "Q03", "Q04" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Medium
+      output_file: "tu_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Seasonal code mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal_code"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_text"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Stattype code mapping
+        stattype_code:
+          lookup_table: "stattype"
+          lookup_key: "stattype_code"
+          lookup_value: "stattype_text"
+          create_field: "stattype_text"
+          on_missing: "UNKNOWN_STATTYPE"
+          cache: true
+        
+        # Sex code mapping
+        sex_code:
+          lookup_table: "sex"
+          lookup_key: "sex_code"
+          lookup_value: "sex_text"
+          create_field: "sex_text"
+          on_missing: "UNKNOWN_SEX"
+          cache: true
+        
+        # Age code mapping
+        age_code:
+          lookup_table: "age"
+          lookup_key: "age_code"
+          lookup_value: "age_text"
+          create_field: "age_text"
+          on_missing: "UNKNOWN_AGE"
+          cache: true
+        
+        # Race code mapping
+        race_code:
+          lookup_table: "race"
+          lookup_key: "race_code"
+          lookup_value: "race_text"
+          create_field: "race_text"
+          on_missing: "UNKNOWN_RACE"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^TU[U]\\d{16}$"
+            action: flag
+            message: "Invalid series ID format: should be TU[U] followed by 16 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 18
+            action: reject
+            message: "Series ID must be exactly 18 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 2003
+            max: 2067
+            action: reject
+            message: "Begin year must be between 2003 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 2003
+            max: 2067
+            action: reject
+            message: "End year must be between 2003 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01", "Q01", "Q02", "Q03", "Q04" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01", "Q01", "Q02", "Q03", "Q04" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, seasonal, stattype_code, datays_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, stattype_code, begin_year, end_year ]
+        output_file: "tu_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 2000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "tu_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/tu"

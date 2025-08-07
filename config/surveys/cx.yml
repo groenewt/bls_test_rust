@@ -1,0 +1,498 @@
+# .config/surveys/cx.yml
+# name: Consumer Expenditure Survey Processing Configuration
+# description:
+# author: Junie
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/cx
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+# changes:
+
+#General Survey Information
+survey:
+  code: cx #survey code (ex.ap,sm,tu)- see docs (.docs/surveys/* for all surveys)
+  name: Consumer Expenditure Survey #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The Consumer Expenditure Survey (CE) provides data on expenditures, income, and demographic characteristics of consumers in the United States."
+  definition: "
+The following is a definition of: CONSUMER EXPENDITURE SURVEY (CX)
+
+Survey Description: The Consumer Expenditure Survey (CE) provides data on expenditures, 
+income, and demographic characteristics of consumers in the United States. The CE 
+consists of two surveys, the Interview Survey and the Diary Survey, that provide 
+information on the buying habits of American consumers, including data on their 
+expenditures, income, and consumer unit (families and single consumers) characteristics.
+
+The survey data are collected for the Bureau of Labor Statistics by the U.S. Census Bureau. 
+The CE is important because it is the only Federal survey to provide information on the 
+complete range of consumers' expenditures and incomes, as well as the characteristics of 
+those consumers.
+
+The CE collects information from the nation's households and families on their buying habits 
+(expenditures), income, and household characteristics. The strength of the CE is that it 
+allows data users to relate the expenditures and income of consumers to the characteristics 
+of those consumers. The survey consists of two components, a quarterly Interview Survey and 
+a weekly Diary Survey, each with its own questionnaire and sample.
+
+Summary Data Available: Consumer expenditure data are available for the civilian, 
+noninstitutional population of the United States and various subpopulations, with estimates 
+available by income quintiles, income classes, age of reference person, size of consumer 
+unit, composition of consumer unit, number of earners, housing tenure, region of residence, 
+occupation, education, and other characteristics.
+                "
+  characteristics:
+    frequency: annual
+    coverage: "Consumer expenditure data are available for the civilian, noninstitutional population of the United States and various subpopulations"
+    time_series_count: "Consumer expenditure data series" 
+    classification_system: "Demographics codes, characteristics codes, and expenditure categories"
+    update_schedule: "Annual release"
+    begin_year: 2003
+    survey_methodology: "The CE consists of two surveys, the Interview Survey and the Diary Survey, that provide information on the buying habits of American consumers."
+    calculation_basis: "Expenditure estimates are constructed for different demographic groups and expenditure categories."
+
+#Survey Series Information
+series:
+  path: "cx.series" #path to series file
+  use_mmap: true
+  series_size_class: Medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 18
+      type: Text
+      example_value: "CXU010101LB01010000"
+      map_file: ""
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "U"
+      needs_mapping: true
+      map_file: "seasonal"
+    expenditure_code:
+      length: 6
+      type: Text
+      example_value: "010101"
+      needs_mapping: true
+      map_file: "expenditure"
+    demographics_code:
+      length: 4
+      type: Text
+      example_value: "LB01"
+      needs_mapping: true
+      map_file: "demographics"
+    characteristics_code:
+      length: 2
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "characteristics"
+    series_title:
+      length: 200
+      type: Text
+      example_value: "Food, All Consumer Units"
+      needs_mapping: false
+      map_file: ""
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: ""
+      needs_mapping: true
+      map_file: "footnote"
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "2003"
+      needs_mapping: false
+      map_file: ""
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: ""
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2024"
+      needs_mapping: false
+      map_file: ""
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: ""
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 18
+        type: Text
+        example_value: "CXU010101LB01010000"
+      year:
+        length: 4
+        type: values
+        example_value: "2003"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "7023"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ demographics, characteristics ]  # Small, frequently used
+    lazy: [ footnote, seasonal ]  # Load on demand
+    mmap: [ expenditure ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    characteristics:
+        file_path: "cx.characteristics"
+        name: Characteristics
+        description: "Maps characteristics codes to characteristics names"
+        index_col: "characteristics_code"
+        schema:
+          demographics_code:
+            length: 4
+            type: str
+            example_value: "LB01"
+          characteristics_code:
+            length: 2
+            type: str
+            example_value: "01"
+          characteristics_text:
+            length: 100
+            type: str
+            example_value: "All Consumer Units"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 4
+            type: str
+            example_value: "1010"
+
+    demographics:
+        file_path: "cx.demographics"
+        name: Demographics
+        description: "Maps demographics codes to demographics names"
+        index_col: "demographics_code"
+        schema:
+          demographics_code:
+            length: 4
+            type: str
+            example_value: "LB01"
+          demographics_text:
+            length: 100
+            type: str
+            example_value: "Income quintiles"
+
+    expenditure:
+        file_path: "cx.expenditure"
+        name: Expenditure
+        description: "Maps expenditure codes to expenditure categories"
+        index_col: "expenditure_code"
+        schema:
+          expenditure_code:
+            length: 6
+            type: str
+            example_value: "010101"
+          expenditure_text:
+            length: 100
+            type: str
+            example_value: "Food"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 4
+            type: str
+            example_value: "1010"
+
+    footnote:
+        file_path: "cx.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "C"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: ""
+
+    seasonal:
+        file_path: "cx.seasonal"
+        name: Seasonal Adjustment
+        description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+        index_col: "seasonal_code"
+        schema:
+          seasonal_code:
+            length: 1
+            type: str
+            example_value: "U"
+          seasonal_text:
+            length: 100
+            type: str
+            example_value: "Not seasonally adjusted"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks due to size
+  max_threads: 4     # Increased parallelization for medium-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ cx.data.0.Current, cx.data.1.AllData ]
+      partition_strategy:
+        partion_by: "demographics_code"
+        file_format: "cx.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 2003
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^CX[U]\\d{16}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "A01" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Medium
+      output_file: "cx_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Seasonal code mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal_code"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_text"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Expenditure code mapping
+        expenditure_code:
+          lookup_table: "expenditure"
+          lookup_key: "expenditure_code"
+          lookup_value: "expenditure_text"
+          create_field: "expenditure_text"
+          on_missing: "UNKNOWN_EXPENDITURE"
+          cache: true
+        
+        # Demographics code mapping
+        demographics_code:
+          lookup_table: "demographics"
+          lookup_key: "demographics_code"
+          lookup_value: "demographics_text"
+          create_field: "demographics_text"
+          on_missing: "UNKNOWN_DEMOGRAPHICS"
+          cache: true
+        
+        # Characteristics code mapping
+        characteristics_code:
+          lookup_table: "characteristics"
+          lookup_key: "characteristics_code"
+          lookup_value: "characteristics_text"
+          create_field: "characteristics_text"
+          on_missing: "UNKNOWN_CHARACTERISTICS"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^CX[U]\\d{16}$"
+            action: flag
+            message: "Invalid series ID format: should be CX[U] followed by 16 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 18
+            action: reject
+            message: "Series ID must be exactly 18 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 2003
+            max: 2067
+            action: reject
+            message: "Begin year must be between 2003 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 2003
+            max: 2067
+            action: reject
+            message: "End year must be between 2003 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, seasonal, expenditure_code, demographics_code, characteristics_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, expenditure_code, demographics_code, characteristics_code, begin_year, end_year ]
+        output_file: "cx_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 2000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "cx_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/cx"

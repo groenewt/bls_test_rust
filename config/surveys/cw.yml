@@ -1,0 +1,569 @@
+# .config/surveys/cw.yml
+# name: Consumer Price Index - All Urban Wage earners and clerical workers Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/cw
+#         - Data files are in ASCII text format
+#         - Spaces separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/cw.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: cw #survey code (ex.ap,sm,tu)- see docs (.docs/surveys/* for all surveys)
+  name: Consumer Price Index - All Urban Wage earners and clerical workers #friendly survey name
+  size_class: large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The Consumer Price Index (CPI) is a statistical measure of change, over time, of the prices of goods and services in major expenditure groups--such as food, housing, apparel, transportation, and medical care--typically purchased by urban consumers."
+  definition: "
+The following is a definition of: CONSUMER PRICE INDEX - All Urban Wage earners and clerical workers (CW)
+
+Survey Description: The Consumer Price Index (CPI) is a statistical measure
+of change, over time, of the prices of goods and services in major 
+expenditure groups--such as food, housing, apparel, transportation, and 
+medical care--typically purchased by urban consumers.  Essentially, it 
+compares the cost of a sample \"market basket\" of goods and services in a 
+specific month relative to the cost of the same \"market basket\" in an 
+earlier reference period.  This reference period is designated as the base 
+period.
+
+The CPI publishes indexes for two 
+populations; urban wage earners and clerical workers (CW), and all urban 
+consumers (CU).  
+
+To construct the two indexes, thousands of prices for commodities and services purchased by consumers  
+are collected in a sample of 75 urban places. Rent data is collected in separate sample of thousands of rental units.  
+Comparison of indexes for individual CMSA's or cities show only the relative
+change over time in prices between locations. These indexes cannot be used
+to measure interarea differences in price levels or living costs.
+
+Summary Data Available: U.S. average indexes for both populations are 
+available for several hundred  consumer items and groups of items. In addition, 
+many of the indexes have been adjusted for seasonality.  The indexes 
+are monthly. Different indexes go back to different years, with the earliest, including all items, 
+dating to  1913. Semi-annual indexes have been 
+calculated for many items for comparison with semi-annual areas 
+mentioned below. Semi-annual indexes are available from 1984 forward.
+
+Area indexes for both populations are available for 23 urban places. For 
+each area, indexes are published for a subset of items and groups. The indexes
+are published monthly for three areas and bimonthly for twenty areas. Regional and division level 
+indexes for both populations are available for a subset of items and groups published. Indexes are published 
+for four regions and nine divisions. Regional indexes date to 1966; divisional indexes are newer, dating to 2018.  
+Indexes are monthly, with Semi-annual indexes 
+also calculated for selected  items.  
+
+City-size class indexes for both populations are available for two size classes 
+with a similar subset of groups and items  
+Region/city-size indexes (for example, Midwest size class B/C)for both populations are also available monthly. 
+
+Frequency of Observations:  U.S. city average indexes, regional indexes, 
+division indexes, size class indexes, and three metro area indexes are monthly. 20 metro area indexes are bimonthly.
+
+Annual Averages: Annual averages are available for all unadjusted series 
+in the CW and CU.
+
+Base Periods: Most indexes have a base period of 1982-1984 = 100. Other 
+indexes, mainly newer indexes, are based more recently.  The base period value is generally 100.0, 
+with rare exceptions where the base is set to 1000 to avoid loss of precision. The index
+for the \"Purchasing Power\" values (AAOR and SAOR) have a base period value of 1.000.
+
+Data Characteristics: Indexes are published to three decimal places.
+
+Updating Schedule:  Updates become available with the release of new data, typically between the 10th and 14th of the month 
+following the reference month.
+                "
+  characteristics:
+    frequency: monthly
+    coverage: "Urban wage earners and clerical workers"
+    time_series_count: "Consumer Price Index time series data" 
+    classification_system: "Area codes, item codes, and seasonal adjustment"
+    update_schedule: "Monthly release, typically between the 10th and 14th of the month following the reference month"
+    begin_year: 1913
+    survey_methodology: "Thousands of prices for commodities and services purchased by consumers are collected in a sample of 75 urban places."
+    calculation_basis: "Indexes are published to three decimal places. Most indexes have a base period of 1982-1984 = 100."
+
+#Survey Series Information
+series:
+  path: "cw.series" #path to series file
+  use_mmap: true
+  series_size_class: Large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "CWSR0000SA0"
+      map_file: "" #leave blank for none
+    area_code:
+      length: 4
+      type: Text
+      example_value: "0000"
+      needs_mapping: true
+      map_file: "area" #leave blank for none
+    item_code:
+      length: 8
+      type: Text
+      example_value: "SA0"
+      needs_mapping: true
+      map_file: "item" #leave blank for none
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "S"
+      needs_mapping: true
+      map_file: "seasonal" #leave blank for none
+    periodicity_code:
+      length: 1
+      type: Text
+      example_value: "R"
+      needs_mapping: true
+      map_file: "periodicity" #leave blank for none
+    base_code:
+      length: 1
+      type: Text
+      example_value: "S"
+      needs_mapping: true
+      map_file: "base" #leave blank for none
+    base_period:
+      length: 20
+      type: Text
+      example_value: "1982-84=100"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1947"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "M01"
+      needs_mapping: true
+      map_file: "period" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2025"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "M07"
+      needs_mapping: true
+      map_file: "period" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "CWUR0400AA0"
+      year:
+        length: 4
+        type: values
+        example_value: "2025"
+      period:
+        length: 3
+        type: Text
+        example_value: "M07"
+      value:
+        length: 12
+        type: values
+        example_value: "53.3"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ area, item, seasonal, period ]  # Small, frequently used
+    lazy: [ footnote, periodicity, base ]  # Load on demand
+    mmap: [ ]  # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    area:
+        file_path: "cw.area"
+        name: Area
+        description: "Maps area codes to area names"
+        index_col: "area_code"
+        schema:
+          area_code:
+            length: 4
+            type: str
+            example_value: "0000"
+          area_name:
+            length: 80
+            type: Text
+            example_value: "U.S. city average"
+
+
+    base:
+        file_path: "cw.base"
+        name: Base
+        description: "Maps base codes to base descriptions"
+        index_col: "base_code"
+        schema:
+          base_code:
+            length: 1
+            type: str
+            example_value: "S"
+          base_text:
+            length: 100
+            type: str
+            example_value: "Standard reference base"
+
+    footnote:
+        file_path: "cw.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "R"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: "Revised"
+
+    item:
+        file_path: "cw.item"
+        name: Item
+        description: "Maps item codes to item names"
+        index_col: "item_code"
+        schema:
+          item_code:
+            length: 8
+            type: str
+            example_value: "SA0"
+          item_name:
+            length: 100
+            type: str
+            example_value: "All items"
+
+    period:
+        file_path: "cw.period"
+        name: Period
+        description: "Maps period codes to period names"
+        index_col: "period"
+        schema:
+          period:
+            length: 3
+            type: str
+            example_value: "M01"
+          period_abbr:
+            length: 5
+            type: str
+            example_value: "JAN"
+          period_name:
+            length: 20
+            type: str
+            example_value: "January"
+
+    periodicity:
+        file_path: "cw.periodicity"
+        name: Periodicity
+        description: "Maps periodicity codes to periodicity descriptions"
+        index_col: "periodicity_code"
+        schema:
+          periodicity_code:
+            length: 1
+            type: str
+            example_value: "R"
+          periodicity_name:
+            length: 100
+            type: str
+            example_value: "Regular"
+
+    seasonal:
+        file_path: "cw.seasonal"
+        name: Seasonal Adjustment
+        description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+        index_col: "seasonal_code"
+        schema:
+          seasonal_code:
+            length: 1
+            type: str
+            example_value: "S"
+          seasonal_text:
+            length: 100
+            type: str
+            example_value: "Seasonally adjusted"
+
+processing:
+  # Strategy for large survey
+  strategy: mmap  # Process using memory mapping due to size
+  max_threads: 8  # Increased parallelization for large-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 100
+  buffer_pool_size: 16
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Large
+      list_data_files: [ 
+        cw.data.0.Current, 
+        cw.data.1.AllItems, 
+        cw.data.2.Summaries,
+        cw.data.3.AsizeNorthEast,
+        cw.data.4.AsizeNorthCentral,
+        cw.data.5.AsizeSouth,
+        cw.data.6.AsizeWest,
+        cw.data.7.OtherNorthEast,
+        cw.data.8.OtherNorthCentral,
+        cw.data.9.OtherSouth,
+        cw.data.10.OtherWest,
+        cw.data.11.USFoodBeverage,
+        cw.data.12.USHousing,
+        cw.data.13.USApparel,
+        cw.data.14.USTransportation,
+        cw.data.15.USMedical,
+        cw.data.16.USRecreation,
+        cw.data.17.USEducationAndCommunication,
+        cw.data.18.USOtherGoodsAndServices,
+        cw.data.19.PopulationSize,
+        cw.data.20.USCommoditiesServicesSpecial
+      ]
+      partition_strategy:
+        partion_by: "area_code"
+        file_format: "cw.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1913
+                max: 2067
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^CW[SU][RS]\\d{4}[A-Z0-9]{2,8}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Large
+      output_file: "cw_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Area code mapping
+        area_code:
+          lookup_table: "area"
+          lookup_key: "area_code"
+          lookup_value: "area_name"
+          create_field: "area_name"
+          on_missing: "UNKNOWN_AREA"
+          cache: true
+        
+        # Item code mapping
+        item_code:
+          lookup_table: "item"
+          lookup_key: "item_code"
+          lookup_value: "item_name"
+          create_field: "item_name"
+          on_missing: "UNKNOWN_ITEM"
+          cache: true
+        
+        # Seasonal code mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal_code"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_text"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Periodicity code mapping
+        periodicity_code:
+          lookup_table: "periodicity"
+          lookup_key: "periodicity_code"
+          lookup_value: "periodicity_name"
+          create_field: "periodicity_name"
+          on_missing: "UNKNOWN_PERIODICITY"
+          cache: true
+        
+        # Base code mapping
+        base_code:
+          lookup_table: "base"
+          lookup_key: "base_code"
+          lookup_value: "base_text"
+          create_field: "base_text"
+          on_missing: "UNKNOWN_BASE"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^CW[SU][RS]\\d{4}[A-Z0-9]{2,8}$"
+            action: flag
+            message: "Invalid series ID format: should be CW[SU][RS] followed by 4 digits and 2-8 alphanumeric characters"
+          
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1913
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1913 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1913
+            max: 2067
+            action: reject
+            message: "End year must be between 1913 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, area_code, item_code, seasonal, periodicity_code, base_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, area_code, item_code, begin_year, end_year ]
+        output_file: "cw_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 5000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "cw_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for large-sized data
+    interval_records: 100000
+    checkpoint_dir: "checkpoints/cw"

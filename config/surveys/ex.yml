@@ -108,7 +108,7 @@ series:
       example_value: "712112" #??
       needs_mapping: true
       map_file: "item" #leave blank for none
-    series_title:
+    series_title: ## IN SERIES DATA (NOT EXCPLITLY  MENTIONED in DOCS though FYI)
       length: 7
       type: Text
       example_value: "Potatoes, white, per lb. (453.6 gm) in U.S. city average, average price, not seasonally adjusted"

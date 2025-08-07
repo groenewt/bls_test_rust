@@ -1,0 +1,547 @@
+# .config/surveys/bg.yml
+# name: Collective Bargaining Series - State and Local Government Processing Configuration
+# description:
+# author: Junie
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/bg
+#         - Data files are in ASCII text format
+#         - Spaces separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/bg.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: bg #survey code
+  name: Collective Bargaining Series - State and Local Government #friendly survey name
+  size_class: small #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "This series summarizes wage-rate changes in major collective bargaining units in State and local governments."
+  definition: "
+The following is a definition of:  COLLECTIVE BARGAINING SERIES - 
+				   STATE AND LOCAL GOVERNMENT (BG)
+
+Survey Description:  This series summarizes wage-rate changes in major
+collective bargaining units (those with 1,000 workers or more) in State and
+local governments where:  (1)  A labor organization is recognized as the
+bargaining agent for a group of workers; (2)  the settlements are embodied
+in signed, mutually binding contracts; and (3)  wages are determined by
+collective bargaining.  Wage-rate change data are measured for units of
+1,000 workers or more; compensation measures are compiled for settlements
+of 5,000 workers or more.
+
+Summary Data Available:
+
+Wage Rate Changes:  Two types of information are presented.  \"Settlement\"
+data measure the net impact of increases, decreases, and no change in wage
+rates as a result of new settlements reached during the reference period.  
+Changes scheduled during the first 12 months after the contract effective 
+date (first-year) and all changes over the contract term expressed as an 
+annual rate (over the life) are presented.  Data on \"wage rate changes under
+all major agreements\" include increases, decreases, and no change in the 
+reference period stemming from settlements in that period, from earlier 
+settlements with changes deferred to the period, and from COLA adjustments.
+
+Compensation Changes:  These data measure changes (increases, decreases, and
+no change) in employee compensation (wages and benefits) resulting from 
+settlements negotiated in the reference period covering 5,000 workers or 
+more.  Both changes occurring within 12 months of the contract effective 
+date (first year) and all changes that will occur over the contract term 
+expressed as an annual rate (over the life) are presented.  \"Compensation 
+changes\" measure changes in the costs for employee compensation including 
+specified lump-sum payments and reflects both the size and timing of 
+compensation rate changes.
+                "
+  characteristics:
+    frequency: semiannual
+    coverage: "State and local government collective bargaining units with 1,000 workers or more"
+    time_series_count: "25 series" # Count from bg.series file (minus header)
+    classification_system: "Collective bargaining agreements"
+    update_schedule: "Updates are available in February and August"
+    begin_year: 1983
+    survey_methodology: "Data collected from collective bargaining agreements in state and local governments"
+    calculation_basis: "Percent changes with one decimal place"
+
+#Survey Series Information
+series:
+  path: "bg.series" #path to series file
+  use_mmap: true
+  series_size_class: Micro #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 13
+      type: Text
+      example_value: "BGU01111001"
+      map_file: ""
+    measure_code:
+      length: 2
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "measure"
+    unit_code:
+      length: 1
+      type: Text
+      example_value: "1"
+      needs_mapping: true
+      map_file: "unit"
+    alteration_code:
+      length: 1
+      type: Text
+      example_value: "1"
+      needs_mapping: true
+      map_file: "alteration"
+    sector_code:
+      length: 1
+      type: Text
+      example_value: "1"
+      needs_mapping: true
+      map_file: "sector"
+    contract_duration:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "duration"
+    contract_selection:
+      length: 2
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "selection"
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "U"
+      needs_mapping: false
+      map_file: ""
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1984"
+      needs_mapping: false
+      map_file: ""
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "Q02"
+      needs_mapping: true
+      map_file: "period"
+    end_year:
+      length: 4
+      type: Text
+      example_value: "1995"
+      needs_mapping: false
+      map_file: ""
+    end_period:
+      length: 3
+      type: Text
+      example_value: "Q02"
+      needs_mapping: true
+      map_file: "period"
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 13
+        type: Text
+        example_value: "BGU01111001"
+      year:
+        length: 4
+        type: values
+        example_value: "1984"
+      period:
+        length: 3
+        type: Text
+        example_value: "Q02"
+      value:
+        length: 12
+        type: values
+        example_value: "3.9"
+      cont_break:
+        length: 1
+        type: Text
+        example_value: "N"
+      status:
+        length: 1
+        type: Text
+        example_value: "F"
+      footnote_exists:
+        length: 1
+        type: Text
+        example_value: "N"
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ period, measure, unit ]  # Small, frequently used
+    lazy: [ alteration, duration, sector, selection ]  # Load on demand
+    mmap: [ ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    alteration:
+        file_path: "bg.alteration"
+        name: Alteration
+        description: "Maps alteration codes to alteration text"
+        index_col: "alteration_code"
+        schema:
+          alteration_code:
+            length: 1
+            type: str
+            example_value: "1"
+          alteration_text:
+            length: 50
+            type: Text
+            example_value: "Changes (net increases, and no change)"
+
+    duration:
+        file_path: "bg.duration"
+        name: Contract Duration
+        description: "Maps contract duration codes to contract duration text"
+        index_col: "contract_duration"
+        schema:
+          contract_duration:
+            length: 1
+            type: str
+            example_value: "0"
+          contract_duration_text:
+            length: 50
+            type: str
+            example_value: "All contracts"
+
+    measure:
+        file_path: "bg.measure"
+        name: Measure
+        description: "Maps measure codes to measure text"
+        index_col: "measure_code"
+        schema:
+          measure_code:
+            length: 2
+            type: str
+            example_value: "01"
+          measure_text:
+            length: 90
+            type: str
+            example_value: "First contract year wage rate, all settlmts., 1,000 or more wkrs."
+
+    period:
+        file_path: "bg.period"
+        name: Period
+        description: "Maps period codes to period names"
+        index_col: "period"
+        schema:
+          period:
+            length: 3
+            type: str
+            example_value: "Q01"
+          period_abbr:
+            length: 5
+            type: str
+            example_value: "QTR2"
+          period_name:
+            length: 20
+            type: str
+            example_value: "Second Quarter"
+
+    sector:
+        file_path: "bg.sector"
+        name: Sector
+        description: "Maps sector codes to sector names"
+        index_col: "sector_code"
+        schema:
+          sector_code:
+            length: 1
+            type: str
+            example_value: "1"
+          sector_name:
+            length: 40
+            type: str
+            example_value: "State and local government"
+
+    selection:
+        file_path: "bg.selection"
+        name: Contract Selection
+        description: "Maps contract selection codes to contract selection text"
+        index_col: "contract_selection"
+        schema:
+          contract_selection:
+            length: 2
+            type: str
+            example_value: "01"
+          contract_selection_text:
+            length: 80
+            type: str
+            example_value: "All contracts negotiated in periods"
+
+    unit:
+        file_path: "bg.unit"
+        name: Unit
+        description: "Maps unit codes to unit text"
+        index_col: "unit_code"
+        schema:
+          unit_code:
+            length: 1
+            type: str
+            example_value: "1"
+          unit_text:
+            length: 20
+            type: str
+            example_value: "Mean (in percents)"
+
+processing:
+  # Strategy for small survey
+  strategy: in_memory  # Load entirely into memory
+  max_threads: 2       # Limited parallelization needed
+  
+  # Performance hints
+  use_mmap: false  # Too small to benefit from mmap
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for small dataset
+      use_mmap: false
+      series_size_class: Micro
+      list_data_files: [ bg.data.1.AllData ]
+      partition_strategy:
+        partition_by: "sector_code"
+        file_format: "bg.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period]
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -100.0 # MIN RANGE
+                max: 100.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1980
+                max: 2000
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^BG[US].{11}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "Q01", "Q02", "Q03", "Q04", "Q05", "Q13" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, cont_break, status, footnote_exists ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: false
+      series_size_class: Micro
+      output_file: "bg_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Measure code mapping
+        measure_code:
+          lookup_table: "measure"
+          lookup_key: "measure_code"
+          lookup_value: "measure_text"
+          create_field: "measure_name"
+          on_missing: "UNKNOWN_MEASURE"
+          cache: true
+        
+        # Unit code mapping
+        unit_code:
+          lookup_table: "unit"
+          lookup_key: "unit_code"
+          lookup_value: "unit_text"
+          create_field: "unit_name"
+          on_missing: "UNKNOWN_UNIT"
+          cache: true
+        
+        # Alteration code mapping
+        alteration_code:
+          lookup_table: "alteration"
+          lookup_key: "alteration_code"
+          lookup_value: "alteration_text"
+          create_field: "alteration_name"
+          on_missing: "UNKNOWN_ALTERATION"
+          cache: true
+        
+        # Sector code mapping
+        sector_code:
+          lookup_table: "sector"
+          lookup_key: "sector_code"
+          lookup_value: "sector_name"
+          create_field: "sector_name"
+          on_missing: "UNKNOWN_SECTOR"
+          cache: true
+        
+        # Contract duration mapping
+        contract_duration:
+          lookup_table: "duration"
+          lookup_key: "contract_duration"
+          lookup_value: "contract_duration_text"
+          create_field: "contract_duration_name"
+          on_missing: "UNKNOWN_DURATION"
+          cache: true
+        
+        # Contract selection mapping
+        contract_selection:
+          lookup_table: "selection"
+          lookup_key: "contract_selection"
+          lookup_value: "contract_selection_text"
+          create_field: "contract_selection_name"
+          on_missing: "UNKNOWN_SELECTION"
+          cache: true
+        
+        # Begin period mapping
+        begin_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "begin_period_name"
+          on_missing: keep_original
+          cache: true
+        
+        # End period mapping
+        end_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "end_period_name"
+          on_missing: keep_original
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^BG[US].{11}$"
+            action: flag
+            message: "Invalid series ID format: should be BG[S/U] followed by 11 characters"
+          
+          - field: series_id
+            rule: length
+            exact: 13
+            action: reject
+            message: "Series ID must be exactly 13 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1980
+            max: 2000
+            action: reject
+            message: "Begin year must be between 1980 and 2000"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1980
+            max: 2000
+            action: reject
+            message: "End year must be between 1980 and 2000"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "Q01", "Q02", "Q03", "Q04", "Q05", "Q13" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "Q01", "Q02", "Q03", "Q04", "Q05", "Q13" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, seasonal, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ contract_duration, contract_selection ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, measure_code, sector_code, begin_year, end_year ]
+        output_file: "bg_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 1000    # Stop if too many errors
+  log_errors: true
+  error_file: "bg_errors.log"
+  
+  # Checkpoint settings (not needed for small files)
+  checkpoint:
+    enabled: false
+    interval_records: 10000
+    checkpoint_dir: "checkpoints/bg"

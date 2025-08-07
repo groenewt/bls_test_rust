@@ -1,0 +1,671 @@
+# .config/surveys/cf.yml
+# name: Census of Fatal Occupational Injuries Processing Configuration
+# description:
+# author: Junie
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/cf
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/cf.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: cf #survey code (cf)- see docs (.docs/surveys/* for all surveys)
+  name: Census of Fatal Occupational Injuries #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "Census of Fatal Occupational Injuries (CFOI) data on fatal occupational injuries."
+  definition: "
+The following is a definition of: CENSUS OF FATAL OCCUPATIONAL INJURIES (1992-2002) (CF)
+
+Survey Description:   
+
+The Bureau of Labor Statistics (BLS) Census of Fatal Occupational Injuries 
+(CFOI) program collects data on fatal occupational injuries that is comprehensive, 
+timely, and verifiable. All groups of employees are included in CFOI, including 
+private sector workers, government workers, self-employed, and family 
+businesses. The program is a cooperative venture between the BLS and State 
+agencies. The State agencies collect, code, and verify fatality data which are 
+collected from workers' compensation reports, death certificates, accident 
+reports and news media, as well as from Federal agency sources provided by BLS.  
+All 50 States and the District of Columbia are represented in the CFOI data.
+
+The data are ultimately sent to BLS for tabulation of national occupational 
+fatality numbers. BLS provides detailed data on case characteristics such as 
+the event or exposure leading to the fatality, the source of the fatality, and 
+worker activity at the time of the incident. Event or exposure and source codes 
+are based on the BLS Occupational Injury and Illness Classification structure. 
+BLS also tabulates the number of occupational fatalities by demographic attributes 
+such as age, sex, race, ethnic origin, and occupation. (Occupation 
+classifications are based on the 1990 Bureau of the Census Occupational 
+Classification System.) These tabulations may be summarized by major industry 
+groups or by detailed industry (based on the 1987 Standard Industrial 
+Classification Manual.) A distinction is made between private sector and 
+government industries.  
+
+Summary data available: The Census of Fatal Occupational Injuries data series 
+started in 1992.
+
+Frequency of observations: All data are annual.
+
+Data characteristics: All figures are actual numbers of fatalities.
+
+Updating schedule: Updates to the data become available approximately 8 months 
+following the close of the reference year.
+                "
+  characteristics:
+    frequency: annual
+    coverage: "All 50 States and the District of Columbia"
+    time_series_count: "Varies by year" 
+    classification_system: "1990 Bureau of the Census Occupational Classification System and 1987 Standard Industrial Classification Manual"
+    update_schedule: "Approximately 8 months following the close of the reference year"
+    begin_year: 1992
+    survey_methodology: "The State agencies collect, code, and verify fatality data which are 
+collected from workers' compensation reports, death certificates, accident 
+reports and news media, as well as from Federal agency sources provided by BLS."
+    calculation_basis: "Actual counts of fatal occupational injuries"
+
+#Survey Series Information
+series:
+  path: "cf.series" 
+  use_mmap: true
+  series_size_class: Medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17
+      type: Text
+      example_value: "CFU00000080"
+      map_file: ""
+    category_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "category"
+    datatype_code:
+      length: 1
+      type: Text
+      example_value: "8"
+      needs_mapping: true
+      map_file: "datatype"
+    case_code:
+      length: 1
+      type: Text
+      example_value: "9"
+      needs_mapping: true
+      map_file: "case"
+    industry_code:
+      length: 4
+      type: Text
+      example_value: "0100"
+      needs_mapping: true
+      map_file: "industry"
+    event_code:
+      length: 4
+      type: Text
+      example_value: "639X"
+      needs_mapping: true
+      map_file: "event"
+    source_code:
+      length: 4
+      type: Text
+      example_value: "98XX"
+      needs_mapping: true
+      map_file: "source"
+    occupation_code:
+      length: 4
+      type: Text
+      example_value: "0040"
+      needs_mapping: true
+      map_file: "occupation"
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1992"
+      needs_mapping: false
+      map_file: ""
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: ""
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2000"
+      needs_mapping: false
+      map_file: ""
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: ""
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "CFU00000080"
+      year:
+        length: 4
+        type: values
+        example_value: "1996"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "6202"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files:
+  lookup_config:
+    preload: [ case, category, datatype ]  # Small, frequently used
+    lazy: [ footnote, event, source, occupation, industry, category2 ]  # Load on demand
+    mmap: [ ]  # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    case:
+        file_path: "cf.case"
+        name: Case
+        description: Identifies the type of case for which data are available
+        index_col: "case_code"
+        schema:
+          case_code:
+            length: 1
+            type: str
+            example_value: "9"
+          case_text:
+            length: 100
+            type: Text
+            example_value: "Text"
+
+    category:
+        file_path: "cf.category"
+        name: Category
+        description: Identifies the category of the observation
+        index_col: "category_code"
+        schema:
+          case_code:
+            length: 1
+            type: str
+            example_value: "9"
+          category_code:
+            length: 2
+            type: str
+            example_value: "AA"
+          category_text:
+            length: 100
+            type: Text
+            example_value: "Text"
+
+    category2:
+        file_path: "cf.category2"
+        name: Category2
+        description: Additional category information
+        index_col: "category_code"
+        schema:
+          category_code:
+            length: 2
+            type: str
+            example_value: "AB"
+          category_text:
+            length: 100
+            type: Text
+            example_value: "Text"
+
+    datatype:
+        file_path: "cf.datatype"
+        name: Datatype
+        description: Identifies the datatype of the observation
+        index_col: "datatype_code"
+        schema:
+          datatype_code:
+            length: 1
+            type: str
+            example_value: "8"
+          datatype_text:
+            length: 100
+            type: Text
+            example_value: "Text"
+
+    event:
+        file_path: "cf.event"
+        name: Event
+        description: Names the event which resulted in the reported injury
+        index_col: "event_code"
+        schema:
+          event_code:
+            length: 4
+            type: str
+            example_value: "639X"
+          event_text:
+            length: 100
+            type: Text
+            example_value: "Text"
+
+    footnote:
+        file_path: "cf.footnote"
+        name: Footnotes
+        description: Identifies footnotes for the data series
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "C"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    industry:
+        file_path: "cf.industry"
+        name: Industry
+        description: Identifies the industry for which data are observed
+        index_col: "industry_code"
+        schema:
+          industry_code:
+            length: 4
+            type: str
+            example_value: "0119"
+          industry_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    occupation:
+        file_path: "cf.occupation"
+        name: Occupation
+        description: Identifies the occupation of the person experiencing the injury
+        index_col: "occupation_code"
+        schema:
+          occupation_code:
+            length: 4
+            type: str
+            example_value: "0030"
+          occupation_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    source:
+        file_path: "cf.source"
+        name: Source
+        description: Identifies the source of injury
+        index_col: "source_code"
+        schema:
+          source_code:
+            length: 4
+            type: str
+            example_value: "98XX"
+          source_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks
+  max_threads: 4     # Moderate parallelization
+  
+  # Chunk settings
+  chunk_size_mb: 20
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for better performance
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ cf.data.0.Current, cf.data.1.AllData ]
+      partition_strategy:
+        partion_by: "category_code"
+        file_format: "cf.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: 0  # Fatality counts should be non-negative
+                max: 100000  # Reasonable upper limit for fatality counts
+                action: flag  # Flag but don't reject
+
+              - field: year
+                rule: range
+                min: 1992  # Beginning year of the survey
+                max: 2055  # Future-proof
+                action: reject
+
+              - field: series_id
+                rule: pattern
+                pattern: "^CF[US]\\d{10}$"
+                action: flag
+
+              - field: period
+                rule: values
+                allowed: [ "A01" ]  # Annual data only
+                action: flag
+
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Medium
+      output_file: "cf_series_dict.csv"
+
+      # Mapping configuration for lookups
+      mapping:
+        # Category code mapping
+        category_code:
+          lookup_table: "category"
+          lookup_key: "category_code"
+          lookup_value: "category_text"
+          create_field: "category_name"
+          on_missing: "UNKNOWN_CATEGORY"
+          cache: true
+
+        # Datatype code mapping
+        datatype_code:
+          lookup_table: "datatype"
+          lookup_key: "datatype_code"
+          lookup_value: "datatype_text"
+          create_field: "datatype_name"
+          on_missing: "UNKNOWN_DATATYPE"
+          cache: true
+
+        # Case code mapping
+        case_code:
+          lookup_table: "case"
+          lookup_key: "case_code"
+          lookup_value: "case_text"
+          create_field: "case_name"
+          on_missing: "UNKNOWN_CASE"
+          cache: true
+
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_text"
+          create_field: "industry_name"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+
+        # Event code mapping
+        event_code:
+          lookup_table: "event"
+          lookup_key: "event_code"
+          lookup_value: "event_text"
+          create_field: "event_name"
+          on_missing: "UNKNOWN_EVENT"
+          cache: true
+
+        # Source code mapping
+        source_code:
+          lookup_table: "source"
+          lookup_key: "source_code"
+          lookup_value: "source_text"
+          create_field: "source_name"
+          on_missing: "UNKNOWN_SOURCE"
+          cache: true
+
+        # Occupation code mapping
+        occupation_code:
+          lookup_table: "occupation"
+          lookup_key: "occupation_code"
+          lookup_value: "occupation_text"
+          create_field: "occupation_name"
+          on_missing: "UNKNOWN_OCCUPATION"
+          cache: true
+
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^CF[US]\\d{10}$"
+            action: flag
+            message: "Invalid series ID format: should be CF[U/S][10]"
+
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+
+          # Category code validation
+          - field: category_code
+            rule: length
+            exact: 2
+            action: reject
+            message: "Category code must be exactly 2 characters"
+
+          - field: category_code
+            rule: lookup_exists
+            lookup_table: "category"
+            action: flag
+            message: "Category code not found in category lookup table"
+
+          # Datatype code validation
+          - field: datatype_code
+            rule: length
+            exact: 1
+            action: reject
+            message: "Datatype code must be exactly 1 character"
+
+          - field: datatype_code
+            rule: lookup_exists
+            lookup_table: "datatype"
+            action: flag
+            message: "Datatype code not found in datatype lookup table"
+
+          # Case code validation
+          - field: case_code
+            rule: length
+            exact: 1
+            action: reject
+            message: "Case code must be exactly 1 character"
+
+          - field: case_code
+            rule: lookup_exists
+            lookup_table: "case"
+            action: flag
+            message: "Case code not found in case lookup table"
+
+          # Industry code validation
+          - field: industry_code
+            rule: length
+            exact: 4
+            action: reject
+            message: "Industry code must be exactly 4 characters"
+
+          - field: industry_code
+            rule: lookup_exists
+            lookup_table: "industry"
+            action: flag
+            message: "Industry code not found in industry lookup table"
+
+          # Event code validation
+          - field: event_code
+            rule: length
+            exact: 4
+            action: reject
+            message: "Event code must be exactly 4 characters"
+
+          - field: event_code
+            rule: lookup_exists
+            lookup_table: "event"
+            action: flag
+            message: "Event code not found in event lookup table"
+
+          # Source code validation
+          - field: source_code
+            rule: length
+            exact: 4
+            action: reject
+            message: "Source code must be exactly 4 characters"
+
+          - field: source_code
+            rule: lookup_exists
+            lookup_table: "source"
+            action: flag
+            message: "Source code not found in source lookup table"
+
+          # Occupation code validation
+          - field: occupation_code
+            rule: length
+            exact: 4
+            action: reject
+            message: "Occupation code must be exactly 4 characters"
+
+          - field: occupation_code
+            rule: lookup_exists
+            lookup_table: "occupation"
+            action: flag
+            message: "Occupation code not found in occupation lookup table"
+
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1992
+            max: 2055
+            action: reject
+            message: "Begin year must be between 1992 and 2055"
+
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1992
+            max: 2055
+            action: reject
+            message: "End year must be between 1992 and 2055"
+
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid begin period value"
+
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid end period value"
+
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year >= begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+
+        # Completeness checks
+        required_fields: [ series_id, category_code, datatype_code, case_code, industry_code, event_code, source_code, occupation_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ ]
+
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, category_code, datatype_code, case_code, industry_code, event_code, source_code, occupation_code, begin_year, end_year ]
+        output_file: "cf_series_dict_stats.json"
+
+# Error handling & recovery
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 1000    # Stop if too many errors
+  log_errors: true
+  error_file: "cf_errors.log"
+
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/cf"

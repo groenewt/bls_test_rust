@@ -1,0 +1,935 @@
+# .config/surveys/ch.yml
+# name: Occupational Injuries and Illnesses - Characteristics Data Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/ch
+#         - Data files are in ASCII text format
+#         - Spaces separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/ch.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: ch #survey code (ex.ap,sm,tu)- see docs (.docs/surveys/* for all surveys)
+  name: Occupational Injuries and Illnesses - Characteristics Data #friendly survey name
+  size_class: large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "Detailed breakouts of injury and illness data by various characteristics."
+  definition: "
+The following is a definition of:  Occupational Injuries and Illnesses - 
+characteristics data (ch)
+
+Survey Description:  Besides injury and illness counts, survey respondents 
+also are asked to provide additional information for a subset of the most 
+serious nonfatal cases logged, namely, those that involved at least 1 day 
+away from work, beyond the day of injury or onset of illness. Employers 
+answer several questions about these cases, including the demographics of 
+the worker disabled, the nature of the disabling condition, and the event 
+and source producing that condition. 
+
+Summary Data Available: Detailed breakouts of injury and illness data by
+a variety of characteristics, including age, category, event, gender,
+industry, length of service, nature, occupation, part of body, race, and
+source are available.
+
+Frequency of Observations: Annual data are available.
+
+Data Characteristics:  Data are reported to one decimal place.
+
+Updating Schedule: OSHS Characteristics data are published annually.
+                "
+  characteristics:
+    frequency: annual
+    coverage: "Detailed breakouts of injury and illness data by a variety of characteristics, including age, category, event, gender, industry, length of service, nature, occupation, part of body, race, and source."
+    time_series_count: "Large number of series" #COUNT OF LINE NUMBER IN SERIES FILE (-1 for header)
+    classification_system: "Occupational injuries and illnesses categories"
+    update_schedule: "Published annually"
+    begin_year: 2002
+    survey_methodology: "Survey respondents provide additional information for a subset of the most serious nonfatal cases logged, namely, those that involved at least 1 day away from work, beyond the day of injury or onset of illness."
+    calculation_basis: "Data are reported to one decimal place"
+
+#################### ============================================ ============================================
+#Survey Series Information
+series:
+  path: "ch.series" #path to series file
+  use_mmap: true
+  series_size_class: large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17
+      type: Text
+      example_value: "CHU00X00XXXX3E100"
+      map_file: ""
+    category_code:
+      length: 3
+      type: Text
+      example_value: "00X"
+      needs_mapping: true
+      map_file: "category"
+    datatype_code:
+      length: 1
+      type: Text
+      example_value: "3"
+      needs_mapping: true
+      map_file: "datatype"
+    case_code:
+      length: 1
+      type: Text
+      example_value: "E"
+      needs_mapping: true
+      map_file: "case"
+    age_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "age"
+    los_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "los"
+    race_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "race"
+    gender_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "gender"
+    pob_code:
+      length: 6
+      type: Text
+      example_value: "0XXXXX"
+      needs_mapping: true
+      map_file: "pob"
+    event_code:
+      length: 6
+      type: Text
+      example_value: "00XXXX"
+      needs_mapping: true
+      map_file: "event"
+    source_code:
+      length: 6
+      type: Text
+      example_value: "0XXXXX"
+      needs_mapping: true
+      map_file: "source"
+    occupation_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "occupation"
+    nature_code:
+      length: 6
+      type: Text
+      example_value: "0XXXXX"
+      needs_mapping: true
+      map_file: "nature"
+    industry_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "industry"
+    time_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "time"
+    hour_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "hour"
+    weekday_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "weekday"
+    special_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "special"
+    ownership_code:
+      length: 1
+      type: Text
+      example_value: "1"
+      needs_mapping: true
+      map_file: "ownership"
+    state_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "state"
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: ""
+      needs_mapping: true
+      map_file: "footnote"
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "2002"
+      needs_mapping: false
+      map_file: ""
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: ""
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2003"
+      needs_mapping: false
+      map_file: ""
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: ""
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "CHU00X00XXXX3E100"
+      year:
+        length: 4
+        type: values
+        example_value: "2003"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "0.6770580361"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files:
+  lookup_config:
+    preload: [age, case, datatype, gender, hour, los, ownership, race, special, state, time, weekday, footnote]  # Small, frequently used
+    lazy: [category, event, industry, nature, occupation, pob, source]  # Load on demand (larger files)
+    mmap: []  # use it for large files
+    cache_all: true  # Keep in memory
+  files:
+    age:
+      file_path: "ch.age"
+      name: Age
+      description: "Age of subjects for which data are observed"
+      index_col: "age_code"
+      schema:
+        age_code:
+          length: 6
+          type: str
+          example_value: "000000"
+        age_text:
+          length: 100
+          type: Text
+          example_value: "20-24"
+
+    case:
+      file_path: "ch.case"
+      name: Case
+      description: "Type of case for which data are available"
+      index_col: "case_code"
+      schema:
+        case_code:
+          length: 1
+          type: str
+          example_value: "E"
+        case_text:
+          length: 100
+          type: Text
+          example_value: "Industry division or selected characteristics by age"
+
+    category:
+      file_path: "ch.category"
+      name: Category
+      description: "Industry, event, or characteristic for which data are available"
+      index_col: "category_code"
+      schema:
+        case_code:
+          length: 1
+          type: str
+          example_value: "3"
+        category_code:
+          length: 3
+          type: str
+          example_value: "00X"
+        category_text:
+          length: 100
+          type: Text
+          example_value: "Mining"
+
+    datatype:
+      file_path: "ch.datatype"
+      name: Datatype
+      description: "Datatype of the observation"
+      index_col: "datatype_code"
+      schema:
+        datatype_code:
+          length: 1
+          type: str
+          example_value: "3"
+        datatype_text:
+          length: 100
+          type: Text
+          example_value: "Text"
+
+    event:
+      file_path: "ch.event"
+      name: Event
+      description: "Event which resulted in the reported injury or illness"
+      index_col: "event_code"
+      schema:
+        event_code:
+          length: 6
+          type: str
+          example_value: "00XXXX"
+        event_text:
+          length: 100
+          type: Text
+          example_value: "Fall from roof"
+
+    footnote:
+      file_path: "ch.footnote"
+      name: Footnotes
+      description: "Footnotes for the data series"
+      index_col: "footnote_code"
+      schema:
+        footnote_code:
+          length: 1
+          type: str
+          example_value: "P"
+        footnote_text:
+          length: 100
+          type: str
+          example_value: ""
+
+    gender:
+      file_path: "ch.gender"
+      name: Gender
+      description: "Gender of person experiencing the injury or illness"
+      index_col: "gender_code"
+      schema:
+        gender_code:
+          length: 6
+          type: str
+          example_value: "000000"
+        gender_text:
+          length: 100
+          type: Text
+          example_value: "Male"
+
+    hour:
+      file_path: "ch.hour"
+      name: Hour
+      description: "Total hours worked before injury or illness"
+      index_col: "hour_code"
+      schema:
+        hour_code:
+          length: 6
+          type: str
+          example_value: "000000"
+        hour_text:
+          length: 100
+          type: Text
+          example_value: "1 - 2 hours"
+
+    industry:
+      file_path: "ch.industry"
+      name: Industry
+      description: "Industry for which data are observed"
+      index_col: "industry_code"
+      schema:
+        industry_code:
+          length: 6
+          type: str
+          example_value: "000000"
+        industry_text:
+          length: 100
+          type: Text
+          example_value: "Construction"
+
+    los:
+      file_path: "ch.los"
+      name: Length of Service
+      description: "Length of service of the person experiencing the injury or illness"
+      index_col: "los_code"
+      schema:
+        los_code:
+          length: 6
+          type: str
+          example_value: "000000"
+        los_text:
+          length: 100
+          type: Text
+          example_value: "1-5 years"
+
+    nature:
+      file_path: "ch.nature"
+      name: Nature
+      description: "Nature of the injury or illness"
+      index_col: "nature_code"
+      schema:
+        nature_code:
+          length: 6
+          type: str
+          example_value: "0XXXXX"
+        nature_text:
+          length: 100
+          type: Text
+          example_value: "Burns"
+
+    occupation:
+      file_path: "ch.occupation"
+      name: Occupation
+      description: "Occupation of the person experiencing the injury or illness"
+      index_col: "occupation_code"
+      schema:
+        occupation_code:
+          length: 6
+          type: str
+          example_value: "000000"
+        occupation_text:
+          length: 100
+          type: Text
+          example_value: "Dentists"
+
+    ownership:
+      file_path: "ch.ownership"
+      name: Ownership
+      description: "Type of ownership"
+      index_col: "ownership_code"
+      schema:
+        ownership_code:
+          length: 1
+          type: str
+          example_value: "1"
+        ownership_text:
+          length: 100
+          type: Text
+          example_value: "Detailed Private Industry"
+
+    pob:
+      file_path: "ch.pob"
+      name: Part of Body
+      description: "Part of body affected"
+      index_col: "pob_code"
+      schema:
+        pob_code:
+          length: 6
+          type: str
+          example_value: "0XXXXX"
+        pob_text:
+          length: 100
+          type: Text
+          example_value: "Forearm(s)"
+
+    race:
+      file_path: "ch.race"
+      name: Race
+      description: "Race of the person experiencing the injury or illness"
+      index_col: "race_code"
+      schema:
+        race_code:
+          length: 6
+          type: str
+          example_value: "000000"
+        race_text:
+          length: 100
+          type: Text
+          example_value: "Hispanic"
+
+    source:
+      file_path: "ch.source"
+      name: Source
+      description: "Source of the injury or illness"
+      index_col: "source_code"
+      schema:
+        source_code:
+          length: 6
+          type: str
+          example_value: "0XXXXX"
+        source_text:
+          length: 100
+          type: Text
+          example_value: "Insecticides"
+
+    special:
+      file_path: "ch.special"
+      name: Special
+      description: "Specific injury or illness"
+      index_col: "special_code"
+      schema:
+        special_code:
+          length: 6
+          type: str
+          example_value: "000000"
+        special_text:
+          length: 100
+          type: Text
+          example_value: "Musculoskeletal disorders"
+
+    state:
+      file_path: "ch.state"
+      name: State
+      description: "State where injury or illness occurred"
+      index_col: "state_code"
+      schema:
+        state_code:
+          length: 2
+          type: str
+          example_value: "00"
+        state_name:
+          length: 100
+          type: Text
+          example_value: "Arizona"
+
+    time:
+      file_path: "ch.time"
+      name: Time
+      description: "Time of the day injury or illness occurred"
+      index_col: "time_code"
+      schema:
+        time_code:
+          length: 6
+          type: str
+          example_value: "000000"
+        time_text:
+          length: 100
+          type: Text
+          example_value: "12:01AM-4:00AM"
+
+    weekday:
+      file_path: "ch.weekday"
+      name: Weekday
+      description: "Day of the week the injury or illness occurred"
+      index_col: "weekday_code"
+      schema:
+        weekday_code:
+          length: 6
+          type: str
+          example_value: "000000"
+        weekday_text:
+          length: 100
+          type: Text
+          example_value: "Sunday"
+
+# ============================================ ============================================
+# PROCESSING CONFIGURATION
+# ============================================ ============================================
+processing:
+  # Strategy for large survey
+  strategy: mmap  # Use memory mapping for large files
+  max_threads: 8  # Higher parallelization for large dataset
+  
+  # Chunk settings for large files
+  chunk_size_mb: 100
+  buffer_pool_size: 16
+  
+  # Performance hints
+  use_mmap: true  # Benefit from mmap for large files
+  enable_statistics: true
+  enable_profiling: true
+
+# ============================================ ============================================
+# OUTPUT CONFIGURATION
+# ============================================ ============================================
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: parquet
+      compression: snappy  # Good balance between speed and compression
+      
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition for large dataset
+        partition_by: [year]  # Partition by year for time-series analysis
+      
+      use_mmap: true
+      series_size_class: large
+      list_data_files: [ch.data.0.Current, ch.data.1.AllData]
+      
+      partition_strategy:
+        partion_by: "category_code"
+        file_format: "ch.data.%d.%s"
+        load_dictionary_values: true
+      
+      transformations:
+        sort_by: [series_id, year, period]
+        deduplicate: true
+        deduplicate_on: [series_id, year, period, footnote_codes]
+        
+        # Column encoding optimization for Parquet
+        encoding:
+          series_id: dictionary  # Repeated values
+          category_code: dictionary
+          datatype_code: dictionary
+          case_code: dictionary
+          year: delta  # Sequential years
+          period: dictionary
+          value: plain  # Values vary widely
+      
+      validation:
+        # Data quality checks
+        rules:
+          - field: value
+            rule: range
+            min: -10000000000000000.0
+            max: 10000000000000000.0
+            action: flag  # Flag but don't reject
+          
+          - field: year
+            rule: range
+            min: 1900
+            max: 2055
+            action: reject
+          
+          - field: series_id
+            rule: pattern
+            pattern: "^CH[US][0-9A-Z]{15}$"
+            action: flag
+          
+          - field: period
+            rule: values
+            allowed: ["A01"]
+            action: flag
+        
+        # Completeness checks
+        required_fields: [series_id, year, period]
+        nullable_fields: [value, footnote_codes]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [year, period, value]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: parquet
+      compression: snappy
+      
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      
+      use_mmap: true
+      series_size_class: large
+      output_file: "ch_series_dict.parquet"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Category code mapping
+        category_code:
+          lookup_table: "category"
+          lookup_key: "category_code"
+          lookup_value: "category_text"
+          create_field: "category_name"
+          on_missing: "UNKNOWN_CATEGORY"
+          cache: true
+        
+        # Datatype code mapping
+        datatype_code:
+          lookup_table: "datatype"
+          lookup_key: "datatype_code"
+          lookup_value: "datatype_text"
+          create_field: "datatype_name"
+          on_missing: "UNKNOWN_DATATYPE"
+          cache: true
+        
+        # Case code mapping
+        case_code:
+          lookup_table: "case"
+          lookup_key: "case_code"
+          lookup_value: "case_text"
+          create_field: "case_name"
+          on_missing: "UNKNOWN_CASE"
+          cache: true
+        
+        # Age code mapping
+        age_code:
+          lookup_table: "age"
+          lookup_key: "age_code"
+          lookup_value: "age_text"
+          create_field: "age_name"
+          on_missing: "UNKNOWN_AGE"
+          cache: true
+        
+        # LOS code mapping
+        los_code:
+          lookup_table: "los"
+          lookup_key: "los_code"
+          lookup_value: "los_text"
+          create_field: "los_name"
+          on_missing: "UNKNOWN_LOS"
+          cache: true
+        
+        # Race code mapping
+        race_code:
+          lookup_table: "race"
+          lookup_key: "race_code"
+          lookup_value: "race_text"
+          create_field: "race_name"
+          on_missing: "UNKNOWN_RACE"
+          cache: true
+        
+        # Gender code mapping
+        gender_code:
+          lookup_table: "gender"
+          lookup_key: "gender_code"
+          lookup_value: "gender_text"
+          create_field: "gender_name"
+          on_missing: "UNKNOWN_GENDER"
+          cache: true
+        
+        # POB code mapping
+        pob_code:
+          lookup_table: "pob"
+          lookup_key: "pob_code"
+          lookup_value: "pob_text"
+          create_field: "pob_name"
+          on_missing: "UNKNOWN_POB"
+          cache: true
+        
+        # Event code mapping
+        event_code:
+          lookup_table: "event"
+          lookup_key: "event_code"
+          lookup_value: "event_text"
+          create_field: "event_name"
+          on_missing: "UNKNOWN_EVENT"
+          cache: true
+        
+        # Source code mapping
+        source_code:
+          lookup_table: "source"
+          lookup_key: "source_code"
+          lookup_value: "source_text"
+          create_field: "source_name"
+          on_missing: "UNKNOWN_SOURCE"
+          cache: true
+        
+        # Occupation code mapping
+        occupation_code:
+          lookup_table: "occupation"
+          lookup_key: "occupation_code"
+          lookup_value: "occupation_text"
+          create_field: "occupation_name"
+          on_missing: "UNKNOWN_OCCUPATION"
+          cache: true
+        
+        # Nature code mapping
+        nature_code:
+          lookup_table: "nature"
+          lookup_key: "nature_code"
+          lookup_value: "nature_text"
+          create_field: "nature_name"
+          on_missing: "UNKNOWN_NATURE"
+          cache: true
+        
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_text"
+          create_field: "industry_name"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+        
+        # Time code mapping
+        time_code:
+          lookup_table: "time"
+          lookup_key: "time_code"
+          lookup_value: "time_text"
+          create_field: "time_name"
+          on_missing: "UNKNOWN_TIME"
+          cache: true
+        
+        # Hour code mapping
+        hour_code:
+          lookup_table: "hour"
+          lookup_key: "hour_code"
+          lookup_value: "hour_text"
+          create_field: "hour_name"
+          on_missing: "UNKNOWN_HOUR"
+          cache: true
+        
+        # Weekday code mapping
+        weekday_code:
+          lookup_table: "weekday"
+          lookup_key: "weekday_code"
+          lookup_value: "weekday_text"
+          create_field: "weekday_name"
+          on_missing: "UNKNOWN_WEEKDAY"
+          cache: true
+        
+        # Special code mapping
+        special_code:
+          lookup_table: "special"
+          lookup_key: "special_code"
+          lookup_value: "special_text"
+          create_field: "special_name"
+          on_missing: "UNKNOWN_SPECIAL"
+          cache: true
+        
+        # Ownership code mapping
+        ownership_code:
+          lookup_table: "ownership"
+          lookup_key: "ownership_code"
+          lookup_value: "ownership_text"
+          create_field: "ownership_name"
+          on_missing: "UNKNOWN_OWNERSHIP"
+          cache: true
+        
+        # State code mapping
+        state_code:
+          lookup_table: "state"
+          lookup_key: "state_code"
+          lookup_value: "state_name"
+          create_field: "state_name"
+          on_missing: "UNKNOWN_STATE"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [series_id]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [series_id]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^CH[US][0-9A-Z]{15}$"
+            action: flag
+            message: "Invalid series ID format"
+          
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1900
+            max: 2055
+            action: reject
+            message: "Begin year must be between 1900 and 2055"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1900
+            max: 2055
+            action: reject
+            message: "End year must be between 1900 and 2055"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: ["A01"]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: ["A01"]
+            action: flag
+            message: "Invalid end period value"
+        
+        # Completeness checks
+        required_fields: [series_id, category_code, datatype_code, case_code, begin_year, begin_period, end_year, end_period]
+        nullable_fields: [footnote_codes, age_code, los_code, race_code, gender_code, pob_code, event_code, source_code, occupation_code, nature_code, industry_code, time_code, hour_code, weekday_code, special_code]
+        
+        # Uniqueness constraint
+        unique_fields: [series_id]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [series_id, category_code, datatype_code, case_code, begin_year, end_year]
+        output_file: "ch_series_dict_stats.json"
+
+# ============================================
+# ERROR HANDLING & RECOVERY
+# ============================================
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 10000   # Higher threshold for large dataset
+  log_errors: true
+  error_file: "ch_errors.log"
+  
+  # Checkpoint settings for large files
+  checkpoint:
+    enabled: true
+    interval_records: 100000
+    checkpoint_dir: "checkpoints/ch"

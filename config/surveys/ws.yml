@@ -1,0 +1,475 @@
+# .config/surveys/ws.yml
+# name: Work Stoppage Data Survey Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/ws
+#         - Data files are in ASCII text format
+#         - Spaces separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/ws.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: ws #survey code (ex.ap,sm,tu)- see docs (.docs/surveys/* for all surveys)
+  name: Work Stoppage Data #friendly survey name
+  size_class: small #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The series covers all work stoppages--strikes and lockouts--involving 1,000 workers or more and lasting one full shift or longer."
+  definition: "
+The following is a definition of:  WORK STOPPAGE DATA (WS)
+
+Survey Description:  The series covers all work stoppages--strikes and 
+lockouts--involving 1,000 workers or more and lasting one full shift or 
+longer.  The Bureau does not attempt to differentiate between strikes and 
+lockouts.  The series does not measure the indirect or secondary effect of 
+stoppages on other establishments whose employees are idled by material 
+shortages or lack of services.  For the series, a stoppage is considered 
+to be ended when the number of workers involved dips below 1,000.
+
+The series presents annual data from 1947 through 1981 and annual and 
+monthly data thereafter; it is not comparable with the one terminated in 
+1981 that covered stoppages involving six workers or more.
+
+Summary Data Available:  The number of stoppages beginning in the period.
+
+The number of stoppages in effect in the period, comprising those that 
+began in the period and those that began earlier and continued into the 
+period.
+
+The number of workers directly involved in stoppages beginning in the 
+period.
+
+Thte number of workers directly involved in stoppages in effect in the 
+period.
+
+The total number of workdays lost by workers directly involved in the 
+stoppages in effect in the period.
+
+Total workdays lost in the stoppages in effect, as a percent of the number 
+of workdays in the period multiplied by total national employment in the 
+period.  (Private household, forestry, and fishery employees are excluded 
+from total national employment.)
+
+Frequency of Observations:  Monthly in all cases.
+
+Annual Averages:  Annual data are available.
+
+Data Characteristics:  All percent changes are stored with one decimal 
+place.
+
+
+Updating Schedule:  Updates become available about 3 weeks after the end of
+each month.  All monthly figures are preliminary until final monthly and 
+annual figures are issued in February.
+                "
+  characteristics:
+    frequency: monthly
+    coverage: "National data on work stoppages"
+    time_series_count: "Work Stoppage Data series" 
+    classification_system: "Work stoppages by measure"
+    update_schedule: "Monthly, about 3 weeks after the end of each month"
+    begin_year: 1947
+    survey_methodology: "The series covers all work stoppages--strikes and lockouts--involving 1,000 workers or more and lasting one full shift or longer."
+    calculation_basis: "Direct measurement of work stoppages"
+
+#Survey Series Information
+series:
+  path: "ws.series" #path to series file
+  use_mmap: false
+  series_size_class: Micro #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 6
+      type: Text
+      example_value: "WSU001"
+      map_file: ""
+    measure_code:
+      length: 3
+      type: Text
+      example_value: "001"
+      needs_mapping: true
+      map_file: "measure"
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "U"
+      needs_mapping: true
+      map_file: "seasonal"
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1947"
+      needs_mapping: false
+      map_file: ""
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "M13"
+      needs_mapping: true
+      map_file: "period"
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2002"
+      needs_mapping: false
+      map_file: ""
+    end_period:
+      length: 3
+      type: Text
+      example_value: "M01"
+      needs_mapping: true
+      map_file: "period"
+
+data_file:
+  general:
+    use_mmap: false
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 6
+        type: Text
+        example_value: "WSU001"
+      year:
+        length: 4
+        type: values
+        example_value: "1947"
+      period:
+        length: 3
+        type: Text
+        example_value: "M13"
+      value:
+        length: 12
+        type: values
+        example_value: "25,720"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ period, seasonal ]  # Available files
+    lazy: [ ]  # No other files available
+    mmap: [ ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    footnote:
+        file_path: "ws.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "1"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    measure:
+        file_path: "ws.measure"
+        name: Measure
+        description: "Maps measure codes to measure descriptions"
+        index_col: "measure_code"
+        schema:
+          measure_code:
+            length: 3
+            type: str
+            example_value: "001"
+          measure_text:
+            length: 100
+            type: str
+            example_value: "Number of work stoppages beginning in the period"
+
+    period:
+      file_path: "ws.period"
+      name: Period
+      description: "Period of observation"
+      index_col: "period"
+      schema:
+        period:
+          length: 3
+          type: str
+          example_value: "M01"
+        period_abbr:
+          length: 5
+          type: str
+          example_value: "JAN"
+        period_name:
+          length: 20
+          type: str
+          example_value: "January"
+    
+    seasonal:
+      file_path: "ws.seasonal"
+      name: Seasonal
+      description: "Seasonal adjustment indicator"
+      index_col: "seasonal_code"
+      schema:
+        seasonal_code:
+          length: 1
+          type: str
+          example_value: "S"
+        seasonal_text:
+          length: 100
+          type: str
+          example_value: "Seasonally Adjusted"
+
+processing:
+  # Strategy for small survey
+  strategy: in_memory  # Load entirely into memory
+  max_threads: 2       # Limited parallelization needed
+  
+  # Performance hints
+  use_mmap: false  # Too small to benefit from mmap
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for small dataset
+      use_mmap: false
+      series_size_class: Micro
+      list_data_files: [ ws.data.1.AllData ]  # Referenced in documentation but not found in repository
+      partition_strategy:
+        partion_by: "measure_code"
+        file_format: "ws.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1947
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^WS[SU]\\d{3}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "M01", "M02", "M03", "M04", "M05", "M06",
+                           "M07", "M08", "M09", "M10", "M11", "M12", "M13" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: false
+      series_size_class: Micro
+      output_file: "ws_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Measure code mapping (file not available in repository but referenced in documentation)
+        measure_code:
+          lookup_table: "measure"
+          lookup_key: "measure_code"
+          lookup_value: "measure_text"
+          create_field: "measure_name"
+          on_missing: "UNKNOWN_MEASURE"
+          cache: true
+        
+        # Seasonal code mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal_code"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_name"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Begin period mapping
+        begin_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "begin_period_name"
+          on_missing: keep_original
+          cache: true
+        
+        # End period mapping
+        end_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "end_period_name"
+          on_missing: keep_original
+          cache: true
+        
+        # Footnote codes mapping (file not available in repository but referenced in documentation)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^WS[SU]\\d{3}$"
+            action: flag
+            message: "Invalid series ID format: should be WS[S/U] followed by 3 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 6
+            action: reject
+            message: "Series ID must be exactly 6 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Measure code validation
+          - field: measure_code
+            rule: length
+            exact: 3
+            action: reject
+            message: "Measure code must be exactly 3 characters"
+          
+          - field: measure_code
+            rule: pattern
+            pattern: "^\\d{3}$"
+            action: flag
+            message: "Measure code should be 3 digits"
+          
+          # Seasonal validation
+          - field: seasonal
+            rule: values
+            allowed: [ "S", "U" ]
+            action: flag
+            message: "Invalid seasonal value"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1947
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1947 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1947
+            max: 2067
+            action: reject
+            message: "End year must be between 1947 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06",
+                       "M07", "M08", "M09", "M10", "M11", "M12", "M13" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06",
+                       "M07", "M08", "M09", "M10", "M11", "M12", "M13" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, measure_code, seasonal, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, measure_code, begin_year, end_year ]
+        output_file: "ws_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 1000    # Stop if too many errors
+  log_errors: true
+  error_file: "ws_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: false  # Not needed for small files
+    interval_records: 10000
+    checkpoint_dir: "checkpoints/ws"

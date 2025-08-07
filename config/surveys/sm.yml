@@ -1,0 +1,606 @@
+# .config/surveys/sm.yml
+# name: State and Metro Area Employment, Hours, & Earnings Survey Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/sm
+#         - Data files are in ASCII text format
+#         - Spaces separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/sm.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: sm #survey code (ex.ap,sm,tu)- see docs (.docs/surveys/* for all surveys)
+  name: State and Metro Area Employment, Hours, & Earnings #friendly survey name
+  size_class: large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "State and Metro Area Employment, Hours, & Earnings data from the Current Employment Statistics (CES) survey."
+  definition: "
+The following is a definition of: STATE AND METRO AREA EMPLOYMENT, HOURS, & EARNINGS (SM)
+
+Survey Description: The Current Employment Statistics (CES) survey is a monthly survey 
+of business establishments that provides estimates of employment, hours, and earnings 
+data by industry for the nation as a whole, all States, and most major metropolitan areas.
+
+The CES survey is a Federal-State cooperative endeavor in which State employment 
+security agencies prepare and process the data. BLS provides the procedures and 
+technical support, draws the sample, and makes the estimates. The CES survey 
+is the most comprehensive source of information on the current employment situation 
+in the United States.
+
+The CES survey includes a sample of over 390,000 establishments employing over 47 million 
+nonfarm wage and salary workers, full or part time, who receive pay during the payroll 
+period which includes the 12th of the month. Included are employees on paid sick leave, 
+paid holiday, paid vacation, and so on. Persons who work during the pay period but 
+receive no pay are not counted. Persons who are on layoff, on leave without pay, 
+or on strike for the entire pay period, or who have not yet started working during 
+the pay period are not counted as employed. The CES survey counts persons at their 
+place of work rather than at their place of residence.
+
+Summary Data Available: The CES survey provides data on employment, hours, and earnings 
+for the nation, States, and major metropolitan areas. Data are available for major 
+industry divisions and for detailed industry levels.
+
+Frequency of Observations: All data are monthly.
+
+Data Characteristics: Employment data are in thousands. Average weekly hours and 
+average hourly earnings are actual numbers.
+
+Updating Schedule: Updates to the data become available with the monthly release of 
+new data, typically on the first Friday of the month following the reference month.
+                "
+  characteristics:
+    frequency: monthly
+    coverage: "National, state, and metropolitan area data on employment, hours, and earnings"
+    time_series_count: "State and Metro Area Employment, Hours, & Earnings series"
+    classification_system: "NAICS (North American Industry Classification System)"
+    update_schedule: "Monthly release, typically on the first Friday of the month following the reference month"
+    begin_year: 1991
+    survey_methodology: "The CES survey is a monthly survey of business establishments that provides estimates of employment, hours, and earnings data by industry for the nation as a whole, all States, and most major metropolitan areas."
+    calculation_basis: "Survey of over 390,000 establishments employing over 47 million nonfarm wage and salary workers"
+
+#Survey Series Information
+series:
+  path: "sm.series" #path to series file
+  use_mmap: true
+  series_size_class: Large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 30 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "SMS00000000000000021"
+      map_file: "" #leave blank for none
+    state_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "state" #leave blank for none
+    area_code:
+      length: 5
+      type: Text
+      example_value: "00000"
+      needs_mapping: true
+      map_file: "area" #leave blank for none
+    supersector_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "supersector" #leave blank for none
+    industry_code:
+      length: 8
+      type: Text
+      example_value: "00000000"
+      needs_mapping: true
+      map_file: "industry" #leave blank for none
+    data_type_code:
+      length: 2
+      type: Text
+      example_value: "21"
+      needs_mapping: true
+      map_file: "data_type" #leave blank for none
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "S"
+      needs_mapping: true
+      map_file: "seasonal" #leave blank for none
+    benchmark_year:
+      length: 4
+      type: Text
+      example_value: "2024"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: ""
+      needs_mapping: true
+      map_file: "footnote" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1991"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "M01"
+      needs_mapping: true
+      map_file: "period" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2025"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "M06"
+      needs_mapping: true
+      map_file: "period" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 30
+        type: Text
+        example_value: "SMS00000000000000021"
+      year:
+        length: 4
+        type: values
+        example_value: "2025"
+      period:
+        length: 3
+        type: Text
+        example_value: "M06"
+      value:
+        length: 12
+        type: values
+        example_value: "81.4"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ state, area, supersector ]  # Small, frequently used
+    lazy: [ footnote, period, industry, data_type, seasonal ]  # Load on demand
+    mmap: [ ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    area:
+        file_path: "sm.area"
+        name: Area
+        description: "Maps area codes to area names"
+        index_col: "area_code"
+        schema:
+          area_code:
+            length: 5
+            type: str
+            example_value: "00000"
+          area_name:
+            length: 100
+            type: Text
+            example_value: "Statewide"
+
+    data_type:
+        file_path: "sm.data_type"
+        name: Data Type
+        description: "Maps data type codes to data type names"
+        index_col: "data_type_code"
+        schema:
+          data_type_code:
+            length: 2
+            type: str
+            example_value: "01"
+          data_type_text:
+            length: 100
+            type: str
+            example_value: "All Employees, In Thousands"
+
+    footnote:
+        file_path: "sm.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "C"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: ""
+
+    industry:
+        file_path: "sm.industry"
+        name: Industry
+        description: "Maps industry codes to industry names"
+        index_col: "industry_code"
+        schema:
+          industry_code:
+            length: 8
+            type: str
+            example_value: "00000000"
+          industry_name:
+            length: 100
+            type: str
+            example_value: "Total Nonfarm"
+
+    period:
+        file_path: "sm.period"
+        name: Period
+        description: "Maps period codes to period names"
+        index_col: "period"
+        schema:
+          period:
+            length: 3
+            type: str
+            example_value: "M01"
+          mm:
+            length: 3
+            type: str
+            example_value: "JAN"
+          month:
+            length: 20
+            type: str
+            example_value: "January"
+
+    seasonal:
+        file_path: "sm.seasonal"
+        name: Seasonal
+        description: "Maps seasonal codes to seasonal text"
+        index_col: "seasonal_code"
+        schema:
+          seasonal_code:
+            length: 1
+            type: str
+            example_value: "S"
+          seasonal_text:
+            length: 100
+            type: str
+            example_value: "Seasonally Adjusted"
+
+    state:
+        file_path: "sm.state"
+        name: State
+        description: "Maps state codes to state names"
+        index_col: "state_code"
+        schema:
+          state_code:
+            length: 2
+            type: str
+            example_value: "00"
+          state_name:
+            length: 100
+            type: str
+            example_value: "All States"
+
+    supersector:
+        file_path: "sm.supersector"
+        name: Supersector
+        description: "Maps supersector codes to supersector names"
+        index_col: "supersector_code"
+        schema:
+          supersector_code:
+            length: 2
+            type: str
+            example_value: "00"
+          supersector_name:
+            length: 100
+            type: str
+            example_value: "Total Nonfarm"
+
+processing:
+  # Strategy for large survey
+  strategy: mmap  # Use memory mapping for large files
+  max_threads: 8  # Increased parallelization for large data
+  
+  # Chunk settings
+  chunk_size_mb: 100
+  buffer_pool_size: 16
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: true
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Large
+      list_data_files: [ sm.data.0.Current, sm.data.1.AllData ]
+      partition_strategy:
+        partion_by: "state_code"
+        file_format: "sm.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1991
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^SM[SU]\\d{28}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "M01", "M02", "M03", "M04", "M05", "M06",
+                           "M07", "M08", "M09", "M10", "M11", "M12" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Large
+      output_file: "sm_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # State code mapping
+        state_code:
+          lookup_table: "state"
+          lookup_key: "state_code"
+          lookup_value: "state_name"
+          create_field: "state_name"
+          on_missing: "UNKNOWN_STATE"
+          cache: true
+        
+        # Area code mapping
+        area_code:
+          lookup_table: "area"
+          lookup_key: "area_code"
+          lookup_value: "area_name"
+          create_field: "area_name"
+          on_missing: "UNKNOWN_AREA"
+          cache: true
+        
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_name"
+          create_field: "industry_name"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+        
+        # Supersector code mapping
+        supersector_code:
+          lookup_table: "supersector"
+          lookup_key: "supersector_code"
+          lookup_value: "supersector_name"
+          create_field: "supersector_name"
+          on_missing: "UNKNOWN_SUPERSECTOR"
+          cache: true
+        
+        # Data type code mapping
+        data_type_code:
+          lookup_table: "data_type"
+          lookup_key: "data_type_code"
+          lookup_value: "data_type_text"
+          create_field: "data_type_text"
+          on_missing: "UNKNOWN_DATA_TYPE"
+          cache: true
+        
+        # Seasonal mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal_code"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_text"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^SM[SU]\\d{28}$"
+            action: flag
+            message: "Invalid series ID format: should be SM[S/U] followed by 28 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 30
+            action: reject
+            message: "Series ID must be exactly 30 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # State code validation
+          - field: state_code
+            rule: length
+            exact: 2
+            action: reject
+            message: "State code must be exactly 2 characters"
+          
+          - field: state_code
+            rule: pattern
+            pattern: "^[0-9]{2}$"
+            action: flag
+            message: "State code should be 2 digits"
+          
+          - field: state_code
+            rule: lookup_exists
+            lookup_table: "state"
+            action: flag
+            message: "State code not found in state lookup table"
+          
+          # Area code validation
+          - field: area_code
+            rule: length
+            exact: 5
+            action: reject
+            message: "Area code must be exactly 5 characters"
+          
+          - field: area_code
+            rule: pattern
+            pattern: "^[0-9]{5}$"
+            action: flag
+            message: "Area code should be 5 digits"
+          
+          # Industry code validation
+          - field: industry_code
+            rule: length
+            exact: 8
+            action: reject
+            message: "Industry code must be exactly 8 characters"
+          
+          - field: industry_code
+            rule: pattern
+            pattern: "^[0-9]{8}$"
+            action: flag
+            message: "Industry code should be 8 digits"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1991
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1991 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1991
+            max: 2067
+            action: reject
+            message: "End year must be between 1991 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06",
+                       "M07", "M08", "M09", "M10", "M11", "M12" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06",
+                       "M07", "M08", "M09", "M10", "M11", "M12" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, state_code, area_code, supersector_code, industry_code, data_type_code, seasonal, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, state_code, area_code, industry_code, begin_year, end_year ]
+        output_file: "sm_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 5000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "sm_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for large data
+    interval_records: 100000
+    checkpoint_dir: "checkpoints/sm"

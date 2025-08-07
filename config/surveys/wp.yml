@@ -1,0 +1,513 @@
+# .config/surveys/wp.yml
+# name: Producer Price Index Survey Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/wp
+#         - Data files are in ASCII text format
+#         - Spaces separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/wp.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: wp #survey code (ex.ap,sm,tu)- see docs (.docs/surveys/* for all surveys)
+  name: Producer Price Index #friendly survey name
+  size_class: large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "About 10,000 PPIs for individual products and groups of products are released each month. PPIs are available for the output of nearly all industries in the goods-producing sectors of the U.S. economy--mining, manufacturing, agriculture, fishing, and forestry--as well as natural gas, electricity, construction, and goods competitive with those made in the producing sectors, such as waste and scrap materials."
+  definition: "
+The following is a description of: PRODUCER PRICE INDEX-Current Commodity Series (WP)
+
+Survey Description:  About 10,000 PPIs for individual products and groups of products
+are released each month. PPIs are available for the output of nearly all industries in
+the goods-producing sectors of the U.S. economy--mining, manufacturing, agriculture, 
+fishing, and forestry--as well as natural gas, electricity, construction, and goods
+competitive with those made in the producing sectors, such as waste and scrap materials. 
+The PPI program covers approximately 72 percent of the service sector's output, as 
+measured by revenue reported in the 2007 Economic Census. Data includes industries in the
+following sectors: wholesale and retail trade; transportation and warehousing; information;
+finance and insurance; real estate brokering, rental, and leasing; professional, scientific,
+and technical services; administrative, support, and waste management services; health care
+and social assistance; and accommodation.
+
+To the extent possible, prices used in constructing the indexes are the 
+actual revenue or net transaction prices producers receive for sales of
+their outputs.  Scientific (probability) sampling techniques are 
+used to select reporting establishments, products, and transactions for all
+types and volumes of output (not just volume-sellers).
+
+The commodity classification structure of the PPI organizes products by 
+similarity of end use or material composition, regardless of whether the 
+products are classified as primary or secondary in their industry of origin. 
+This system is unique to the PPI and does not match any other standard coding 
+structure. The commodity classification system is organized as a hierarchical 
+structure that starts with major commodity groupings (2-digit level of aggregation). 
+Each major commodity grouping includes (in descending order of aggregation) 
+subgroups (3-digit level), product classes (4-digit level), subproduct classes 
+(5- and 6-digit level), item groupings (7-digit level), and individual items 
+(8-, 9-, and 10-digit levels). Commodity-based FD-ID price indexes regroup 
+commodities at the subproduct class (six-digit) level, according to the class 
+of buyer and the amount of physical processing or assembling the products have 
+undergone. Commodity-based Inputs to Industries indexes regroup commodities to form
+indexes for the net input to industry production (excluding capital investment,
+labor, and imports).
+                "
+  characteristics:
+    frequency: monthly
+    coverage: "National"
+    time_series_count: "More than 4,000 commodity price indexes"
+    classification_system: "PPI commodity classification system"
+    update_schedule: "Monthly, near the middle of the month following a given reference month"
+    begin_year: 1947
+    survey_methodology: "Scientific (probability) sampling techniques"
+    calculation_basis: "Actual revenue or net transaction prices producers receive for sales of their outputs"
+
+#Survey Series Information
+series:
+  path: "wp.series" #path to series file
+  use_mmap: true
+  series_size_class: Large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 30
+      type: Text
+      example_value: "WPS00000000"
+      map_file: ""
+    group_code:
+      length: 3
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "group"
+    item_code:
+      length: 12
+      type: Text
+      example_value: "1101"
+      needs_mapping: true
+      map_file: "item"
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "S"
+      needs_mapping: true
+      map_file: "seasonal"
+    base_date:
+      length: 6
+      type: Text
+      example_value: "8206"
+      needs_mapping: false
+      map_file: ""
+    series_title:
+      length: 256
+      type: Text
+      example_value: "PPI Commodity data for Farm products-Citrus fruits, seasonally adjusted"
+      needs_mapping: false
+      map_file: ""
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1967"
+      needs_mapping: false
+      map_file: ""
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "M01"
+      needs_mapping: true
+      map_file: "period"
+    end_year:
+      length: 4
+      type: Text
+      example_value: "1974"
+      needs_mapping: false
+      map_file: ""
+    end_period:
+      length: 3
+      type: Text
+      example_value: "M12"
+      needs_mapping: true
+      map_file: "period"
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 30
+        type: Text
+        example_value: "WPS011101"
+      year:
+        length: 4
+        type: values
+        example_value: "1994"
+      period:
+        length: 3
+        type: Text
+        example_value: "M01"
+      value:
+        length: 12
+        type: values
+        example_value: "105.9"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ group, item ]  # Small, frequently used
+    lazy: [ footnote, period, seasonal ]  # Load on demand
+    mmap: [ ]  # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    group:
+        file_path: "wp.group"
+        name: Group
+        description: "Maps group codes to group names"
+        index_col: "group_code"
+        schema:
+          group_code:
+            length: 3
+            type: str
+            example_value: "02"
+          group_text:
+            length: 150
+            type: Text
+            example_value: "Processed foods and feeds"
+
+    item:
+        file_path: "wp.item"
+        name: Item
+        description: "Maps item codes to item names"
+        index_col: "item_code"
+        schema:
+          group_code:
+            length: 3
+            type: str
+            example_value: "01"
+          item_code:
+            length: 12
+            type: str
+            example_value: "1101"
+          item_text:
+            length: 150
+            type: str
+            example_value: "Citrus fruits"
+
+    footnote:
+        file_path: "wp.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 2
+            type: str
+            example_value: "P"
+          footnote_text:
+            length: 200
+            type: str
+            example_value: "Preliminary"
+
+    period:
+        file_path: "wp.period"
+        name: Period
+        description: "Maps period codes to period names"
+        index_col: "period"
+        schema:
+          period:
+            length: 3
+            type: str
+            example_value: "M01"
+          period_abbr:
+            length: 5
+            type: str
+            example_value: "JAN"
+          period_name:
+            length: 20
+            type: str
+            example_value: "January"
+
+    seasonal:
+        file_path: "wp.seasonal"
+        name: Seasonal
+        description: "Maps seasonal codes to seasonal names"
+        index_col: "seasonal"
+        schema:
+          seasonal:
+            length: 1
+            type: str
+            example_value: "S"
+          seasonal_text:
+            length: 30
+            type: str
+            example_value: "Seasonally adjusted"
+
+processing:
+  # Strategy for large survey
+  strategy: mmap  # Use memory mapping for large files
+  max_threads: 8  # Increased parallelization for large-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 100
+  buffer_pool_size: 16
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Large
+      list_data_files: [ wp.data.0.Current ]
+      partition_strategy:
+        partion_by: "group_code"
+        file_format: "wp.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1947
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^WP[SU]\\d{8}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Large
+      output_file: "wp_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Group code mapping
+        group_code:
+          lookup_table: "group"
+          lookup_key: "group_code"
+          lookup_value: "group_text"
+          create_field: "group_name"
+          on_missing: "UNKNOWN_GROUP"
+          cache: true
+        
+        # Item code mapping
+        item_code:
+          lookup_table: "item"
+          lookup_key: "item_code"
+          lookup_value: "item_text"
+          create_field: "item_name"
+          on_missing: "UNKNOWN_ITEM"
+          cache: true
+        
+        # Seasonal mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_name"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Begin period mapping
+        begin_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "begin_period_name"
+          on_missing: keep_original
+          cache: true
+        
+        # End period mapping
+        end_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "end_period_name"
+          on_missing: keep_original
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^WP[SU]\\d{8}$"
+            action: flag
+            message: "Invalid series ID format: should be WP[S/U] followed by 8 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 30
+            action: reject
+            message: "Series ID must be exactly 30 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Group code validation
+          - field: group_code
+            rule: length
+            exact: 3
+            action: reject
+            message: "Group code must be exactly 3 characters"
+          
+          - field: group_code
+            rule: lookup_exists
+            lookup_table: "group"
+            action: flag
+            message: "Group code not found in group lookup table"
+          
+          # Item code validation
+          - field: item_code
+            rule: length
+            exact: 12
+            action: reject
+            message: "Item code must be exactly 12 characters"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1947
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1947 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1947
+            max: 2067
+            action: reject
+            message: "End year must be between 1947 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, group_code, item_code, seasonal, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ series_title, base_date ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, group_code, item_code, begin_year, end_year ]
+        output_file: "wp_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 5000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "wp_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for large-sized data
+    interval_records: 100000
+    checkpoint_dir: "checkpoints/wp"
