@@ -1,0 +1,601 @@
+# .config/surveys/ex.yml
+# name: Example Survey Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-05
+# notes:
+#         - data location: .data.raw/bls/ap
+#         - Data files are in ASCII text format
+#         - Spaces separate data elements in an original BLS file :(
+#         - full doc: .docs/bls/survey/ap.md
+# changes:
+
+#General Survey Information
+survey:
+  code: ap #survey code (ex.ap,sm,tu)- see docs (.docs/surveys/* for all surveys)
+  name: Average Price Data #friendly survey name
+  size_class: small #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "Average consumer prices for selected items, collected monthly from retail stores."
+  definition: "
+The following is a definition of:  Average Price Data (AP)
+
+Survey Description: Average consumer prices are calculated for household
+fuel, motor fuel, and food items from prices collected for the Consumer
+Price Index (CPI). Average prices are best used to measure the price level
+in a particular month, not to measure price change over time. It is more
+appropriate to use CPI index values for the particular item categories to measure
+price change.
+
+Prices, except for electricity, are collected monthly by BLS representatives
+in the 75 urban areas priced for the CPI.  Electricity prices are collected
+for the BLS for the same 75 areas on a monthly basis by the Department of
+Energy using mail questionnaires. All fuel prices include applicable
+Federal, State, and local taxes; prices for natural gas and electricity also
+include fuel and purchased gas adjustments.
+
+Summary Data Available: Average consumer prices for household fuel and
+motor fuel are available for the U.S. city average, 23 urban areas, 4
+regions, 12 region/size class groupings, and 9 divisions.
+
+Average consumer prices for food are available for the U.S. city average, and
+four regions. 
+
+Monthly data are available for up to 6 household fuel categories, 6
+motor fuel categories, and around 100 food categories.
+
+Frequency of Observations: All data are monthly; annual averages are not
+available.
+
+Data Characteristics: Average prices are stored to three decimal places.
+
+Updating Schedule: Updates become available with the monthly release of new data, typically from the 10th to the  14th of the month
+following the reference month.
+                "
+  characteristics:
+    frequency: monthly
+    coverage: "Average consumer prices for household fuel and
+motor fuel are available for the U.S. city average, 23 urban areas, 4
+regions, 12 region/size class groupings, and 9 divisions."
+    time_series_count: "1,482 series" #COUNT OF LINE NUMBER IN SERIES FILe (-1 for header)
+    classification_system: "Consumer goods and services categories"
+    update_schedule: "Monthly release, typically mid-month"
+    begin_year: 1978
+    survey_methodology: "Prices, except for electricity, are collected monthly by BLS representatives
+in the 75 urban areas priced for the CPI.  Electricity prices are collected
+for the BLS for the same 75 areas on a monthly basis by the Department of
+Energy using mail questionnaires. All fuel prices include applicable
+Federal, State, and local taxes; prices for natural gas and electricity also
+include fuel and purchased gas adjustments."
+    calculation_basis: "Average of prices collected during reference period"
+
+#################### ============================================ ============================================ ============================================
+# ▄▄▄▄▄▄▄▄▄▄   ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄       ▄▄       ▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄   ▄▄▄▄▄▄▄▄▄▄▄  ▄            ▄▄▄▄▄▄▄▄▄▄▄
+#▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌     ▐░░▌     ▐░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌
+#▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌ ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌     ▐░▌░▌   ▐░▐░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌          ▐░█▀▀▀▀▀▀▀▀▀
+#▐░▌       ▐░▌▐░▌       ▐░▌     ▐░▌     ▐░▌       ▐░▌     ▐░▌▐░▌ ▐░▌▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌          ▐░▌
+#▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌     ▐░▌ ▐░▐░▌ ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░▌          ▐░█▄▄▄▄▄▄▄▄▄
+#▐░▌       ▐░▌▐░░░░░░░░░░░▌     ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌  ▐░▌  ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌
+#▐░▌       ▐░▌▐░█▀▀▀▀▀▀▀█░▌     ▐░▌     ▐░█▀▀▀▀▀▀▀█░▌     ▐░▌   ▀   ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌           ▀▀▀▀▀▀▀▀▀█░▌
+#▐░▌       ▐░▌▐░▌       ▐░▌     ▐░▌     ▐░▌       ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌                    ▐░▌
+#▐░█▄▄▄▄▄▄▄█░▌▐░▌       ▐░▌     ▐░▌     ▐░▌       ▐░▌     ▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄█░▌
+#▐░░░░░░░░░░▌ ▐░▌       ▐░▌     ▐░▌     ▐░▌       ▐░▌     ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌
+# ▀▀▀▀▀▀▀▀▀▀   ▀         ▀       ▀       ▀         ▀       ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀
+#
+#
+#################### ============================================ ============================================ ============================================
+
+#Survey Series Information ***mapper defined after data file
+series:
+  path: "ap.series" #path to series file @TODO: full path?
+  use_mmap: true
+  series_size_class: Micro #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "APU0000712112" #??
+      map_file: "" #leave blank for none
+    area_code:
+      length: 80
+      type: Text
+      example_value: "0000"
+      needs_mapping: true
+      map_file: "area" #leave blank for none
+    item_code:
+      length: 7 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "712112" #??
+      needs_mapping: true
+      map_file: "item" #leave blank for none
+    series_title:
+      length: 7
+      type: Text
+      example_value: "Potatoes, white, per lb. (453.6 gm) in U.S. city average, average price, not seasonally adjusted"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    footnote_codes:
+      length: 4 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: " " #??
+      needs_mapping: true
+      map_file: "footnote" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1986"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "M03" #??
+      needs_mapping: true
+      map_file: "period" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2025"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "M06"
+      needs_mapping: true
+      map_file: "period" #leave blank for none
+
+
+data_file:
+
+  general:
+    #
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "APU0000701111"
+      year:
+        length: 4
+        type: values
+        example_value: "2025"
+      period:
+        length: 3
+        type: Text
+        example_value: "M06"
+      value:
+        length: 12
+        type: values
+        example_value: "0.574"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+
+
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ area, item ]  # Small, frequently used
+    lazy: [ footnote, period ]  # Load on demand
+    mmap: [ ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    area:
+        file_path: "ap.area"
+        name: Area
+        description: Utilized to identify the area of the survey (various from nation, regions, states, csa's)
+        index_col: "area_code"
+        schema:
+          area_code:
+            length: 4 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+            type: str
+            example_value: "A100" #??
+          area_name:
+            length: 80
+            type: Text
+            example_value: "Los Angeles-Riverside-Orange County, CA"
+
+
+    footnote:
+        file_path: "ap.footnote"
+        name: Footnotes
+        description: Footnotes
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+            type: str
+            example_value: "C" #??
+          footnote_text:
+            length: 100 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+            type: str
+            example_value: ""
+
+    item:
+        file_path: "ap.item"
+        name: item
+        description: specific item being observed in the data series
+        index_col: "item_code"
+        schema:
+          item_code:
+            length: 7 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+            type: str
+            example_value: "703111" #??
+          item_name:
+            length: 100 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+            type: str
+            example_value: "Ground chuck, 100% beef, per lb. (453.6 gm)" #??
+
+
+    period:
+      file_path: "ap.period"
+      name: period
+      description: Period of observation
+      index_col: "period"
+      schema:
+        period:
+          length: 3 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+          type: str
+          example_value: "M01" #??
+        period_abbr:
+          length: 5 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+          type: str
+          example_value: "JAN" #??
+        period_name:
+          length: 20 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+          type: str
+          example_value: "January" #??
+
+# ============================================ ============================================
+#  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄  ▄▄▄▄▄▄▄▄▄▄▄
+#▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌▐░░░░░░░░░░░▌
+#▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀  ▀▀▀▀█░█▀▀▀▀ ▐░▌░▌     ▐░▌▐░█▀▀▀▀▀▀▀▀▀
+#▐░▌       ▐░▌▐░▌       ▐░▌▐░▌       ▐░▌▐░▌          ▐░▌          ▐░▌          ▐░▌               ▐░▌     ▐░▌▐░▌    ▐░▌▐░▌
+#▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌▐░▌       ▐░▌▐░▌          ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░▌ ▐░▌   ▐░▌▐░▌ ▄▄▄▄▄▄▄▄
+#▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░▌          ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌     ▐░▌     ▐░▌  ▐░▌  ▐░▌▐░▌▐░░░░░░░░▌
+#▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀█░█▀▀ ▐░▌       ▐░▌▐░▌          ▐░█▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀█░▌ ▀▀▀▀▀▀▀▀▀█░▌     ▐░▌     ▐░▌   ▐░▌ ▐░▌▐░▌ ▀▀▀▀▀▀█░▌
+#▐░▌          ▐░▌     ▐░▌  ▐░▌       ▐░▌▐░▌          ▐░▌                    ▐░▌          ▐░▌     ▐░▌     ▐░▌    ▐░▌▐░▌▐░▌       ▐░▌
+#▐░▌          ▐░▌      ▐░▌ ▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄█░▌ ▄▄▄▄▄▄▄▄▄█░▌ ▄▄▄▄█░█▄▄▄▄ ▐░▌     ▐░▐░▌▐░█▄▄▄▄▄▄▄█░▌
+#▐░▌          ▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌      ▐░░▌▐░░░░░░░░░░░▌
+# ▀            ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀        ▀▀  ▀▀▀▀▀▀▀▀▀▀▀
+#
+# ============================================ ============================================
+processing:
+  # Strategy for small survey
+  strategy: in_memory  # Load entirely into memory
+  max_threads: 2       # Limited parallelization needed
+
+  # Chunk settings (if needed for consistency)
+ # chunk_size_mb: 10
+#  buffer_pool_size: 4
+
+  # Performance hints
+  use_mmap: false  # Too small to benefit from mmap
+  enable_statistics: true
+  enable_profiling: false
+
+# ============================================ ============================================
+#  ▄▄▄▄▄▄▄▄▄▄▄  ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄
+#▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌
+#▐░█▀▀▀▀▀▀▀█░▌▐░▌       ▐░▌ ▀▀▀▀█░█▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌▐░▌       ▐░▌ ▀▀▀▀█░█▀▀▀▀
+#▐░▌       ▐░▌▐░▌       ▐░▌     ▐░▌     ▐░▌       ▐░▌▐░▌       ▐░▌     ▐░▌
+#▐░▌       ▐░▌▐░▌       ▐░▌     ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌▐░▌       ▐░▌     ▐░▌
+#▐░▌       ▐░▌▐░▌       ▐░▌     ▐░▌     ▐░░░░░░░░░░░▌▐░▌       ▐░▌     ▐░▌
+#▐░▌       ▐░▌▐░▌       ▐░▌     ▐░▌     ▐░█▀▀▀▀▀▀▀▀▀ ▐░▌       ▐░▌     ▐░▌
+#▐░▌       ▐░▌▐░▌       ▐░▌     ▐░▌     ▐░▌          ▐░▌       ▐░▌     ▐░▌
+#▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌     ▐░▌     ▐░▌          ▐░█▄▄▄▄▄▄▄█░▌     ▐░▌
+#▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌     ▐░▌     ▐░▌          ▐░░░░░░░░░░░▌     ▐░▌
+# ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀       ▀       ▀            ▀▀▀▀▀▀▀▀▀▀▀       ▀
+#
+# ============================================ ============================================
+output:
+
+  data_series:
+
+    basic_load:
+      # Format settings
+      #format: parquet
+      #compression: snappy  # Fast compression for small data
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for small dataset
+        # Alternative: partition by year for time-series analysis
+        # partition_by: [year]
+      ## DISTINCT FOR 'data file type'/allowing for customizable approaches
+      #PATTERN or list (explicit approach?)
+      # if any data file has a different schema or size, utilize new 'section' under data_file
+      use_mmap: false
+      series_size_class: Micro #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+      list_data_files: [ ap.data.0.Current,ap.data.1.HouseholdFuels,ap.data.2.Gasoline,ap.data.3.Food ]
+      partition_strategy:
+        partion_by: "area_code"
+        file_format: "ap.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period,footnote_codes]
+     #     # Column encoding optimization (IF PARQUET)
+     #     encoding:
+     #       series_id: dictionary  # Repeated values
+     #       area_code: dictionary
+     #       item_code: dictionary
+     #       year: delta  # Sequential years
+     #       period: dictionar
+     #       value: plain  # Prices vary widely
+
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+
+              - field: year
+                rule: range
+                min: 1900
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+
+              - field: series_id
+                rule: pattern
+                pattern: "Invalid series ID format: should be AP[U/S][10] where [10:[area:4][item:6]]"
+                action: flag #flag while testing
+
+              - field: period
+                rule: values
+                allowed: [ "M01", "M02", "M03", "M04", "M05", "M06",
+                           "M07", "M08", "M09", "M10", "M11", "M12" ,"M13"]
+                action: flag #flag while testing
+
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: false
+      series_size_class: Micro
+      output_file: "ap_series_dict.csv"
+
+      # Mapping configuration for lookups
+      mapping:
+        # Area code mapping
+        area_code:
+          lookup_table: "area"
+          lookup_key: "area_code"
+          lookup_value: "area_name"
+          create_field: "area_name"
+          on_missing: "UNKNOWN_AREA"
+          cache: true
+
+        # Item code mapping
+        item_code:
+          lookup_table: "item"
+          lookup_key: "item_code"
+          lookup_value: "item_name"
+          create_field: "item_name"
+          on_missing: "UNKNOWN_ITEM"
+          cache: true
+
+        # Begin period mapping
+        begin_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "begin_period_name"
+          on_missing: keep_original
+          cache: true
+
+        # End period mapping
+        end_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "end_period_name"
+          on_missing: keep_original
+          cache: true
+
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+
+      validation:
+        # Data quality checks for series file //@TODO: Consolidate grouped 'types' with validation rules (but maybe being more explicit better?
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^AP[US]\\d{10}$"
+            action: flag #flag while testing
+            message: "Invalid series ID format: should be AP[U/S][10] where [10:[area:4][item:6]]"
+
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+
+          # Area code validation
+          - field: area_code
+            rule: length
+            exact: 4
+            action: reject
+            message: "Area code must be exactly 4 characters"
+
+          - field: area_code
+            rule: pattern
+            pattern: "^[0-9A-Z]{4}$"
+            action: flag
+            message: "Area code should be 4 alphanumeric characters"
+
+          - field: area_code
+            rule: lookup_exists
+            lookup_table: "area"
+            action: flag
+            message: "Area code not found in area lookup table"
+
+          # Item code validation
+
+          - field: item_code
+            rule: pattern
+            pattern: "^[0-9]{7}$"
+            action: flag
+            message: "Item code should be 7 digits"
+
+          - field: item_name
+            rule: lookup_exists
+            lookup_table: "item"
+            action: flag
+            message: "Item code not found in item lookup table"
+
+          # Series title validation
+          - field: series_title
+            rule: length
+            min: 2
+            max: 1012
+            action: flag
+            message: "Series title should be between 2 and 1012 characters"
+
+          # Footnote codes validation
+          - field: footnote_codes
+            rule: length
+            max: 10
+            action: flag
+            message: "Footnote codes field exceeds maximum length"
+
+
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1776
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1776 and 2067"
+
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1776
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1776 and 2067"
+
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06",
+                       "M07", "M08", "M09", "M10", "M11", "M12","M13" ]
+            action: flag
+            message: "Invalid begin period value"
+
+
+
+
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06",
+                       "M07", "M08", "M09", "M10", "M11", "M12","M13" ]
+            action: flag
+            message: "Invalid end period value"
+
+
+          # Cross-field validation: series_id consistency
+          - field: series_id
+            rule: composite_check
+            check_fields: [ area_code, item_code ]
+            validation: "series_id[3:7] == area_code AND series_id[7:13] == item_code"
+            action: flag
+            message: "Series ID components don't match area_code and item_code"
+
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+
+        # Completeness checks
+        required_fields: [ series_id, area_code, item_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ series_title, footnote_codes ]
+
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, area_code, item_code, begin_year, end_year ]
+        output_file: "ap_series_dict_stats.json"
+
+
+
+# ============================================
+# ERROR HANDLING & RECOVERY
+# ============================================
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 1000    # Stop if too many errors
+  log_errors: true
+  error_file: "ap_errors.log"
+
+  # Checkpoint settings (even for small files)
+  checkpoint:
+    enabled: false  # Not needed for 23MB
+    interval_records: 10000
+    checkpoint_dir: "checkpoints/ap"
