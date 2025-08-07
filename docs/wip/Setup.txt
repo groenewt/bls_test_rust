@@ -1,0 +1,70 @@
+Setup
+
+#HEADER: General info
+
+## MODEL SECTION
+- describes overall data 'structures' and general overview of interaction
+- ex.
+	```yml
+		data_file:
+			general: # statements regarding the structure of the genereal data files (per survey/data endpoint basis)
+				use_mmap: true
+				obs_value:
+				schema:#
+		lookupfile:
+			lookup_config: # defines loading strategy (SEE: strategy validation)
+		files:
+			$FILE_CONFIG_!: # file configuration for file 1 (SEE: lookup_files validation)
+			
+	```
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+         __             __                                  ___     __      __  _           
+   _____/ /__________ _/ /____  ____ ___  __   _   ______ _/ (_____/ ____ _/ /_(_____  ____ 
+  / ___/ __/ ___/ __ `/ __/ _ \/ __ `/ / / /  | | / / __ `/ / / __  / __ `/ __/ / __ \/ __ \
+ (__  / /_/ /  / /_/ / /_/  __/ /_/ / /_/ /   | |/ / /_/ / / / /_/ / /_/ / /_/ / /_/ / / / /
+/____/\__/_/   \__,_/\__/\___/\__, /\__, /    |___/\__,_/_/_/\__,_/\__,_/\__/_/\____/_/ /_/ 
+                             /____//____/                                                   
+                                                                                                                                                   
+	1. preload: []	# Small, frequently used
+	2. lazy: []   # Load on demand
+	3. mmap: [] 	#it for large files
+ 	4. cache_all: []	# Small enough to keep in memory
+			
+    __            __                    _____ __                         ___     __      __  _           
+   / ____  ____  / /____  ______       / __(_/ ___  _____   _   ______ _/ (_____/ ____ _/ /_(_____  ____ 
+  / / __ \/ __ \/ //_/ / / / __ \     / /_/ / / _ \/ ___/  | | / / __ `/ / / __  / __ `/ __/ / __ \/ __ \
+ / / /_/ / /_/ / ,< / /_/ / /_/ /    / __/ / /  __(__  )   | |/ / /_/ / / / /_/ / /_/ / /_/ / /_/ / / / /
+/_/\____/\____/_/|_|\__,_/ .________/_/ /_/_/\___/____/    |___/\__,_/_/_/\__,_/\__,_/\__/_/\____/_/ /_/ 
+                        /_/   /_____/                                                                    
+
+# lookup_files validation
+-  ex.
+		```yaml
+		    $FILE_NAME:
+			file_path: "./FILE_PATH"
+			name: Area
+			description: Utilized to identify the area of the survey (various from nation, regions, states, csa's)
+			index_col: "area_code"
+			schema:
+
+		```
+
+

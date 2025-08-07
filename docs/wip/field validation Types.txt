@@ -1,0 +1,57 @@
+
+-field validation:
+--Types
+	1. Success
+	2. Suppressed Warning
+		- only logged
+		-  ex.
+		```yaml
+		```
+	3. Flag
+		- raise warning (visible in debug)
+		-  ex.
+		```yaml
+		```
+	4. Reject
+		- don't accept value
+		-  ex.
+		```yaml
+		```
+	5. Fatal
+		- stop in place
+		-  ex.
+		```yaml
+		```
+	6. Flush
+		- remove current prgoress entirely
+		-  ex.
+		```yaml
+		```
+--Rules 
+	1. pattern
+		- regex pattern to check
+		-  ex.
+		```yaml
+		
+		```
+	2. lookup exists
+		- checking if mapped target values mapped
+		-  ex.
+		```yaml
+		```
+	3. composite check
+		- checking relationship between present values across fields 
+		- either pattern or function
+		- ex.
+		```yaml
+		# Cross-field validation: series_id consistency
+		- field: series_id
+		    rule: composite_check
+		    check_fields: [ area_code, item_code ]
+		    validation: "series_id[3:7] == area_code AND series_id[7:13] == item_code"
+		    action: flag
+		    message: "Series ID components don't match area_code and item_code"
+		```
+-- Common Validation rules
+	1. *_year: rule:range; between 1776 and 2067
+	2. 
