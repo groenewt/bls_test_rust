@@ -4,21 +4,26 @@
 //! into memory for fast processing. It's optimized for small to medium-sized
 //! datasets that can fit comfortably in available RAM.
 
-use std::time::Instant;
-use std::path::Path;
-use std::sync::Arc;
 use async_trait::async_trait;
 use rayon::prelude::*;
-use tokio::task;
+use std::collections::HashMap;
+use std::path::Path;
+use std::time::Instant;
 
-use crate::data::model::{Series, Observation, Lookup, Survey};
-use crate::data::reader::{create_optimized_reader, DataReader, SeriesReader, ObservationReader, LookupReader, SurveyReader};
-use crate::data::writer::{create_optimized_writer, DataWriter, SeriesWriter, ObservationWriter, LookupWriter, SurveyWriter};
-use crate::processing::traits::{
-    DataProcessor, ProcessingConfig, ProcessingStats, ProcessingStrategy,
-    ProcessingInput, ProcessingOutput, ProcessingContext,
+use crate::data::model::{Lookup, Observation, Series, Survey};
+use crate::data::reader::{
+    DataReader, LookupReader, ObservationReader, SeriesReader, SurveyReader,
+    create_optimized_reader,
+};
+use crate::data::writer::{
+    DataWriter, LookupWriter, ObservationWriter, SeriesWriter, SurveyWriter,
+    create_optimized_writer,
 };
 use crate::error::types::{ProcessingError, Result};
+use crate::processing::traits::{
+    DataProcessor, ProcessingConfig, ProcessingContext, ProcessingInput, ProcessingOutput,
+    ProcessingStats, ProcessingStrategy,
+};
 use crate::utils::validation::BLSValidationRules;
 
 /// In-memory processing strategy implementation
@@ -48,20 +53,26 @@ impl InMemoryProcessor {
         for path in &input.paths {
             let path_obj = Path::new(path);
             let mut reader = create_optimized_reader(path_obj)?;
-            
+
             reader.open(path_obj).await?;
-            
+
             // Determine data type based on file name or format hint
             let data_type = self.determine_data_type(path, &input.format_hint)?;
-            
+
             match data_type.as_str() {
                 "series" => {
                     // Try to downcast to concrete types that implement SeriesReader
-                    if let Some(file_reader) = reader.as_any().downcast_ref::<crate::data::reader::file_reader::FileReader>() {
+                    if let Some(file_reader) = reader
+                        .as_any()
+                        .downcast_ref::<crate::data::reader::file_reader::FileReader>(
+                    ) {
                         let series_data = self.load_series_data(file_reader).await?;
                         total_records += series_data.len() as u64;
                         dataset.series.extend(series_data);
-                    } else if let Some(mmap_reader) = reader.as_any().downcast_ref::<crate::data::reader::mmap_reader::MmapReader>() {
+                    } else if let Some(mmap_reader) = reader
+                        .as_any()
+                        .downcast_ref::<crate::data::reader::mmap_reader::MmapReader>(
+                    ) {
                         let series_data = self.load_series_data(mmap_reader).await?;
                         total_records += series_data.len() as u64;
                         dataset.series.extend(series_data);
@@ -69,7 +80,10 @@ impl InMemoryProcessor {
                 }
                 "observations" => {
                     // Try to downcast to concrete types that implement ObservationReader
-                    if let Some(file_reader) = reader.as_any().downcast_ref::<crate::data::reader::file_reader::FileReader>() {
+                    if let Some(file_reader) = reader
+                        .as_any()
+                        .downcast_ref::<crate::data::reader::file_reader::FileReader>(
+                    ) {
                         let obs_data = self.load_observation_data(file_reader).await?;
                         total_records += obs_data.len() as u64;
                         dataset.observations.extend(obs_data);
@@ -77,7 +91,10 @@ impl InMemoryProcessor {
                 }
                 "lookups" => {
                     // Try to downcast to concrete types that implement LookupReader
-                    if let Some(file_reader) = reader.as_any().downcast_ref::<crate::data::reader::file_reader::FileReader>() {
+                    if let Some(file_reader) = reader
+                        .as_any()
+                        .downcast_ref::<crate::data::reader::file_reader::FileReader>(
+                    ) {
                         let lookup_data = self.load_lookup_data(file_reader).await?;
                         total_records += lookup_data.len() as u64;
                         dataset.lookups.extend(lookup_data);
@@ -86,16 +103,18 @@ impl InMemoryProcessor {
                 "survey" => {
                     // Survey loading not yet implemented
                     return Err(ProcessingError::NotImplemented(
-                        "Survey data loading not yet implemented".to_string()
-                    ).into());
+                        "Survey data loading not yet implemented".to_string(),
+                    )
+                    .into());
                 }
                 _ => {
-                    return Err(ProcessingError::UnsupportedDataType(
-                        format!("Unknown data type: {}", data_type)
-                    ).into());
+                    return Err(ProcessingError::UnsupportedDataType(format!(
+                        "Unknown data type: {data_type}"
+                    ))
+                    .into());
                 }
             }
-            
+
             total_bytes += reader.stats().bytes_processed;
             reader.close().await?;
         }
@@ -108,34 +127,31 @@ impl InMemoryProcessor {
     }
 
     /// Load series data from a reader
-    async fn load_series_data(&self, reader: &dyn SeriesReader) -> Result<Vec<Series>> {
-        // This is a simplified implementation - in practice, we'd need to handle
-        // the async trait object properly
-        let mut series_data = Vec::new();
-        
-        // For now, return empty vector - this would be implemented with proper
-        // async trait object handling in a real implementation
-        Ok(series_data)
+    async fn load_series_data(&self, _reader: &dyn SeriesReader) -> Result<Vec<Series>> {
+        // For now, return empty data - proper implementation will load from reader
+        // Focus on getting config integration working first per config_integration_steps.md
+        Ok(Vec::new())
     }
 
     /// Load observation data from a reader
-    async fn load_observation_data(&self, reader: &dyn ObservationReader) -> Result<Vec<Observation>> {
-        // Similar to load_series_data, this would be properly implemented
+    async fn load_observation_data(
+        &self,
+        _reader: &dyn ObservationReader,
+    ) -> Result<Vec<Observation>> {
+        // For now, return empty data - proper implementation will load from reader
         Ok(Vec::new())
     }
 
     /// Load lookup data from a reader
-    async fn load_lookup_data(&self, reader: &dyn LookupReader) -> Result<Vec<Lookup>> {
-        // Similar to load_series_data, this would be properly implemented
+    async fn load_lookup_data(&self, _reader: &dyn LookupReader) -> Result<Vec<Lookup>> {
+        // For now, return empty data - proper implementation will load from reader
         Ok(Vec::new())
     }
 
     /// Load survey data from a reader
-    async fn load_survey_data(&self, reader: &dyn SurveyReader) -> Result<Survey> {
-        // This would be properly implemented with async trait handling
-        Err(ProcessingError::NotImplemented(
-            "Survey data loading not yet implemented".to_string()
-        ).into())
+    async fn load_survey_data(&self, _reader: &dyn SurveyReader) -> Result<Survey> {
+        // For now, return error - will be replaced with YAML config loading per config_integration_steps.md
+        Err(ProcessingError::NotImplemented("Survey data loading will be replaced with YAML config integration".to_string()).into())
     }
 
     /// Determine data type from file path and format hint
@@ -202,15 +218,13 @@ impl InMemoryProcessor {
     /// Process a single series record
     fn process_series(&self, series: &mut Series) {
         // Apply validation
-        if self.config.validate_data {
-            if let Err(_) = self.validation_rules.validate_series_record(&[
-                series.id().to_string(),
-                series.title().to_string(),
-            ]) {
+        if self.config.validate_data
+            && self
+                .validation_rules
+                .validate_series_record(&[series.id().to_string(), series.title().to_string()]).is_err()
+            {
                 // Handle validation error
-                return;
             }
-        }
 
         // Apply transformations (placeholder)
         // In a real implementation, this would apply configured transformations
@@ -219,16 +233,14 @@ impl InMemoryProcessor {
     /// Process a single observation record
     fn process_observation(&self, observation: &mut Observation) {
         // Apply validation
-        if self.config.validate_data {
-            if let Err(_) = self.validation_rules.validate_observation_record(&[
+        if self.config.validate_data
+            && self.validation_rules.validate_observation_record(&[
                 observation.series_id().to_string(),
                 observation.year().to_string(),
                 observation.period().to_string(),
-            ]) {
+            ]).is_err() {
                 // Handle validation error
-                return;
             }
-        }
 
         // Apply transformations (placeholder)
     }
@@ -236,15 +248,13 @@ impl InMemoryProcessor {
     /// Process a single lookup record
     fn process_lookup(&self, lookup: &mut Lookup) {
         // Apply validation
-        if self.config.validate_data {
-            if let Err(_) = self.validation_rules.validate_lookup_record(&[
-                lookup.table_id.clone(),
-                lookup.table_name.clone(),
-            ]) {
+        if self.config.validate_data
+            && self
+                .validation_rules
+                .validate_lookup_record(&[lookup.table_id.clone(), lookup.table_name.clone()]).is_err()
+            {
                 // Handle validation error
-                return;
             }
-        }
 
         // Apply transformations (placeholder)
     }
@@ -256,57 +266,109 @@ impl InMemoryProcessor {
     }
 
     /// Write processed data to output destinations
-    async fn write_processed_data(&mut self, dataset: &InMemoryDataSet, output: &ProcessingOutput) -> Result<()> {
+    async fn write_processed_data(
+        &mut self,
+        dataset: &InMemoryDataSet,
+        output: &ProcessingOutput,
+    ) -> Result<()> {
         let start_time = Instant::now();
 
         for (i, path) in output.paths.iter().enumerate() {
             let path_obj = Path::new(path);
             let mut writer = create_optimized_writer(path_obj)?;
-            
+
             writer.open(path_obj).await?;
 
             // Write data based on what's available in the dataset
             if !dataset.series.is_empty() {
                 // Try to downcast to concrete types that implement SeriesWriter
-                if let Some(csv_writer) = writer.as_any().downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>() {
+                if let Some(csv_writer) = writer
+                    .as_any()
+                    .downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>(
+                ) {
                     self.write_series_data(csv_writer, &dataset.series).await?;
-                } else if let Some(json_writer) = writer.as_any().downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>() {
+                } else if let Some(json_writer) = writer
+                    .as_any()
+                    .downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>(
+                ) {
                     self.write_series_data(json_writer, &dataset.series).await?;
-                } else if let Some(parquet_writer) = writer.as_any().downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>() {
-                    self.write_series_data(parquet_writer, &dataset.series).await?;
+                } else if let Some(parquet_writer) =
+                    writer
+                        .as_any()
+                        .downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>()
+                {
+                    self.write_series_data(parquet_writer, &dataset.series)
+                        .await?;
                 }
             }
 
             if !dataset.observations.is_empty() {
                 // Try to downcast to concrete types that implement ObservationWriter
-                if let Some(csv_writer) = writer.as_any().downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>() {
-                    self.write_observation_data(csv_writer, &dataset.observations).await?;
-                } else if let Some(json_writer) = writer.as_any().downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>() {
-                    self.write_observation_data(json_writer, &dataset.observations).await?;
-                } else if let Some(parquet_writer) = writer.as_any().downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>() {
-                    self.write_observation_data(parquet_writer, &dataset.observations).await?;
+                if let Some(csv_writer) = writer
+                    .as_any()
+                    .downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>(
+                ) {
+                    self.write_observation_data(csv_writer, &dataset.observations)
+                        .await?;
+                } else if let Some(json_writer) = writer
+                    .as_any()
+                    .downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>(
+                ) {
+                    self.write_observation_data(json_writer, &dataset.observations)
+                        .await?;
+                } else if let Some(parquet_writer) =
+                    writer
+                        .as_any()
+                        .downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>()
+                {
+                    self.write_observation_data(parquet_writer, &dataset.observations)
+                        .await?;
                 }
             }
 
             if !dataset.lookups.is_empty() {
                 // Try to downcast to concrete types that implement LookupWriter
-                if let Some(csv_writer) = writer.as_any().downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>() {
+                if let Some(csv_writer) = writer
+                    .as_any()
+                    .downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>(
+                ) {
                     self.write_lookup_data(csv_writer, &dataset.lookups).await?;
-                } else if let Some(json_writer) = writer.as_any().downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>() {
-                    self.write_lookup_data(json_writer, &dataset.lookups).await?;
-                } else if let Some(parquet_writer) = writer.as_any().downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>() {
-                    self.write_lookup_data(parquet_writer, &dataset.lookups).await?;
+                } else if let Some(json_writer) = writer
+                    .as_any()
+                    .downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>(
+                ) {
+                    self.write_lookup_data(json_writer, &dataset.lookups)
+                        .await?;
+                } else if let Some(parquet_writer) =
+                    writer
+                        .as_any()
+                        .downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>()
+                {
+                    self.write_lookup_data(parquet_writer, &dataset.lookups)
+                        .await?;
                 }
             }
 
             if !dataset.surveys.is_empty() {
                 // Try to downcast to concrete types that implement SurveyWriter
                 for survey in &dataset.surveys {
-                    if let Some(csv_writer) = writer.as_any().downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>() {
+                    if let Some(csv_writer) = writer
+                        .as_any()
+                        .downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>(
+                    ) {
                         self.write_survey_data(csv_writer, survey).await?;
-                    } else if let Some(json_writer) = writer.as_any().downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>() {
+                    } else if let Some(json_writer) =
+                        writer
+                            .as_any()
+                            .downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>()
+                    {
                         self.write_survey_data(json_writer, survey).await?;
-                    } else if let Some(parquet_writer) = writer.as_any().downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>() {
+                    } else if let Some(parquet_writer) =
+                        writer
+                            .as_any()
+                            .downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>(
+                            )
+                    {
                         self.write_survey_data(parquet_writer, survey).await?;
                     }
                 }
@@ -326,7 +388,11 @@ impl InMemoryProcessor {
     }
 
     /// Write observation data using a writer
-    async fn write_observation_data(&self, writer: &dyn ObservationWriter, observations: &[Observation]) -> Result<()> {
+    async fn write_observation_data(
+        &self,
+        writer: &dyn ObservationWriter,
+        observations: &[Observation],
+    ) -> Result<()> {
         // This would be properly implemented with async trait handling
         Ok(())
     }
@@ -364,17 +430,21 @@ impl InMemoryProcessor {
     /// Check if the dataset can fit in available memory
     fn check_memory_constraints(&self, estimated_usage: u64) -> Result<()> {
         if self.config.memory_limit > 0 && estimated_usage > self.config.memory_limit {
-            return Err(ProcessingError::SystemError(
-                format!("Insufficient memory: estimated usage {} exceeds limit {}", estimated_usage, self.config.memory_limit)
-            ).into());
+            return Err(ProcessingError::SystemError(format!(
+                "Insufficient memory: estimated usage {} exceeds limit {}",
+                estimated_usage, self.config.memory_limit
+            ))
+            .into());
         }
 
         // Check available system memory (simplified)
         let available_memory = self.get_available_memory();
-        if estimated_usage > available_memory * 80 / 100 { // Use max 80% of available memory
-            return Err(ProcessingError::SystemError(
-                format!("Insufficient memory: estimated usage {} exceeds 80% of available memory {}", estimated_usage, available_memory)
-            ).into());
+        if estimated_usage > available_memory * 80 / 100 {
+            // Use max 80% of available memory
+            return Err(ProcessingError::SystemError(format!(
+                "Insufficient memory: estimated usage {estimated_usage} exceeds 80% of available memory {available_memory}"
+            ))
+            .into());
         }
 
         Ok(())
@@ -405,7 +475,7 @@ impl DataProcessor for InMemoryProcessor {
     fn can_process(&self, input: &ProcessingInput) -> Result<bool> {
         // Check if we can estimate memory usage
         let estimated_usage = self.estimate_memory_usage_internal(input)?;
-        
+
         // Check memory constraints
         match self.check_memory_constraints(estimated_usage) {
             Ok(_) => Ok(true),
@@ -413,7 +483,11 @@ impl DataProcessor for InMemoryProcessor {
         }
     }
 
-    async fn process(&mut self, input: ProcessingInput, output: ProcessingOutput) -> Result<ProcessingContext> {
+    async fn process(
+        &mut self,
+        input: ProcessingInput,
+        output: ProcessingOutput,
+    ) -> Result<ProcessingContext> {
         let start_time = Instant::now();
         self.reset_stats();
 
@@ -453,14 +527,16 @@ impl DataProcessor for InMemoryProcessor {
     fn validate_config(&self, config: &ProcessingConfig) -> Result<()> {
         if config.batch_size == 0 {
             return Err(ProcessingError::InvalidConfiguration(
-                "Batch size must be greater than 0".to_string()
-            ).into());
+                "Batch size must be greater than 0".to_string(),
+            )
+            .into());
         }
 
         if config.max_threads == 0 {
             return Err(ProcessingError::InvalidConfiguration(
-                "Max threads must be greater than 0".to_string()
-            ).into());
+                "Max threads must be greater than 0".to_string(),
+            )
+            .into());
         }
 
         Ok(())
@@ -498,16 +574,19 @@ mod tests {
     fn test_in_memory_processor_creation() {
         let config = ProcessingConfig::default();
         let processor = InMemoryProcessor::new(config);
-        assert_eq!(processor.supported_strategies(), vec![ProcessingStrategy::InMemory]);
+        assert_eq!(
+            processor.supported_strategies(),
+            vec![ProcessingStrategy::InMemory]
+        );
     }
 
     #[test]
     fn test_config_validation() {
         let processor = InMemoryProcessor::new(ProcessingConfig::default());
-        
+
         let valid_config = ProcessingConfig::default();
         assert!(processor.validate_config(&valid_config).is_ok());
-        
+
         let mut invalid_config = ProcessingConfig::default();
         invalid_config.batch_size = 0;
         assert!(processor.validate_config(&invalid_config).is_err());
@@ -516,20 +595,32 @@ mod tests {
     #[test]
     fn test_data_type_determination() {
         let processor = InMemoryProcessor::new(ProcessingConfig::default());
-        
-        assert_eq!(processor.determine_data_type("test.series", &None).unwrap(), "series");
-        assert_eq!(processor.determine_data_type("test.data.0", &None).unwrap(), "observations");
-        assert_eq!(processor.determine_data_type("test.area", &None).unwrap(), "lookups");
-        
+
+        assert_eq!(
+            processor.determine_data_type("test.series", &None).unwrap(),
+            "series"
+        );
+        assert_eq!(
+            processor.determine_data_type("test.data.0", &None).unwrap(),
+            "observations"
+        );
+        assert_eq!(
+            processor.determine_data_type("test.area", &None).unwrap(),
+            "lookups"
+        );
+
         let hint = Some("custom".to_string());
-        assert_eq!(processor.determine_data_type("test.txt", &hint).unwrap(), "custom");
+        assert_eq!(
+            processor.determine_data_type("test.txt", &hint).unwrap(),
+            "custom"
+        );
     }
 
     #[test]
     fn test_memory_estimation() {
         let processor = InMemoryProcessor::new(ProcessingConfig::default());
         let input = ProcessingInput::new(vec!["nonexistent.csv".to_string()]);
-        
+
         // Should handle non-existent files gracefully
         let result = processor.estimate_memory_usage(&input);
         assert!(result.is_ok());
@@ -540,9 +631,12 @@ mod tests {
         let mut dataset = InMemoryDataSet::new();
         assert!(dataset.is_empty());
         assert_eq!(dataset.total_records(), 0);
-        
+
         // Add some test data
-        dataset.series.push(Series::new("TEST001".to_string(), "Test".to_string(), "AREA001".to_string()));
+        dataset.series.push(Series::new(
+            "TEST001",
+            "Test",
+        ));
         assert!(!dataset.is_empty());
         assert_eq!(dataset.total_records(), 1);
     }

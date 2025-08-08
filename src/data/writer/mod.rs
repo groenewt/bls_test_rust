@@ -4,23 +4,23 @@
 //! with support for different output formats, writing strategies, and performance
 //! optimizations.
 
-pub mod traits;
 pub mod csv_writer;
-pub mod parquet_writer;
-pub mod json_writer;
 pub mod factory;
+pub mod json_writer;
+pub mod parquet_writer;
+pub mod traits;
 
 // Re-export public types and traits
 pub use traits::{
-    DataWriter, SeriesWriter, ObservationWriter, LookupWriter, SurveyWriter,
-    StreamingWriter, CompressedWriter, TransactionalWriter, WriterFactory,
-    WriterConfig, WriteStats, OutputMetadata, CompressionInfo, SchemaInfo,
+    CompressedWriter, CompressionInfo, DataWriter, LookupWriter, ObservationWriter, OutputMetadata,
+    SchemaInfo, SeriesWriter, StreamingWriter, SurveyWriter, TransactionalWriter, WriteStats,
+    WriterConfig, WriterFactory,
 };
 
 pub use csv_writer::CsvDataWriter;
-pub use parquet_writer::ParquetDataWriter;
-pub use json_writer::JsonDataWriter;
 pub use factory::{DefaultWriterFactory, WriterFactoryConfig, WriterFactoryConfigBuilder};
+pub use json_writer::JsonDataWriter;
+pub use parquet_writer::ParquetDataWriter;
 
 /// Create a default writer factory
 pub fn create_default_factory() -> DefaultWriterFactory {
@@ -33,13 +33,18 @@ pub fn create_factory_with_config(config: WriterFactoryConfig) -> DefaultWriterF
 }
 
 /// Convenience function to create an optimized writer for a file
-pub fn create_optimized_writer(path: &std::path::Path) -> crate::error::types::Result<Box<dyn DataWriter>> {
+pub fn create_optimized_writer(
+    path: &std::path::Path,
+) -> crate::error::types::Result<Box<dyn DataWriter>> {
     let factory = create_default_factory();
     factory.create_optimized_writer(path)
 }
 
 /// Create a writer for a specific format
-pub fn create_writer_for_format(format: &str, config: WriterConfig) -> crate::error::types::Result<Box<dyn DataWriter>> {
+pub fn create_writer_for_format(
+    format: &str,
+    config: WriterConfig,
+) -> crate::error::types::Result<Box<dyn DataWriter>> {
     let factory = create_default_factory();
     factory.create_writer(format, config)
 }
@@ -95,7 +100,7 @@ mod tests {
     #[test]
     fn test_writer_creation() {
         let config = WriterConfig::default();
-        
+
         // Test creating writers for different formats
         assert!(create_writer_for_format("csv", config.clone()).is_ok());
         assert!(create_writer_for_format("parquet", config.clone()).is_ok());
@@ -108,10 +113,10 @@ mod tests {
         // Test creating optimized writers based on file paths
         let csv_path = Path::new("test.csv");
         assert!(create_optimized_writer(csv_path).is_ok());
-        
+
         let parquet_path = Path::new("test.parquet");
         assert!(create_optimized_writer(parquet_path).is_ok());
-        
+
         let json_path = Path::new("test.json");
         assert!(create_optimized_writer(json_path).is_ok());
     }

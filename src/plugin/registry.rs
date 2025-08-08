@@ -1,15 +1,14 @@
 //! Plugin registry implementation for managing and discovering plugins.
 
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::time::SystemTime;
-use async_trait::async_trait;
-use serde::{Serialize, Deserialize};
 
-use crate::plugin::traits::{Plugin, PluginMetadata, PluginConfig};
-use crate::plugin::loader::{PluginLoader, DefaultPluginLoader, LoaderConfig};
-use crate::error::types::{Result, Error, PluginError};
-use crate::error::recovery::HealthStatus;
+use crate::error::types::{Error, PluginError, Result};
+use crate::plugin::loader::{DefaultPluginLoader, LoaderConfig, PluginLoader};
+use crate::plugin::traits::{Plugin, PluginMetadata};
 
 /// Plugin registry trait for managing plugins.
 #[async_trait]
@@ -111,17 +110,21 @@ impl DefaultPluginRegistry {
 
     /// Checks if the maximum number of plugins is reached.
     fn check_plugin_limit(&self) -> Result<()> {
-        let plugins = self.plugins.read()
-            .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+        let plugins = self.plugins.read().map_err(|_| {
+            Error::Plugin(PluginError::CommunicationError {
                 plugin: "registry".to_string(),
                 message: "Failed to acquire read lock".to_string(),
-            }))?;
+            })
+        })?;
         let plugin_count = plugins.len();
 
         if plugin_count >= self.config.max_plugins {
             return Err(Error::Plugin(PluginError::ConfigurationError {
                 plugin: "registry".to_string(),
-                message: format!("Maximum number of plugins ({}) reached", self.config.max_plugins),
+                message: format!(
+                    "Maximum number of plugins ({}) reached",
+                    self.config.max_plugins
+                ),
             }));
         }
 
@@ -153,15 +156,16 @@ impl DefaultPluginRegistry {
         }
 
         let plugin_ids: Vec<String> = {
-            let plugins = self.plugins.read()
-                .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+            let plugins = self.plugins.read().map_err(|_| {
+                Error::Plugin(PluginError::CommunicationError {
                     plugin: "registry".to_string(),
                     message: "Failed to acquire read lock".to_string(),
-                }))?;
+                })
+            })?;
             plugins.keys().cloned().collect()
         };
 
-        let mut unhealthy_plugins: Vec<String> = Vec::new();
+        let unhealthy_plugins: Vec<String> = Vec::new();
 
         // TODO: Implement health check functionality when Plugin trait supports it
         // For now, skip health checks since Plugin trait doesn't have health_check method
@@ -169,7 +173,7 @@ impl DefaultPluginRegistry {
         // Unload unhealthy plugins
         for plugin_id in unhealthy_plugins {
             if let Err(e) = self.unregister_plugin(&plugin_id).await {
-                eprintln!("Failed to unload unhealthy plugin {}: {}", plugin_id, e);
+                eprintln!("Failed to unload unhealthy plugin {plugin_id}: {e}");
             }
         }
 
@@ -189,12 +193,13 @@ impl PluginRegistry for DefaultPluginRegistry {
 
         // Check if plugin is already registered
         {
-            let plugins = self.plugins.read()
-                .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+            let plugins = self.plugins.read().map_err(|_| {
+                Error::Plugin(PluginError::CommunicationError {
                     plugin: "registry".to_string(),
                     message: "Failed to acquire read lock".to_string(),
-                }))?;
-            
+                })
+            })?;
+
             if plugins.contains_key(&plugin_id) {
                 return Err(Error::Plugin(PluginError::ConfigurationError {
                     plugin: plugin_id.clone(),
@@ -214,11 +219,12 @@ impl PluginRegistry for DefaultPluginRegistry {
 
         // Add to registry
         {
-            let mut plugins = self.plugins.write()
-                .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+            let mut plugins = self.plugins.write().map_err(|_| {
+                Error::Plugin(PluginError::CommunicationError {
                     plugin: "registry".to_string(),
                     message: "Failed to acquire write lock for registration".to_string(),
-                }))?;
+                })
+            })?;
             plugins.insert(plugin_id, registered_plugin);
         }
 
@@ -231,17 +237,19 @@ impl PluginRegistry for DefaultPluginRegistry {
 
     async fn unregister_plugin(&mut self, plugin_id: &str) -> Result<()> {
         let registered_plugin = {
-            let mut plugins = self.plugins.write()
-                .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+            let mut plugins = self.plugins.write().map_err(|_| {
+                Error::Plugin(PluginError::CommunicationError {
                     plugin: "registry".to_string(),
                     message: "Failed to acquire write lock".to_string(),
-                }))?;
-            
-            plugins.remove(plugin_id)
-                .ok_or_else(|| Error::Plugin(PluginError::NotFoundError {
+                })
+            })?;
+
+            plugins.remove(plugin_id).ok_or_else(|| {
+                Error::Plugin(PluginError::NotFoundError {
                     plugin: plugin_id.to_string(),
-                    message: format!("Plugin {} not found", plugin_id),
-                }))?
+                    message: format!("Plugin {plugin_id} not found"),
+                })
+            })?
         };
 
         // Shutdown the plugin - simplified approach
@@ -257,23 +265,26 @@ impl PluginRegistry for DefaultPluginRegistry {
     }
 
     fn get_plugin(&self, plugin_id: &str) -> Result<Arc<tokio::sync::RwLock<Box<dyn Plugin>>>> {
-        let plugins = self.plugins.read()
-            .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+        let plugins = self.plugins.read().map_err(|_| {
+            Error::Plugin(PluginError::CommunicationError {
                 plugin: "registry".to_string(),
                 message: "Failed to acquire read lock".to_string(),
-            }))?;
-        
-        let registered_plugin = plugins.get(plugin_id)
-            .ok_or_else(|| Error::Plugin(PluginError::NotFoundError {
+            })
+        })?;
+
+        let registered_plugin = plugins.get(plugin_id).ok_or_else(|| {
+            Error::Plugin(PluginError::NotFoundError {
                 plugin: plugin_id.to_string(),
-                message: format!("Plugin {} not found", plugin_id),
-            }))?;
+                message: format!("Plugin {plugin_id} not found"),
+            })
+        })?;
 
         Ok(registered_plugin.plugin.clone())
     }
 
     fn list_plugins(&self) -> Vec<String> {
-        self.plugins.read()
+        self.plugins
+            .read()
             .map(|plugins| plugins.keys().cloned().collect())
             .unwrap_or_default()
     }
@@ -284,9 +295,12 @@ impl PluginRegistry for DefaultPluginRegistry {
             Err(_) => return vec![],
         };
 
-        plugins.iter()
+        plugins
+            .iter()
             .filter(|(_, registered_plugin)| {
-                registered_plugin.metadata.supported_surveys
+                registered_plugin
+                    .metadata
+                    .supported_surveys
                     .iter()
                     .any(|code| code.eq_ignore_ascii_case(survey_code))
             })
@@ -295,23 +309,26 @@ impl PluginRegistry for DefaultPluginRegistry {
     }
 
     fn get_plugin_metadata(&self, plugin_id: &str) -> Result<PluginMetadata> {
-        let plugins = self.plugins.read()
-            .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+        let plugins = self.plugins.read().map_err(|_| {
+            Error::Plugin(PluginError::CommunicationError {
                 plugin: "registry".to_string(),
                 message: "Failed to acquire read lock".to_string(),
-            }))?;
-        
-        let registered_plugin = plugins.get(plugin_id)
-            .ok_or_else(|| Error::Plugin(PluginError::NotFoundError {
+            })
+        })?;
+
+        let registered_plugin = plugins.get(plugin_id).ok_or_else(|| {
+            Error::Plugin(PluginError::NotFoundError {
                 plugin: plugin_id.to_string(),
-                message: format!("Plugin {} not found", plugin_id),
-            }))?;
+                message: format!("Plugin {plugin_id} not found"),
+            })
+        })?;
 
         Ok(registered_plugin.metadata.clone())
     }
 
     fn is_plugin_registered(&self, plugin_id: &str) -> bool {
-        self.plugins.read()
+        self.plugins
+            .read()
             .map(|plugins| plugins.contains_key(plugin_id))
             .unwrap_or(false)
     }
@@ -322,10 +339,10 @@ impl PluginRegistry for DefaultPluginRegistry {
 
     async fn clear(&mut self) -> Result<()> {
         let plugin_ids = self.list_plugins();
-        
+
         for plugin_id in plugin_ids {
             if let Err(e) = self.unregister_plugin(&plugin_id).await {
-                eprintln!("Failed to unregister plugin {}: {}", plugin_id, e);
+                eprintln!("Failed to unregister plugin {plugin_id}: {e}");
             }
         }
 
@@ -342,6 +359,12 @@ impl Default for RegistryConfig {
             auto_unload_unhealthy: false,
             access_timeout_seconds: 30,
         }
+    }
+}
+
+impl Default for RegistryStats {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -387,7 +410,7 @@ mod tests {
 
     // Mock plugin for testing
     #[derive(Debug)]
-struct MockPlugin {
+    struct MockPlugin {
         metadata: PluginMetadata,
         stats: PluginStats,
     }

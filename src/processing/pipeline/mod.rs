@@ -29,39 +29,40 @@
 //!
 //! let config = ProcessingConfig::default();
 //! let mut pipeline = DefaultPipeline::new(config);
-//! 
+//!
 //! // Add custom stages
 //! pipeline.add_stage(Box::new(LoaderStageImpl::new()))?;
-//! 
+//!
 //! // Execute pipeline
 //! let mut context = ProcessingContext::new(config);
 //! pipeline.execute(&mut context)?;
 //! ```
 
+pub mod default;
 pub mod loader;
 pub mod transformer;
 pub mod validator;
 pub mod writer;
-pub mod default;
 
 use std::collections::HashMap;
 use std::time::Instant;
 
+use crate::error::types::Result;
 use crate::processing::traits::{
-    ProcessingPipeline, PipelineStage, ProcessingContext, ProcessingConfig,
-    ValidationResult, ValidationSeverity,
+    ProcessingConfig, ProcessingContext, ProcessingPipeline, ValidationResult,
+    ValidationSeverity,
 };
-use crate::error::types::{ProcessingError, Result};
 
 // Re-export stage implementations
+pub use default::DefaultPipeline;
 pub use loader::LoaderStageImpl;
 pub use transformer::TransformerStageImpl;
 pub use validator::ValidatorStageImpl;
 pub use writer::WriterStageImpl;
-pub use default::DefaultPipeline;
 
 /// Pipeline execution statistics
 #[derive(Debug, Clone)]
+#[derive(Default)]
 pub struct PipelineStats {
     /// Total execution time in milliseconds
     pub total_time_ms: u64,
@@ -77,18 +78,6 @@ pub struct PipelineStats {
     pub peak_memory_usage: u64,
 }
 
-impl Default for PipelineStats {
-    fn default() -> Self {
-        Self {
-            total_time_ms: 0,
-            stage_times: HashMap::new(),
-            records_processed: 0,
-            error_count: 0,
-            warning_count: 0,
-            peak_memory_usage: 0,
-        }
-    }
-}
 
 impl PipelineStats {
     /// Create new pipeline statistics
@@ -196,7 +185,8 @@ impl PipelineExecutionContext {
     /// Finish executing a stage
     pub fn finish_stage(&mut self, stage_name: String, start_time: Instant) {
         let elapsed = start_time.elapsed();
-        self.stats.add_stage_time(stage_name, elapsed.as_millis() as u64);
+        self.stats
+            .add_stage_time(stage_name, elapsed.as_millis() as u64);
         self.current_stage = None;
     }
 
@@ -237,7 +227,7 @@ fn get_current_memory_usage() -> u64 {
             }
         }
     }
-    
+
     // Fallback: return 0 (unknown)
     0
 }
@@ -245,35 +235,35 @@ fn get_current_memory_usage() -> u64 {
 /// Create a default pipeline with all standard stages
 pub fn create_default_pipeline(config: ProcessingConfig) -> Result<DefaultPipeline> {
     let mut pipeline = DefaultPipeline::new(config);
-    
+
     // Add standard stages in order
     pipeline.add_stage(Box::new(LoaderStageImpl::new()))?;
     pipeline.add_stage(Box::new(TransformerStageImpl::new()))?;
     pipeline.add_stage(Box::new(ValidatorStageImpl::new()))?;
     pipeline.add_stage(Box::new(WriterStageImpl::new()))?;
-    
+
     Ok(pipeline)
 }
 
 /// Create a minimal pipeline with only loader and writer stages
 pub fn create_minimal_pipeline(config: ProcessingConfig) -> Result<DefaultPipeline> {
     let mut pipeline = DefaultPipeline::new(config);
-    
+
     // Add minimal stages
     pipeline.add_stage(Box::new(LoaderStageImpl::new()))?;
     pipeline.add_stage(Box::new(WriterStageImpl::new()))?;
-    
+
     Ok(pipeline)
 }
 
 /// Create a validation-focused pipeline
 pub fn create_validation_pipeline(config: ProcessingConfig) -> Result<DefaultPipeline> {
     let mut pipeline = DefaultPipeline::new(config);
-    
+
     // Add stages focused on validation
     pipeline.add_stage(Box::new(LoaderStageImpl::new()))?;
     pipeline.add_stage(Box::new(ValidatorStageImpl::new()))?;
-    
+
     Ok(pipeline)
 }
 
@@ -296,7 +286,7 @@ mod tests {
         let mut stats = PipelineStats::new();
         stats.add_stage_time("loader".to_string(), 100);
         stats.add_stage_time("transformer".to_string(), 200);
-        
+
         assert_eq!(stats.total_time_ms, 300);
         assert_eq!(stats.stage_times.get("loader"), Some(&100));
         assert_eq!(stats.stage_times.get("transformer"), Some(&200));
@@ -307,7 +297,7 @@ mod tests {
         let mut stats = PipelineStats::new();
         stats.add_records(1000);
         stats.add_records(500);
-        
+
         assert_eq!(stats.records_processed, 1500);
     }
 
@@ -316,7 +306,7 @@ mod tests {
         let mut stats = PipelineStats::new();
         stats.add_records(1000);
         stats.total_time_ms = 1000; // 1 second
-        
+
         assert_eq!(stats.processing_rate(), 1000.0); // 1000 records per second
     }
 
@@ -327,7 +317,7 @@ mod tests {
         stats.total_time_ms = 2000;
         stats.error_count = 5;
         stats.warning_count = 10;
-        
+
         let summary = stats.summary();
         assert!(summary.contains("1000 records"));
         assert!(summary.contains("2000ms"));
@@ -339,11 +329,11 @@ mod tests {
     fn test_pipeline_execution_context() {
         let config = ProcessingConfig::default();
         let mut exec_context = PipelineExecutionContext::new(config);
-        
+
         let start_time = exec_context.start_stage("test_stage".to_string());
         std::thread::sleep(std::time::Duration::from_millis(10));
         exec_context.finish_stage("test_stage".to_string(), start_time);
-        
+
         assert_eq!(exec_context.execution_order.len(), 1);
         assert_eq!(exec_context.execution_order[0], "test_stage");
         assert!(exec_context.stats.stage_times.contains_key("test_stage"));
@@ -354,7 +344,7 @@ mod tests {
         let config = ProcessingConfig::default();
         let pipeline = create_default_pipeline(config);
         assert!(pipeline.is_ok());
-        
+
         let pipeline = pipeline.unwrap();
         assert_eq!(pipeline.get_stages().len(), 4); // loader, transformer, validator, writer
     }
@@ -364,7 +354,7 @@ mod tests {
         let config = ProcessingConfig::default();
         let pipeline = create_minimal_pipeline(config);
         assert!(pipeline.is_ok());
-        
+
         let pipeline = pipeline.unwrap();
         assert_eq!(pipeline.get_stages().len(), 2); // loader, writer
     }
@@ -374,7 +364,7 @@ mod tests {
         let config = ProcessingConfig::default();
         let pipeline = create_validation_pipeline(config);
         assert!(pipeline.is_ok());
-        
+
         let pipeline = pipeline.unwrap();
         assert_eq!(pipeline.get_stages().len(), 2); // loader, validator
     }

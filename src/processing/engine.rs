@@ -3,17 +3,16 @@
 //! This module provides the main processing engine that orchestrates the entire
 //! data processing workflow.
 
-use std::time::Instant;
-use std::sync::Arc;
-use crate::config::Config;
-use crate::processing::traits::{
-    ProcessingPipeline, ProcessorFactory, ProcessingConfig, ProcessingInput,
-    ProcessingOutput, ProcessingContext, ProcessingStrategy,
-};
-use crate::processing::pipeline::{create_default_pipeline, DefaultPipeline};
-use crate::processing::strategy::factory::DefaultProcessorFactory;
-use crate::processing::registry::{ProcessorRegistryImpl, RegistryConfig};
 use crate::error::types::{ProcessingError, Result};
+use crate::processing::pipeline::{DefaultPipeline, create_default_pipeline};
+use crate::processing::registry::ProcessorRegistryImpl;
+use crate::processing::strategy::factory::DefaultProcessorFactory;
+use crate::processing::traits::{
+    ProcessingConfig, ProcessingContext, ProcessingInput, ProcessingOutput, ProcessingPipeline,
+    ProcessingStrategy,
+};
+use std::sync::Arc;
+use std::time::Instant;
 
 /// Main processing engine that orchestrates the entire workflow
 pub struct ProcessingEngine {
@@ -49,13 +48,13 @@ impl EngineStats {
     pub fn update(&mut self, processing_time_ms: u64, success: bool) {
         self.total_runs += 1;
         self.total_processing_time_ms += processing_time_ms;
-        
+
         if success {
             self.successful_runs += 1;
         } else {
             self.failed_runs += 1;
         }
-        
+
         self.avg_processing_time_ms = self.total_processing_time_ms as f64 / self.total_runs as f64;
     }
 
@@ -120,36 +119,45 @@ impl ProcessingEngine {
     }
 
     /// Process data with the given input and output specifications
-    pub async fn process(&mut self, input: ProcessingInput, output: ProcessingOutput) -> Result<ProcessingContext> {
+    pub async fn process(
+        &mut self,
+        input: ProcessingInput,
+        output: ProcessingOutput,
+    ) -> Result<ProcessingContext> {
         let start_time = Instant::now();
-        
-        log::info!("Starting processing engine with {} input paths", input.paths.len());
-        
+
+        log::info!(
+            "Starting processing engine with {} input paths",
+            input.paths.len()
+        );
+
         // Create processing context
         let mut context = ProcessingContext::new(self.config.clone());
         context.input_paths = input.paths.clone();
         context.output_paths = output.paths.clone();
-        
+
         // Add input parameters to context
         for (key, value) in input.custom_params {
             context.add_metric(key, value.parse().unwrap_or(0.0));
         }
-        
+
         // Execute the pipeline
         let result = self.pipeline.execute(&mut context).await;
-        
+
         let elapsed = start_time.elapsed();
         let processing_time_ms = elapsed.as_millis() as u64;
-        
+
         match result {
             Ok(()) => {
                 self.stats.update(processing_time_ms, true);
-                log::info!("Processing completed successfully in {}ms", processing_time_ms);
+                log::info!(
+                    "Processing completed successfully in {processing_time_ms}ms"
+                );
                 Ok(context)
             }
             Err(e) => {
                 self.stats.update(processing_time_ms, false);
-                log::error!("Processing failed after {}ms: {}", processing_time_ms, e);
+                log::error!("Processing failed after {processing_time_ms}ms: {e}");
                 Err(e)
             }
         }
@@ -157,20 +165,20 @@ impl ProcessingEngine {
 
     /// Process a survey by name
     pub async fn process_survey(&mut self, survey_code: &str) -> Result<ProcessingContext> {
-        log::info!("Processing survey: {}", survey_code);
-        
+        log::info!("Processing survey: {survey_code}");
+
         // Create input specification for the survey
         let input = ProcessingInput::new(vec![
             format!("data/raw/bls/{}/{}.series", survey_code, survey_code),
             format!("data/raw/bls/{}/{}.data", survey_code, survey_code),
         ]);
-        
+
         // Create output specification
         let output = ProcessingOutput::new(
             vec![format!("data/processed/{}/output.csv", survey_code)],
             "csv".to_string(),
         );
-        
+
         self.process(input, output).await
     }
 
@@ -179,14 +187,15 @@ impl ProcessingEngine {
         // Validate configuration
         if self.config.max_threads == 0 {
             return Err(ProcessingError::InvalidConfiguration(
-                "max_threads must be greater than 0".to_string()
-            ).into());
+                "max_threads must be greater than 0".to_string(),
+            )
+            .into());
         }
-        
+
         // Validate pipeline
         let context = ProcessingContext::new(self.config.clone());
         self.pipeline.validate(&context)?;
-        
+
         log::info!("Engine validation passed");
         Ok(())
     }
@@ -207,7 +216,11 @@ impl ProcessingEngine {
             config: self.config.clone(),
             stats: self.stats.clone(),
             pipeline_stages: self.pipeline.get_stages().len(),
-            registry_processors: self.registry.get_statistics().map(|s| s.total_processors).unwrap_or(0),
+            registry_processors: self
+                .registry
+                .get_statistics()
+                .map(|s| s.total_processors)
+                .unwrap_or(0),
         }
     }
 }
@@ -282,9 +295,13 @@ impl ProcessingEngineBuilder {
 
     /// Build the processing engine
     pub fn build(self) -> Result<ProcessingEngine> {
-        let factory = self.factory.unwrap_or_else(|| Arc::new(DefaultProcessorFactory::new()));
-        let registry = self.registry.unwrap_or_else(|| Arc::new(ProcessorRegistryImpl::default()));
-        
+        let factory = self
+            .factory
+            .unwrap_or_else(|| Arc::new(DefaultProcessorFactory::new()));
+        let registry = self
+            .registry
+            .unwrap_or_else(|| Arc::new(ProcessorRegistryImpl::default()));
+
         let pipeline = if let Some(pipeline) = self.pipeline {
             pipeline
         } else {
@@ -320,7 +337,7 @@ mod tests {
     fn test_engine_creation() {
         let config = ProcessingConfig::default();
         let engine = ProcessingEngine::new(config);
-        
+
         assert_eq!(engine.stats().total_runs, 0);
         assert_eq!(engine.stats().success_rate(), 0.0);
     }
@@ -328,13 +345,13 @@ mod tests {
     #[test]
     fn test_engine_stats_update() {
         let mut stats = EngineStats::default();
-        
+
         stats.update(1000, true);
         assert_eq!(stats.total_runs, 1);
         assert_eq!(stats.successful_runs, 1);
         assert_eq!(stats.failed_runs, 0);
         assert_eq!(stats.success_rate(), 1.0);
-        
+
         stats.update(2000, false);
         assert_eq!(stats.total_runs, 2);
         assert_eq!(stats.successful_runs, 1);
@@ -346,7 +363,7 @@ mod tests {
     fn test_engine_validation() {
         let config = ProcessingConfig::default();
         let engine = ProcessingEngine::new(config);
-        
+
         assert!(engine.validate().is_ok());
     }
 
@@ -355,7 +372,7 @@ mod tests {
         let mut config = ProcessingConfig::default();
         config.max_threads = 0;
         let engine = ProcessingEngine::new(config);
-        
+
         assert!(engine.validate().is_err());
     }
 
@@ -364,10 +381,10 @@ mod tests {
         let builder = ProcessingEngineBuilder::new()
             .with_strategy(ProcessingStrategy::InMemory)
             .with_max_threads(8);
-        
+
         let engine = builder.build();
         assert!(engine.is_ok());
-        
+
         let engine = engine.unwrap();
         assert_eq!(engine.config().strategy, ProcessingStrategy::InMemory);
         assert_eq!(engine.config().max_threads, 8);
@@ -375,9 +392,8 @@ mod tests {
 
     #[test]
     fn test_engine_builder_invalid_config() {
-        let builder = ProcessingEngineBuilder::new()
-            .with_max_threads(0);
-        
+        let builder = ProcessingEngineBuilder::new().with_max_threads(0);
+
         let engine = builder.build();
         assert!(engine.is_err());
     }
@@ -386,10 +402,10 @@ mod tests {
     fn test_get_execution_plan() {
         let config = ProcessingConfig::default();
         let engine = ProcessingEngine::new(config);
-        
+
         let plan = engine.get_execution_plan();
         assert!(plan.is_ok());
-        
+
         let plan = plan.unwrap();
         assert!(!plan.is_empty());
     }
@@ -398,7 +414,7 @@ mod tests {
     fn test_get_status() {
         let config = ProcessingConfig::default();
         let engine = ProcessingEngine::new(config.clone());
-        
+
         let status = engine.get_status();
         assert_eq!(status.config.strategy, config.strategy);
         assert_eq!(status.stats.total_runs, 0);
@@ -408,13 +424,13 @@ mod tests {
     fn test_reset_stats() {
         let config = ProcessingConfig::default();
         let mut engine = ProcessingEngine::new(config);
-        
+
         // Manually update stats
         engine.stats.total_runs = 5;
         engine.stats.successful_runs = 3;
-        
+
         engine.reset_stats();
-        
+
         assert_eq!(engine.stats().total_runs, 0);
         assert_eq!(engine.stats().successful_runs, 0);
     }
@@ -424,7 +440,7 @@ mod tests {
         let config = ProcessingConfig::default();
         let pipeline = Box::new(DefaultPipeline::new(config.clone()));
         let engine = ProcessingEngine::with_pipeline(config, pipeline);
-        
+
         assert_eq!(engine.stats().total_runs, 0);
     }
 }

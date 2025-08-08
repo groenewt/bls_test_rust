@@ -4,16 +4,16 @@
 //! standard file I/O operations. It's optimized for small to medium-sized files
 //! and provides robust error handling and validation.
 
+use async_trait::async_trait;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
-use async_trait::async_trait;
 use tokio::fs::File as AsyncFile;
 use tokio::io::{AsyncBufReadExt, BufReader as AsyncBufReader};
 
-use crate::data::model::{Series, Observation, Lookup};
+use crate::data::model::{Lookup, Observation, Series};
 use crate::data::reader::traits::{
-    DataReader, SeriesReader, SeriesIterator, ObservationReader, ObservationIterator, 
-    LookupReader, LookupIterator, ReaderConfig, ReadStats,
+    DataReader, LookupIterator, LookupReader, ObservationIterator, ObservationReader, ReadStats,
+    ReaderConfig, SeriesIterator, SeriesReader,
 };
 use crate::error::types::{DataError, Result};
 use crate::utils::validation::BLSValidationRules;
@@ -66,7 +66,8 @@ impl FileReader {
         if fields.len() < 3 {
             return Err(DataError::invalid_format(
                 "Series record must have at least 3 fields".to_string(),
-            ).into());
+            )
+            .into());
         }
 
         // Basic series parsing - this would be expanded based on actual BLS format
@@ -81,23 +82,28 @@ impl FileReader {
         if fields.len() < 4 {
             return Err(DataError::invalid_format(
                 "Observation record must have at least 4 fields".to_string(),
-            ).into());
+            )
+            .into());
         }
 
         let series_id = fields[0].clone();
-        let year = fields[1].parse::<i32>()
-            .map_err(|e| DataError::parse_error(format!("Invalid year: {}", e)))?;
+        let year = fields[1]
+            .parse::<i32>()
+            .map_err(|e| DataError::parse_error(format!("Invalid year: {e}")))?;
         let period = fields[2].clone();
         let value_str = &fields[3];
 
         let value = if value_str.is_empty() || value_str == "-" {
             None
         } else {
-            Some(value_str.parse::<f64>()
-                .map_err(|e| DataError::parse_error(format!("Invalid value: {}", e)))?)
+            Some(
+                value_str
+                    .parse::<f64>()
+                    .map_err(|e| DataError::parse_error(format!("Invalid value: {e}")))?,
+            )
         };
 
-        Ok(Observation::new(&series_id, &year, &*period, value))
+        Ok(Observation::new(&series_id, &year, &period, value))
     }
 
     /// Parse a lookup record from fields
@@ -105,54 +111,67 @@ impl FileReader {
         if fields.len() < 2 {
             return Err(DataError::invalid_format(
                 "Lookup record must have at least 2 fields".to_string(),
-            ).into());
+            )
+            .into());
         }
 
         let code = fields[0].clone();
         let name = fields[1].clone();
         let _description = fields.get(2).cloned();
 
-        Ok(Lookup::new(&code, &*name))
+        Ok(Lookup::new(&code, &name))
     }
 
     /// Update statistics after processing records
-    fn update_stats(&mut self, records_processed: u64, bytes_processed: u64, errors: u64, start_time: Instant) {
+    fn update_stats(
+        &mut self,
+        records_processed: u64,
+        bytes_processed: u64,
+        errors: u64,
+        start_time: Instant,
+    ) {
         self.stats.records_read += records_processed;
         self.stats.bytes_processed += bytes_processed;
         self.stats.errors_encountered += errors;
         self.stats.read_time_ms += start_time.elapsed().as_millis() as u64;
     }
-    
+
     /// Static version of parse_observation_record that doesn't borrow self
     fn parse_observation_record_static(fields: &[String]) -> Result<Observation> {
         if fields.len() < 4 {
             return Err(DataError::invalid_format(
                 "Observation record must have at least 4 fields".to_string(),
-            ).into());
+            )
+            .into());
         }
 
         let series_id = fields[0].clone();
-        let year = fields[1].parse::<i32>()
-            .map_err(|e| DataError::parse_error(format!("Invalid year: {}", e)))?;
+        let year = fields[1]
+            .parse::<i32>()
+            .map_err(|e| DataError::parse_error(format!("Invalid year: {e}")))?;
         let period = fields[2].clone();
         let value_str = &fields[3];
 
         let value = if value_str.is_empty() || value_str == "-" {
             None
         } else {
-            Some(value_str.parse::<f64>()
-                .map_err(|e| DataError::parse_error(format!("Invalid value: {}", e)))?)
+            Some(
+                value_str
+                    .parse::<f64>()
+                    .map_err(|e| DataError::parse_error(format!("Invalid value: {e}")))?,
+            )
         };
 
         Ok(Observation::new(&series_id, &year, &period, value))
     }
-    
+
     /// Static version of parse_lookup_record that doesn't borrow self
     fn parse_lookup_record_static(fields: &[String]) -> Result<Lookup> {
         if fields.len() < 2 {
             return Err(DataError::invalid_format(
                 "Lookup record must have at least 2 fields".to_string(),
-            ).into());
+            )
+            .into());
         }
 
         let code = fields[0].clone();
@@ -166,7 +185,8 @@ impl FileReader {
         if fields.len() < 4 {
             return Err(DataError::invalid_format(
                 "Series record must have at least 4 fields".to_string(),
-            ).into());
+            )
+            .into());
         }
 
         let series_id = fields[0].clone();
@@ -196,7 +216,7 @@ impl DataReader for FileReader {
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
-    
+
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
         self
     }
@@ -224,16 +244,18 @@ impl DataReader for FileReader {
         // Check file extension or naming convention
         if let Some(extension) = path.extension() {
             match extension.to_str() {
-                Some("series") | Some("data") | Some("area") | Some("item") | Some("txt") => Ok(true),
+                Some("series") | Some("data") | Some("area") | Some("item") | Some("txt") => {
+                    Ok(true)
+                }
                 _ => Ok(false),
             }
         } else {
             // Check if filename matches BLS naming patterns
             if let Some(filename) = path.file_name().and_then(|n| n.to_str()) {
-                Ok(filename.contains(".series") || 
-                   filename.contains(".data") || 
-                   filename.contains(".area") || 
-                   filename.contains(".item"))
+                Ok(filename.contains(".series")
+                    || filename.contains(".data")
+                    || filename.contains(".area")
+                    || filename.contains(".item"))
             } else {
                 Ok(false)
             }
@@ -242,13 +264,16 @@ impl DataReader for FileReader {
 
     async fn open(&mut self, path: &Path) -> Result<()> {
         if !self.can_read(path)? {
-            return Err(DataError::unsupported_format(
-                format!("Cannot read file: {}", path.display())
-            ).into());
+            return Err(DataError::unsupported_format(format!(
+                "Cannot read file: {}",
+                path.display()
+            ))
+            .into());
         }
 
-        let file = AsyncFile::open(path).await
-            .map_err(|e| DataError::io_error(format!("Failed to open file: {}", e)))?;
+        let file = AsyncFile::open(path)
+            .await
+            .map_err(|e| DataError::io_error(format!("Failed to open file: {e}")))?;
 
         self.file_handle = Some(file);
         self.current_file = Some(path.to_path_buf());
@@ -279,7 +304,7 @@ impl SeriesReader for FileReader {
         let mut series_list = Vec::new();
         let mut errors = 0u64;
         let mut bytes_processed = 0;
-        
+
         // Extract config values before the borrow
         let max_errors = self.config.max_errors as u64;
         let skip_malformed = self.config.skip_malformed;
@@ -289,13 +314,20 @@ impl SeriesReader for FileReader {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
-                .map_err(|e| DataError::io_error(format!("Failed to read line: {}", e)))? > 0 {
-                
+            while reader
+                .read_line(&mut line)
+                .await
+                .map_err(|e| DataError::io_error(format!("Failed to read line: {e}")))?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 4 {
                     match Self::parse_series_record_static(&fields) {
@@ -303,25 +335,28 @@ impl SeriesReader for FileReader {
                         Err(_) => {
                             errors += 1;
                             if !skip_malformed {
-                                return Err(DataError::parse_error(
-                                    format!("Failed to parse series record: {}", line)
-                                ).into());
+                                return Err(DataError::parse_error(format!(
+                                    "Failed to parse series record: {line}"
+                                ))
+                                .into());
                             }
                         }
                     }
                 } else {
                     errors += 1;
                     if !skip_malformed {
-                        return Err(DataError::missing_value(
-                            format!("Invalid series record: {}", line)
-                        ).into());
+                        return Err(DataError::missing_value(format!(
+                            "Invalid series record: {line}"
+                        ))
+                        .into());
                     }
                 }
 
                 if errors > max_errors {
-                    return Err(DataError::too_many_errors(
-                        format!("Exceeded maximum error count: {}", max_errors)
-                    ).into());
+                    return Err(DataError::too_many_errors(format!(
+                        "Exceeded maximum error count: {max_errors}"
+                    ))
+                    .into());
                 }
 
                 line.clear();
@@ -330,7 +365,12 @@ impl SeriesReader for FileReader {
             return Err(DataError::io_error("No file is currently open".to_string()).into());
         }
 
-        self.update_stats(series_list.len() as u64, bytes_processed, errors, start_time);
+        self.update_stats(
+            series_list.len() as u64,
+            bytes_processed,
+            errors,
+            start_time,
+        );
         Ok(series_list)
     }
 
@@ -339,7 +379,7 @@ impl SeriesReader for FileReader {
         let mut series_list = Vec::new();
         let mut errors = 0u64;
         let mut bytes_processed = 0;
-        
+
         // Extract config values before the borrow
         let max_errors = self.config.max_errors as u64;
         let skip_malformed = self.config.skip_malformed;
@@ -350,17 +390,23 @@ impl SeriesReader for FileReader {
             let mut line = String::new();
 
             while series_list.len() < batch_size {
-                let bytes_read = reader.read_line(&mut line).await
-                    .map_err(|e| DataError::io_error(format!("Failed to read line: {}", e)))?;
-                
+                let bytes_read = reader
+                    .read_line(&mut line)
+                    .await
+                    .map_err(|e| DataError::io_error(format!("Failed to read line: {e}")))?;
+
                 if bytes_read == 0 {
                     break; // EOF
                 }
 
                 bytes_processed += bytes_read as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 4 {
                     match Self::parse_series_record_static(&fields) {
@@ -368,9 +414,10 @@ impl SeriesReader for FileReader {
                         Err(_) => {
                             errors += 1;
                             if !skip_malformed {
-                                return Err(DataError::parse_error(
-                                    format!("Failed to parse series record: {}", line)
-                                ).into());
+                                return Err(DataError::parse_error(format!(
+                                    "Failed to parse series record: {line}"
+                                ))
+                                .into());
                             }
                         }
                     }
@@ -378,17 +425,19 @@ impl SeriesReader for FileReader {
                     errors += 1;
                     if !skip_malformed {
                         return Err(DataError::ValidationError {
-                            message: format!("Invalid series record: {}", line),
+                            message: format!("Invalid series record: {line}"),
                             path: None,
                             line: None,
-                        }.into());
+                        }
+                        .into());
                     }
                 }
 
                 if errors > max_errors {
-                    return Err(DataError::too_many_errors(
-                        format!("Exceeded maximum error count: {}", max_errors)
-                    ).into());
+                    return Err(DataError::too_many_errors(format!(
+                        "Exceeded maximum error count: {max_errors}"
+                    ))
+                    .into());
                 }
 
                 line.clear();
@@ -397,7 +446,12 @@ impl SeriesReader for FileReader {
             return Err(DataError::io_error("No file is currently open".to_string()).into());
         }
 
-        self.update_stats(series_list.len() as u64, bytes_processed, errors, start_time);
+        self.update_stats(
+            series_list.len() as u64,
+            bytes_processed,
+            errors,
+            start_time,
+        );
         Ok(series_list)
     }
 
@@ -405,7 +459,7 @@ impl SeriesReader for FileReader {
         let start_time = Instant::now();
         let mut bytes_processed = 0;
         let mut errors = 0u64;
-        
+
         // Extract config values before the borrow
         let field_separator = self.config.field_separator;
 
@@ -413,13 +467,20 @@ impl SeriesReader for FileReader {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
-                .map_err(|e| DataError::io_error(format!("Failed to read line: {}", e)))? > 0 {
-                
+            while reader
+                .read_line(&mut line)
+                .await
+                .map_err(|e| DataError::io_error(format!("Failed to read line: {e}")))?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if !fields.is_empty() && fields[0] == series_id {
                     // Simple validation without borrowing self
@@ -432,9 +493,10 @@ impl SeriesReader for FileReader {
                             Err(_) => {
                                 errors += 1;
                                 if !self.config.skip_malformed {
-                                    return Err(DataError::parse_error(
-                                        format!("Failed to parse series record: {}", line)
-                                    ).into());
+                                    return Err(DataError::parse_error(format!(
+                                        "Failed to parse series record: {line}"
+                                    ))
+                                    .into());
                                 }
                             }
                         }
@@ -455,7 +517,7 @@ impl SeriesReader for FileReader {
         let start_time = Instant::now();
         let mut count = 0;
         let mut bytes_processed = 0;
-        
+
         // Extract config values before the borrow
         let field_separator = self.config.field_separator;
 
@@ -463,13 +525,20 @@ impl SeriesReader for FileReader {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
-                .map_err(|e| DataError::io_error(format!("Failed to read line: {}", e)))? > 0 {
-                
+            while reader
+                .read_line(&mut line)
+                .await
+                .map_err(|e| DataError::io_error(format!("Failed to read line: {e}")))?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Simple validation without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
                 if fields.len() >= 4 {
                     count += 1;
                 }
@@ -483,7 +552,6 @@ impl SeriesReader for FileReader {
         self.update_stats(count, bytes_processed, 0, start_time);
         Ok(count)
     }
-
 }
 
 #[async_trait]
@@ -496,7 +564,7 @@ impl SeriesIterator for FileReader {
         let mut processed = 0;
         let mut bytes_processed = 0;
         let mut errors = 0u64;
-        
+
         // Extract config values before the borrow
         let skip_malformed = self.config.skip_malformed;
         let field_separator = self.config.field_separator;
@@ -505,13 +573,20 @@ impl SeriesIterator for FileReader {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
-                .map_err(|e| DataError::io_error(format!("Failed to read line: {}", e)))? > 0 {
-                
+            while reader
+                .read_line(&mut line)
+                .await
+                .map_err(|e| DataError::io_error(format!("Failed to read line: {e}")))?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 4 {
                     match Self::parse_series_record_static(&fields) {
@@ -522,9 +597,10 @@ impl SeriesIterator for FileReader {
                         Err(_) => {
                             errors += 1;
                             if !skip_malformed {
-                                return Err(DataError::parse_error(
-                                    format!("Failed to parse series record: {}", line)
-                                ).into());
+                                return Err(DataError::parse_error(format!(
+                                    "Failed to parse series record: {line}"
+                                ))
+                                .into());
                             }
                         }
                     }
@@ -548,27 +624,38 @@ impl ObservationReader for FileReader {
         let mut observations = Vec::new();
         let mut bytes_processed = 0;
         let mut errors = 0u64;
-        
+
         // Extract config values before the borrow
         let max_errors = self.config.max_errors as u64;
         let skip_malformed = self.config.skip_malformed;
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
+            while reader
+                .read_line(&mut line)
+                .await
                 .map_err(|e| DataError::ReadError {
                     path: current_file_name.clone(),
-                    source: format!("Failed to read line: {}", e),
-                })? > 0 {
-                
+                    source: format!("Failed to read line: {e}"),
+                })?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 4 {
                     match Self::parse_observation_record_static(&fields) {
@@ -577,10 +664,14 @@ impl ObservationReader for FileReader {
                             errors += 1;
                             if !skip_malformed {
                                 return Err(DataError::ValidationError {
-                                    message: format!("Failed to parse observation record: {}", line.trim()),
+                                    message: format!(
+                                        "Failed to parse observation record: {}",
+                                        line.trim()
+                                    ),
                                     path: Some(current_file_name),
                                     line: None,
-                                }.into());
+                                }
+                                .into());
                             }
                         }
                     }
@@ -588,10 +679,11 @@ impl ObservationReader for FileReader {
 
                 if errors > max_errors {
                     return Err(DataError::ValidationError {
-                        message: format!("Exceeded maximum error count: {}", max_errors),
+                        message: format!("Exceeded maximum error count: {max_errors}"),
                         path: Some(current_file_name),
                         line: None,
-                    }.into());
+                    }
+                    .into());
                 }
 
                 line.clear();
@@ -600,10 +692,16 @@ impl ObservationReader for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
-        self.update_stats(observations.len() as u64, bytes_processed, errors, start_time);
+        self.update_stats(
+            observations.len() as u64,
+            bytes_processed,
+            errors,
+            start_time,
+        );
         Ok(observations)
     }
 
@@ -612,31 +710,42 @@ impl ObservationReader for FileReader {
         let mut observations = Vec::with_capacity(batch_size);
         let mut bytes_processed = 0;
         let mut errors = 0u64;
-        
+
         // Extract config values before the borrow
         let skip_malformed = self.config.skip_malformed;
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
             while observations.len() < batch_size {
-                let bytes_read = reader.read_line(&mut line).await
-                    .map_err(|e| DataError::ReadError {
-                        path: current_file_name.clone(),
-                        source: format!("Failed to read line: {}", e),
-                    })?;
-                
+                let bytes_read =
+                    reader
+                        .read_line(&mut line)
+                        .await
+                        .map_err(|e| DataError::ReadError {
+                            path: current_file_name.clone(),
+                            source: format!("Failed to read line: {e}"),
+                        })?;
+
                 if bytes_read == 0 {
                     break; // End of file
                 }
 
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 4 {
                     match Self::parse_observation_record_static(&fields) {
@@ -645,10 +754,14 @@ impl ObservationReader for FileReader {
                             errors += 1;
                             if !skip_malformed {
                                 return Err(DataError::ValidationError {
-                                    message: format!("Failed to parse observation record: {}", line.trim()),
+                                    message: format!(
+                                        "Failed to parse observation record: {}",
+                                        line.trim()
+                                    ),
                                     path: Some(current_file_name),
                                     line: None,
-                                }.into());
+                                }
+                                .into());
                             }
                         }
                     }
@@ -660,10 +773,16 @@ impl ObservationReader for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
-        self.update_stats(observations.len() as u64, bytes_processed, errors, start_time);
+        self.update_stats(
+            observations.len() as u64,
+            bytes_processed,
+            errors,
+            start_time,
+        );
         Ok(observations)
     }
 
@@ -672,26 +791,37 @@ impl ObservationReader for FileReader {
         let mut observations = Vec::new();
         let mut bytes_processed = 0;
         let mut errors = 0u64;
-        
+
         // Extract config values before the borrow
         let skip_malformed = self.config.skip_malformed;
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
+            while reader
+                .read_line(&mut line)
+                .await
                 .map_err(|e| DataError::ReadError {
                     path: current_file_name.clone(),
-                    source: format!("Failed to read line: {}", e),
-                })? > 0 {
-                
+                    source: format!("Failed to read line: {e}"),
+                })?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 4 {
                     match Self::parse_observation_record_static(&fields) {
@@ -704,10 +834,14 @@ impl ObservationReader for FileReader {
                             errors += 1;
                             if !skip_malformed {
                                 return Err(DataError::ValidationError {
-                                    message: format!("Failed to parse observation record: {}", line.trim()),
+                                    message: format!(
+                                        "Failed to parse observation record: {}",
+                                        line.trim()
+                                    ),
                                     path: Some(current_file_name),
                                     line: None,
-                                }.into());
+                                }
+                                .into());
                             }
                         }
                     }
@@ -719,42 +853,59 @@ impl ObservationReader for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
-        self.update_stats(observations.len() as u64, bytes_processed, errors, start_time);
+        self.update_stats(
+            observations.len() as u64,
+            bytes_processed,
+            errors,
+            start_time,
+        );
         Ok(observations)
     }
 
     async fn read_observations_by_date_range(
-        &mut self, 
-        start_date: &str, 
-        end_date: &str
+        &mut self,
+        start_date: &str,
+        end_date: &str,
     ) -> Result<Vec<Observation>> {
         let start_time = Instant::now();
         let mut observations = Vec::new();
         let mut bytes_processed = 0;
         let mut errors = 0u64;
-        
+
         // Extract config values before the borrow
         let skip_malformed = self.config.skip_malformed;
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
+            while reader
+                .read_line(&mut line)
+                .await
                 .map_err(|e| DataError::ReadError {
                     path: current_file_name.clone(),
-                    source: format!("Failed to read line: {}", e),
-                })? > 0 {
-                
+                    source: format!("Failed to read line: {e}"),
+                })?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 4 {
                     match Self::parse_observation_record_static(&fields) {
@@ -768,10 +919,14 @@ impl ObservationReader for FileReader {
                             errors += 1;
                             if !skip_malformed {
                                 return Err(DataError::ValidationError {
-                                    message: format!("Failed to parse observation record: {}", line.trim()),
+                                    message: format!(
+                                        "Failed to parse observation record: {}",
+                                        line.trim()
+                                    ),
                                     path: Some(current_file_name),
                                     line: None,
-                                }.into());
+                                }
+                                .into());
                             }
                         }
                     }
@@ -783,10 +938,16 @@ impl ObservationReader for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
-        self.update_stats(observations.len() as u64, bytes_processed, errors, start_time);
+        self.update_stats(
+            observations.len() as u64,
+            bytes_processed,
+            errors,
+            start_time,
+        );
         Ok(observations)
     }
 
@@ -794,25 +955,36 @@ impl ObservationReader for FileReader {
         let start_time = Instant::now();
         let mut count = 0;
         let mut bytes_processed = 0;
-        
+
         // Extract config values before the borrow
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
+            while reader
+                .read_line(&mut line)
+                .await
                 .map_err(|e| DataError::ReadError {
                     path: current_file_name.clone(),
-                    source: format!("Failed to read line: {}", e),
-                })? > 0 {
-                
+                    source: format!("Failed to read line: {e}"),
+                })?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Simple validation without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
                 if fields.len() >= 4 {
                     count += 1;
                 }
@@ -823,13 +995,13 @@ impl ObservationReader for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
         self.update_stats(count, bytes_processed, 0, start_time);
         Ok(count)
     }
-
 }
 
 // LookupReader implementation for FileReader
@@ -840,26 +1012,37 @@ impl LookupReader for FileReader {
         let mut lookups = Vec::new();
         let mut bytes_processed = 0;
         let mut errors = 0u64;
-        
+
         // Extract config values before the borrow
         let skip_malformed = self.config.skip_malformed;
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
+            while reader
+                .read_line(&mut line)
+                .await
                 .map_err(|e| DataError::ReadError {
                     path: current_file_name.clone(),
-                    source: format!("Failed to read line: {}", e),
-                })? > 0 {
-                
+                    source: format!("Failed to read line: {e}"),
+                })?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 2 {
                     match Self::parse_lookup_record_static(&fields) {
@@ -868,10 +1051,14 @@ impl LookupReader for FileReader {
                             errors += 1;
                             if !skip_malformed {
                                 return Err(DataError::ValidationError {
-                                    message: format!("Failed to parse lookup record: {}", line.trim()),
+                                    message: format!(
+                                        "Failed to parse lookup record: {}",
+                                        line.trim()
+                                    ),
                                     path: Some(current_file_name),
                                     line: None,
-                                }.into());
+                                }
+                                .into());
                             }
                         }
                     }
@@ -883,7 +1070,8 @@ impl LookupReader for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
         self.update_stats(lookups.len() as u64, bytes_processed, errors, start_time);
@@ -895,31 +1083,42 @@ impl LookupReader for FileReader {
         let mut lookups = Vec::with_capacity(batch_size);
         let mut bytes_processed = 0;
         let mut errors = 0u64;
-        
+
         // Extract config values before the borrow
         let skip_malformed = self.config.skip_malformed;
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
             while lookups.len() < batch_size {
-                let bytes_read = reader.read_line(&mut line).await
-                    .map_err(|e| DataError::ReadError {
-                        path: current_file_name.clone(),
-                        source: format!("Failed to read line: {}", e),
-                    })?;
+                let bytes_read =
+                    reader
+                        .read_line(&mut line)
+                        .await
+                        .map_err(|e| DataError::ReadError {
+                            path: current_file_name.clone(),
+                            source: format!("Failed to read line: {e}"),
+                        })?;
 
                 if bytes_read == 0 {
                     break; // EOF
                 }
 
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 2 {
                     match Self::parse_lookup_record_static(&fields) {
@@ -928,10 +1127,14 @@ impl LookupReader for FileReader {
                             errors += 1;
                             if !skip_malformed {
                                 return Err(DataError::ValidationError {
-                                    message: format!("Failed to parse lookup record: {}", line.trim()),
+                                    message: format!(
+                                        "Failed to parse lookup record: {}",
+                                        line.trim()
+                                    ),
                                     path: Some(current_file_name),
                                     line: None,
-                                }.into());
+                                }
+                                .into());
                             }
                         }
                     }
@@ -943,7 +1146,8 @@ impl LookupReader for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
         self.update_stats(lookups.len() as u64, bytes_processed, errors, start_time);
@@ -954,26 +1158,37 @@ impl LookupReader for FileReader {
         let start_time = Instant::now();
         let mut bytes_processed = 0;
         let mut errors = 0u64;
-        
+
         // Extract config values before the borrow
         let skip_malformed = self.config.skip_malformed;
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
+            while reader
+                .read_line(&mut line)
+                .await
                 .map_err(|e| DataError::ReadError {
                     path: current_file_name.clone(),
-                    source: format!("Failed to read line: {}", e),
-                })? > 0 {
-                
+                    source: format!("Failed to read line: {e}"),
+                })?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 2 {
                     match Self::parse_lookup_record_static(&fields) {
@@ -988,10 +1203,14 @@ impl LookupReader for FileReader {
                             errors += 1;
                             if !skip_malformed {
                                 return Err(DataError::ValidationError {
-                                    message: format!("Failed to parse lookup record: {}", line.trim()),
+                                    message: format!(
+                                        "Failed to parse lookup record: {}",
+                                        line.trim()
+                                    ),
                                     path: Some(current_file_name),
                                     line: None,
-                                }.into());
+                                }
+                                .into());
                             }
                         }
                     }
@@ -1003,7 +1222,8 @@ impl LookupReader for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
         self.update_stats(0, bytes_processed, errors, start_time);
@@ -1014,25 +1234,36 @@ impl LookupReader for FileReader {
         let start_time = Instant::now();
         let mut count = 0;
         let mut bytes_processed = 0;
-        
+
         // Extract config values before the borrow
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
+            while reader
+                .read_line(&mut line)
+                .await
                 .map_err(|e| DataError::ReadError {
                     path: current_file_name.clone(),
-                    source: format!("Failed to read line: {}", e),
-                })? > 0 {
-                
+                    source: format!("Failed to read line: {e}"),
+                })?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Simple validation without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
                 if fields.len() >= 2 {
                     count += 1;
                 }
@@ -1043,7 +1274,8 @@ impl LookupReader for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
         self.update_stats(count, bytes_processed, 0, start_time);
@@ -1062,26 +1294,37 @@ impl ObservationIterator for FileReader {
         let mut processed = 0;
         let mut bytes_processed = 0;
         let mut errors = 0;
-        
+
         // Extract config values before the borrow
         let skip_malformed = self.config.skip_malformed;
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
+            while reader
+                .read_line(&mut line)
+                .await
                 .map_err(|e| DataError::ReadError {
                     path: current_file_name.clone(),
-                    source: format!("Failed to read line: {}", e),
-                })? > 0 {
-                
+                    source: format!("Failed to read line: {e}"),
+                })?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 4 {
                     match Self::parse_observation_record_static(&fields) {
@@ -1093,10 +1336,14 @@ impl ObservationIterator for FileReader {
                             errors += 1;
                             if !skip_malformed {
                                 return Err(DataError::ValidationError {
-                                    message: format!("Failed to parse observation record: {}", line.trim()),
+                                    message: format!(
+                                        "Failed to parse observation record: {}",
+                                        line.trim()
+                                    ),
                                     path: Some(current_file_name),
                                     line: None,
-                                }.into());
+                                }
+                                .into());
                             }
                         }
                     }
@@ -1108,7 +1355,8 @@ impl ObservationIterator for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
         self.update_stats(processed, bytes_processed, errors as u64, start_time);
@@ -1127,26 +1375,37 @@ impl LookupIterator for FileReader {
         let mut processed = 0;
         let mut bytes_processed = 0;
         let mut errors = 0;
-        
+
         // Extract config values before the borrow
         let skip_malformed = self.config.skip_malformed;
         let field_separator = self.config.field_separator;
-        let current_file_name = self.current_file.as_ref().map(|p| p.display().to_string()).unwrap_or_default();
+        let current_file_name = self
+            .current_file
+            .as_ref()
+            .map(|p| p.display().to_string())
+            .unwrap_or_default();
 
         if let Some(ref mut file) = self.file_handle {
             let mut reader = AsyncBufReader::new(file);
             let mut line = String::new();
 
-            while reader.read_line(&mut line).await
+            while reader
+                .read_line(&mut line)
+                .await
                 .map_err(|e| DataError::ReadError {
                     path: current_file_name.clone(),
-                    source: format!("Failed to read line: {}", e),
-                })? > 0 {
-                
+                    source: format!("Failed to read line: {e}"),
+                })?
+                > 0
+            {
                 bytes_processed += line.len() as u64;
-                
+
                 // Parse line without borrowing self
-                let fields: Vec<String> = line.trim().split(field_separator).map(|s| s.to_string()).collect();
+                let fields: Vec<String> = line
+                    .trim()
+                    .split(field_separator)
+                    .map(|s| s.to_string())
+                    .collect();
 
                 if fields.len() >= 2 {
                     match Self::parse_lookup_record_static(&fields) {
@@ -1158,10 +1417,14 @@ impl LookupIterator for FileReader {
                             errors += 1;
                             if !skip_malformed {
                                 return Err(DataError::ValidationError {
-                                    message: format!("Failed to parse lookup record: {}", line.trim()),
+                                    message: format!(
+                                        "Failed to parse lookup record: {}",
+                                        line.trim()
+                                    ),
                                     path: Some(current_file_name),
                                     line: None,
-                                }.into());
+                                }
+                                .into());
                             }
                         }
                     }
@@ -1173,7 +1436,8 @@ impl LookupIterator for FileReader {
             return Err(DataError::ReadError {
                 path: "unknown".to_string(),
                 source: "No file is currently open".to_string(),
-            }.into());
+            }
+            .into());
         }
 
         self.update_stats(processed, bytes_processed, errors as u64, start_time);
@@ -1183,8 +1447,8 @@ impl LookupIterator for FileReader {
 
 #[cfg(test)]
 mod tests {
-    use std::io::Write;
     use super::*;
+    use std::io::Write;
     use tempfile::NamedTempFile;
     use tokio::io::AsyncWriteExt;
 
@@ -1200,10 +1464,10 @@ mod tests {
     async fn test_can_read_valid_file() {
         let mut temp_file = NamedTempFile::new().unwrap();
         temp_file.write_all(b"test data").unwrap();
-        
+
         let config = ReaderConfig::default();
         let reader = FileReader::new(config);
-        
+
         // This would return false because the temp file doesn't have a BLS extension
         // In a real test, we'd create a file with the proper extension
         assert!(!reader.can_read(temp_file.path()).unwrap());
@@ -1213,10 +1477,10 @@ mod tests {
     async fn test_parse_line() {
         let config = ReaderConfig::default();
         let reader = FileReader::new(config);
-        
+
         let line = "field1\tfield2\tfield3";
         let fields = reader.parse_line(line);
-        
+
         assert_eq!(fields.len(), 3);
         assert_eq!(fields[0], "field1");
         assert_eq!(fields[1], "field2");
@@ -1227,11 +1491,9 @@ mod tests {
     async fn test_parse_series_record() {
         let config = ReaderConfig::default();
         let reader = FileReader::new(config);
-        
-        let fields = vec![
-            "SERIES001".to_string(),
-            "Test Series".to_string()];
-        
+
+        let fields = vec!["SERIES001".to_string(), "Test Series".to_string()];
+
         let series = reader.parse_series_record(&fields).unwrap();
         assert_eq!(series.id(), "SERIES001");
     }

@@ -31,15 +31,11 @@ pub mod writer;
 
 // Re-export commonly used types and traits
 pub use model::{
-    Series, Observation, Lookup, Survey,
-    SeriesMetadata, ObservationValue, LookupEntry, SurveyMetadata
+    Lookup, LookupEntry, Observation, ObservationValue, Series, SeriesMetadata, Survey,
+    SurveyMetadata,
 };
-pub use reader::{
-    DataReader, FileReader, MmapReader, ReaderFactory
-};
-pub use writer::{
-    DataWriter, CsvDataWriter, ParquetDataWriter, JsonDataWriter, WriterFactory
-};
+pub use reader::{DataReader, FileReader, MmapReader, ReaderFactory};
+pub use writer::{CsvDataWriter, DataWriter, JsonDataWriter, ParquetDataWriter, WriterFactory};
 
 // Convenience type aliases
 pub type Result<T> = std::result::Result<T, crate::error::DataError>;

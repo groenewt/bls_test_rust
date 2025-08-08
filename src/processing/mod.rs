@@ -39,43 +39,37 @@
 //! }
 //! ```
 
-pub mod traits;
-pub mod strategy;
+pub mod dag;
+pub mod engine;
 pub mod pipeline;
 pub mod registry;
-pub mod engine;
-pub mod dag;
+pub mod strategy;
+pub mod traits;
 
 // Re-export commonly used types and traits
 pub use traits::{
-    DataProcessor, ProcessingPipeline, ProcessorRegistry, ProcessorFactory,
-    PipelineStage, LoaderStage, TransformerStage, ValidatorStage, WriterStage,
-    ProcessingConfig, ProcessingStrategy, ProcessingInput, ProcessingOutput,
-    ProcessingContext, ProcessingStats, ProcessedData,
-    ValidationResult, ValidationRule, ValidationRuleType, ValidationSeverity,
-    TransformationRule, TransformationRuleType,
+    DataProcessor, LoaderStage, PipelineStage, ProcessedData, ProcessingConfig, ProcessingContext,
+    ProcessingInput, ProcessingOutput, ProcessingPipeline, ProcessingStats, ProcessingStrategy,
+    ProcessorFactory, ProcessorRegistry, TransformationRule, TransformationRuleType,
+    TransformerStage, ValidationResult, ValidationRule, ValidationRuleType, ValidationSeverity,
+    ValidatorStage, WriterStage,
 };
 
 pub use strategy::{
-    InMemoryProcessor, ChunkedProcessor, MemoryMappedProcessor,
-    create_processor, recommend_strategy,
+    ChunkedProcessor, InMemoryProcessor, MemoryMappedProcessor, create_processor,
+    recommend_strategy,
 };
 
 pub use pipeline::{
-    DefaultPipeline, LoaderStageImpl, TransformerStageImpl, 
-    ValidatorStageImpl, WriterStageImpl,
+    DefaultPipeline, LoaderStageImpl, TransformerStageImpl, ValidatorStageImpl, WriterStageImpl,
 };
 
-pub use registry::{
-    DefaultProcessorRegistry, ProcessorRegistryImpl,
-};
+pub use registry::{DefaultProcessorRegistry, ProcessorRegistryImpl};
 
-pub use engine::{
-    ProcessingEngine, ProcessingEngineBuilder, EngineStats, EngineStatus,
-};
+pub use engine::{EngineStats, EngineStatus, ProcessingEngine, ProcessingEngineBuilder};
 
 pub use dag::{
-    DagExecutor, DagExecutionStats, DagExecutionContext, TaskState, TaskExecutionResult,
+    DagExecutionContext, DagExecutionStats, DagExecutor, TaskExecutionResult, TaskState,
 };
 
 /// Create a new processing engine with default configuration
@@ -86,7 +80,7 @@ pub fn create_engine() -> ProcessingEngine {
 /// Create a processing engine optimized for the given input
 pub fn create_optimized_engine(input: &ProcessingInput) -> crate::error::Result<ProcessingEngine> {
     let strategy = recommend_strategy(input)?;
-    let config = ProcessingConfig::default().with_strategy(strategy);
+    ProcessingConfig::default().with_strategy(strategy);
     Ok(ProcessingEngine::new(ProcessingConfig::default()))
 }
 

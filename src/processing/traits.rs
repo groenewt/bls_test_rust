@@ -5,15 +5,13 @@
 //! performant, and support different processing approaches based on data size
 //! and performance requirements.
 
-use std::path::Path;
-use std::collections::HashMap;
-use async_trait::async_trait;
-use serde::{Serialize, Deserialize};
-use crate::config::Config;
-use crate::data::model::{Series, Observation, Lookup, Survey};
+use crate::data::model::{Lookup, Observation, Series, Survey};
 use crate::data::reader::traits::{DataReader, ReaderConfig};
 use crate::data::writer::traits::{DataWriter, WriterConfig};
-use crate::error::types::{ProcessingError, Result};
+use crate::error::types::Result;
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 /// Configuration for processing operations
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -42,7 +40,7 @@ pub struct ProcessingConfig {
 
 impl ProcessingConfig {
     pub(crate) fn with_strategy(&mut self, p0: ProcessingStrategy) {
-        self.strategy= p0;
+        self.strategy = p0;
     }
 }
 
@@ -61,8 +59,6 @@ impl Default for ProcessingConfig {
             custom_params: HashMap::new(),
         }
     }
-    
-    
 }
 
 /// Processing strategy enumeration
@@ -116,7 +112,7 @@ pub struct ProcessingContext {
     pub temp_files: Vec<String>,
     /// Custom context data
     pub custom_data: HashMap<String, String>,
-    pub data_readers: Vec<Box<dyn DataReader>>
+    pub data_readers: Vec<Box<dyn DataReader>>,
 }
 
 impl ProcessingContext {
@@ -149,25 +145,29 @@ impl ProcessingContext {
 pub trait DataProcessor: Send + Sync {
     /// Get processor configuration
     fn config(&self) -> &ProcessingConfig;
-    
+
     /// Get processing statistics
     fn stats(&self) -> &ProcessingStats;
-    
+
     /// Reset processing statistics
     fn reset_stats(&mut self);
-    
+
     /// Check if the processor can handle the given input
     fn can_process(&self, input: &ProcessingInput) -> Result<bool>;
-    
+
     /// Process data with the given input and output specifications
-    async fn process(&mut self, input: ProcessingInput, output: ProcessingOutput) -> Result<ProcessingContext>;
-    
+    async fn process(
+        &mut self,
+        input: ProcessingInput,
+        output: ProcessingOutput,
+    ) -> Result<ProcessingContext>;
+
     /// Get supported processing strategies
     fn supported_strategies(&self) -> Vec<ProcessingStrategy>;
-    
+
     /// Estimate memory usage for the given input
     fn estimate_memory_usage(&self, input: &ProcessingInput) -> Result<u64>;
-    
+
     /// Validate processing configuration
     fn validate_config(&self, config: &ProcessingConfig) -> Result<()>;
 }
@@ -183,7 +183,7 @@ pub struct ProcessingInput {
     pub format_hint: Option<String>,
     /// Custom input parameters
     pub custom_params: HashMap<String, String>,
-    pub parameters: ()
+    pub parameters: (),
 }
 
 impl ProcessingInput {
@@ -247,22 +247,22 @@ impl ProcessingOutput {
 pub trait PipelineStage: Send + Sync {
     /// Get stage name
     fn name(&self) -> &str;
-    
+
     /// Get stage description
     fn description(&self) -> &str;
-    
+
     /// Check if the stage can process the given context
     fn can_process(&self, context: &ProcessingContext) -> Result<bool>;
-    
+
     /// Execute the pipeline stage
     async fn execute(&mut self, context: &mut ProcessingContext) -> Result<()>;
-    
+
     /// Get stage dependencies (stages that must run before this one)
     fn dependencies(&self) -> Vec<String>;
-    
+
     /// Validate stage configuration
     fn validate(&self, context: &ProcessingContext) -> Result<()>;
-    
+
     /// Cleanup resources after stage execution
     async fn cleanup(&mut self, context: &mut ProcessingContext) -> Result<()>;
 }
@@ -271,11 +271,14 @@ pub trait PipelineStage: Send + Sync {
 #[async_trait]
 pub trait LoaderStage: PipelineStage {
     /// Load data from input sources
-    async fn load_data(&mut self, context: &mut ProcessingContext) -> Result<Vec<Box<dyn DataReader>>>;
-    
+    async fn load_data(
+        &mut self,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Box<dyn DataReader>>>;
+
     /// Get estimated data size
     fn estimate_data_size(&self, context: &ProcessingContext) -> Result<u64>;
-    
+
     /// Check data availability
     fn check_data_availability(&self, context: &ProcessingContext) -> Result<bool>;
 }
@@ -284,17 +287,33 @@ pub trait LoaderStage: PipelineStage {
 #[async_trait]
 pub trait TransformerStage: PipelineStage {
     /// Transform series data
-    async fn transform_series(&mut self, series: Vec<Series>, context: &mut ProcessingContext) -> Result<Vec<Series>>;
-    
+    async fn transform_series(
+        &mut self,
+        series: Vec<Series>,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Series>>;
+
     /// Transform observation data
-    async fn transform_observations(&mut self, observations: Vec<Observation>, context: &mut ProcessingContext) -> Result<Vec<Observation>>;
-    
+    async fn transform_observations(
+        &mut self,
+        observations: Vec<Observation>,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Observation>>;
+
     /// Transform lookup data
-    async fn transform_lookups(&mut self, lookups: Vec<Lookup>, context: &mut ProcessingContext) -> Result<Vec<Lookup>>;
-    
+    async fn transform_lookups(
+        &mut self,
+        lookups: Vec<Lookup>,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Lookup>>;
+
     /// Transform survey data
-    async fn transform_survey(&mut self, survey: Survey, context: &mut ProcessingContext) -> Result<Survey>;
-    
+    async fn transform_survey(
+        &mut self,
+        survey: Survey,
+        context: &mut ProcessingContext,
+    ) -> Result<Survey>;
+
     /// Get transformation rules
     fn get_transformation_rules(&self) -> Vec<TransformationRule>;
 }
@@ -303,17 +322,33 @@ pub trait TransformerStage: PipelineStage {
 #[async_trait]
 pub trait ValidatorStage: PipelineStage {
     /// Validate series data
-    async fn validate_series(&mut self, series: &[Series], context: &mut ProcessingContext) -> Result<ValidationResult>;
-    
+    async fn validate_series(
+        &mut self,
+        series: &[Series],
+        context: &mut ProcessingContext,
+    ) -> Result<ValidationResult>;
+
     /// Validate observation data
-    async fn validate_observations(&mut self, observations: &[Observation], context: &mut ProcessingContext) -> Result<ValidationResult>;
-    
+    async fn validate_observations(
+        &mut self,
+        observations: &[Observation],
+        context: &mut ProcessingContext,
+    ) -> Result<ValidationResult>;
+
     /// Validate lookup data
-    async fn validate_lookups(&mut self, lookups: &[Lookup], context: &mut ProcessingContext) -> Result<ValidationResult>;
-    
+    async fn validate_lookups(
+        &mut self,
+        lookups: &[Lookup],
+        context: &mut ProcessingContext,
+    ) -> Result<ValidationResult>;
+
     /// Validate survey data
-    async fn validate_survey(&mut self, survey: &Survey, context: &mut ProcessingContext) -> Result<ValidationResult>;
-    
+    async fn validate_survey(
+        &mut self,
+        survey: &Survey,
+        context: &mut ProcessingContext,
+    ) -> Result<ValidationResult>;
+
     /// Get validation rules
     fn get_validation_rules(&self) -> Vec<ValidationRule>;
 }
@@ -322,11 +357,18 @@ pub trait ValidatorStage: PipelineStage {
 #[async_trait]
 pub trait WriterStage: PipelineStage {
     /// Write processed data to output destinations
-    async fn write_data(&mut self, data: ProcessedData, context: &mut ProcessingContext) -> Result<Vec<String>>;
-    
+    async fn write_data(
+        &mut self,
+        data: ProcessedData,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<String>>;
+
     /// Get output writers
-    async fn get_writers(&mut self, context: &ProcessingContext) -> Result<Vec<Box<dyn DataWriter>>>;
-    
+    async fn get_writers(
+        &mut self,
+        context: &ProcessingContext,
+    ) -> Result<Vec<Box<dyn DataWriter>>>;
+
     /// Finalize output files
     async fn finalize_output(&mut self, context: &mut ProcessingContext) -> Result<()>;
 }
@@ -479,19 +521,19 @@ pub struct ValidationWarning {
 pub trait ProcessingPipeline: Send + Sync {
     /// Add a stage to the pipeline
     fn add_stage(&mut self, stage: Box<dyn PipelineStage>) -> Result<()>;
-    
+
     /// Remove a stage from the pipeline
     fn remove_stage(&mut self, stage_name: &str) -> Result<()>;
-    
+
     /// Get pipeline stages
     fn get_stages(&self) -> Vec<&dyn PipelineStage>;
-    
+
     /// Execute the entire pipeline
     async fn execute(&mut self, context: &mut ProcessingContext) -> Result<()>;
-    
+
     /// Validate pipeline configuration
     fn validate(&self, context: &ProcessingContext) -> Result<()>;
-    
+
     /// Get pipeline execution plan
     fn get_execution_plan(&self) -> Result<Vec<String>>;
 }
@@ -499,23 +541,24 @@ pub trait ProcessingPipeline: Send + Sync {
 /// Trait for processor registry
 pub trait ProcessorRegistry: Send + Sync {
     /// Register a processor
-    fn register_processor(&mut self, name: String, processor: Box<dyn DataProcessor>) -> Result<()>;
-    
+    fn register_processor(&mut self, name: String, processor: Box<dyn DataProcessor>)
+    -> Result<()>;
+
     /// Unregister a processor
     fn unregister_processor(&mut self, name: &str) -> Result<()>;
-    
+
     /// Get a processor by name
     fn get_processor(&self, name: &str) -> Result<&dyn DataProcessor>;
-    
+
     /// Get a mutable processor by name
     fn get_processor_mut(&mut self, name: &str) -> Result<&mut dyn DataProcessor>;
-    
+
     /// List all registered processors
     fn list_processors(&self) -> Vec<String>;
-    
+
     /// Check if a processor is registered
     fn has_processor(&self, name: &str) -> bool;
-    
+
     /// Clear all registered processors
     fn clear(&mut self);
 }
@@ -523,14 +566,18 @@ pub trait ProcessorRegistry: Send + Sync {
 /// Factory trait for creating processors
 pub trait ProcessorFactory: Send + Sync {
     /// Create a processor for the given strategy
-    fn create_processor(&self, strategy: ProcessingStrategy, config: ProcessingConfig) -> Result<Box<dyn DataProcessor>>;
-    
+    fn create_processor(
+        &self,
+        strategy: ProcessingStrategy,
+        config: ProcessingConfig,
+    ) -> Result<Box<dyn DataProcessor>>;
+
     /// Create a pipeline with default stages
     fn create_pipeline(&self, config: ProcessingConfig) -> Result<Box<dyn ProcessingPipeline>>;
-    
+
     /// Get supported strategies
     fn supported_strategies(&self) -> Vec<ProcessingStrategy>;
-    
+
     /// Get recommended strategy for the given input
     fn recommend_strategy(&self, input: &ProcessingInput) -> Result<ProcessingStrategy>;
 }
@@ -553,7 +600,7 @@ mod tests {
         let input = ProcessingInput::new(vec!["test.csv".to_string()])
             .with_param("key".to_string(), "value".to_string())
             .with_format_hint("csv".to_string());
-        
+
         assert_eq!(input.paths.len(), 1);
         assert_eq!(input.custom_params.get("key"), Some(&"value".to_string()));
         assert_eq!(input.format_hint, Some("csv".to_string()));
@@ -561,19 +608,23 @@ mod tests {
 
     #[test]
     fn test_processing_output_creation() {
-        let output = ProcessingOutput::new(vec!["output.parquet".to_string()], "parquet".to_string())
-            .with_param("compression".to_string(), "snappy".to_string());
-        
+        let output =
+            ProcessingOutput::new(vec!["output.parquet".to_string()], "parquet".to_string())
+                .with_param("compression".to_string(), "snappy".to_string());
+
         assert_eq!(output.paths.len(), 1);
         assert_eq!(output.format, "parquet");
-        assert_eq!(output.custom_params.get("compression"), Some(&"snappy".to_string()));
+        assert_eq!(
+            output.custom_params.get("compression"),
+            Some(&"snappy".to_string())
+        );
     }
 
     #[test]
     fn test_processing_context() {
         let config = ProcessingConfig::default();
         let mut context = ProcessingContext::new(config);
-        
+
         context.add_metric("test_metric".to_string(), 42.0);
         assert_eq!(context.get_metric("test_metric"), Some(42.0));
         assert_eq!(context.get_metric("nonexistent"), None);

@@ -4,20 +4,20 @@
 //! with support for different file formats, reading strategies, and performance
 //! optimizations.
 
-pub mod traits;
+pub mod factory;
 pub mod file_reader;
 pub mod mmap_reader;
-pub mod factory;
+pub mod traits;
 
 // Re-export public types and traits
 pub use traits::{
-    DataReader, SeriesReader, ObservationReader, LookupReader, SurveyReader,
-    StreamingReader, MemoryMappedReader, ReaderFactory, ReaderConfig, ReadStats,
+    DataReader, LookupReader, MemoryMappedReader, ObservationReader, ReadStats, ReaderConfig,
+    ReaderFactory, SeriesReader, StreamingReader, SurveyReader,
 };
 
+pub use factory::{DefaultReaderFactory, ReaderFactoryConfig, ReaderFactoryConfigBuilder};
 pub use file_reader::FileReader;
 pub use mmap_reader::MmapReader;
-pub use factory::{DefaultReaderFactory, ReaderFactoryConfig, ReaderFactoryConfigBuilder};
 
 /// Create a default reader factory
 pub fn create_default_factory() -> DefaultReaderFactory {
@@ -30,7 +30,9 @@ pub fn create_factory_with_config(config: ReaderFactoryConfig) -> DefaultReaderF
 }
 
 /// Convenience function to create an optimized reader for a file
-pub fn create_optimized_reader(path: &std::path::Path) -> crate::error::types::Result<Box<dyn DataReader>> {
+pub fn create_optimized_reader(
+    path: &std::path::Path,
+) -> crate::error::types::Result<Box<dyn DataReader>> {
     let factory = create_default_factory();
     factory.create_optimized_reader(path)
 }

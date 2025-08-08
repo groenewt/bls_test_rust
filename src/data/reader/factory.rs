@@ -4,16 +4,15 @@
 //! based on file characteristics, configuration, and performance requirements.
 //! The factory automatically selects the optimal reader strategy.
 
-use std::path::Path;
 use std::collections::HashMap;
-use std::sync::Arc;
+use std::path::Path;
 
-use crate::data::reader::traits::{
-    DataReader, SeriesReader, ObservationReader, LookupReader, SurveyReader,
-    StreamingReader, MemoryMappedReader, ReaderFactory, ReaderConfig,
-};
 use crate::data::reader::file_reader::FileReader;
 use crate::data::reader::mmap_reader::MmapReader;
+use crate::data::reader::traits::{
+    DataReader, LookupReader, MemoryMappedReader, ObservationReader, ReaderConfig, ReaderFactory,
+    SeriesReader, StreamingReader, SurveyReader,
+};
 use crate::error::types::{DataError, Result};
 
 /// Default reader factory implementation
@@ -57,6 +56,12 @@ impl Default for ReaderFactoryConfig {
     }
 }
 
+impl Default for DefaultReaderFactory {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DefaultReaderFactory {
     /// Create a new reader factory with default configuration
     pub fn new() -> Self {
@@ -66,40 +71,49 @@ impl DefaultReaderFactory {
     /// Create a new reader factory with the given configuration
     pub fn with_config(config: ReaderFactoryConfig) -> Self {
         let mut reader_configs = HashMap::new();
-        
+
         // Set up default configurations for different file types
-        reader_configs.insert("series".to_string(), ReaderConfig {
-            buffer_size: config.default_buffer_size,
-            batch_size: config.default_batch_size,
-            validate_on_read: config.enable_validation,
-            use_memory_mapping: config.prefer_mmap,
-            encoding: "UTF-8".to_string(),
-            field_separator: '\t',
-            skip_malformed: false,
-            max_errors: config.max_errors,
-        });
+        reader_configs.insert(
+            "series".to_string(),
+            ReaderConfig {
+                buffer_size: config.default_buffer_size,
+                batch_size: config.default_batch_size,
+                validate_on_read: config.enable_validation,
+                use_memory_mapping: config.prefer_mmap,
+                encoding: "UTF-8".to_string(),
+                field_separator: '\t',
+                skip_malformed: false,
+                max_errors: config.max_errors,
+            },
+        );
 
-        reader_configs.insert("data".to_string(), ReaderConfig {
-            buffer_size: config.default_buffer_size,
-            batch_size: config.default_batch_size * 2, // Larger batch for data files
-            validate_on_read: config.enable_validation,
-            use_memory_mapping: config.prefer_mmap,
-            encoding: "UTF-8".to_string(),
-            field_separator: '\t',
-            skip_malformed: true, // More lenient for data files
-            max_errors: config.max_errors * 2,
-        });
+        reader_configs.insert(
+            "data".to_string(),
+            ReaderConfig {
+                buffer_size: config.default_buffer_size,
+                batch_size: config.default_batch_size * 2, // Larger batch for data files
+                validate_on_read: config.enable_validation,
+                use_memory_mapping: config.prefer_mmap,
+                encoding: "UTF-8".to_string(),
+                field_separator: '\t',
+                skip_malformed: true, // More lenient for data files
+                max_errors: config.max_errors * 2,
+            },
+        );
 
-        reader_configs.insert("lookup".to_string(), ReaderConfig {
-            buffer_size: config.default_buffer_size / 2, // Smaller buffer for lookup files
-            batch_size: config.default_batch_size / 2,
-            validate_on_read: config.enable_validation,
-            use_memory_mapping: false, // Lookup files are usually small
-            encoding: "UTF-8".to_string(),
-            field_separator: '\t',
-            skip_malformed: false,
-            max_errors: config.max_errors / 2,
-        });
+        reader_configs.insert(
+            "lookup".to_string(),
+            ReaderConfig {
+                buffer_size: config.default_buffer_size / 2, // Smaller buffer for lookup files
+                batch_size: config.default_batch_size / 2,
+                validate_on_read: config.enable_validation,
+                use_memory_mapping: false, // Lookup files are usually small
+                encoding: "UTF-8".to_string(),
+                field_separator: '\t',
+                skip_malformed: false,
+                max_errors: config.max_errors / 2,
+            },
+        );
 
         // Override with user-provided configurations
         for (file_type, user_config) in &config.file_type_configs {
@@ -146,9 +160,11 @@ impl DefaultReaderFactory {
                 _ => Ok("generic".to_string()),
             }
         } else {
-            Err(DataError::unsupported_format(
-                format!("Cannot determine file type for: {}", path.display())
-            ).into())
+            Err(DataError::unsupported_format(format!(
+                "Cannot determine file type for: {}",
+                path.display()
+            ))
+            .into())
         }
     }
 
@@ -168,7 +184,8 @@ impl DefaultReaderFactory {
 
     /// Get or create a reader configuration for the given file type
     fn get_reader_config(&self, file_type: &str) -> ReaderConfig {
-        self.reader_configs.get(file_type)
+        self.reader_configs
+            .get(file_type)
             .cloned()
             .unwrap_or_else(|| {
                 // Fallback to generic configuration
@@ -189,7 +206,7 @@ impl DefaultReaderFactory {
     pub fn create_optimized_reader(&self, path: &Path) -> Result<Box<dyn DataReader>> {
         let file_type = self.determine_file_type(path)?;
         let config = self.get_reader_config(&file_type);
-        
+
         if self.should_use_mmap(path, &config)? {
             Ok(Box::new(MmapReader::new(config)))
         } else {
@@ -231,12 +248,16 @@ impl ReaderFactory for DefaultReaderFactory {
         }
     }
 
-    fn create_observation_reader(&self, config: ReaderConfig) -> Result<Box<dyn ObservationReader>> {
+    fn create_observation_reader(
+        &self,
+        config: ReaderConfig,
+    ) -> Result<Box<dyn ObservationReader>> {
         // FileReader implements ObservationReader, MmapReader does not yet
         if config.use_memory_mapping {
             Err(DataError::not_implemented(
-                "ObservationReader for MmapReader is not yet implemented".to_string()
-            ).into())
+                "ObservationReader for MmapReader is not yet implemented".to_string(),
+            )
+            .into())
         } else {
             Ok(Box::new(FileReader::new(config)))
         }
@@ -246,27 +267,33 @@ impl ReaderFactory for DefaultReaderFactory {
         // LookupReader would be implemented similarly to SeriesReader
         // For now, return an error indicating it's not yet implemented
         Err(DataError::not_implemented(
-            "LookupReader implementation is not yet available".to_string()
-        ).into())
+            "LookupReader implementation is not yet available".to_string(),
+        )
+        .into())
     }
 
     fn create_survey_reader(&self, config: ReaderConfig) -> Result<Box<dyn SurveyReader>> {
         // SurveyReader would be implemented similarly to SeriesReader
         // For now, return an error indicating it's not yet implemented
         Err(DataError::not_implemented(
-            "SurveyReader implementation is not yet available".to_string()
-        ).into())
+            "SurveyReader implementation is not yet available".to_string(),
+        )
+        .into())
     }
 
     fn create_streaming_reader(&self, config: ReaderConfig) -> Result<Box<dyn StreamingReader>> {
         // StreamingReader would be implemented similarly to SeriesReader
         // For now, return an error indicating it's not yet implemented
         Err(DataError::not_implemented(
-            "StreamingReader implementation is not yet available".to_string()
-        ).into())
+            "StreamingReader implementation is not yet available".to_string(),
+        )
+        .into())
     }
 
-    fn create_memory_mapped_reader(&self, config: ReaderConfig) -> Result<Box<dyn MemoryMappedReader>> {
+    fn create_memory_mapped_reader(
+        &self,
+        config: ReaderConfig,
+    ) -> Result<Box<dyn MemoryMappedReader>> {
         Ok(Box::new(MmapReader::new(config)))
     }
 
@@ -345,8 +372,8 @@ impl Default for ReaderFactoryConfigBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::NamedTempFile;
     use std::io::Write;
+    use tempfile::NamedTempFile;
 
     #[test]
     fn test_factory_creation() {
@@ -360,13 +387,13 @@ mod tests {
     #[test]
     fn test_file_type_determination() {
         let factory = DefaultReaderFactory::new();
-        
+
         let series_path = Path::new("test.series");
         assert_eq!(factory.determine_file_type(series_path).unwrap(), "series");
-        
+
         let data_path = Path::new("test.data.0");
         assert_eq!(factory.determine_file_type(data_path).unwrap(), "data");
-        
+
         let area_path = Path::new("test.area");
         assert_eq!(factory.determine_file_type(area_path).unwrap(), "lookup");
     }
@@ -376,22 +403,30 @@ mod tests {
         let config = ReaderFactoryConfigBuilder::new()
             .mmap_threshold(1024) // 1KB threshold for testing
             .build();
-        
+
         let factory = DefaultReaderFactory::with_config(config);
-        
+
         // Create a small file
         let mut small_file = NamedTempFile::with_suffix(".series").unwrap();
         small_file.write_all(b"small data").unwrap();
-        
+
         let reader_config = factory.get_reader_config("series");
-        assert!(!factory.should_use_mmap(small_file.path(), &reader_config).unwrap());
-        
+        assert!(
+            !factory
+                .should_use_mmap(small_file.path(), &reader_config)
+                .unwrap()
+        );
+
         // Create a larger file
         let mut large_file = NamedTempFile::with_suffix(".series").unwrap();
         let large_data = "x".repeat(2048); // 2KB
         large_file.write_all(large_data.as_bytes()).unwrap();
-        
-        assert!(factory.should_use_mmap(large_file.path(), &reader_config).unwrap());
+
+        assert!(
+            factory
+                .should_use_mmap(large_file.path(), &reader_config)
+                .unwrap()
+        );
     }
 
     #[test]
@@ -404,7 +439,7 @@ mod tests {
             .max_errors(500)
             .prefer_mmap(false)
             .build();
-        
+
         assert_eq!(config.mmap_threshold, 50 * 1024 * 1024);
         assert_eq!(config.default_buffer_size, 128 * 1024);
         assert_eq!(config.default_batch_size, 2000);
@@ -417,11 +452,11 @@ mod tests {
     fn test_reader_creation() {
         let factory = DefaultReaderFactory::new();
         let config = ReaderConfig::default();
-        
+
         // Test creating different reader types
         let reader = factory.create_reader("series", config.clone());
         assert!(reader.is_ok());
-        
+
         let mmap_reader = factory.create_memory_mapped_reader(config);
         assert!(mmap_reader.is_ok());
     }

@@ -4,12 +4,11 @@
 //! The traits are designed to be flexible, performant, and support different reading
 //! strategies based on file size and processing requirements.
 
-use std::any::Any;
-use std::io::{BufRead, Read, Seek};
-use std::path::Path;
+use crate::data::model::{Lookup, Observation, Series, Survey};
+use crate::error::types::Result;
 use async_trait::async_trait;
-use crate::data::model::{Series, Observation, Lookup, Survey};
-use crate::error::types::{DataError, Result};
+use std::any::Any;
+use std::path::Path;
 
 /// Configuration for reader behavior
 #[derive(Debug, Clone)]
@@ -67,31 +66,31 @@ pub struct ReadStats {
 pub trait DataReader: Send + Sync + std::fmt::Debug {
     /// Read configuration
     fn config(&self) -> &ReaderConfig;
-    
+
     /// Get reading statistics
     fn stats(&self) -> &ReadStats;
-    
+
     /// Reset statistics
     fn reset_stats(&mut self);
-    
+
     /// Check if the reader can handle the given file
     fn can_read(&self, path: &Path) -> Result<bool>;
-    
+
     /// Open a file for reading
     async fn open(&mut self, path: &Path) -> Result<()>;
-    
+
     /// Close the currently open file
     async fn close(&mut self) -> Result<()>;
-    
+
     /// Check if a file is currently open
     fn is_open(&self) -> bool;
-    
+
     /// Get the path of the currently open file
     fn current_file(&self) -> Option<&Path>;
-    
+
     /// Enable downcasting to concrete types
     fn as_any(&self) -> &dyn Any;
-    
+
     /// Enable mutable downcasting to concrete types
     fn as_any_mut(&mut self) -> &mut dyn Any;
 }
@@ -101,13 +100,13 @@ pub trait DataReader: Send + Sync + std::fmt::Debug {
 pub trait SeriesReader: DataReader {
     /// Read all series from the file
     async fn read_all_series(&mut self) -> Result<Vec<Series>>;
-    
+
     /// Read series in batches
     async fn read_series_batch(&mut self, batch_size: usize) -> Result<Vec<Series>>;
-    
+
     /// Read a specific series by ID
     async fn read_series_by_id(&mut self, series_id: &str) -> Result<Option<Series>>;
-    
+
     /// Count total number of series in the file
     async fn count_series(&mut self) -> Result<u64>;
 }
@@ -147,7 +146,7 @@ pub trait StreamingProcessor {
     where
         F: Fn(&str) -> Result<T> + Send + Sync,
         T: Send + Sync;
-    
+
     /// Stream data line by line
     async fn stream_lines<F>(&mut self, callback: F) -> Result<()>
     where
@@ -159,20 +158,20 @@ pub trait StreamingProcessor {
 pub trait ObservationReader: DataReader {
     /// Read all observations from the file
     async fn read_all_observations(&mut self) -> Result<Vec<Observation>>;
-    
+
     /// Read observations in batches
     async fn read_observations_batch(&mut self, batch_size: usize) -> Result<Vec<Observation>>;
-    
+
     /// Read observations for a specific series
     async fn read_observations_for_series(&mut self, series_id: &str) -> Result<Vec<Observation>>;
-    
+
     /// Read observations within a date range
     async fn read_observations_by_date_range(
         &mut self,
         start_date: &str,
         end_date: &str,
     ) -> Result<Vec<Observation>>;
-    
+
     /// Count total number of observations in the file
     async fn count_observations(&mut self) -> Result<u64>;
 }
@@ -182,13 +181,13 @@ pub trait ObservationReader: DataReader {
 pub trait LookupReader: DataReader {
     /// Read all lookup entries from the file
     async fn read_all_lookups(&mut self) -> Result<Vec<Lookup>>;
-    
+
     /// Read lookup entries in batches
     async fn read_lookups_batch(&mut self, batch_size: usize) -> Result<Vec<Lookup>>;
-    
+
     /// Read a specific lookup entry by code
     async fn read_lookup_by_code(&mut self, code: &str) -> Result<Option<Lookup>>;
-    
+
     /// Count total number of lookup entries in the file
     async fn count_lookups(&mut self) -> Result<u64>;
 }
@@ -198,7 +197,7 @@ pub trait LookupReader: DataReader {
 pub trait SurveyReader: DataReader {
     /// Read survey metadata
     async fn read_survey(&mut self) -> Result<Survey>;
-    
+
     /// Validate survey structure
     async fn validate_survey_structure(&mut self) -> Result<bool>;
 }
@@ -214,10 +213,10 @@ pub trait StreamingReader: DataReader {
 pub trait MemoryMappedReader: DataReader {
     /// Get a memory-mapped view of the file
     fn memory_map(&self) -> Result<&[u8]>;
-    
+
     /// Get a slice of the memory-mapped file
     fn slice(&self, start: usize, len: usize) -> Result<&[u8]>;
-    
+
     /// Search for a pattern in the memory-mapped file
     fn find_pattern(&self, pattern: &[u8]) -> Result<Vec<usize>>;
 }
@@ -226,25 +225,29 @@ pub trait MemoryMappedReader: DataReader {
 pub trait ReaderFactory: Send + Sync {
     /// Create a reader for the given file type and path
     fn create_reader(&self, file_type: &str, config: ReaderConfig) -> Result<Box<dyn DataReader>>;
-    
+
     /// Create a series reader
     fn create_series_reader(&self, config: ReaderConfig) -> Result<Box<dyn SeriesReader>>;
-    
+
     /// Create an observation reader
-    fn create_observation_reader(&self, config: ReaderConfig) -> Result<Box<dyn ObservationReader>>;
-    
+    fn create_observation_reader(&self, config: ReaderConfig)
+    -> Result<Box<dyn ObservationReader>>;
+
     /// Create a lookup reader
     fn create_lookup_reader(&self, config: ReaderConfig) -> Result<Box<dyn LookupReader>>;
-    
+
     /// Create a survey reader
     fn create_survey_reader(&self, config: ReaderConfig) -> Result<Box<dyn SurveyReader>>;
-    
+
     /// Create a streaming reader
     fn create_streaming_reader(&self, config: ReaderConfig) -> Result<Box<dyn StreamingReader>>;
-    
+
     /// Create a memory-mapped reader
-    fn create_memory_mapped_reader(&self, config: ReaderConfig) -> Result<Box<dyn MemoryMappedReader>>;
-    
+    fn create_memory_mapped_reader(
+        &self,
+        config: ReaderConfig,
+    ) -> Result<Box<dyn MemoryMappedReader>>;
+
     /// Get supported file types
     fn supported_file_types(&self) -> Vec<String>;
 }

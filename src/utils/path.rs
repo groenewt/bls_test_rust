@@ -12,10 +12,9 @@
 //!
 //! ## Usage
 
-
-use std::path::{Path, PathBuf};
-use std::env;
 use crate::error::{Result, SystemError};
+use std::env;
+use std::path::{Path, PathBuf};
 
 /// Path utilities for the BLS data processing system
 pub struct PathUtils {
@@ -25,9 +24,8 @@ pub struct PathUtils {
 impl PathUtils {
     /// Create a new PathUtils instance
     pub fn new() -> Self {
-        let project_root = env::current_dir()
-            .unwrap_or_else(|_| PathBuf::from("."));
-        
+        let project_root = env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
+
         Self { project_root }
     }
 
@@ -46,30 +44,32 @@ impl PathUtils {
     /// Validate a path for security and correctness
     pub fn validate_path<P: AsRef<Path>>(&self, path: P) -> Result<()> {
         let path = path.as_ref();
-        
+
         // Check for path traversal attempts
         if path.to_string_lossy().contains("..") {
             return Err(crate::error::Error::System(SystemError::invalid_path(
-                format!("Path contains invalid traversal: {}", path.display())
+                format!("Path contains invalid traversal: {}", path.display()),
             )));
         }
 
         // Check for absolute paths outside project root (security measure)
         if path.is_absolute() {
-            let canonical_path = path.canonicalize()
-                .map_err(|e| crate::error::Error::System(SystemError::IoError {
+            let canonical_path = path.canonicalize().map_err(|e| {
+                crate::error::Error::System(SystemError::IoError {
                     operation: "canonicalize path".to_string(),
                     source: e.to_string(),
-                }))?;
-            let canonical_root = self.project_root.canonicalize()
-                .map_err(|e| crate::error::Error::System(SystemError::IoError {
+                })
+            })?;
+            let canonical_root = self.project_root.canonicalize().map_err(|e| {
+                crate::error::Error::System(SystemError::IoError {
                     operation: "canonicalize project root".to_string(),
                     source: e.to_string(),
-                }))?;
-            
+                })
+            })?;
+
             if !canonical_path.starts_with(canonical_root) {
                 return Err(crate::error::Error::System(SystemError::InvalidPath(
-                    format!("Path is outside project root: {}", path.display())
+                    format!("Path is outside project root: {}", path.display()),
                 )));
             }
         }
@@ -100,22 +100,22 @@ impl PathUtils {
 
     /// Get the config directory path
     pub fn config_dir(&self) -> PathBuf {
-        self.build_path(&["config"])
+        self.build_path(["config"])
     }
 
     /// Get the data directory path
     pub fn data_dir(&self) -> PathBuf {
-        self.build_path(&["data"])
+        self.build_path(["data"])
     }
 
     /// Get the output directory path
     pub fn output_dir(&self) -> PathBuf {
-        self.build_path(&["data", "processed"])
+        self.build_path(["data", "processed"])
     }
 
     /// Get the final output directory path
     pub fn final_output_dir(&self) -> PathBuf {
-        self.build_path(&["data", "final"])
+        self.build_path(["data", "final"])
     }
 }
 
@@ -126,9 +126,12 @@ impl Default for PathUtils {
 }
 
 /// Get a configuration file path
-pub fn get_config_path<P1: AsRef<Path>, P2: AsRef<Path>>(subdir: P1, filename: P2) -> Result<PathBuf> {
+pub fn get_config_path<P1: AsRef<Path>, P2: AsRef<Path>>(
+    subdir: P1,
+    filename: P2,
+) -> Result<PathBuf> {
     let path_utils = PathUtils::new();
-    let mut path = path_utils.build_path(&["config"]);
+    let mut path = path_utils.build_path(["config"]);
     path.push(subdir.as_ref());
     path.push(filename.as_ref());
     path_utils.validate_path(&path)?;
@@ -137,12 +140,12 @@ pub fn get_config_path<P1: AsRef<Path>, P2: AsRef<Path>>(subdir: P1, filename: P
 
 /// Get a data file path
 pub fn get_data_path<P1: AsRef<Path>, P2: AsRef<Path>, P3: AsRef<Path>>(
-    data_type: P1, 
-    source: P2, 
-    survey: P3
+    data_type: P1,
+    source: P2,
+    survey: P3,
 ) -> Result<PathBuf> {
     let path_utils = PathUtils::new();
-    let mut path = path_utils.build_path(&["data"]);
+    let mut path = path_utils.build_path(["data"]);
     path.push(data_type.as_ref());
     path.push(source.as_ref());
     path.push(survey.as_ref());
@@ -151,9 +154,12 @@ pub fn get_data_path<P1: AsRef<Path>, P2: AsRef<Path>, P3: AsRef<Path>>(
 }
 
 /// Get an output file path
-pub fn get_output_path<P1: AsRef<Path>, P2: AsRef<Path>>(subdir: P1, filename: P2) -> Result<PathBuf> {
+pub fn get_output_path<P1: AsRef<Path>, P2: AsRef<Path>>(
+    subdir: P1,
+    filename: P2,
+) -> Result<PathBuf> {
     let path_utils = PathUtils::new();
-    let mut path = path_utils.build_path(&["data", "processed"]);
+    let mut path = path_utils.build_path(["data", "processed"]);
     path.push(subdir.as_ref());
     path.push(filename.as_ref());
     path_utils.validate_path(&path)?;
@@ -161,9 +167,12 @@ pub fn get_output_path<P1: AsRef<Path>, P2: AsRef<Path>>(subdir: P1, filename: P
 }
 
 /// Get a final output file path
-pub fn get_final_output_path<P1: AsRef<Path>, P2: AsRef<Path>>(subdir: P1, filename: P2) -> Result<PathBuf> {
+pub fn get_final_output_path<P1: AsRef<Path>, P2: AsRef<Path>>(
+    subdir: P1,
+    filename: P2,
+) -> Result<PathBuf> {
     let path_utils = PathUtils::new();
-    let mut path = path_utils.build_path(&["data", "final"]);
+    let mut path = path_utils.build_path(["data", "final"]);
     path.push(subdir.as_ref());
     path.push(filename.as_ref());
     path_utils.validate_path(&path)?;
@@ -173,7 +182,7 @@ pub fn get_final_output_path<P1: AsRef<Path>, P2: AsRef<Path>>(subdir: P1, filen
 /// Get a temporary file path
 pub fn get_temp_path<P: AsRef<Path>>(filename: P) -> Result<PathBuf> {
     let path_utils = PathUtils::new();
-    let mut path = path_utils.build_path(&["target", "tmp"]);
+    let mut path = path_utils.build_path(["target", "tmp"]);
     path.push(filename.as_ref());
     path_utils.validate_path(&path)?;
     Ok(path)
@@ -182,31 +191,31 @@ pub fn get_temp_path<P: AsRef<Path>>(filename: P) -> Result<PathBuf> {
 /// Get survey directory path
 pub fn survey_dir(survey_code: &str) -> String {
     let normalized_code = survey_code.to_uppercase();
-    format!("surveys/{}", normalized_code)
+    format!("surveys/{normalized_code}")
 }
 
 /// Get survey file path
 pub fn survey_file(survey_code: &str, filename: &str) -> String {
     let normalized_code = survey_code.to_uppercase();
-    format!("surveys/{}/{}", normalized_code, filename)
+    format!("surveys/{normalized_code}/{filename}")
 }
 
 /// Get overrides default file path
 pub fn overrides_default(survey_code: &str) -> String {
     let normalized_code = survey_code.to_uppercase();
-    format!("surveys/{}/overrides/defaults.yml", normalized_code)
+    format!("surveys/{normalized_code}/overrides/defaults.yml")
 }
 
 /// Get overrides environment file path
 pub fn overrides_env(survey_code: &str, env: &str) -> String {
     let normalized_code = survey_code.to_uppercase();
-    format!("surveys/{}/overrides/env/{}.yml", normalized_code, env)
+    format!("surveys/{normalized_code}/overrides/env/{env}.yml")
 }
 
 /// Get overrides local file path
 pub fn overrides_local(survey_code: &str) -> String {
     let normalized_code = survey_code.to_uppercase();
-    format!("surveys/{}/overrides/local.yml", normalized_code)
+    format!("surveys/{normalized_code}/overrides/local.yml")
 }
 
 /// Get shared directory path
@@ -216,7 +225,7 @@ pub fn shared_dir() -> String {
 
 /// Get shared macro file path
 pub fn shared_macro_file(filename: &str) -> String {
-    format!("surveys/_shared/macros/{}", filename)
+    format!("surveys/_shared/macros/{filename}")
 }
 
 /// Get archive directory path
@@ -234,7 +243,7 @@ pub fn validate_path_security(path: &str) -> Result<()> {
     if path.contains("..") || path.contains("~") {
         return Err(crate::error::Error::System(SystemError::IoError {
             operation: "path validation".to_string(),
-            source: format!("Path traversal detected: {}", path),
+            source: format!("Path traversal detected: {path}"),
         }));
     }
     Ok(())
@@ -243,19 +252,20 @@ pub fn validate_path_security(path: &str) -> Result<()> {
 /// Ensure a directory exists, creating it if necessary
 pub fn ensure_directory<P: AsRef<Path>>(path: P) -> Result<()> {
     let path = path.as_ref();
-    
+
     if !path.exists() {
-        std::fs::create_dir_all(path)
-            .map_err(|e| crate::error::Error::System(SystemError::IoError {
+        std::fs::create_dir_all(path).map_err(|e| {
+            crate::error::Error::System(SystemError::IoError {
                 operation: "create directory".to_string(),
                 source: e.to_string(),
-            }))?;
+            })
+        })?;
     } else if !path.is_dir() {
         return Err(crate::error::Error::System(SystemError::InvalidPath(
-            format!("Path exists but is not a directory: {}", path.display())
+            format!("Path exists but is not a directory: {}", path.display()),
         )));
     }
-    
+
     Ok(())
 }
 
@@ -340,16 +350,16 @@ mod tests {
     fn test_ensure_directory() {
         let temp_dir = TempDir::new().unwrap();
         let test_dir = temp_dir.path().join("test_dir");
-        
+
         // Directory doesn't exist initially
         assert!(!test_dir.exists());
-        
+
         // Create directory
         let result = ensure_directory(&test_dir);
         assert!(result.is_ok());
         assert!(test_dir.exists());
         assert!(test_dir.is_dir());
-        
+
         // Calling again should succeed
         let result = ensure_directory(&test_dir);
         assert!(result.is_ok());
@@ -359,10 +369,10 @@ mod tests {
     fn test_ensure_directory_file_exists() {
         let temp_dir = TempDir::new().unwrap();
         let test_file = temp_dir.path().join("test_file");
-        
+
         // Create a file
         fs::write(&test_file, "test").unwrap();
-        
+
         // Try to create directory with same name should fail
         let result = ensure_directory(&test_file);
         assert!(result.is_err());

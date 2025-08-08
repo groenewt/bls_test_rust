@@ -3,16 +3,13 @@
 //! This module provides the writer stage implementation for the processing pipeline.
 //! The writer stage outputs processed data in various formats.
 
-use std::collections::HashMap;
-use std::time::Instant;
 use async_trait::async_trait;
 
-use crate::processing::traits::{
-    PipelineStage, WriterStage, ProcessingContext, ProcessingConfig,
-    ProcessedData,
-};
-use crate::data::writer::{DataWriter, create_optimized_writer};
+use crate::data::writer::DataWriter;
 use crate::error::types::{ProcessingError, Result};
+use crate::processing::traits::{
+    PipelineStage, ProcessedData, ProcessingContext, WriterStage,
+};
 
 /// Implementation of the writer stage
 pub struct WriterStageImpl {
@@ -91,14 +88,16 @@ impl PipelineStage for WriterStageImpl {
 
     async fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
         log::info!("Starting writer stage execution");
-        
+
         // Basic writing implementation
         self.stats.records_written += 1;
         self.stats.files_written += 1;
-        
-        log::info!("Writer stage completed: {} records written", 
-                  self.stats.records_written);
-        
+
+        log::info!(
+            "Writer stage completed: {} records written",
+            self.stats.records_written
+        );
+
         Ok(())
     }
 
@@ -109,8 +108,9 @@ impl PipelineStage for WriterStageImpl {
     fn validate(&self, context: &ProcessingContext) -> Result<()> {
         if context.data_readers.is_empty() {
             return Err(ProcessingError::InvalidConfiguration(
-                "No data available for writing".to_string()
-            ).into());
+                "No data available for writing".to_string(),
+            )
+            .into());
         }
         Ok(())
     }
@@ -122,11 +122,18 @@ impl PipelineStage for WriterStageImpl {
 
 #[async_trait]
 impl WriterStage for WriterStageImpl {
-    async fn write_data(&mut self, _data: ProcessedData, _context: &mut ProcessingContext) -> Result<Vec<String>> {
+    async fn write_data(
+        &mut self,
+        _data: ProcessedData,
+        _context: &mut ProcessingContext,
+    ) -> Result<Vec<String>> {
         Ok(vec!["output.csv".to_string()])
     }
 
-    async fn get_writers(&mut self, _context: &ProcessingContext) -> Result<Vec<Box<dyn DataWriter>>> {
+    async fn get_writers(
+        &mut self,
+        _context: &ProcessingContext,
+    ) -> Result<Vec<Box<dyn DataWriter>>> {
         Ok(Vec::new())
     }
 

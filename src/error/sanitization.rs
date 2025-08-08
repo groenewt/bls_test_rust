@@ -35,11 +35,10 @@
 //! ## Usage
 //!
 
-use std::collections::HashMap;
-use std::fmt;
 use chrono::{DateTime, Utc};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::error::{Error, ErrorContext};
@@ -89,10 +88,7 @@ impl Default for SanitizationPolicy {
             audit_logging: true,
             custom_patterns: Vec::new(),
             context_policies: HashMap::new(),
-            safe_error_types: vec![
-                "ValidationError".to_string(),
-                "FormatError".to_string(),
-            ],
+            safe_error_types: vec!["ValidationError".to_string(), "FormatError".to_string()],
             detailed_logging: false,
         }
     }
@@ -148,12 +144,18 @@ pub struct SanitizationStats {
     pub audit_events: u64,
 }
 
+impl Default for ErrorSanitizer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ErrorSanitizer {
     /// Create a new error sanitizer
     pub fn new() -> Self {
         let policy = SanitizationPolicy::default();
         let patterns = Self::compile_default_patterns(&policy);
-        
+
         Self {
             policy,
             patterns,
@@ -189,7 +191,9 @@ impl ErrorSanitizer {
         self.stats.total_operations += 1;
 
         // Determine security level for this context
-        let security_level = self.policy.context_policies
+        let security_level = self
+            .policy
+            .context_policies
             .get(context)
             .unwrap_or(&self.policy.security_level);
 
@@ -203,21 +207,27 @@ impl ErrorSanitizer {
 
         // Apply patterns based on security level
         for pattern in &self.patterns {
-            if Self::should_apply_pattern(&pattern.min_security_level, security_level) {
-                if pattern.regex.is_match(&sanitized) {
-                    sanitized = pattern.regex.replace_all(&sanitized, &pattern.replacement).to_string();
+            if Self::should_apply_pattern(&pattern.min_security_level, security_level)
+                && pattern.regex.is_match(&sanitized) {
+                    sanitized = pattern
+                        .regex
+                        .replace_all(&sanitized, &pattern.replacement)
+                        .to_string();
                     was_sanitized = true;
-                    
+
                     // Update statistics
-                    *self.stats.patterns_matched.entry(pattern.name.clone()).or_insert(0) += 1;
-                    
+                    *self
+                        .stats
+                        .patterns_matched
+                        .entry(pattern.name.clone())
+                        .or_insert(0) += 1;
+
                     // Log audit event if enabled
                     if let Some(audit_logger) = &mut self.audit_logger {
                         audit_logger.log_sanitization_event(&pattern.name, context, message);
                         self.stats.audit_events += 1;
                     }
                 }
-            }
         }
 
         if was_sanitized {
@@ -233,9 +243,7 @@ impl ErrorSanitizer {
             Error::Config(config_error) => {
                 Error::Config(self.sanitize_config_error(config_error, context))
             }
-            Error::Data(data_error) => {
-                Error::Data(self.sanitize_data_error(data_error, context))
-            }
+            Error::Data(data_error) => Error::Data(self.sanitize_data_error(data_error, context)),
             Error::Processing(processing_error) => {
                 Error::Processing(self.sanitize_processing_error(processing_error, context))
             }
@@ -252,10 +260,14 @@ impl ErrorSanitizer {
     }
 
     /// Sanitize error context
-    pub fn sanitize_context(&mut self, context: &ErrorContext, sanitization_context: &str) -> ErrorContext {
+    pub fn sanitize_context(
+        &mut self,
+        context: &ErrorContext,
+        sanitization_context: &str,
+    ) -> ErrorContext {
         let mut sanitized = context.clone();
         sanitized.message = self.sanitize_message(&context.message, sanitization_context);
-        
+
         // Sanitize metadata
         for (key, value) in &mut sanitized.metadata {
             *value = self.sanitize_message(value, sanitization_context);
@@ -371,7 +383,11 @@ impl ErrorSanitizer {
     }
 
     // Sanitization methods for specific error types
-    fn sanitize_config_error(&mut self, error: &crate::error::ConfigError, context: &str) -> crate::error::ConfigError {
+    fn sanitize_config_error(
+        &mut self,
+        error: &crate::error::ConfigError,
+        context: &str,
+    ) -> crate::error::ConfigError {
         use crate::error::ConfigError;
         match error {
             ConfigError::LoadError { path, source } => ConfigError::LoadError {
@@ -382,7 +398,11 @@ impl ErrorSanitizer {
                 message: self.sanitize_message(message, context),
                 field: field.clone(),
             },
-            ConfigError::ParseError { message, line, column } => ConfigError::ParseError {
+            ConfigError::ParseError {
+                message,
+                line,
+                column,
+            } => ConfigError::ParseError {
                 message: self.sanitize_message(message, context),
                 line: *line,
                 column: *column,
@@ -395,24 +415,41 @@ impl ErrorSanitizer {
         }
     }
 
-    fn sanitize_data_error(&mut self, error: &crate::error::DataError, context: &str) -> crate::error::DataError {
+    fn sanitize_data_error(
+        &mut self,
+        error: &crate::error::DataError,
+        context: &str,
+    ) -> crate::error::DataError {
         use crate::error::DataError;
         match error {
             DataError::ReadError { path, source } => DataError::ReadError {
                 path: self.sanitize_message(path, context),
                 source: self.sanitize_message(source, context),
             },
-            DataError::ValidationError { message, path, line } => DataError::ValidationError {
+            DataError::ValidationError {
+                message,
+                path,
+                line,
+            } => DataError::ValidationError {
                 message: self.sanitize_message(message, context),
                 path: path.as_ref().map(|p| self.sanitize_message(p, context)),
                 line: *line,
             },
-            DataError::FormatError { message, expected, actual } => DataError::FormatError {
+            DataError::FormatError {
+                message,
+                expected,
+                actual,
+            } => DataError::FormatError {
                 message: self.sanitize_message(message, context),
                 expected: expected.clone(),
                 actual: actual.clone(),
             },
-            DataError::SchemaError { message, field, expected_type, actual_type } => DataError::SchemaError {
+            DataError::SchemaError {
+                message,
+                field,
+                expected_type,
+                actual_type,
+            } => DataError::SchemaError {
                 message: self.sanitize_message(message, context),
                 field: field.clone(),
                 expected_type: expected_type.clone(),
@@ -426,22 +463,38 @@ impl ErrorSanitizer {
     }
 
     // Additional sanitization methods for other error types would be implemented here
-    fn sanitize_processing_error(&mut self, error: &crate::error::ProcessingError, context: &str) -> crate::error::ProcessingError {
+    fn sanitize_processing_error(
+        &mut self,
+        error: &crate::error::ProcessingError,
+        context: &str,
+    ) -> crate::error::ProcessingError {
         // Implementation would sanitize processing error fields
         error.clone()
     }
 
-    fn sanitize_output_error(&mut self, error: &crate::error::OutputError, context: &str) -> crate::error::OutputError {
+    fn sanitize_output_error(
+        &mut self,
+        error: &crate::error::OutputError,
+        context: &str,
+    ) -> crate::error::OutputError {
         // Implementation would sanitize output error fields
         error.clone()
     }
 
-    fn sanitize_plugin_error(&mut self, error: &crate::error::PluginError, context: &str) -> crate::error::PluginError {
+    fn sanitize_plugin_error(
+        &mut self,
+        error: &crate::error::PluginError,
+        context: &str,
+    ) -> crate::error::PluginError {
         // Implementation would sanitize plugin error fields
         error.clone()
     }
 
-    fn sanitize_system_error(&mut self, error: &crate::error::SystemError, context: &str) -> crate::error::SystemError {
+    fn sanitize_system_error(
+        &mut self,
+        error: &crate::error::SystemError,
+        context: &str,
+    ) -> crate::error::SystemError {
         // Implementation would sanitize system error fields
         error.clone()
     }
@@ -471,6 +524,12 @@ pub struct AuditEntry {
     pub sensitive_data_detected: bool,
 }
 
+impl Default for AuditLogger {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AuditLogger {
     /// Create a new audit logger
     pub fn new() -> Self {
@@ -480,7 +539,12 @@ impl AuditLogger {
     }
 
     /// Log a sanitization event
-    pub fn log_sanitization_event(&mut self, pattern: &str, context: &str, _original_message: &str) {
+    pub fn log_sanitization_event(
+        &mut self,
+        pattern: &str,
+        context: &str,
+        _original_message: &str,
+    ) {
         let entry = AuditEntry {
             id: Uuid::new_v4(),
             timestamp: Utc::now(),
@@ -489,7 +553,7 @@ impl AuditLogger {
             pattern_matched: Some(pattern.to_string()),
             sensitive_data_detected: true,
         };
-        
+
         self.entries.push(entry);
     }
 
@@ -506,24 +570,35 @@ pub mod utils {
     /// Check if a message contains potentially sensitive data
     pub fn contains_sensitive_data(message: &str) -> bool {
         let sensitive_keywords = [
-            "password", "token", "key", "secret", "credential",
-            "auth", "login", "user", "admin"
+            "password",
+            "token",
+            "key",
+            "secret",
+            "credential",
+            "auth",
+            "login",
+            "user",
+            "admin",
         ];
-        
+
         let message_lower = message.to_lowercase();
-        sensitive_keywords.iter().any(|keyword| message_lower.contains(keyword))
+        sensitive_keywords
+            .iter()
+            .any(|keyword| message_lower.contains(keyword))
     }
 
     /// Create a safe error message for external reporting
     pub fn create_safe_message(error_type: &str, component: &str) -> String {
-        format!("An error occurred in {} component: {}", component, error_type)
+        format!(
+            "An error occurred in {component} component: {error_type}"
+        )
     }
 
     /// Validate sanitization pattern
     pub fn validate_pattern(pattern: &str) -> Result<(), String> {
         match Regex::new(pattern) {
             Ok(_) => Ok(()),
-            Err(e) => Err(format!("Invalid regex pattern: {}", e)),
+            Err(e) => Err(format!("Invalid regex pattern: {e}")),
         }
     }
 }

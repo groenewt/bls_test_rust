@@ -39,10 +39,10 @@
 //!
 //! ```
 
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt;
-use serde::{Deserialize, Serialize};
-use chrono::{DateTime, Utc};
 
 use crate::error::{Error, ErrorContext};
 
@@ -88,7 +88,7 @@ impl Locale {
         }
 
         let mut locale = Self::new(parts[0]);
-        
+
         for part in parts.iter().skip(1) {
             match part.len() {
                 2 => {
@@ -116,29 +116,29 @@ impl Locale {
     /// Convert locale to string representation
     pub fn to_string(&self) -> String {
         let mut parts = vec![self.language.clone()];
-        
+
         if let Some(script) = &self.script {
             parts.push(script.clone());
         }
-        
+
         if let Some(region) = &self.region {
             parts.push(region.clone());
         }
-        
+
         if let Some(variant) = &self.variant {
             parts.push(variant.clone());
         }
-        
+
         parts.join("-")
     }
 
     /// Get fallback locales for this locale
     pub fn fallback_chain(&self) -> Vec<Locale> {
         let mut fallbacks = Vec::new();
-        
+
         // Add current locale
         fallbacks.push(self.clone());
-        
+
         // Add locale without variant
         if self.variant.is_some() {
             fallbacks.push(Locale {
@@ -148,7 +148,7 @@ impl Locale {
                 variant: None,
             });
         }
-        
+
         // Add locale without script
         if self.script.is_some() {
             fallbacks.push(Locale {
@@ -158,7 +158,7 @@ impl Locale {
                 variant: None,
             });
         }
-        
+
         // Add locale without region
         if self.region.is_some() {
             fallbacks.push(Locale {
@@ -168,12 +168,12 @@ impl Locale {
                 variant: None,
             });
         }
-        
+
         // Add default English fallback
         if self.language != "en" {
             fallbacks.push(Locale::new("en"));
         }
-        
+
         fallbacks
     }
 }
@@ -252,7 +252,7 @@ pub struct CatalogMetadata {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PluralRules {
     /// Locale these rules apply to
-        /// Plural rule expressions
+    /// Plural rule expressions
     pub rules: HashMap<String, String>,
 }
 
@@ -297,7 +297,7 @@ impl MessageCatalog {
                 needs_review: false,
             },
         };
-        
+
         self.entries.insert(key.to_string(), entry);
         self.metadata.translation_count = self.entries.len();
         self.metadata.updated_at = Utc::now();
@@ -338,6 +338,12 @@ pub struct LocalizationStats {
     pub fallback_used: u64,
     /// Missing translations
     pub missing_translations: HashMap<String, u64>,
+}
+
+impl Default for ErrorLocalizer {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ErrorLocalizer {
@@ -384,7 +390,7 @@ impl ErrorLocalizer {
         self.stats.total_requests += 1;
 
         let error_key = self.get_error_key(error);
-        
+
         if let Some(localized) = self.get_localized_message(&error_key, locale) {
             self.stats.successful_localizations += 1;
             localized
@@ -396,10 +402,14 @@ impl ErrorLocalizer {
                     return localized;
                 }
             }
-            
+
             // Record missing translation
-            *self.stats.missing_translations.entry(error_key.clone()).or_insert(0) += 1;
-            
+            *self
+                .stats
+                .missing_translations
+                .entry(error_key.clone())
+                .or_insert(0) += 1;
+
             // Return default error message
             self.get_default_error_message(error)
         }
@@ -425,10 +435,14 @@ impl ErrorLocalizer {
                     return self.substitute_parameters(&template, params);
                 }
             }
-            
+
             // Record missing translation
-            *self.stats.missing_translations.entry(key.to_string()).or_insert(0) += 1;
-            
+            *self
+                .stats
+                .missing_translations
+                .entry(key.to_string())
+                .or_insert(0) += 1;
+
             // Return key as fallback
             key.to_string()
         }
@@ -437,13 +451,13 @@ impl ErrorLocalizer {
     /// Localize error context
     pub fn localize_context(&mut self, context: &ErrorContext, locale: &Locale) -> ErrorContext {
         let mut localized = context.clone();
-        
+
         // Try to localize the context message
         let context_key = format!("context.{}", context.component);
         if let Some(localized_message) = self.get_localized_message(&context_key, locale) {
             localized.message = localized_message;
         }
-        
+
         localized
     }
 
@@ -463,41 +477,31 @@ impl ErrorLocalizer {
     /// Get error key for localization lookup
     fn get_error_key(&self, error: &Error) -> String {
         match error {
-            Error::Config(config_error) => {
-                format!("config.{:?}", config_error).to_lowercase()
-            }
-            Error::Data(data_error) => {
-                format!("data.{:?}", data_error).to_lowercase()
-            }
+            Error::Config(config_error) => format!("config.{config_error:?}").to_lowercase(),
+            Error::Data(data_error) => format!("data.{data_error:?}").to_lowercase(),
             Error::Processing(processing_error) => {
-                format!("processing.{:?}", processing_error).to_lowercase()
+                format!("processing.{processing_error:?}").to_lowercase()
             }
-            Error::Output(output_error) => {
-                format!("output.{:?}", output_error).to_lowercase()
-            }
-            Error::Plugin(plugin_error) => {
-                format!("plugin.{:?}", plugin_error).to_lowercase()
-            }
-            Error::System(system_error) => {
-                format!("system.{:?}", system_error).to_lowercase()
-            }
+            Error::Output(output_error) => format!("output.{output_error:?}").to_lowercase(),
+            Error::Plugin(plugin_error) => format!("plugin.{plugin_error:?}").to_lowercase(),
+            Error::System(system_error) => format!("system.{system_error:?}").to_lowercase(),
         }
     }
 
     /// Get default error message (English fallback)
     fn get_default_error_message(&self, error: &Error) -> String {
-        format!("{:?}", error)
+        format!("{error:?}")
     }
 
     /// Substitute parameters in a message template
     fn substitute_parameters(&self, template: &str, params: &[(&str, &str)]) -> String {
         let mut result = template.to_string();
-        
+
         for (key, value) in params {
-            let placeholder = format!("{{{}}}", key);
+            let placeholder = format!("{{{key}}}");
             result = result.replace(&placeholder, value);
         }
-        
+
         result
     }
 }
@@ -527,10 +531,7 @@ pub mod locale_detection {
     }
 
     /// Get best matching locale from available catalogs
-    pub fn best_match(
-        requested: &Locale,
-        available: &[Locale],
-    ) -> Option<Locale> {
+    pub fn best_match(requested: &Locale, available: &[Locale]) -> Option<Locale> {
         // Exact match
         if available.contains(requested) {
             return Some(requested.clone());
@@ -555,7 +556,7 @@ pub mod cultural {
     pub fn format_number(number: f64, locale: &Locale) -> String {
         // Implementation would use locale-specific number formatting
         // For now, return basic formatting
-        format!("{:.2}", number)
+        format!("{number:.2}")
     }
 
     /// Format dates according to locale conventions

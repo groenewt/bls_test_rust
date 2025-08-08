@@ -4,20 +4,20 @@
 //! JSON format output. It supports structured data, custom serialization,
 //! and both compact and pretty-printed formats.
 
+use async_trait::async_trait;
+use flate2::Compression;
+use flate2::write::GzEncoder;
+use serde_json::{Map, Value, json};
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use std::time::Instant;
-use async_trait::async_trait;
-use serde_json::{json, Value, Map};
-use flate2::write::GzEncoder;
-use flate2::Compression;
 
-use crate::data::model::{Series, Observation, Lookup, Survey};
+use crate::data::model::{Lookup, Observation, Series, Survey};
 use crate::data::writer::traits::{
-    DataWriter, SeriesWriter, ObservationWriter, LookupWriter, SurveyWriter,
-    StreamingWriter, CompressedWriter, WriterConfig, WriteStats, CompressionInfo,
+    CompressedWriter, CompressionInfo, DataWriter, LookupWriter, ObservationWriter, SeriesWriter,
+    StreamingWriter, SurveyWriter, WriteStats, WriterConfig,
 };
 use crate::error::types::{DataError, Result};
 use crate::utils::validation::BLSValidationRules;
@@ -74,8 +74,11 @@ impl JsonDataWriter {
         obj.insert("series_id".to_string(), json!(series.id()));
         obj.insert("title".to_string(), json!(series.title()));
         obj.insert("survey_code".to_string(), json!(series.survey_code()));
-        obj.insert("frequency".to_string(), json!(series.frequency().to_string()));
-        
+        obj.insert(
+            "frequency".to_string(),
+            json!(series.frequency().to_string()),
+        );
+
         if let Some(area) = series.area() {
             obj.insert("area_code".to_string(), json!(area.code));
             obj.insert("area_name".to_string(), json!(area.name));
@@ -87,7 +90,7 @@ impl JsonDataWriter {
         if let Some(unit) = series.unit() {
             obj.insert("units".to_string(), json!(unit.name));
         }
-        
+
         // Add metadata fields
         obj.insert("is_active".to_string(), json!(series.is_active()));
 
@@ -100,15 +103,22 @@ impl JsonDataWriter {
         obj.insert("series_id".to_string(), json!(observation.series_id()));
         obj.insert("year".to_string(), json!(observation.year()));
         obj.insert("period".to_string(), json!(observation.period()));
-        
+
         if let Some(value) = observation.numeric_value() {
             // Format float with configured precision
-            let formatted_value = format!("{:.precision$}", value, precision = self.config.float_precision);
-            obj.insert("value".to_string(), json!(formatted_value.parse::<f64>().unwrap_or(value)));
+            let formatted_value = format!(
+                "{:.precision$}",
+                value,
+                precision = self.config.float_precision
+            );
+            obj.insert(
+                "value".to_string(),
+                json!(formatted_value.parse::<f64>().unwrap_or(value)),
+            );
         } else {
             obj.insert("value".to_string(), Value::Null);
         }
-        
+
         // Add data quality and other metadata
         obj.insert("quality".to_string(), json!(observation.quality()));
         obj.insert("has_value".to_string(), json!(observation.has_value()));
@@ -124,7 +134,7 @@ impl JsonDataWriter {
         obj.insert("table_name".to_string(), json!(lookup.table_name));
         obj.insert("survey_code".to_string(), json!(lookup.survey_code));
         obj.insert("entry_count".to_string(), json!(lookup.entry_count()));
-        
+
         // Convert entries to a JSON object
         let mut entries_obj = Map::new();
         for (code, entry) in &lookup.entries {
@@ -160,12 +170,14 @@ impl JsonDataWriter {
             let mut writer = writer.lock().unwrap();
             let json_string = if self.config.include_headers {
                 // Pretty print for readability
-                serde_json::to_string_pretty(value)
-                    .map_err(|e| DataError::serialization_error(format!("Failed to serialize JSON: {}", e)))?
+                serde_json::to_string_pretty(value).map_err(|e| {
+                    DataError::serialization_error(format!("Failed to serialize JSON: {e}"))
+                })?
             } else {
                 // Compact format
-                serde_json::to_string(value)
-                    .map_err(|e| DataError::serialization_error(format!("Failed to serialize JSON: {}", e)))?
+                serde_json::to_string(value).map_err(|e| {
+                    DataError::serialization_error(format!("Failed to serialize JSON: {e}"))
+                })?
             };
 
             let bytes_written = if self.is_array_format {
@@ -190,7 +202,8 @@ impl JsonDataWriter {
             Err(DataError::IoError {
                 path: "unknown".to_string(),
                 source: "No writer available".to_string(),
-            }.into())
+            }
+            .into())
         }
     }
 
@@ -206,15 +219,22 @@ impl JsonDataWriter {
         match record_type {
             "series" | "observation" | "lookup" | "survey" => Ok(true),
             _ => Err(DataError::ValidationError {
-                message: format!("Unknown record type: {}", record_type),
+                message: format!("Unknown record type: {record_type}"),
                 path: None,
                 line: None,
-            }.into()),
+            }
+            .into()),
         }
     }
 
     /// Update statistics after writing records
-    fn update_stats(&mut self, records_written: u64, bytes_written: u64, errors: u64, start_time: Instant) {
+    fn update_stats(
+        &mut self,
+        records_written: u64,
+        bytes_written: u64,
+        errors: u64,
+        start_time: Instant,
+    ) {
         self.stats.records_written += records_written;
         self.stats.bytes_written += bytes_written;
         self.stats.errors_encountered += errors;
@@ -262,7 +282,7 @@ impl DataWriter for JsonDataWriter {
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
-    
+
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
         self
     }
@@ -312,9 +332,11 @@ impl DataWriter for JsonDataWriter {
 
     async fn open(&mut self, path: &Path) -> Result<()> {
         if !self.can_write(path)? {
-            return Err(DataError::unsupported_format(
-                format!("Cannot write JSON to: {}", path.display())
-            ).into());
+            return Err(DataError::unsupported_format(format!(
+                "Cannot write JSON to: {}",
+                path.display()
+            ))
+            .into());
         }
 
         // Check if file exists and we're not allowed to overwrite
@@ -322,7 +344,8 @@ impl DataWriter for JsonDataWriter {
             return Err(DataError::IoError {
                 path: path.display().to_string(),
                 source: "File already exists and overwrite is disabled".to_string(),
-            }.into());
+            }
+            .into());
         }
 
         // Determine format based on file extension
@@ -332,11 +355,10 @@ impl DataWriter for JsonDataWriter {
             }
         }
 
-        let file = File::create(path)
-            .map_err(|e| DataError::IoError {
-                path: path.display().to_string(),
-                source: format!("Failed to create file: {}", e),
-            })?;
+        let file = File::create(path).map_err(|e| DataError::IoError {
+            path: path.display().to_string(),
+            source: format!("Failed to create file: {e}"),
+        })?;
 
         let writer = self.create_writer(file)?;
         self.writer = Some(writer);
@@ -359,11 +381,10 @@ impl DataWriter for JsonDataWriter {
     async fn flush(&mut self) -> Result<()> {
         if let Some(ref writer) = self.writer {
             let mut writer = writer.lock().unwrap();
-            writer.flush()
-                .map_err(|e| DataError::IoError {
-                    path: "unknown".to_string(),
-                    source: format!("Failed to flush writer: {}", e),
-                })?;
+            writer.flush().map_err(|e| DataError::IoError {
+                path: "unknown".to_string(),
+                source: format!("Failed to flush writer: {e}"),
+            })?;
         }
         Ok(())
     }
@@ -385,7 +406,7 @@ impl DataWriter for JsonDataWriter {
 impl SeriesWriter for JsonDataWriter {
     async fn write_series(&mut self, series: &Series) -> Result<()> {
         let start_time = Instant::now();
-        
+
         self.validate_record(series, "series")?;
         let json_value = self.series_to_json(series);
         let bytes_written = self.write_json_value(&json_value)?;
@@ -412,7 +433,12 @@ impl SeriesWriter for JsonDataWriter {
             }
         }
 
-        self.update_stats(series.len() as u64 - errors, total_bytes, errors, start_time);
+        self.update_stats(
+            series.len() as u64 - errors,
+            total_bytes,
+            errors,
+            start_time,
+        );
         Ok(())
     }
 
@@ -425,7 +451,7 @@ impl SeriesWriter for JsonDataWriter {
 impl ObservationWriter for JsonDataWriter {
     async fn write_observation(&mut self, observation: &Observation) -> Result<()> {
         let start_time = Instant::now();
-        
+
         self.validate_record(observation, "observation")?;
         let json_value = self.observation_to_json(observation);
         let bytes_written = self.write_json_value(&json_value)?;
@@ -452,22 +478,29 @@ impl ObservationWriter for JsonDataWriter {
             }
         }
 
-        self.update_stats(observations.len() as u64 - errors, total_bytes, errors, start_time);
+        self.update_stats(
+            observations.len() as u64 - errors,
+            total_bytes,
+            errors,
+            start_time,
+        );
         Ok(())
     }
 
     // Generic method write_all_observations moved to extension trait
 
-    async fn write_observations_for_series(&mut self, series_id: &str, observations: &[Observation]) -> Result<()> {
+    async fn write_observations_for_series(
+        &mut self,
+        series_id: &str,
+        observations: &[Observation],
+    ) -> Result<()> {
         let filtered_observations: Vec<&Observation> = observations
             .iter()
             .filter(|obs| obs.series_id() == series_id)
             .collect();
 
-        let owned_observations: Vec<Observation> = filtered_observations
-            .into_iter()
-            .cloned()
-            .collect();
+        let owned_observations: Vec<Observation> =
+            filtered_observations.into_iter().cloned().collect();
 
         self.write_observations_batch(&owned_observations).await
     }
@@ -479,7 +512,7 @@ impl ObservationWriter for JsonDataWriter {
 impl LookupWriter for JsonDataWriter {
     async fn write_lookup(&mut self, lookup: &Lookup) -> Result<()> {
         let start_time = Instant::now();
-        
+
         self.validate_record(lookup, "lookup")?;
         let json_value = self.lookup_to_json(lookup);
         let bytes_written = self.write_json_value(&json_value)?;
@@ -506,7 +539,12 @@ impl LookupWriter for JsonDataWriter {
             }
         }
 
-        self.update_stats(lookups.len() as u64 - errors, total_bytes, errors, start_time);
+        self.update_stats(
+            lookups.len() as u64 - errors,
+            total_bytes,
+            errors,
+            start_time,
+        );
         Ok(())
     }
 
@@ -519,7 +557,7 @@ impl LookupWriter for JsonDataWriter {
 impl SurveyWriter for JsonDataWriter {
     async fn write_survey(&mut self, survey: &Survey) -> Result<()> {
         let start_time = Instant::now();
-        
+
         self.validate_record(survey, "survey")?;
         let json_value = self.survey_to_json(survey);
         let bytes_written = self.write_json_value(&json_value)?;
@@ -536,7 +574,7 @@ impl StreamingWriter for JsonDataWriter {
     async fn start_stream(&mut self) -> Result<()> {
         if self.is_array_format && self.writer.is_some() {
             if let Some(ref writer) = self.writer {
-            let mut writer = writer.lock().unwrap();
+                let mut writer = writer.lock().unwrap();
                 writer.write_all(b"[\n")?;
                 self.first_record = false;
             }
@@ -558,7 +596,7 @@ impl StreamingWriter for JsonDataWriter {
     async fn end_stream(&mut self) -> Result<()> {
         if self.is_array_format && self.writer.is_some() {
             if let Some(ref writer) = self.writer {
-            let mut writer = writer.lock().unwrap();
+                let mut writer = writer.lock().unwrap();
                 writer.write_all(b"\n]")?;
             }
         }
@@ -571,8 +609,9 @@ impl CompressedWriter for JsonDataWriter {
     fn set_compression_level(&mut self, level: u8) -> Result<()> {
         if level > 9 {
             return Err(DataError::invalid_configuration(
-                "Compression level must be between 0 and 9".to_string()
-            ).into());
+                "Compression level must be between 0 and 9".to_string(),
+            )
+            .into());
         }
         self.config.compression_level = level;
         Ok(())
@@ -594,8 +633,8 @@ impl CompressedWriter for JsonDataWriter {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::NamedTempFile;
     use std::io::Read;
+    use tempfile::NamedTempFile;
 
     #[tokio::test]
     async fn test_json_writer_creation() {
@@ -609,13 +648,13 @@ mod tests {
     async fn test_can_write_json() {
         let config = WriterConfig::default();
         let writer = JsonDataWriter::new(config);
-        
+
         let json_path = Path::new("test.json");
         assert!(writer.can_write(json_path).unwrap());
-        
+
         let jsonl_path = Path::new("test.jsonl");
         assert!(writer.can_write(jsonl_path).unwrap());
-        
+
         let invalid_path = Path::new("test.csv");
         assert!(!writer.can_write(invalid_path).unwrap());
     }
@@ -624,23 +663,20 @@ mod tests {
     async fn test_write_series() {
         let config = WriterConfig::default();
         let mut writer = JsonDataWriter::new(config);
-        
+
         let temp_file = NamedTempFile::with_suffix(".json").unwrap();
         writer.open(temp_file.path()).await.unwrap();
-        
-        let series = Series::new(
-            &"TEST001",
-            &"Test Series"
-        );
-        
+
+        let series = Series::new(&"TEST001", &"Test Series");
+
         writer.write_series(&series).await.unwrap();
         writer.close().await.unwrap();
-        
+
         // Verify the file was written
         let mut file_content = String::new();
         let mut file = File::open(temp_file.path()).unwrap();
         file.read_to_string(&mut file_content).unwrap();
-        
+
         assert!(file_content.contains("TEST001"));
         assert!(file_content.contains("Test Series"));
         assert!(file_content.contains("AREA001"));
@@ -649,34 +685,40 @@ mod tests {
     #[tokio::test]
     async fn test_array_vs_line_delimited() {
         let config = WriterConfig::default();
-        
+
         // Test array format
         let mut array_writer = JsonDataWriter::new(config.clone());
         array_writer.set_array_format(true);
-        
+
         let temp_file1 = NamedTempFile::with_suffix(".json").unwrap();
         array_writer.open(temp_file1.path()).await.unwrap();
-        
+
         let series = Series::new(&*"TEST001", &*"Test".to_string());
         array_writer.write_series(&series).await.unwrap();
         array_writer.close().await.unwrap();
-        
+
         let mut content1 = String::new();
-        File::open(temp_file1.path()).unwrap().read_to_string(&mut content1).unwrap();
+        File::open(temp_file1.path())
+            .unwrap()
+            .read_to_string(&mut content1)
+            .unwrap();
         assert!(content1.starts_with('['));
         assert!(content1.ends_with(']'));
-        
+
         // Test line-delimited format
         let mut line_writer = JsonDataWriter::new(config);
         line_writer.set_array_format(false);
-        
+
         let temp_file2 = NamedTempFile::with_suffix(".jsonl").unwrap();
         line_writer.open(temp_file2.path()).await.unwrap();
         line_writer.write_series(&series).await.unwrap();
         line_writer.close().await.unwrap();
-        
+
         let mut content2 = String::new();
-        File::open(temp_file2.path()).unwrap().read_to_string(&mut content2).unwrap();
+        File::open(temp_file2.path())
+            .unwrap()
+            .read_to_string(&mut content2)
+            .unwrap();
         assert!(!content2.starts_with('['));
         assert!(!content2.ends_with(']'));
     }
@@ -685,7 +727,7 @@ mod tests {
     async fn test_supported_extensions() {
         let config = WriterConfig::default();
         let writer = JsonDataWriter::new(config);
-        
+
         let extensions = writer.supported_extensions();
         assert!(extensions.contains(&"json".to_string()));
         assert!(extensions.contains(&"jsonl".to_string()));
@@ -696,13 +738,13 @@ mod tests {
         let mut config = WriterConfig::default();
         config.compress_output = true;
         config.compression_level = 6;
-        
+
         let mut writer = JsonDataWriter::new(config);
         assert_eq!(writer.compression_level(), 6);
-        
+
         writer.set_compression_level(3).unwrap();
         assert_eq!(writer.compression_level(), 3);
-        
+
         // Test invalid compression level
         assert!(writer.set_compression_level(10).is_err());
     }

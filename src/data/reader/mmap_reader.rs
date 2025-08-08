@@ -4,17 +4,17 @@
 //! for efficient processing of large BLS data files. It's optimized for files larger
 //! than 1GB and provides zero-copy access to file data.
 
-use std::fs::File;
-use std::path::{Path, PathBuf};
-use std::time::Instant;
-use std::sync::Arc;
 use async_trait::async_trait;
 use memmap2::{Mmap, MmapOptions};
+use std::fs::File;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use std::time::Instant;
 
-use crate::data::model::{Series, SeriesMetadata, Observation, Lookup, Survey};
+use crate::data::model::{Lookup, Observation, Series, SeriesMetadata};
 use crate::data::reader::traits::{
-    DataReader, SeriesReader, ObservationReader, LookupReader, SurveyReader,
-    MemoryMappedReader, StreamingReader, ReaderConfig, ReadStats,
+    DataReader, MemoryMappedReader, ReadStats, ReaderConfig,
+    SeriesReader,
 };
 use crate::error::types::{DataError, Result};
 use crate::utils::validation::BLSValidationRules;
@@ -105,14 +105,20 @@ impl MmapReader {
         if fields.len() < 3 {
             return Err(DataError::invalid_format(
                 "Series record must have at least 3 fields".to_string(),
-            ).into());
+            )
+            .into());
         }
 
         let series_id = fields[0].clone();
         let title = fields.get(1).unwrap_or(&String::new()).clone();
         let area_code = fields.get(2).unwrap_or(&String::new()).clone();
 
-        Ok(Series::with_metadata(&series_id, &title, &area_code, SeriesMetadata::default()))
+        Ok(Series::with_metadata(
+            &series_id,
+            &title,
+            &area_code,
+            SeriesMetadata::default(),
+        ))
     }
 
     /// Parse an observation record from fields
@@ -120,20 +126,25 @@ impl MmapReader {
         if fields.len() < 4 {
             return Err(DataError::invalid_format(
                 "Observation record must have at least 4 fields".to_string(),
-            ).into());
+            )
+            .into());
         }
 
         let series_id = fields[0].clone();
-        let year = fields[1].parse::<i32>()
-            .map_err(|e| DataError::parse_error(format!("Invalid year: {}", e)))?;
+        let year = fields[1]
+            .parse::<i32>()
+            .map_err(|e| DataError::parse_error(format!("Invalid year: {e}")))?;
         let period = fields[2].clone();
         let value_str = &fields[3];
 
         let value = if value_str.is_empty() || value_str == "-" {
             None
         } else {
-            Some(value_str.parse::<f64>()
-                .map_err(|e| DataError::parse_error(format!("Invalid value: {}", e)))?)
+            Some(
+                value_str
+                    .parse::<f64>()
+                    .map_err(|e| DataError::parse_error(format!("Invalid value: {e}")))?,
+            )
         };
 
         Ok(Observation::new(&series_id, &year, &period, value))
@@ -144,7 +155,8 @@ impl MmapReader {
         if fields.len() < 2 {
             return Err(DataError::invalid_format(
                 "Lookup record must have at least 2 fields".to_string(),
-            ).into());
+            )
+            .into());
         }
 
         let code = fields[0].clone();
@@ -155,7 +167,13 @@ impl MmapReader {
     }
 
     /// Update statistics after processing records
-    fn update_stats(&mut self, records_processed: u64, bytes_processed: u64, errors: u64, start_time: Instant) {
+    fn update_stats(
+        &mut self,
+        records_processed: u64,
+        bytes_processed: u64,
+        errors: u64,
+        start_time: Instant,
+    ) {
         self.stats.records_read += records_processed;
         self.stats.bytes_processed += bytes_processed;
         self.stats.errors_encountered += errors;
@@ -175,7 +193,7 @@ impl MmapReader {
     /// Find all line positions in the memory-mapped file
     fn find_line_positions(&self) -> Vec<usize> {
         let mut positions = vec![0]; // Start of file
-        
+
         if let Some(ref mmap) = self.memory_map {
             let data = mmap.as_ref();
             for (i, &byte) in data.iter().enumerate() {
@@ -184,7 +202,7 @@ impl MmapReader {
                 }
             }
         }
-        
+
         positions
     }
 }
@@ -194,7 +212,7 @@ impl DataReader for MmapReader {
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
-    
+
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
         self
     }
@@ -231,16 +249,18 @@ impl DataReader for MmapReader {
         // Check file extension or naming convention
         if let Some(extension) = path.extension() {
             match extension.to_str() {
-                Some("series") | Some("data") | Some("area") | Some("item") | Some("txt") => Ok(true),
+                Some("series") | Some("data") | Some("area") | Some("item") | Some("txt") => {
+                    Ok(true)
+                }
                 _ => Ok(false),
             }
         } else {
             // Check if filename matches BLS naming patterns
             if let Some(filename) = path.file_name().and_then(|n| n.to_str()) {
-                Ok(filename.contains(".series") || 
-                   filename.contains(".data") || 
-                   filename.contains(".area") || 
-                   filename.contains(".item"))
+                Ok(filename.contains(".series")
+                    || filename.contains(".data")
+                    || filename.contains(".area")
+                    || filename.contains(".item"))
             } else {
                 Ok(false)
             }
@@ -249,19 +269,21 @@ impl DataReader for MmapReader {
 
     async fn open(&mut self, path: &Path) -> Result<()> {
         if !self.can_read(path)? {
-            return Err(DataError::unsupported_format(
-                format!("Cannot read file with memory mapping: {}", path.display())
-            ).into());
+            return Err(DataError::unsupported_format(format!(
+                "Cannot read file with memory mapping: {}",
+                path.display()
+            ))
+            .into());
         }
 
         let file = File::open(path)
-            .map_err(|e| DataError::io_error(format!("Failed to open file: {}", e)))?;
+            .map_err(|e| DataError::io_error(format!("Failed to open file: {e}")))?;
 
         // Create memory map
         let mmap = unsafe {
             MmapOptions::new()
                 .map(&file)
-                .map_err(|e| DataError::io_error(format!("Failed to create memory map: {}", e)))?
+                .map_err(|e| DataError::io_error(format!("Failed to create memory map: {e}")))?
         };
 
         self.file_handle = Some(file);
@@ -305,9 +327,13 @@ impl MemoryMappedReader for MmapReader {
             if start + len <= data.len() {
                 Ok(&data[start..start + len])
             } else {
-                Err(DataError::invalid_range(
-                    format!("Slice range {}..{} exceeds file size {}", start, start + len, data.len())
-                ).into())
+                Err(DataError::invalid_range(format!(
+                    "Slice range {}..{} exceeds file size {}",
+                    start,
+                    start + len,
+                    data.len()
+                ))
+                .into())
             }
         } else {
             Err(DataError::io_error("No memory map available".to_string()).into())
@@ -318,7 +344,7 @@ impl MemoryMappedReader for MmapReader {
         if let Some(ref mmap) = self.memory_map {
             let data = mmap.as_ref();
             let mut positions = Vec::new();
-            
+
             if pattern.is_empty() {
                 return Ok(positions);
             }
@@ -363,32 +389,41 @@ impl SeriesReader for MmapReader {
                         Err(_) => {
                             errors += 1;
                             if !self.config.skip_malformed {
-                                return Err(DataError::parse_error(
-                                    format!("Failed to parse series record: {}", line)
-                                ).into());
+                                return Err(DataError::parse_error(format!(
+                                    "Failed to parse series record: {line}"
+                                ))
+                                .into());
                             }
                         }
                     }
                 } else {
                     errors += 1;
                     if !self.config.skip_malformed {
-                        return Err(DataError::invalid_configuration(
-                            format!("Invalid series record: {}", line)
-                        ).into());
+                        return Err(DataError::invalid_configuration(format!(
+                            "Invalid series record: {line}"
+                        ))
+                        .into());
                     }
                 }
 
                 if errors > self.config.max_errors {
-                    return Err(DataError::too_many_errors(
-                        format!("Exceeded maximum error count: {}", self.config.max_errors)
-                    ).into());
+                    return Err(DataError::too_many_errors(format!(
+                        "Exceeded maximum error count: {}",
+                        self.config.max_errors
+                    ))
+                    .into());
                 }
             }
         } else {
-            return  Err(DataError::io_error("No memory map available".to_string()).into());
+            return Err(DataError::io_error("No memory map available".to_string()).into());
         }
 
-        self.update_stats(series_list.len() as u64, bytes_processed, errors.try_into().unwrap(), start_time);
+        self.update_stats(
+            series_list.len() as u64,
+            bytes_processed,
+            errors.try_into().unwrap(),
+            start_time,
+        );
         Ok(series_list)
     }
 
@@ -416,25 +451,29 @@ impl SeriesReader for MmapReader {
                             Err(_) => {
                                 errors += 1;
                                 if !self.config.skip_malformed {
-                                    return Err(DataError::parse_error(
-                                        format!("Failed to parse series record: {}", line)
-                                    ).into());
+                                    return Err(DataError::parse_error(format!(
+                                        "Failed to parse series record: {line}"
+                                    ))
+                                    .into());
                                 }
                             }
                         }
                     } else {
                         errors += 1;
                         if !self.config.skip_malformed {
-                            return Err(DataError::invalid_configuration(
-                                format!("Invalid series record: {}", line)
-                            ).into());
+                            return Err(DataError::invalid_configuration(format!(
+                                "Invalid series record: {line}"
+                            ))
+                            .into());
                         }
                     }
 
                     if errors > self.config.max_errors {
-                        return Err(DataError::too_many_errors(
-                            format!("Exceeded maximum error count: {}", self.config.max_errors)
-                        ).into());
+                        return Err(DataError::too_many_errors(format!(
+                            "Exceeded maximum error count: {}",
+                            self.config.max_errors
+                        ))
+                        .into());
                     }
                 } else {
                     break; // EOF
@@ -444,7 +483,12 @@ impl SeriesReader for MmapReader {
             return Err(DataError::io_error("No memory map available".to_string()).into());
         }
 
-        self.update_stats(series_list.len() as u64, bytes_processed, errors as u64, start_time);
+        self.update_stats(
+            series_list.len() as u64,
+            bytes_processed,
+            errors as u64,
+            start_time,
+        );
         Ok(series_list)
     }
 
@@ -466,8 +510,8 @@ impl SeriesReader for MmapReader {
 
                 let fields = self.parse_line(&line);
 
-                if !fields.is_empty() && fields[0] == series_id {
-                    if self.validate_record(&fields, "series").unwrap_or(false) {
+                if !fields.is_empty() && fields[0] == series_id
+                    && self.validate_record(&fields, "series").unwrap_or(false) {
                         match self.parse_series_record(&fields) {
                             Ok(series) => {
                                 self.update_stats(1, bytes_processed, errors, start_time);
@@ -476,14 +520,14 @@ impl SeriesReader for MmapReader {
                             Err(_) => {
                                 errors += 1;
                                 if !self.config.skip_malformed {
-                                    return Err(DataError::parse_error(
-                                        format!("Failed to parse series record: {}", line)
-                                    ).into());
+                                    return Err(DataError::parse_error(format!(
+                                        "Failed to parse series record: {line}"
+                                    ))
+                                    .into());
                                 }
                             }
                         }
                     }
-                }
             }
         } else {
             return Err(DataError::io_error("No memory map available".to_string()).into());
@@ -505,7 +549,6 @@ impl SeriesReader for MmapReader {
         self.update_stats(count, bytes_processed, 0, start_time);
         Ok(count)
     }
-
 }
 
 #[cfg(test)]
@@ -528,10 +571,10 @@ mod tests {
         let mut temp_file = NamedTempFile::with_suffix(".series").unwrap();
         let data = "test data\n".repeat(1_000_000); // ~10MB
         temp_file.write_all(data.as_bytes()).unwrap();
-        
+
         let config = ReaderConfig::default();
         let reader = MmapReader::new(config);
-        
+
         assert!(reader.can_read(temp_file.path()).unwrap());
     }
 
@@ -540,15 +583,15 @@ mod tests {
         let mut temp_file = NamedTempFile::with_suffix(".series").unwrap();
         let data = "test data\n".repeat(1_000_000);
         temp_file.write_all(data.as_bytes()).unwrap();
-        
+
         let config = ReaderConfig::default();
         let mut reader = MmapReader::new(config);
-        
+
         reader.open(temp_file.path()).await.unwrap();
-        
+
         let mmap_data = reader.memory_map().unwrap();
         assert!(!mmap_data.is_empty());
-        
+
         let slice = reader.slice(0, 9).unwrap();
         assert_eq!(slice, b"test data");
     }
@@ -558,12 +601,12 @@ mod tests {
         let mut temp_file = NamedTempFile::with_suffix(".series").unwrap();
         let data = "SERIES001\tTest Series\tAREA001\nSERIES002\tAnother Series\tAREA002\n";
         temp_file.write_all(data.as_bytes()).unwrap();
-        
+
         let config = ReaderConfig::default();
         let mut reader = MmapReader::new(config);
-        
+
         reader.open(temp_file.path()).await.unwrap();
-        
+
         let positions = reader.find_pattern(b"SERIES").unwrap();
         assert_eq!(positions.len(), 2);
         assert_eq!(positions[0], 0);

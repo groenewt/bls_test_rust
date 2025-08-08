@@ -39,10 +39,9 @@
 //! let main_err: Error = config_err.into();
 //! ```
 
-use std::fmt;
-use std::error::Error as StdError;
 use serde::{Deserialize, Serialize};
-use crate::data::model::Survey;
+use std::error::Error as StdError;
+use std::fmt;
 
 /// Main error type for the Rusty BLS Data Processing system
 ///
@@ -126,10 +125,7 @@ pub enum ConfigError {
         message: String,
     },
     /// DAG validation error
-    DagValidationError {
-        dag_name: String,
-        message: String,
-    },
+    DagValidationError { dag_name: String, message: String },
 }
 
 impl ConfigError {
@@ -204,10 +200,7 @@ impl ConfigError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum DataError {
     /// Error reading data file
-    ReadError {
-        path: String,
-        source: String,
-    },
+    ReadError { path: String, source: String },
     /// Data validation error
     ValidationError {
         message: String,
@@ -228,10 +221,7 @@ pub enum DataError {
         actual_type: String,
     },
     /// Data validation error
-    IoError {
-        path: String,
-        source: String
-    },
+    IoError { path: String, source: String },
 }
 
 impl DataError {
@@ -335,30 +325,15 @@ impl DataError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ProcessingError {
     /// Transformation error
-    TransformationError {
-        message: String,
-        operation: String,
-    },
+    TransformationError { message: String, operation: String },
     /// Computation error
-    ComputationError {
-        message: String,
-        context: String,
-    },
+    ComputationError { message: String, context: String },
     /// Strategy execution error
-    StrategyError {
-        strategy: String,
-        message: String,
-    },
+    StrategyError { strategy: String, message: String },
     /// Pipeline stage error
-    PipelineError {
-        stage: String,
-        message: String,
-    },
+    PipelineError { stage: String, message: String },
     /// Unsupported operation error
-    UnsupportedOperation {
-        operation: String,
-        message: String,
-    },
+    UnsupportedOperation { operation: String, message: String },
     /// Invalid configuration error
     InvalidConfiguration(String),
     /// System error
@@ -373,7 +348,7 @@ impl ProcessingError {
             message,
         }
     }
-    
+
     /// Constructor for NotImplemented variant
     pub fn NotImplemented(message: String) -> ProcessingError {
         ProcessingError::UnsupportedOperation {
@@ -447,25 +422,13 @@ impl ProcessingError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum OutputError {
     /// Error writing output file
-    WriteError {
-        path: String,
-        source: String,
-    },
+    WriteError { path: String, source: String },
     /// Output formatting error
-    FormatError {
-        format: String,
-        message: String,
-    },
+    FormatError { format: String, message: String },
     /// Serialization error
-    SerializationError {
-        format: String,
-        message: String,
-    },
+    SerializationError { format: String, message: String },
     /// Partitioning error
-    PartitionError {
-        strategy: String,
-        message: String,
-    },
+    PartitionError { strategy: String, message: String },
 }
 
 /// Plugin-related error types
@@ -505,30 +468,18 @@ pub enum PluginError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SystemError {
     /// I/O operation error
-    IoError {
-        operation: String,
-        source: String,
-    },
+    IoError { operation: String, source: String },
     /// Memory allocation error
     MemoryError {
         message: String,
         requested_size: Option<usize>,
     },
     /// Network operation error
-    NetworkError {
-        operation: String,
-        source: String,
-    },
+    NetworkError { operation: String, source: String },
     /// Resource exhaustion error
-    ResourceError {
-        resource: String,
-        message: String,
-    },
+    ResourceError { resource: String, message: String },
     /// Time-related error
-    TimeError {
-        operation: String,
-        message: String,
-    },
+    TimeError { operation: String, message: String },
     ParseError {
         format: String,
         source: String,
@@ -538,7 +489,10 @@ pub enum SystemError {
 
 impl SystemError {
     pub(crate) fn InvalidPath(p0: String) -> SystemError {
-        todo!()
+        SystemError::IoError {
+            operation: "path validation".to_string(),
+            source: format!("Invalid path: {p0}"),
+        }
     }
 }
 
@@ -546,14 +500,14 @@ impl SystemError {
     pub(crate) fn invalid_path(path: String) -> SystemError {
         SystemError::IoError {
             operation: "path validation".to_string(),
-            source: format!("Invalid path: {}", path),
+            source: format!("Invalid path: {path}"),
         }
     }
 
     pub(crate) fn file_not_found(path: String) -> SystemError {
         SystemError::IoError {
             operation: "file access".to_string(),
-            source: format!("File not found: {}", path),
+            source: format!("File not found: {path}"),
         }
     }
 }
@@ -565,12 +519,12 @@ pub type Result<T> = std::result::Result<T, Error>;
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Error::Config(e) => write!(f, "Configuration error: {}", e),
-            Error::Data(e) => write!(f, "Data error: {}", e),
-            Error::Processing(e) => write!(f, "Processing error: {}", e),
-            Error::Output(e) => write!(f, "Output error: {}", e),
-            Error::Plugin(e) => write!(f, "Plugin error: {}", e),
-            Error::System(e) => write!(f, "System error: {}", e),
+            Error::Config(e) => write!(f, "Configuration error: {e}"),
+            Error::Data(e) => write!(f, "Data error: {e}"),
+            Error::Processing(e) => write!(f, "Processing error: {e}"),
+            Error::Output(e) => write!(f, "Output error: {e}"),
+            Error::Plugin(e) => write!(f, "Plugin error: {e}"),
+            Error::System(e) => write!(f, "System error: {e}"),
         }
     }
 }
@@ -578,49 +532,104 @@ impl fmt::Display for Error {
 impl fmt::Display for ConfigError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ConfigError::LoadError { path, source } => write!(f, "Failed to load config from '{}': {}", path, source),
+            ConfigError::LoadError { path, source } => {
+                write!(f, "Failed to load config from '{path}': {source}")
+            }
             ConfigError::ValidationError { message, field } => {
                 if let Some(field) = field {
-                    write!(f, "Validation error in field '{}': {}", field, message)
+                    write!(f, "Validation error in field '{field}': {message}")
                 } else {
-                    write!(f, "Validation error: {}", message)
+                    write!(f, "Validation error: {message}")
                 }
-            },
-            ConfigError::ParseError { message, line, column } => {
+            }
+            ConfigError::ParseError {
+                message,
+                line,
+                column,
+            } => {
                 if let (Some(line), Some(column)) = (line, column) {
-                    write!(f, "Parse error at line {}, column {}: {}", line, column, message)
+                    write!(
+                        f,
+                        "Parse error at line {line}, column {column}: {message}"
+                    )
                 } else {
-                    write!(f, "Parse error: {}", message)
+                    write!(f, "Parse error: {message}")
                 }
-            },
+            }
             ConfigError::MissingError { key, section } => {
                 if let Some(section) = section {
-                    write!(f, "Missing required configuration key '{}' in section '{}'", key, section)
+                    write!(
+                        f,
+                        "Missing required configuration key '{key}' in section '{section}'"
+                    )
                 } else {
-                    write!(f, "Missing required configuration key '{}'", key)
+                    write!(f, "Missing required configuration key '{key}'")
                 }
-            },
-            ConfigError::ConfigLayerMissing { survey_code, layer, path } => {
-                write!(f, "Missing configuration layer '{}' for survey '{}' at path '{}'", layer, survey_code, path)
-            },
-            ConfigError::ConfigVersionMismatch { file_path, expected_version, actual_version } => {
-                write!(f, "Version mismatch in '{}': expected {}, found {}", file_path, expected_version, actual_version)
-            },
-            ConfigError::ConfigMergeError { source_layer, target_layer, message } => {
-                write!(f, "Failed to merge '{}' into '{}': {}", source_layer, target_layer, message)
-            },
-            ConfigError::InvalidOverride { override_path, field, message } => {
-                write!(f, "Invalid override in '{}' for field '{}': {}", override_path, field, message)
-            },
-            ConfigError::UnknownEnvironment { environment, valid_environments } => {
-                write!(f, "Unknown environment '{}'. Valid environments: {}", environment, valid_environments.join(", "))
-            },
-            ConfigError::MacroResolutionError { macro_name, file_path, message } => {
-                write!(f, "Failed to resolve macro '{}' in '{}': {}", macro_name, file_path, message)
-            },
+            }
+            ConfigError::ConfigLayerMissing {
+                survey_code,
+                layer,
+                path,
+            } => {
+                write!(
+                    f,
+                    "Missing configuration layer '{layer}' for survey '{survey_code}' at path '{path}'"
+                )
+            }
+            ConfigError::ConfigVersionMismatch {
+                file_path,
+                expected_version,
+                actual_version,
+            } => {
+                write!(
+                    f,
+                    "Version mismatch in '{file_path}': expected {expected_version}, found {actual_version}"
+                )
+            }
+            ConfigError::ConfigMergeError {
+                source_layer,
+                target_layer,
+                message,
+            } => {
+                write!(
+                    f,
+                    "Failed to merge '{source_layer}' into '{target_layer}': {message}"
+                )
+            }
+            ConfigError::InvalidOverride {
+                override_path,
+                field,
+                message,
+            } => {
+                write!(
+                    f,
+                    "Invalid override in '{override_path}' for field '{field}': {message}"
+                )
+            }
+            ConfigError::UnknownEnvironment {
+                environment,
+                valid_environments,
+            } => {
+                write!(
+                    f,
+                    "Unknown environment '{}'. Valid environments: {}",
+                    environment,
+                    valid_environments.join(", ")
+                )
+            }
+            ConfigError::MacroResolutionError {
+                macro_name,
+                file_path,
+                message,
+            } => {
+                write!(
+                    f,
+                    "Failed to resolve macro '{macro_name}' in '{file_path}': {message}"
+                )
+            }
             ConfigError::DagValidationError { dag_name, message } => {
-                write!(f, "DAG validation error in '{}': {}", dag_name, message)
-            },
+                write!(f, "DAG validation error in '{dag_name}': {message}")
+            }
         }
     }
 }
@@ -628,23 +637,45 @@ impl fmt::Display for ConfigError {
 impl fmt::Display for DataError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            DataError::ReadError { path, source } => write!(f, "Failed to read data from '{}': {}", path, source),
-            DataError::ValidationError { message, path, line } => {
-                match (path, line) {
-                    (Some(path), Some(line)) => write!(f, "Validation error in '{}' at line {}: {}", path, line, message),
-                    (Some(path), None) => write!(f, "Validation error in '{}': {}", path, message),
-                    _ => write!(f, "Validation error: {}", message),
-                }
+            DataError::ReadError { path, source } => {
+                write!(f, "Failed to read data from '{path}': {source}")
+            }
+            DataError::ValidationError {
+                message,
+                path,
+                line,
+            } => match (path, line) {
+                (Some(path), Some(line)) => write!(
+                    f,
+                    "Validation error in '{path}' at line {line}: {message}"
+                ),
+                (Some(path), None) => write!(f, "Validation error in '{path}': {message}"),
+                _ => write!(f, "Validation error: {message}"),
             },
-            DataError::FormatError { message, expected, actual } => {
-                write!(f, "Format error: {}. Expected: {}, Actual: {}", message, expected, actual)
-            },
-            DataError::SchemaError { message, field, expected_type, actual_type } => {
-                write!(f, "Schema error in field '{}': {}. Expected: {}, Actual: {}", field, message, expected_type, actual_type)
-            },
+            DataError::FormatError {
+                message,
+                expected,
+                actual,
+            } => {
+                write!(
+                    f,
+                    "Format error: {message}. Expected: {expected}, Actual: {actual}"
+                )
+            }
+            DataError::SchemaError {
+                message,
+                field,
+                expected_type,
+                actual_type,
+            } => {
+                write!(
+                    f,
+                    "Schema error in field '{field}': {message}. Expected: {expected_type}, Actual: {actual_type}"
+                )
+            }
             DataError::IoError { path, source } => {
-                write!(f, "I/O error at path '{}': {}", path, source)
-            },
+                write!(f, "I/O error at path '{path}': {source}")
+            }
         }
     }
 }
@@ -653,26 +684,29 @@ impl fmt::Display for ProcessingError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ProcessingError::TransformationError { message, operation } => {
-                write!(f, "Transformation error in operation '{}': {}", operation, message)
-            },
+                write!(
+                    f,
+                    "Transformation error in operation '{operation}': {message}"
+                )
+            }
             ProcessingError::ComputationError { message, context } => {
-                write!(f, "Computation error in context '{}': {}", context, message)
-            },
+                write!(f, "Computation error in context '{context}': {message}")
+            }
             ProcessingError::StrategyError { strategy, message } => {
-                write!(f, "Strategy error in '{}': {}", strategy, message)
-            },
+                write!(f, "Strategy error in '{strategy}': {message}")
+            }
             ProcessingError::PipelineError { stage, message } => {
-                write!(f, "Pipeline error in stage '{}': {}", stage, message)
-            },
+                write!(f, "Pipeline error in stage '{stage}': {message}")
+            }
             ProcessingError::UnsupportedOperation { operation, message } => {
-                write!(f, "Unsupported operation '{}': {}", operation, message)
-            },
+                write!(f, "Unsupported operation '{operation}': {message}")
+            }
             ProcessingError::InvalidConfiguration(message) => {
-                write!(f, "Invalid configuration: {}", message)
-            },
+                write!(f, "Invalid configuration: {message}")
+            }
             ProcessingError::SystemError(message) => {
-                write!(f, "System error: {}", message)
-            },
+                write!(f, "System error: {message}")
+            }
         }
     }
 }
@@ -680,10 +714,19 @@ impl fmt::Display for ProcessingError {
 impl fmt::Display for OutputError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            OutputError::WriteError { path, source } => write!(f, "Failed to write output to '{}': {}", path, source),
-            OutputError::FormatError { format, message } => write!(f, "Format error in '{}': {}", format, message),
-            OutputError::SerializationError { format, message } => write!(f, "Serialization error in '{}': {}", format, message),
-            OutputError::PartitionError { strategy, message } => write!(f, "Partition error with strategy '{}': {}", strategy, message),
+            OutputError::WriteError { path, source } => {
+                write!(f, "Failed to write output to '{path}': {source}")
+            }
+            OutputError::FormatError { format, message } => {
+                write!(f, "Format error in '{format}': {message}")
+            }
+            OutputError::SerializationError { format, message } => {
+                write!(f, "Serialization error in '{format}': {message}")
+            }
+            OutputError::PartitionError { strategy, message } => write!(
+                f,
+                "Partition error with strategy '{strategy}': {message}"
+            ),
         }
     }
 }
@@ -691,11 +734,22 @@ impl fmt::Display for OutputError {
 impl fmt::Display for PluginError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            PluginError::LoadError { plugin, source } => write!(f, "Failed to load plugin '{}': {}", plugin, source),
-            PluginError::ExecutionError { plugin, message } => write!(f, "Execution error in plugin '{}': {}", plugin, message),
-            PluginError::CommunicationError { plugin, message } => write!(f, "Communication error with plugin '{}': {}", plugin, message),
-            PluginError::ConfigurationError { plugin, message } => write!(f, "Configuration error in plugin '{}': {}", plugin, message),
-            PluginError::NotFoundError { plugin, message } => write!(f, "Plugin '{}' not found: {}", plugin, message),
+            PluginError::LoadError { plugin, source } => {
+                write!(f, "Failed to load plugin '{plugin}': {source}")
+            }
+            PluginError::ExecutionError { plugin, message } => {
+                write!(f, "Execution error in plugin '{plugin}': {message}")
+            }
+            PluginError::CommunicationError { plugin, message } => write!(
+                f,
+                "Communication error with plugin '{plugin}': {message}"
+            ),
+            PluginError::ConfigurationError { plugin, message } => {
+                write!(f, "Configuration error in plugin '{plugin}': {message}")
+            }
+            PluginError::NotFoundError { plugin, message } => {
+                write!(f, "Plugin '{plugin}' not found: {message}")
+            }
         }
     }
 }
@@ -703,24 +757,42 @@ impl fmt::Display for PluginError {
 impl fmt::Display for SystemError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            SystemError::IoError { operation, source } => write!(f, "I/O error during '{}': {}", operation, source),
-            SystemError::MemoryError { message, requested_size } => {
+            SystemError::IoError { operation, source } => {
+                write!(f, "I/O error during '{operation}': {source}")
+            }
+            SystemError::MemoryError {
+                message,
+                requested_size,
+            } => {
                 if let Some(size) = requested_size {
-                    write!(f, "Memory error (requested {} bytes): {}", size, message)
+                    write!(f, "Memory error (requested {size} bytes): {message}")
                 } else {
-                    write!(f, "Memory error: {}", message)
+                    write!(f, "Memory error: {message}")
                 }
-            },
-            SystemError::NetworkError { operation, source } => write!(f, "Network error during '{}': {}", operation, source),
-            SystemError::ResourceError { resource, message } => write!(f, "Resource error with '{}': {}", resource, message),
-            SystemError::TimeError { operation, message } => write!(f, "Time error during '{}': {}", operation, message),
-            SystemError::ParseError { format, source, context } => {
+            }
+            SystemError::NetworkError { operation, source } => {
+                write!(f, "Network error during '{operation}': {source}")
+            }
+            SystemError::ResourceError { resource, message } => {
+                write!(f, "Resource error with '{resource}': {message}")
+            }
+            SystemError::TimeError { operation, message } => {
+                write!(f, "Time error during '{operation}': {message}")
+            }
+            SystemError::ParseError {
+                format,
+                source,
+                context,
+            } => {
                 if let Some(ctx) = context {
-                    write!(f, "Parse error in format '{}' with context '{}': {}", format, ctx, source)
+                    write!(
+                        f,
+                        "Parse error in format '{format}' with context '{ctx}': {source}"
+                    )
                 } else {
-                    write!(f, "Parse error in format '{}': {}", format, source)
+                    write!(f, "Parse error in format '{format}': {source}")
                 }
-            },
+            }
         }
     }
 }

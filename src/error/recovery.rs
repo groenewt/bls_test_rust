@@ -37,10 +37,9 @@
 //!
 //! ```rust
 
-
-use std::time::{Duration, Instant};
-use std::sync::{Arc, Mutex, MutexGuard};
 use serde::{Deserialize, Serialize};
+use std::sync::{Arc, Mutex, MutexGuard};
+use std::time::{Duration, Instant};
 use tokio::time::sleep;
 
 use crate::error::{Error, Result};
@@ -75,6 +74,12 @@ pub enum BackoffStrategy {
     Exponential { multiplier: f64 },
     /// Custom backoff function
     Custom { name: String },
+}
+
+impl Default for RetryPolicy {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl RetryPolicy {
@@ -124,7 +129,8 @@ impl RetryPolicy {
                 self.initial_delay + increment * attempt as u32
             }
             BackoffStrategy::Exponential { multiplier } => {
-                let delay_ms = self.initial_delay.as_millis() as f64 * multiplier.powi(attempt as i32);
+                let delay_ms =
+                    self.initial_delay.as_millis() as f64 * multiplier.powi(attempt as i32);
                 Duration::from_millis(delay_ms as u64)
             }
             BackoffStrategy::Custom { .. } => {
@@ -147,8 +153,10 @@ impl RetryPolicy {
 
     /// Check if an error is retryable according to this policy
     pub fn is_retryable(&self, error: &Error) -> bool {
-        let error_type = format!("{:?}", error);
-        self.retryable_errors.iter().any(|pattern| error_type.contains(pattern))
+        let error_type = format!("{error:?}");
+        self.retryable_errors
+            .iter()
+            .any(|pattern| error_type.contains(pattern))
     }
 }
 
@@ -183,6 +191,12 @@ pub struct CircuitBreaker {
     success_threshold: usize,
     /// Current success count in HalfOpen state
     success_count: Arc<Mutex<usize>>,
+}
+
+impl Default for CircuitBreaker {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl CircuitBreaker {

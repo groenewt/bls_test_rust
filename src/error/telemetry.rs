@@ -50,10 +50,10 @@
 //! println!("Error rate: {:.2}%", metrics.error_rate);
 //! ```
 
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use serde::{Deserialize, Serialize};
+use std::time::{Duration, SystemTime};
 use uuid::Uuid;
 
 use crate::error::{Error, ErrorContext};
@@ -192,6 +192,12 @@ pub struct ErrorEvent {
     pub recovered: bool,
 }
 
+impl Default for ErrorCollector {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ErrorCollector {
     /// Create a new error collector
     pub fn new() -> Self {
@@ -255,7 +261,7 @@ impl ErrorCollector {
         {
             let mut events = self.error_events.write().unwrap();
             events.push(event.clone());
-            
+
             // Cleanup old events based on retention period
             let cutoff = SystemTime::now() - self.config.retention_period;
             events.retain(|e| e.timestamp > cutoff);
@@ -309,7 +315,7 @@ impl ErrorCollector {
     /// Update metrics with new error event
     fn update_metrics(&self, event: &ErrorEvent) {
         let mut metrics = self.metrics.write().unwrap();
-        
+
         metrics.total_errors += 1;
         metrics.last_updated = SystemTime::now();
 
@@ -318,17 +324,25 @@ impl ErrorCollector {
         *metrics.errors_by_type.entry(error_type).or_insert(0) += 1;
 
         // Update error counts by component
-        *metrics.errors_by_component.entry(event.component.clone()).or_insert(0) += 1;
+        *metrics
+            .errors_by_component
+            .entry(event.component.clone())
+            .or_insert(0) += 1;
 
         // Update error counts by severity
-        *metrics.errors_by_severity.entry(event.severity.clone()).or_insert(0) += 1;
+        *metrics
+            .errors_by_severity
+            .entry(event.severity.clone())
+            .or_insert(0) += 1;
 
         // Calculate error rate (errors per minute)
         let events = self.error_events.read().unwrap();
-        let recent_events = events.iter()
+        let recent_events = events
+            .iter()
             .filter(|e| e.timestamp > SystemTime::now() - self.config.aggregation_window)
             .count();
-        metrics.error_rate = (recent_events as f64) / self.config.aggregation_window.as_secs_f64() * 60.0;
+        metrics.error_rate =
+            (recent_events as f64) / self.config.aggregation_window.as_secs_f64() * 60.0;
     }
 
     /// Analyze error patterns
@@ -340,9 +354,10 @@ impl ErrorCollector {
     /// Filter metrics by component
     fn filter_metrics_by_component(&self, metrics: &ErrorMetrics, component: &str) -> ErrorMetrics {
         let mut filtered = metrics.clone();
-        
+
         // Filter component-specific metrics
-        filtered.errors_by_component = metrics.errors_by_component
+        filtered.errors_by_component = metrics
+            .errors_by_component
             .iter()
             .filter(|(comp, _)| comp.as_str() == component)
             .map(|(k, v)| (k.clone(), *v))
@@ -439,7 +454,8 @@ impl AlertManager {
         }
 
         // Check critical error threshold
-        let critical_count = metrics.errors_by_severity
+        let critical_count = metrics
+            .errors_by_severity
             .get(&ErrorSeverity::Critical)
             .unwrap_or(&0);
         if *critical_count > self.config.critical_error_threshold {
@@ -454,10 +470,10 @@ impl AlertManager {
 pub trait MetricsExporter: Send + Sync + std::fmt::Debug {
     /// Export an error event
     fn export_event(&self, event: &ErrorEvent);
-    
+
     /// Export aggregated metrics
     fn export_metrics(&self, metrics: &ErrorMetrics);
-    
+
     /// Get exporter name
     fn name(&self) -> &str;
 }
@@ -492,9 +508,7 @@ pub mod utils {
     /// Calculate error rate over time window
     pub fn calculate_error_rate(events: &[ErrorEvent], window: Duration) -> f64 {
         let cutoff = SystemTime::now() - window;
-        let recent_count = events.iter()
-            .filter(|e| e.timestamp > cutoff)
-            .count();
+        let recent_count = events.iter().filter(|e| e.timestamp > cutoff).count();
         (recent_count as f64) / window.as_secs_f64() * 60.0
     }
 
@@ -502,7 +516,8 @@ pub mod utils {
     pub fn group_by_component(events: &[ErrorEvent]) -> HashMap<String, Vec<&ErrorEvent>> {
         let mut groups = HashMap::new();
         for event in events {
-            groups.entry(event.component.clone())
+            groups
+                .entry(event.component.clone())
                 .or_insert_with(Vec::new)
                 .push(event);
         }

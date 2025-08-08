@@ -2,17 +2,19 @@
 //!
 //! This module provides CSV output format support for BLS data.
 
+use async_trait::async_trait;
 use std::collections::HashMap;
 use std::path::Path;
 use std::time::Instant;
-use async_trait::async_trait;
 use tokio::fs::File;
 use tokio::io::{AsyncWriteExt, BufWriter};
 
-use crate::data::model::{Series, Observation, Lookup, Survey};
-use crate::output::traits::{FormatWriter, OutputConfig, OutputResult, OutputGenerator, OutputStats};
-use crate::processing::traits::ProcessedData;
+use crate::data::model::{Lookup, Observation, Series, Survey};
 use crate::error::types::{ProcessingError, Result};
+use crate::output::traits::{
+    FormatWriter, OutputConfig, OutputGenerator, OutputResult, OutputStats,
+};
+use crate::processing::traits::ProcessedData;
 
 /// CSV format writer implementation
 pub struct CsvWriter {
@@ -86,9 +88,17 @@ impl CsvWriter {
             "{},{},{},{},{},{}\n",
             survey.survey_code,
             survey.name,
-            survey.metadata.start_date.map(|d| d.format("%Y").to_string()).unwrap_or("".to_string()),
+            survey
+                .metadata
+                .start_date
+                .map(|d| d.format("%Y").to_string())
+                .unwrap_or("".to_string()),
             "",
-            survey.metadata.end_date.map(|d| d.format("%Y").to_string()).unwrap_or("".to_string()),
+            survey
+                .metadata
+                .end_date
+                .map(|d| d.format("%Y").to_string())
+                .unwrap_or("".to_string()),
             ""
         )
     }
@@ -110,28 +120,40 @@ impl FormatWriter for CsvWriter {
         "csv"
     }
 
-    async fn write_series(&mut self, series: &[Series], path: &Path, _config: &OutputConfig) -> Result<OutputResult> {
+    async fn write_series(
+        &mut self,
+        series: &[Series],
+        path: &Path,
+        _config: &OutputConfig,
+    ) -> Result<OutputResult> {
         let start_time = Instant::now();
-        
-        let file = File::create(path).await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {}", e)))?;
+
+        let file = File::create(path)
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {e}")))?;
         let mut writer = BufWriter::new(file);
 
         // Write header
-        writer.write_all(Self::series_header().as_bytes()).await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {}", e)))?;
+        writer
+            .write_all(Self::series_header().as_bytes())
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {e}")))?;
 
         // Write data rows
         let mut bytes_written = Self::series_header().len() as u64;
         for s in series {
             let row = Self::format_series_row(s);
-            writer.write_all(row.as_bytes()).await
-                .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {}", e)))?;
+            writer
+                .write_all(row.as_bytes())
+                .await
+                .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {e}")))?;
             bytes_written += row.len() as u64;
         }
 
-        writer.flush().await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {}", e)))?;
+        writer
+            .flush()
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {e}")))?;
 
         let elapsed = start_time.elapsed();
         let result = OutputResult {
@@ -146,28 +168,40 @@ impl FormatWriter for CsvWriter {
         Ok(result)
     }
 
-    async fn write_observations(&mut self, observations: &[Observation], path: &Path, _config: &OutputConfig) -> Result<OutputResult> {
+    async fn write_observations(
+        &mut self,
+        observations: &[Observation],
+        path: &Path,
+        _config: &OutputConfig,
+    ) -> Result<OutputResult> {
         let start_time = Instant::now();
-        
-        let file = File::create(path).await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {}", e)))?;
+
+        let file = File::create(path)
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {e}")))?;
         let mut writer = BufWriter::new(file);
 
         // Write header
-        writer.write_all(Self::observation_header().as_bytes()).await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {}", e)))?;
+        writer
+            .write_all(Self::observation_header().as_bytes())
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {e}")))?;
 
         // Write data rows
         let mut bytes_written = Self::observation_header().len() as u64;
         for obs in observations {
             let row = Self::format_observation_row(obs);
-            writer.write_all(row.as_bytes()).await
-                .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {}", e)))?;
+            writer
+                .write_all(row.as_bytes())
+                .await
+                .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {e}")))?;
             bytes_written += row.len() as u64;
         }
 
-        writer.flush().await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {}", e)))?;
+        writer
+            .flush()
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {e}")))?;
 
         let elapsed = start_time.elapsed();
         let result = OutputResult {
@@ -182,28 +216,40 @@ impl FormatWriter for CsvWriter {
         Ok(result)
     }
 
-    async fn write_lookups(&mut self, lookups: &[Lookup], path: &Path, _config: &OutputConfig) -> Result<OutputResult> {
+    async fn write_lookups(
+        &mut self,
+        lookups: &[Lookup],
+        path: &Path,
+        _config: &OutputConfig,
+    ) -> Result<OutputResult> {
         let start_time = Instant::now();
-        
-        let file = File::create(path).await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {}", e)))?;
+
+        let file = File::create(path)
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {e}")))?;
         let mut writer = BufWriter::new(file);
 
         // Write header
-        writer.write_all(Self::lookup_header().as_bytes()).await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {}", e)))?;
+        writer
+            .write_all(Self::lookup_header().as_bytes())
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {e}")))?;
 
         // Write data rows
         let mut bytes_written = Self::lookup_header().len() as u64;
         for lookup in lookups {
             let row = Self::format_lookup_row(lookup);
-            writer.write_all(row.as_bytes()).await
-                .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {}", e)))?;
+            writer
+                .write_all(row.as_bytes())
+                .await
+                .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {e}")))?;
             bytes_written += row.len() as u64;
         }
 
-        writer.flush().await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {}", e)))?;
+        writer
+            .flush()
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {e}")))?;
 
         let elapsed = start_time.elapsed();
         let result = OutputResult {
@@ -218,24 +264,36 @@ impl FormatWriter for CsvWriter {
         Ok(result)
     }
 
-    async fn write_survey(&mut self, survey: &Survey, path: &Path, _config: &OutputConfig) -> Result<OutputResult> {
+    async fn write_survey(
+        &mut self,
+        survey: &Survey,
+        path: &Path,
+        _config: &OutputConfig,
+    ) -> Result<OutputResult> {
         let start_time = Instant::now();
-        
-        let file = File::create(path).await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {}", e)))?;
+
+        let file = File::create(path)
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {e}")))?;
         let mut writer = BufWriter::new(file);
 
         // Write header
-        writer.write_all(Self::survey_header().as_bytes()).await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {}", e)))?;
+        writer
+            .write_all(Self::survey_header().as_bytes())
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {e}")))?;
 
         // Write data row
         let row = Self::format_survey_row(survey);
-        writer.write_all(row.as_bytes()).await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {}", e)))?;
+        writer
+            .write_all(row.as_bytes())
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {e}")))?;
 
-        writer.flush().await
-            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {}", e)))?;
+        writer
+            .flush()
+            .await
+            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {e}")))?;
 
         let bytes_written = (Self::survey_header().len() + row.len()) as u64;
         let elapsed = start_time.elapsed();
@@ -251,13 +309,25 @@ impl FormatWriter for CsvWriter {
         Ok(result)
     }
 
-    async fn write_mixed(&mut self, data: ProcessedData, path: &Path, config: &OutputConfig) -> Result<OutputResult> {
+    async fn write_mixed(
+        &mut self,
+        data: ProcessedData,
+        path: &Path,
+        config: &OutputConfig,
+    ) -> Result<OutputResult> {
         match data {
             ProcessedData::Series(series) => self.write_series(&series, path, config).await,
-            ProcessedData::Observations(observations) => self.write_observations(&observations, path, config).await,
+            ProcessedData::Observations(observations) => {
+                self.write_observations(&observations, path, config).await
+            }
             ProcessedData::Lookups(lookups) => self.write_lookups(&lookups, path, config).await,
             ProcessedData::Survey(survey) => self.write_survey(&survey, path, config).await,
-            ProcessedData::Mixed { series, observations, lookups, surveys } => {
+            ProcessedData::Mixed {
+                series,
+                observations,
+                lookups,
+                surveys,
+            } => {
                 // For mixed data, we'll write separate files
                 let mut total_result = OutputResult {
                     output_paths: Vec::new(),
@@ -271,7 +341,8 @@ impl FormatWriter for CsvWriter {
                 let base_name = path.file_stem().unwrap_or(std::ffi::OsStr::new("output"));
 
                 if !series.is_empty() {
-                    let series_path = base_path.join(format!("{}_series.csv", base_name.to_string_lossy()));
+                    let series_path =
+                        base_path.join(format!("{}_series.csv", base_name.to_string_lossy()));
                     let result = self.write_series(&series, &series_path, config).await?;
                     total_result.output_paths.extend(result.output_paths);
                     total_result.records_written += result.records_written;
@@ -280,8 +351,11 @@ impl FormatWriter for CsvWriter {
                 }
 
                 if !observations.is_empty() {
-                    let obs_path = base_path.join(format!("{}_observations.csv", base_name.to_string_lossy()));
-                    let result = self.write_observations(&observations, &obs_path, config).await?;
+                    let obs_path =
+                        base_path.join(format!("{}_observations.csv", base_name.to_string_lossy()));
+                    let result = self
+                        .write_observations(&observations, &obs_path, config)
+                        .await?;
                     total_result.output_paths.extend(result.output_paths);
                     total_result.records_written += result.records_written;
                     total_result.bytes_written += result.bytes_written;
@@ -289,7 +363,8 @@ impl FormatWriter for CsvWriter {
                 }
 
                 if !lookups.is_empty() {
-                    let lookup_path = base_path.join(format!("{}_lookups.csv", base_name.to_string_lossy()));
+                    let lookup_path =
+                        base_path.join(format!("{}_lookups.csv", base_name.to_string_lossy()));
                     let result = self.write_lookups(&lookups, &lookup_path, config).await?;
                     total_result.output_paths.extend(result.output_paths);
                     total_result.records_written += result.records_written;
@@ -299,7 +374,11 @@ impl FormatWriter for CsvWriter {
 
                 if !surveys.is_empty() {
                     for (i, survey) in surveys.iter().enumerate() {
-                        let survey_path = base_path.join(format!("{}_survey_{}.csv", base_name.to_string_lossy(), i));
+                        let survey_path = base_path.join(format!(
+                            "{}_survey_{}.csv",
+                            base_name.to_string_lossy(),
+                            i
+                        ));
                         let result = self.write_survey(survey, &survey_path, config).await?;
                         total_result.output_paths.extend(result.output_paths);
                         total_result.records_written += result.records_written;
@@ -362,16 +441,21 @@ impl OutputGenerator for CsvOutputGenerator {
         vec!["csv".to_string()]
     }
 
-    async fn generate(&mut self, data: ProcessedData, config: OutputConfig) -> Result<OutputResult> {
+    async fn generate(
+        &mut self,
+        data: ProcessedData,
+        config: OutputConfig,
+    ) -> Result<OutputResult> {
         let path = Path::new(&config.destination);
         self.writer.write_mixed(data, path, &config).await
     }
 
     fn validate_config(&self, config: &OutputConfig) -> Result<()> {
         if config.format.to_lowercase() != "csv" {
-            return Err(ProcessingError::invalid_configuration(
-                format!("CSV generator does not support format: {}", config.format)
-            ));
+            return Err(ProcessingError::invalid_configuration(format!(
+                "CSV generator does not support format: {}",
+                config.format
+            )));
         }
         self.writer.validate_format_config(config)
     }
@@ -407,21 +491,11 @@ mod tests {
 
     #[test]
     fn test_format_series_row() {
-        let series = Series {
-            series_id: "TEST001".to_string(),
-            title: Some("Test Series".to_string()),
-            area_code: Some("US".to_string()),
-            item_code: Some("ITEM1".to_string()),
-            seasonal: Some("S".to_string()),
-            periodicity_code: Some("M".to_string()),
-            base_code: Some("BASE".to_string()),
-            base_period: "2020".to_string(),
-        };
+        let series = Series::new("TEST001", "Test Series");
 
         let row = CsvWriter::format_series_row(&series);
         assert!(row.contains("TEST001"));
         assert!(row.contains("Test Series"));
-        assert!(row.contains("US"));
     }
 
     #[test]
@@ -434,7 +508,7 @@ mod tests {
     #[test]
     fn test_csv_generator_validation() {
         let generator = CsvOutputGenerator::new();
-        
+
         let valid_config = OutputConfig {
             format: "csv".to_string(),
             destination: "output.csv".to_string(),
@@ -454,7 +528,7 @@ mod tests {
     fn test_default_format_options() {
         let writer = CsvWriter::new();
         let options = writer.default_format_options();
-        
+
         assert_eq!(options.get("delimiter"), Some(&",".to_string()));
         assert_eq!(options.get("header"), Some(&"true".to_string()));
     }

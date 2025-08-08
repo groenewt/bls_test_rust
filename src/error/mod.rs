@@ -35,23 +35,23 @@
 //! ```
 
 // Re-export core error types and utilities
+pub use context::{ContextExt, ErrorContext, OptionContextExt};
+pub use types::{ConfigError, DataError, OutputError, PluginError, ProcessingError, SystemError};
 pub use types::{Error, Result};
-pub use types::{ConfigError, DataError, ProcessingError, OutputError, PluginError, SystemError};
-pub use context::{ErrorContext, ContextExt, OptionContextExt};
 
 // Re-export enterprise features
-pub use recovery::{RetryPolicy, CircuitBreaker, RecoveryStrategy};
-pub use telemetry::{ErrorMetrics, ErrorCollector};
-pub use sanitization::{ErrorSanitizer, SanitizationPolicy};
 pub use i18n::{ErrorLocalizer, MessageCatalog};
+pub use recovery::{CircuitBreaker, RecoveryStrategy, RetryPolicy};
+pub use sanitization::{ErrorSanitizer, SanitizationPolicy};
+pub use telemetry::{ErrorCollector, ErrorMetrics};
 
 // Module declarations
-pub mod types;
 pub mod context;
-pub mod recovery;
-pub mod telemetry;
-pub mod sanitization;
 pub mod i18n;
+pub mod recovery;
+pub mod sanitization;
+pub mod telemetry;
+pub mod types;
 
 // Convenience macros
 #[macro_export]

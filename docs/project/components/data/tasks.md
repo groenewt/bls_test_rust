@@ -1,6 +1,28 @@
 # Data Module: Tasks and Roadmap
 
-This document outlines the planned tasks and roadmap for the Data module.
+![Data Banner](../../../resources/subheader_02.png)
+
+This document outlines the planned tasks and roadmap for the Data module. This page shows the end-to-end data flow to help you navigate quickly.
+
+### At a Glance
+- Models: Series, Observation, Lookup, Survey
+- Readers: File, Mmap (planned), Streaming (planned)
+- Writers: CSV, Parquet, JSON
+- Status: Core Implementation phase
+
+### Data Flow
+```mermaid
+flowchart LR
+    R[Raw Files] --> FR[File Reader]
+    FR -->|Parse| M[Models]
+    M --> TR[Transformer]
+    TR --> V{Validate}
+    V -- Errors --> EH[Error Handling]
+    V -- OK --> W[Writers]
+    W --> CSV[CSV]
+    W --> PARQ[Parquet]
+    W --> JSON[JSON]
+```
 
 ## Current Status
 
@@ -77,3 +99,12 @@ The Data module is currently in the **Core Implementation** phase.
 - **Performance**: Read/write speeds > 100MB/s
 - **Memory**: Memory usage < 1GB for 10GB datasets
 - **Quality**: Test coverage > 95%
+
+
+---
+
+### Navigation
+- [Docs Home](../../README.md)
+- [Component Index](index.md)
+- [Component README](README.md)
+- [Test Specifications](test_specifications.md)

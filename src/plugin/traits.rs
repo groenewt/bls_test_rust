@@ -1,12 +1,10 @@
 //! Plugin system trait definitions for the Rusty BLS Data Processing system.
 
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::SystemTime;
-use async_trait::async_trait;
-use serde::{Serialize, Deserialize};
 
-use crate::data::model::{Series, Observation, Lookup, Survey};
-use crate::processing::traits::ProcessedData;
 use crate::config::model::ConfigValue;
 use crate::error::types::Result;
 
@@ -48,6 +46,7 @@ pub struct PluginMetadata {
 
 /// Plugin configuration parameters.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct PluginConfig {
     pub parameters: HashMap<String, ConfigValue>,
     pub resource_limits: ResourceLimits,
@@ -80,11 +79,3 @@ impl Default for ResourceLimits {
     }
 }
 
-impl Default for PluginConfig {
-    fn default() -> Self {
-        Self {
-            parameters: HashMap::new(),
-            resource_limits: ResourceLimits::default(),
-        }
-    }
-}

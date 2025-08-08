@@ -3,14 +3,14 @@
 //! This module defines the trait interfaces for output generation across
 //! different formats and destinations.
 
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
-use async_trait::async_trait;
-use serde::{Serialize, Deserialize};
 
-use crate::data::model::{Series, Observation, Lookup, Survey};
-use crate::processing::traits::ProcessedData;
+use crate::data::model::{Lookup, Observation, Series, Survey};
 use crate::error::types::Result;
+use crate::processing::traits::ProcessedData;
 
 /// Main trait for output generators
 #[async_trait]
@@ -30,7 +30,8 @@ pub trait OutputGenerator: Send + Sync {
     }
 
     /// Generate output from processed data
-    async fn generate(&mut self, data: ProcessedData, config: OutputConfig) -> Result<OutputResult>;
+    async fn generate(&mut self, data: ProcessedData, config: OutputConfig)
+    -> Result<OutputResult>;
 
     /// Validate the output configuration
     fn validate_config(&self, config: &OutputConfig) -> Result<()>;
@@ -162,7 +163,7 @@ impl OutputStats {
     pub fn update(&mut self, result: &OutputResult, success: bool) {
         self.total_operations += 1;
         self.total_generation_time_ms += result.generation_time_ms;
-        
+
         if success {
             self.successful_operations += 1;
             self.total_records_written += result.records_written;
@@ -210,19 +211,44 @@ pub trait FormatWriter: Send + Sync {
     fn file_extension(&self) -> &str;
 
     /// Write series data
-    async fn write_series(&mut self, series: &[Series], path: &Path, config: &OutputConfig) -> Result<OutputResult>;
+    async fn write_series(
+        &mut self,
+        series: &[Series],
+        path: &Path,
+        config: &OutputConfig,
+    ) -> Result<OutputResult>;
 
     /// Write observation data
-    async fn write_observations(&mut self, observations: &[Observation], path: &Path, config: &OutputConfig) -> Result<OutputResult>;
+    async fn write_observations(
+        &mut self,
+        observations: &[Observation],
+        path: &Path,
+        config: &OutputConfig,
+    ) -> Result<OutputResult>;
 
     /// Write lookup data
-    async fn write_lookups(&mut self, lookups: &[Lookup], path: &Path, config: &OutputConfig) -> Result<OutputResult>;
+    async fn write_lookups(
+        &mut self,
+        lookups: &[Lookup],
+        path: &Path,
+        config: &OutputConfig,
+    ) -> Result<OutputResult>;
 
     /// Write survey data
-    async fn write_survey(&mut self, survey: &Survey, path: &Path, config: &OutputConfig) -> Result<OutputResult>;
+    async fn write_survey(
+        &mut self,
+        survey: &Survey,
+        path: &Path,
+        config: &OutputConfig,
+    ) -> Result<OutputResult>;
 
     /// Write mixed data
-    async fn write_mixed(&mut self, data: ProcessedData, path: &Path, config: &OutputConfig) -> Result<OutputResult>;
+    async fn write_mixed(
+        &mut self,
+        data: ProcessedData,
+        path: &Path,
+        config: &OutputConfig,
+    ) -> Result<OutputResult>;
 
     /// Validate format-specific configuration
     fn validate_format_config(&self, config: &OutputConfig) -> Result<()>;
@@ -234,7 +260,11 @@ pub trait FormatWriter: Send + Sync {
 /// Trait for output registry
 pub trait OutputRegistry: Send + Sync {
     /// Register an output generator
-    fn register_generator(&mut self, name: String, generator: Box<dyn OutputGenerator>) -> Result<()>;
+    fn register_generator(
+        &mut self,
+        name: String,
+        generator: Box<dyn OutputGenerator>,
+    ) -> Result<()>;
 
     /// Unregister an output generator
     fn unregister_generator(&mut self, name: &str) -> Result<()>;
@@ -261,7 +291,11 @@ pub trait OutputRegistry: Send + Sync {
 /// Trait for output factory
 pub trait OutputFactory: Send + Sync {
     /// Create an output generator for the specified format
-    fn create_generator(&self, format: &str, config: OutputConfig) -> Result<Box<dyn OutputGenerator>>;
+    fn create_generator(
+        &self,
+        format: &str,
+        config: OutputConfig,
+    ) -> Result<Box<dyn OutputGenerator>>;
 
     /// Create a format writer for the specified format
     fn create_writer(&self, format: &str) -> Result<Box<dyn FormatWriter>>;
@@ -308,7 +342,7 @@ mod tests {
     #[test]
     fn test_output_stats_update() {
         let mut stats = OutputStats::default();
-        
+
         let result = OutputResult {
             output_paths: vec!["output.csv".to_string()],
             records_written: 1000,
@@ -316,9 +350,9 @@ mod tests {
             generation_time_ms: 1500,
             metadata: HashMap::new(),
         };
-        
+
         stats.update(&result, true);
-        
+
         assert_eq!(stats.total_operations, 1);
         assert_eq!(stats.successful_operations, 1);
         assert_eq!(stats.total_records_written, 1000);
@@ -329,7 +363,7 @@ mod tests {
     #[test]
     fn test_output_stats_throughput() {
         let mut stats = OutputStats::default();
-        
+
         let result = OutputResult {
             output_paths: vec!["output.csv".to_string()],
             records_written: 2000,
@@ -337,9 +371,9 @@ mod tests {
             generation_time_ms: 2000, // 2 seconds
             metadata: HashMap::new(),
         };
-        
+
         stats.update(&result, true);
-        
+
         // Should be 1000 records per second
         assert_eq!(stats.throughput_records_per_second(), 1000.0);
     }
@@ -347,7 +381,7 @@ mod tests {
     #[test]
     fn test_output_stats_failure() {
         let mut stats = OutputStats::default();
-        
+
         let result = OutputResult {
             output_paths: vec![],
             records_written: 0,
@@ -355,9 +389,9 @@ mod tests {
             generation_time_ms: 1000,
             metadata: HashMap::new(),
         };
-        
+
         stats.update(&result, false);
-        
+
         assert_eq!(stats.total_operations, 1);
         assert_eq!(stats.successful_operations, 0);
         assert_eq!(stats.failed_operations, 1);

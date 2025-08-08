@@ -1,8 +1,8 @@
+use memmap2::MmapOptions;
+use serde_yaml;
 use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use memmap2::MmapOptions;
-use serde_yaml;
 
 use crate::error::types::{Error as CrateError, SystemError};
 use crate::utils::path::PathUtils;
@@ -16,6 +16,12 @@ pub(crate) use crate::utils::path::ensure_directory;
 
 pub struct FileUtils {
     path_utils: PathUtils,
+}
+
+impl Default for FileUtils {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl FileUtils {
@@ -78,9 +84,7 @@ impl FileUtils {
 
         let backup_path = path.with_extension(format!(
             "{}.backup",
-            path.extension()
-                .and_then(|ext| ext.to_str())
-                .unwrap_or("")
+            path.extension().and_then(|ext| ext.to_str()).unwrap_or("")
         ));
 
         fs::copy(path, &backup_path).map_err(|e| {
@@ -193,7 +197,11 @@ impl FileUtils {
     }
 
     /// List files in directory with optional extension filter
-    pub fn list_files<P: AsRef<Path>>(&self, dir: P, extension: Option<&str>) -> Result<Vec<PathBuf>> {
+    pub fn list_files<P: AsRef<Path>>(
+        &self,
+        dir: P,
+        extension: Option<&str>,
+    ) -> Result<Vec<PathBuf>> {
         let dir = dir.as_ref();
         self.path_utils.validate_path(dir)?;
 
@@ -257,7 +265,7 @@ pub fn read_to_string<P: AsRef<Path>>(path: P) -> Result<String> {
     let file_utils = FileUtils::new();
     let path = path.as_ref();
     file_utils.path_utils.validate_path(path)?;
-    
+
     fs::read_to_string(path).map_err(|e| {
         CrateError::System(SystemError::IoError {
             operation: format!("fs::read_to_string({})", path.display()),
@@ -271,12 +279,12 @@ pub fn write_string<P: AsRef<Path>>(path: P, content: &str) -> Result<()> {
     let file_utils = FileUtils::new();
     let path = path.as_ref();
     file_utils.path_utils.validate_path(path)?;
-    
+
     // Ensure parent directory exists
     if let Some(parent) = path.parent() {
         ensure_directory(parent)?;
     }
-    
+
     fs::write(path, content).map_err(|e| {
         CrateError::System(SystemError::IoError {
             operation: format!("fs::write({})", path.display()),
@@ -294,14 +302,14 @@ where
     let file_utils = FileUtils::new();
     let path = path.as_ref();
     file_utils.path_utils.validate_path(path)?;
-    
+
     let content = fs::read_to_string(path).map_err(|e| {
         CrateError::System(SystemError::IoError {
             operation: format!("fs::read_to_string({})", path.display()),
             source: e.to_string(),
         })
     })?;
-    
+
     serde_yaml::from_str(&content).map_err(|e| {
         CrateError::System(SystemError::ParseError {
             format: "YAML".to_string(),
@@ -310,4 +318,3 @@ where
         })
     })
 }
-

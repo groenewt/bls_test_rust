@@ -28,20 +28,20 @@
 //! validator.validate_numeric_range(123.45, 0.0, 1000.0)?;
 //! ```
 
-use std::path::Path;
+use crate::error::{ConfigError, DataError, Result};
+use crate::utils::format::FormatUtils;
+use crate::utils::path::PathUtils;
 use chrono::Datelike;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use validator::{Validate, ValidationError};
-use crate::error::{Result, DataError, ConfigError};
-use crate::utils::format::FormatUtils;
-use crate::utils::path::PathUtils;
+use std::path::Path;
+use validator::ValidationError;
 
 static VALIDATOR: Lazy<ValidationUtils> = Lazy::new(ValidationUtils::new);
 
-static EMAIL_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").unwrap());
+static EMAIL_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").unwrap());
 static URL_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"^https?://[^\s/$.?#].[^\s]*$").unwrap());
-
 
 /// Validation utilities for the BLS data processing system
 pub struct ValidationUtils {
@@ -75,13 +75,13 @@ impl ValidationUtils {
     pub fn validate_numeric_range(&self, value: f64, min: f64, max: f64) -> Result<()> {
         if value.is_nan() || value.is_infinite() {
             return Err(crate::error::Error::Data(DataError::invalid_value(
-                format!("Invalid numeric value: {}", value)
+                format!("Invalid numeric value: {value}"),
             )));
         }
 
         if value < min || value > max {
             return Err(crate::error::Error::Data(DataError::invalid_value(
-                format!("Value {} is outside valid range [{}, {}]", value, min, max)
+                format!("Value {value} is outside valid range [{min}, {max}]"),
             )));
         }
 
@@ -96,7 +96,9 @@ impl ValidationUtils {
 
         if year < min_year || year > max_year {
             return Err(crate::error::Error::Data(DataError::invalid_value(
-                format!("Invalid year: {}. Must be between {} and {}", year, min_year, max_year)
+                format!(
+                    "Invalid year: {year}. Must be between {min_year} and {max_year}"
+                ),
             )));
         }
 
@@ -118,33 +120,49 @@ impl ValidationUtils {
     /// Validate that a string is not empty or whitespace-only
     pub fn validate_non_empty_string(&self, value: &str, field_name: &str) -> Result<()> {
         if value.trim().is_empty() {
-            return Err(crate::error::Error::Data(DataError::MissingValue(
-                format!("Field '{}' cannot be empty", field_name)
-            )));
+            return Err(crate::error::Error::Data(DataError::MissingValue(format!(
+                "Field '{field_name}' cannot be empty"
+            ))));
         }
         Ok(())
     }
 
     /// Validate string length
-    pub fn validate_string_length(&self, value: &str, min_len: usize, max_len: usize, field_name: &str) -> Result<()> {
+    pub fn validate_string_length(
+        &self,
+        value: &str,
+        min_len: usize,
+        max_len: usize,
+        field_name: &str,
+    ) -> Result<()> {
         let len = value.len();
         if len < min_len || len > max_len {
             return Err(crate::error::Error::Data(DataError::invalid_value(
-                format!("Field '{}' length {} is outside valid range [{}, {}]", field_name, len, min_len, max_len)
+                format!(
+                    "Field '{field_name}' length {len} is outside valid range [{min_len}, {max_len}]"
+                ),
             )));
         }
         Ok(())
     }
 
     /// Validate that a value is one of the allowed options
-    pub fn validate_enum_value<T: PartialEq + std::fmt::Display>(&self, value: &T, allowed_values: &[T], field_name: &str) -> Result<()> {
+    pub fn validate_enum_value<T: PartialEq + std::fmt::Display>(
+        &self,
+        value: &T,
+        allowed_values: &[T],
+        field_name: &str,
+    ) -> Result<()> {
         if !allowed_values.contains(value) {
-            let allowed_str = allowed_values.iter()
+            let allowed_str = allowed_values
+                .iter()
                 .map(|v| v.to_string())
                 .collect::<Vec<_>>()
                 .join(", ");
             return Err(crate::error::Error::Data(DataError::invalid_value(
-                format!("Field '{}' value '{}' is not one of allowed values: [{}]", field_name, value, allowed_str)
+                format!(
+                    "Field '{field_name}' value '{value}' is not one of allowed values: [{allowed_str}]"
+                ),
             )));
         }
         Ok(())
@@ -154,7 +172,7 @@ impl ValidationUtils {
     pub fn validate_email(&self, email: &str) -> Result<()> {
         if !EMAIL_REGEX.is_match(email) {
             return Err(crate::error::Error::Data(DataError::invalid_format(
-                format!("Invalid email format: {}", email)
+                format!("Invalid email format: {email}"),
             )));
         }
 
@@ -165,21 +183,19 @@ impl ValidationUtils {
     pub fn validate_url(&self, url: &str) -> Result<()> {
         if !URL_REGEX.is_match(url) {
             return Err(crate::error::Error::Data(DataError::invalid_format(
-                format!("Invalid URL format: {}", url)
+                format!("Invalid URL format: {url}"),
             )));
         }
 
         Ok(())
     }
 
-
-
     /// Validate environment name
     pub fn validate_environment_name(&self, env: &str) -> Result<()> {
         let valid_environments = ["dev", "stage", "prod", "test"];
         if !valid_environments.contains(&env) {
-            return Err((ConfigError::MergeError(
-                format!("Invalid environment '{}'. Valid environments are: {:?}", env, valid_environments)
+            return Err(ConfigError::MergeError(format!(
+                "Invalid environment '{env}'. Valid environments are: {valid_environments:?}"
             )));
         }
         Ok(())
@@ -189,8 +205,9 @@ impl ValidationUtils {
     pub fn validate_file_or_directory_exists<P: AsRef<Path>>(&self, path: P) -> Result<()> {
         let path_ref = path.as_ref();
         if !path_ref.exists() {
-            return Err((ConfigError::MergeError(
-                format!("File or directory does not exist: {}", path_ref.display())
+            return Err(ConfigError::MergeError(format!(
+                "File or directory does not exist: {}",
+                path_ref.display()
             )));
         }
         Ok(())
@@ -200,22 +217,22 @@ impl ValidationUtils {
     pub fn validate_glob_pattern(&self, pattern: &str) -> Result<()> {
         // Basic glob pattern validation - check for invalid characters and patterns
         if pattern.is_empty() {
-            return Err((ConfigError::MergeError(
-                "Glob pattern cannot be empty".to_string()
-            )));
+            return Err(ConfigError::MergeError("Glob pattern cannot be empty".to_string()));
         }
 
         // Check for path traversal attempts
         if pattern.contains("..") {
             return Err(ConfigError::MergeError(
-                "Glob pattern cannot contain path traversal sequences (..)".to_string()
+                "Glob pattern cannot contain path traversal sequences (..)".to_string(),
             ));
         }
 
         // Check for absolute paths (should be relative)
-        if pattern.starts_with('/') || (cfg!(windows) && pattern.len() > 1 && pattern.chars().nth(1) == Some(':')) {
+        if pattern.starts_with('/')
+            || (cfg!(windows) && pattern.len() > 1 && pattern.chars().nth(1) == Some(':'))
+        {
             return Err(ConfigError::MergeError(
-                "Glob pattern should be relative, not absolute".to_string()
+                "Glob pattern should be relative, not absolute".to_string(),
             ));
         }
 
@@ -233,8 +250,12 @@ impl ValidationUtils {
             Ok(()) => Ok(()),
             Err(e) => Err(ConfigError::ValidationError {
                 field: Some("configuration".to_string()),
-                message: e.message.map(|m| m.into_owned()).unwrap_or_else(|| "Validation failed".to_string()),
-            }.into()),
+                message: e
+                    .message
+                    .map(|m| m.into_owned())
+                    .unwrap_or_else(|| "Validation failed".to_string()),
+            }
+            .into()),
         }
     }
 }
@@ -333,7 +354,7 @@ impl BLSValidationRules {
         if let Some(val) = value {
             if val.is_nan() || val.is_infinite() {
                 return Err(crate::error::Error::Data(DataError::invalid_value(
-                    format!("Invalid observation value: {}", val)
+                    format!("Invalid observation value: {val}"),
                 )));
             }
         }
@@ -416,8 +437,16 @@ mod tests {
         // Invalid values
         assert!(validator.validate_numeric_range(-1.0, 0.0, 100.0).is_err());
         assert!(validator.validate_numeric_range(101.0, 0.0, 100.0).is_err());
-        assert!(validator.validate_numeric_range(f64::NAN, 0.0, 100.0).is_err());
-        assert!(validator.validate_numeric_range(f64::INFINITY, 0.0, 100.0).is_err());
+        assert!(
+            validator
+                .validate_numeric_range(f64::NAN, 0.0, 100.0)
+                .is_err()
+        );
+        assert!(
+            validator
+                .validate_numeric_range(f64::INFINITY, 0.0, 100.0)
+                .is_err()
+        );
     }
 
     #[test]
@@ -465,12 +494,28 @@ mod tests {
         let validator = ValidationUtils::new();
 
         // Valid strings
-        assert!(validator.validate_non_empty_string("Hello", "test_field").is_ok());
-        assert!(validator.validate_non_empty_string("  Hello  ", "test_field").is_ok());
+        assert!(
+            validator
+                .validate_non_empty_string("Hello", "test_field")
+                .is_ok()
+        );
+        assert!(
+            validator
+                .validate_non_empty_string("  Hello  ", "test_field")
+                .is_ok()
+        );
 
         // Invalid strings
-        assert!(validator.validate_non_empty_string("", "test_field").is_err());
-        assert!(validator.validate_non_empty_string("   ", "test_field").is_err());
+        assert!(
+            validator
+                .validate_non_empty_string("", "test_field")
+                .is_err()
+        );
+        assert!(
+            validator
+                .validate_non_empty_string("   ", "test_field")
+                .is_err()
+        );
     }
 
     #[test]
@@ -478,12 +523,28 @@ mod tests {
         let validator = ValidationUtils::new();
 
         // Valid lengths
-        assert!(validator.validate_string_length("Hello", 1, 10, "test_field").is_ok());
-        assert!(validator.validate_string_length("Hi", 1, 10, "test_field").is_ok());
+        assert!(
+            validator
+                .validate_string_length("Hello", 1, 10, "test_field")
+                .is_ok()
+        );
+        assert!(
+            validator
+                .validate_string_length("Hi", 1, 10, "test_field")
+                .is_ok()
+        );
 
         // Invalid lengths
-        assert!(validator.validate_string_length("", 1, 10, "test_field").is_err()); // Too short
-        assert!(validator.validate_string_length("This is too long", 1, 10, "test_field").is_err()); // Too long
+        assert!(
+            validator
+                .validate_string_length("", 1, 10, "test_field")
+                .is_err()
+        ); // Too short
+        assert!(
+            validator
+                .validate_string_length("This is too long", 1, 10, "test_field")
+                .is_err()
+        ); // Too long
     }
 
     #[test]
@@ -492,12 +553,28 @@ mod tests {
         let allowed_values = ["option1", "option2", "option3"];
 
         // Valid values
-        assert!(validator.validate_enum_value(&"option1", &allowed_values, "test_field").is_ok());
-        assert!(validator.validate_enum_value(&"option2", &allowed_values, "test_field").is_ok());
+        assert!(
+            validator
+                .validate_enum_value(&"option1", &allowed_values, "test_field")
+                .is_ok()
+        );
+        assert!(
+            validator
+                .validate_enum_value(&"option2", &allowed_values, "test_field")
+                .is_ok()
+        );
 
         // Invalid values
-        assert!(validator.validate_enum_value(&"option4", &allowed_values, "test_field").is_err());
-        assert!(validator.validate_enum_value(&"invalid", &allowed_values, "test_field").is_err());
+        assert!(
+            validator
+                .validate_enum_value(&"option4", &allowed_values, "test_field")
+                .is_err()
+        );
+        assert!(
+            validator
+                .validate_enum_value(&"invalid", &allowed_values, "test_field")
+                .is_err()
+        );
     }
 
     #[test]
@@ -506,7 +583,11 @@ mod tests {
 
         // Valid emails
         assert!(validator.validate_email("test@example.com").is_ok());
-        assert!(validator.validate_email("user.name+tag@domain.co.uk").is_ok());
+        assert!(
+            validator
+                .validate_email("user.name+tag@domain.co.uk")
+                .is_ok()
+        );
 
         // Invalid emails
         assert!(validator.validate_email("invalid-email").is_err());
@@ -520,7 +601,11 @@ mod tests {
 
         // Valid URLs
         assert!(validator.validate_url("https://example.com").is_ok());
-        assert!(validator.validate_url("http://subdomain.example.com/path").is_ok());
+        assert!(
+            validator
+                .validate_url("http://subdomain.example.com/path")
+                .is_ok()
+        );
 
         // Invalid URLs
         assert!(validator.validate_url("not-a-url").is_err());
@@ -530,27 +615,21 @@ mod tests {
     #[test]
     fn test_bls_validation_rules() {
         // Test observation validation
-        assert!(BLSValidationRules::validate_observation(
-            "APUS49074714",
-            2020,
-            "M01",
-            Some(123.45)
-        ).is_ok());
+        assert!(
+            BLSValidationRules::validate_observation("APUS49074714", 2020, "M01", Some(123.45))
+                .is_ok()
+        );
 
         // Test invalid observation
-        assert!(BLSValidationRules::validate_observation(
-            "INVALID",
-            2020,
-            "M01",
-            Some(123.45)
-        ).is_err());
+        assert!(
+            BLSValidationRules::validate_observation("INVALID", 2020, "M01", Some(123.45)).is_err()
+        );
 
         // Test series metadata validation
-        assert!(BLSValidationRules::validate_series_metadata(
-            "APUS49074714",
-            "Test Series Title",
-            "AP"
-        ).is_ok());
+        assert!(
+            BLSValidationRules::validate_series_metadata("APUS49074714", "Test Series Title", "AP")
+                .is_ok()
+        );
 
         // Test processing strategy validation
         assert!(BLSValidationRules::validate_processing_strategy("in_memory").is_ok());

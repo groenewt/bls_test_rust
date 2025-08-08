@@ -1,33 +1,33 @@
 //! # Rusty BLS Data Processing CLI
 //!
 //! Command-line interface for the Rusty BLS Data Processing system.
-//! 
+//!
 //! ## Usage
-//! 
+//!
 //! ```bash
 //! # Process a specific survey
 //! rusty process --survey ap --config config/surveys/ap.yml
-//! 
+//!
 //! # List available surveys
 //! rusty list-surveys
-//! 
+//!
 //! # Validate configuration
 //! rusty validate --config config/surveys/ap.yml
-//! 
+//!
 //! # Show version information
 //! rusty --version
 //! ```
 
 use std::env;
+use std::error::Error as StdError;
 use std::path::PathBuf;
 use std::process;
-use std::error::Error as StdError;
 
 use rusty::{
     config::{Config, ConfigLoader},
-    processing::{ProcessingEngine, ProcessingInput, ProcessingOutput},
     error::{Error, Result},
     init_with_tracing,
+    processing::{ProcessingEngine, ProcessingInput, ProcessingOutput},
 };
 
 /// Command-line arguments structure
@@ -93,14 +93,14 @@ async fn main() {
     // Handle any errors
     if let Err(e) = result {
         eprintln!("Error: {}", e);
-        
+
         // Log the full error chain for debugging
         let mut source = e.source();
         while let Some(err) = source {
             eprintln!("  Caused by: {}", err);
             source = err.source();
         }
-        
+
         process::exit(1);
     }
 }
@@ -108,7 +108,7 @@ async fn main() {
 /// Parse command-line arguments
 fn parse_args() -> Result<Args> {
     let args: Vec<String> = env::args().collect();
-    
+
     if args.len() < 2 {
         return Ok(Args {
             command: Command::Help,
@@ -126,7 +126,7 @@ fn parse_args() -> Result<Args> {
     let mut config_path = None;
     let mut verbose = false;
     let mut output_dir = None;
-    
+
     let mut i = 1;
     while i < args.len() {
         match args[i].as_str() {
@@ -144,7 +144,7 @@ fn parse_args() -> Result<Args> {
                     survey = Some(args[i].clone());
                 } else {
                     return Err(Error::Config(rusty::error::ConfigError::InvalidArgument(
-                        "Missing survey code after --survey".to_string()
+                        "Missing survey code after --survey".to_string(),
                     )));
                 }
             }
@@ -154,7 +154,7 @@ fn parse_args() -> Result<Args> {
                     environment = Some(args[i].clone());
                 } else {
                     return Err(Error::Config(rusty::error::ConfigError::InvalidArgument(
-                        "Missing environment after --env".to_string()
+                        "Missing environment after --env".to_string(),
                     )));
                 }
             }
@@ -164,7 +164,7 @@ fn parse_args() -> Result<Args> {
                     config_path = Some(PathBuf::from(&args[i]));
                 } else {
                     return Err(Error::Config(rusty::error::ConfigError::InvalidArgument(
-                        "Missing config path after --config".to_string()
+                        "Missing config path after --config".to_string(),
                     )));
                 }
             }
@@ -174,14 +174,14 @@ fn parse_args() -> Result<Args> {
                     output_dir = Some(PathBuf::from(&args[i]));
                 } else {
                     return Err(Error::Config(rusty::error::ConfigError::InvalidArgument(
-                        "Missing output directory after --output".to_string()
+                        "Missing output directory after --output".to_string(),
                     )));
                 }
             }
             "--verbose" | "-v" => verbose = true,
             _ => {
                 return Err(Error::Config(rusty::error::ConfigError::InvalidArgument(
-                    format!("Unknown argument: {}", args[i])
+                    format!("Unknown argument: {}", args[i]),
                 )));
             }
         }
@@ -202,7 +202,7 @@ fn parse_args() -> Result<Args> {
 async fn process_survey(args: Args) -> Result<()> {
     let survey_code = args.survey.ok_or_else(|| {
         Error::Config(rusty::error::ConfigError::InvalidArgument(
-            "Survey code is required for processing".to_string()
+            "Survey code is required for processing".to_string(),
         ))
     })?;
 
@@ -221,13 +221,19 @@ async fn process_survey(args: Args) -> Result<()> {
 
     // Create input and output for processing
     let input = ProcessingInput::new(vec!["data/raw/bls/example.csv".to_string()]);
-    let output = ProcessingOutput::new(vec!["data/processed/output.csv".to_string()], "csv".to_string());
-    
+    let output = ProcessingOutput::new(
+        vec!["data/processed/output.csv".to_string()],
+        "csv".to_string(),
+    );
+
     // Process the survey
     let _context = engine.process(input, output).await?;
 
     tracing::info!("Successfully processed survey: {}", survey_code);
-    println!("Processing completed successfully for survey: {}", survey_code);
+    println!(
+        "Processing completed successfully for survey: {}",
+        survey_code
+    );
 
     Ok(())
 }
@@ -236,25 +242,149 @@ async fn process_survey(args: Args) -> Result<()> {
 async fn list_surveys(_args: Args) -> Result<()> {
     tracing::info!("Listing available surveys");
 
-    // This would typically scan the config/surveys directory
-    // For now, we'll provide a placeholder implementation
-    println!("Available surveys:");
-    println!("  ap - Average Price Data");
-    println!("  bd - Business Dynamics Statistics");
-    println!("  ce - Current Employment Statistics");
-    println!("  ex - Example Survey (for testing)");
-    
-    // TODO: Implement actual survey discovery
-    tracing::warn!("Survey listing not fully implemented - showing placeholder data");
+    // Dynamically discover surveys from config/surveys directory
+    match discover_surveys().await {
+        Ok(surveys) => {
+            println!("Available surveys:");
+            for survey in surveys {
+                println!("  {} - {}", survey.code.to_lowercase(), survey.name);
+                if let Some(desc) = survey.description {
+                    println!("    {}", desc);
+                }
+            }
+        }
+        Err(e) => {
+            tracing::error!("Failed to discover surveys: {}", e);
+            println!("Error: Failed to load survey configurations from config/surveys/");
+            return Err(e);
+        }
+    }
 
     Ok(())
+}
+
+/// Discover surveys from the config/surveys directory
+async fn discover_surveys() -> Result<Vec<DiscoveredSurvey>> {
+    use std::fs;
+    use std::path::Path;
+    
+    let surveys_dir = Path::new("config/surveys");
+    if !surveys_dir.exists() {
+        return Err(Error::Config(rusty::error::ConfigError::LoadError {
+            path: "config/surveys".to_string(),
+            source: "Survey configurations directory not found".to_string(),
+        }));
+    }
+
+    let mut surveys = Vec::new();
+    
+    // Read directory entries
+    let entries = fs::read_dir(surveys_dir)
+        .map_err(|e| Error::Config(rusty::error::ConfigError::LoadError {
+            path: "config/surveys".to_string(),
+            source: e.to_string(),
+        }))?;
+
+    for entry in entries {
+        let entry = entry.map_err(|e| Error::Config(rusty::error::ConfigError::LoadError {
+            path: "config/surveys entry".to_string(),
+            source: e.to_string(),
+        }))?;
+
+        let path = entry.path();
+        if path.is_dir() {
+            let survey_code = path.file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or("unknown")
+                .to_string();
+            
+            // Skip special directories
+            if survey_code.starts_with('_') || survey_code.starts_with('.') || survey_code == "TEMPLATE" {
+                continue;
+            }
+
+            // Try to load overview.yml for this survey
+            let overview_path = path.join("overview.yml");
+            if overview_path.exists() {
+                match load_survey_overview(&overview_path).await {
+                    Ok(survey) => surveys.push(survey),
+                    Err(e) => {
+                        tracing::warn!("Failed to load survey {}: {}", survey_code, e);
+                        // Continue with other surveys instead of failing completely
+                    }
+                }
+            }
+        }
+    }
+
+    surveys.sort_by(|a, b| a.code.cmp(&b.code));
+    Ok(surveys)
+}
+
+/// Simple structure for discovered survey information
+#[derive(Debug, Clone)]
+struct DiscoveredSurvey {
+    code: String,
+    name: String,
+    description: Option<String>,
+    size_class: Option<String>,
+}
+
+/// Load survey overview from overview.yml
+async fn load_survey_overview(overview_path: &std::path::Path) -> Result<DiscoveredSurvey> {
+    use std::fs;
+    
+    let content = fs::read_to_string(overview_path)
+        .map_err(|e| Error::Config(rusty::error::ConfigError::LoadError {
+            path: overview_path.display().to_string(),
+            source: e.to_string(),
+        }))?;
+
+    let yaml_value: serde_yaml::Value = serde_yaml::from_str(&content)
+        .map_err(|e| Error::Config(rusty::error::ConfigError::ParseError {
+            message: format!("Failed to parse YAML: {}", e),
+            line: None,
+            column: None,
+        }))?;
+
+    // Extract survey information from YAML structure
+    let survey_section = yaml_value.get("survey")
+        .ok_or_else(|| Error::Config(rusty::error::ConfigError::ValidationError {
+            message: "Missing survey section in overview.yml".to_string(),
+            field: Some("survey".to_string()),
+        }))?;
+
+    let code = survey_section.get("code")
+        .and_then(|v| v.as_str())
+        .unwrap_or("unknown")
+        .to_string();
+
+    let name = survey_section.get("name")
+        .and_then(|v| v.as_str())
+        .unwrap_or("Unknown Survey")
+        .to_string();
+
+    let description = survey_section.get("description")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string());
+
+    let size_class = survey_section.get("size_class")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string());
+
+    Ok(DiscoveredSurvey {
+        code,
+        name,
+        description,
+        size_class,
+    })
 }
 
 /// Validate a configuration file
 async fn validate_config(args: Args) -> Result<()> {
     let config_path = args.config_path.ok_or_else(|| {
         Error::Config(rusty::error::ConfigError::InvalidArgument(
-            "Config path is required for validation".to_string()
+            "Config path is required for validation".to_string(),
         ))
     })?;
 
@@ -273,19 +403,26 @@ async fn validate_config(args: Args) -> Result<()> {
 async fn validate_survey_config(args: Args) -> Result<()> {
     let survey_code = args.survey.ok_or_else(|| {
         Error::Config(rusty::error::ConfigError::InvalidArgument(
-            "Survey code is required for configuration validation".to_string()
+            "Survey code is required for configuration validation".to_string(),
         ))
     })?;
 
     let environment = args.environment.as_deref();
-    
-    tracing::info!("Validating survey configuration: {} (env: {:?})", survey_code, environment);
+
+    tracing::info!(
+        "Validating survey configuration: {} (env: {:?})",
+        survey_code,
+        environment
+    );
 
     // Use the new load_survey_config function which includes validation
     match rusty::config::load_survey_config(&survey_code, environment) {
         Ok(_config) => {
-            println!("✓ Survey configuration is valid: {} (env: {})", 
-                    survey_code, environment.unwrap_or("dev"));
+            println!(
+                "✓ Survey configuration is valid: {} (env: {})",
+                survey_code,
+                environment.unwrap_or("dev")
+            );
             tracing::info!("Survey configuration validation successful");
         }
         Err(e) => {
@@ -301,30 +438,36 @@ async fn validate_survey_config(args: Args) -> Result<()> {
 async fn print_survey_config(args: Args) -> Result<()> {
     let survey_code = args.survey.ok_or_else(|| {
         Error::Config(rusty::error::ConfigError::InvalidArgument(
-            "Survey code is required for printing configuration".to_string()
+            "Survey code is required for printing configuration".to_string(),
         ))
     })?;
 
     let environment = args.environment.as_deref();
-    
-    tracing::info!("Loading survey configuration: {} (env: {:?})", survey_code, environment);
+
+    tracing::info!(
+        "Loading survey configuration: {} (env: {:?})",
+        survey_code,
+        environment
+    );
 
     // Load the configuration using the new system
     let config = rusty::config::load_survey_config(&survey_code, environment)?;
-    
+
     // Print configuration in YAML format
-    let yaml_output = serde_yaml::to_string(&config)
-        .map_err(|e| {
-            let config_error = rusty::error::ConfigError::ParseError {
-                message: format!("Failed to serialize configuration: {}", e),
-                line: None,
-                column: None,
-            };
-            Error::Config(config_error)
-        })?;
-    
-    println!("Configuration for survey {} (env: {}):", 
-             survey_code, environment.unwrap_or("dev"));
+    let yaml_output = serde_yaml::to_string(&config).map_err(|e| {
+        let config_error = rusty::error::ConfigError::ParseError {
+            message: format!("Failed to serialize configuration: {}", e),
+            line: None,
+            column: None,
+        };
+        Error::Config(config_error)
+    })?;
+
+    println!(
+        "Configuration for survey {} (env: {}):",
+        survey_code,
+        environment.unwrap_or("dev")
+    );
     println!("---");
     println!("{}", yaml_output);
 
@@ -335,7 +478,7 @@ async fn print_survey_config(args: Args) -> Result<()> {
 async fn migrate_legacy_config(args: Args) -> Result<()> {
     let survey_code = args.survey.ok_or_else(|| {
         Error::Config(rusty::error::ConfigError::InvalidArgument(
-            "Survey code is required for legacy migration".to_string()
+            "Survey code is required for legacy migration".to_string(),
         ))
     })?;
 
@@ -347,15 +490,21 @@ async fn migrate_legacy_config(args: Args) -> Result<()> {
     // 2. Parse and split it into modular components
     // 3. Write the new modular files to the appropriate directories
     // 4. Validate the new configuration
-    
-    println!("Legacy migration for survey {} is not yet implemented", survey_code);
+
+    println!(
+        "Legacy migration for survey {} is not yet implemented",
+        survey_code
+    );
     println!("This feature will:");
     println!("  1. Load legacy config/surveys/{}.yml", survey_code);
     println!("  2. Split into modular files (overview.yml, model.yml, etc.)");
     println!("  3. Create config/surveys/{}/", survey_code);
     println!("  4. Validate the new modular configuration");
-    
-    tracing::warn!("Legacy migration not yet implemented for survey: {}", survey_code);
+
+    tracing::warn!(
+        "Legacy migration not yet implemented for survey: {}",
+        survey_code
+    );
 
     Ok(())
 }

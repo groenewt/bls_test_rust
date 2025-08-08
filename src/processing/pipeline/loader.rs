@@ -31,26 +31,22 @@
 //! loader.execute(&mut context)?;
 //! ```
 
-use std::path::{Path, PathBuf};
+use async_trait::async_trait;
+use rayon::prelude::*;
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
-use rayon::prelude::*;
-use tokio::task;
-use async_trait::async_trait;
 
-use crate::processing::traits::{
-    PipelineStage, LoaderStage, ProcessingContext, ProcessingConfig,
-    ProcessingInput, ValidationResult, ValidationSeverity, ValidationError,
-};
 use crate::data::reader::{
-    DataReader, SeriesReader, ObservationReader, LookupReader, SurveyReader,
+    DataReader,
     create_optimized_reader,
 };
-use crate::data::model::{Series, Observation, Lookup, Survey};
 use crate::error::types::{ProcessingError, Result};
-use crate::utils::validation::BLSValidationRules;
-use crate::utils::file::{get_file_size, is_file_readable};
+use crate::processing::traits::{
+    LoaderStage, PipelineStage, ProcessingContext,
+};
+use crate::utils::file::get_file_size;
 
 /// Implementation of the loader stage
 pub struct LoaderStageImpl {
@@ -139,17 +135,21 @@ impl LoaderStageImpl {
     }
 
     /// Load data from input paths
-    fn load_data_from_paths(&mut self, paths: &[String], context: &mut ProcessingContext) -> Result<Vec<Box<dyn DataReader>>> {
+    fn load_data_from_paths(
+        &mut self,
+        paths: &[String],
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Box<dyn DataReader>>> {
         let start_time = Instant::now();
         let mut readers = Vec::new();
-        let mut load_errors = 0u64;
+        let load_errors = 0u64;
 
         // Expand wildcards and resolve paths
         let resolved_paths = self.resolve_input_paths(paths)?;
-        
+
         // Group paths by type for efficient loading
         let grouped_paths = self.group_paths_by_type(&resolved_paths)?;
-        
+
         // Load files in parallel with controlled concurrency
         for (data_type, type_paths) in grouped_paths {
             let type_readers = self.load_paths_parallel(&type_paths, &data_type, context)?;
@@ -163,8 +163,14 @@ impl LoaderStageImpl {
         self.stats.load_errors += load_errors;
 
         // Add metrics to context
-        context.add_metric("loader_files_loaded".to_string(), self.stats.files_loaded as f64);
-        context.add_metric("loader_load_time_ms".to_string(), elapsed.as_millis() as f64);
+        context.add_metric(
+            "loader_files_loaded".to_string(),
+            self.stats.files_loaded as f64,
+        );
+        context.add_metric(
+            "loader_load_time_ms".to_string(),
+            elapsed.as_millis() as f64,
+        );
 
         Ok(readers)
     }
@@ -175,7 +181,7 @@ impl LoaderStageImpl {
 
         for path_str in paths {
             let path = resolve_path(path_str)?;
-            
+
             if path_str.contains('*') || path_str.contains('?') {
                 // Expand wildcards
                 let expanded = expand_wildcards(&path)?;
@@ -185,8 +191,9 @@ impl LoaderStageImpl {
             } else {
                 return Err(ProcessingError::PipelineError {
                     stage: "loader".to_string(),
-                    message: format!("Input path does not exist: {}", path_str),
-                }.into());
+                    message: format!("Input path does not exist: {path_str}"),
+                }
+                .into());
             }
         }
 
@@ -196,10 +203,10 @@ impl LoaderStageImpl {
                 return Err(ProcessingError::PipelineError {
                     stage: "loader".to_string(),
                     message: format!("File is not readable: {}", path.display()),
-                }.into());
+                }
+                .into());
             }
         }
-
 
         Ok(resolved_paths)
     }
@@ -210,7 +217,10 @@ impl LoaderStageImpl {
 
         for path in paths {
             let data_type = self.determine_data_type(path)?;
-            grouped.entry(data_type).or_insert_with(Vec::new).push(path.clone());
+            grouped
+                .entry(data_type)
+                .or_insert_with(Vec::new)
+                .push(path.clone());
         }
 
         Ok(grouped)
@@ -219,13 +229,16 @@ impl LoaderStageImpl {
     /// Determine data type from file path
     fn determine_data_type(&self, path: &Path) -> Result<String> {
         let path_str = path.to_string_lossy().to_lowercase();
-        
+
         if path_str.contains(".series") {
             Ok("series".to_string())
         } else if path_str.contains(".data") {
             Ok("observations".to_string())
-        } else if path_str.contains(".area") || path_str.contains(".item") || 
-                 path_str.contains(".industry") || path_str.contains(".occupation") {
+        } else if path_str.contains(".area")
+            || path_str.contains(".item")
+            || path_str.contains(".industry")
+            || path_str.contains(".occupation")
+        {
             Ok("lookup".to_string())
         } else if path_str.contains(".survey") {
             Ok("survey".to_string())
@@ -266,7 +279,7 @@ impl LoaderStageImpl {
                         return Err(e);
                     }
                     // Continue with partial results
-                    log::warn!("Failed to load chunk, continuing: {}", e);
+                    log::warn!("Failed to load chunk, continuing: {e}");
                 }
             }
         }
@@ -298,7 +311,12 @@ impl LoaderStageImpl {
                     if attempts >= max_attempts {
                         return Err(e);
                     }
-                    log::warn!("Load attempt {} failed for {}: {}", attempts, path.display(), e);
+                    log::warn!(
+                        "Load attempt {} failed for {}: {}",
+                        attempts,
+                        path.display(),
+                        e
+                    );
                     std::thread::sleep(std::time::Duration::from_millis(100 * attempts as u64));
                 }
             }
@@ -306,8 +324,13 @@ impl LoaderStageImpl {
 
         Err(ProcessingError::PipelineError {
             stage: "loader".to_string(),
-            message: format!("Failed to load file after {} attempts: {}", max_attempts, path.display()),
-        }.into())
+            message: format!(
+                "Failed to load file after {} attempts: {}",
+                max_attempts,
+                path.display()
+            ),
+        }
+        .into())
     }
 
     /// Try to load a single file (single attempt)
@@ -340,16 +363,20 @@ impl LoaderStageImpl {
     }
 
     /// Validate reader data during loading
-    fn validate_reader_data(&mut self, reader: &dyn DataReader, context: &ProcessingContext) -> Result<()> {
+    fn validate_reader_data(
+        &mut self,
+        reader: &dyn DataReader,
+        context: &ProcessingContext,
+    ) -> Result<()> {
         // This is a simplified validation - in a real implementation,
         // you'd perform more comprehensive checks
-        
+
         // Check if reader can provide basic information
         if reader.stats().records_read == 0 {
             log::warn!("Reader contains no records");
         }
 
-        // Update record count statistics  
+        // Update record count statistics
         self.stats.records_loaded += reader.stats().records_read;
 
         Ok(())
@@ -359,12 +386,13 @@ impl LoaderStageImpl {
     fn check_memory_usage(&self) -> Result<()> {
         // Get current memory usage (simplified implementation)
         let current_usage = self.get_current_memory_usage();
-        
+
         if current_usage > self.config.max_memory_usage {
-            return Err(ProcessingError::SystemError(
-                format!("Memory usage ({} bytes) exceeds limit ({} bytes)", 
-                       current_usage, self.config.max_memory_usage)
-            ).into());
+            return Err(ProcessingError::SystemError(format!(
+                "Memory usage ({} bytes) exceeds limit ({} bytes)",
+                current_usage, self.config.max_memory_usage
+            ))
+            .into());
         }
 
         Ok(())
@@ -435,17 +463,20 @@ impl PipelineStage for LoaderStageImpl {
 
     async fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
         log::info!("Starting loader stage execution");
-        
+
         // Load data from input paths
         let input_paths = context.input_paths.clone();
         let readers = self.load_data_from_paths(&input_paths, context)?;
-        
+
         // Store readers in context for next stages
         context.data_readers = readers;
-        
-        log::info!("Loader stage completed: {} files loaded, {} records", 
-                  self.stats.files_loaded, self.stats.records_loaded);
-        
+
+        log::info!(
+            "Loader stage completed: {} files loaded, {} records",
+            self.stats.files_loaded,
+            self.stats.records_loaded
+        );
+
         Ok(())
     }
 
@@ -458,14 +489,14 @@ impl PipelineStage for LoaderStageImpl {
         // Validate that input paths are provided
         if context.input_paths.is_empty() {
             return Err(ProcessingError::invalid_configuration(
-                "No input paths provided for loader stage".to_string()
+                "No input paths provided for loader stage".to_string(),
             ));
         }
 
         // Validate configuration
         if self.config.max_concurrent_loads == 0 {
             return Err(ProcessingError::invalid_configuration(
-                "max_concurrent_loads must be greater than 0".to_string()
+                "max_concurrent_loads must be greater than 0".to_string(),
             ));
         }
 
@@ -479,14 +510,17 @@ impl PipelineStage for LoaderStageImpl {
                 cache.clear();
             }
         }
-        
+
         Ok(())
     }
 }
 
 #[async_trait]
 impl LoaderStage for LoaderStageImpl {
-    async fn load_data(&mut self, context: &mut ProcessingContext) -> Result<Vec<Box<dyn DataReader>>> {
+    async fn load_data(
+        &mut self,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Box<dyn DataReader>>> {
         let input_paths = context.input_paths.clone();
         self.load_data_from_paths(&input_paths, context)
     }
@@ -498,13 +532,12 @@ impl LoaderStage for LoaderStageImpl {
     fn check_data_availability(&self, context: &ProcessingContext) -> Result<bool> {
         for path_str in &context.input_paths {
             let path = Path::new(path_str);
-            if !path.exists() || !self.is_file_readable(&path)? {
+            if !path.exists() || !self.is_file_readable(path)? {
                 return Ok(false);
             }
         }
         Ok(true)
     }
-
 }
 
 #[cfg(test)]
@@ -539,23 +572,47 @@ mod tests {
     #[test]
     fn test_determine_data_type() {
         let loader = LoaderStageImpl::new();
-        
-        assert_eq!(loader.determine_data_type(Path::new("test.series")).unwrap(), "series");
-        assert_eq!(loader.determine_data_type(Path::new("test.data")).unwrap(), "observations");
-        assert_eq!(loader.determine_data_type(Path::new("test.area")).unwrap(), "lookup");
-        assert_eq!(loader.determine_data_type(Path::new("test.item")).unwrap(), "lookup");
-        assert_eq!(loader.determine_data_type(Path::new("test.survey")).unwrap(), "survey");
-        assert_eq!(loader.determine_data_type(Path::new("test.unknown")).unwrap(), "unknown");
+
+        assert_eq!(
+            loader
+                .determine_data_type(Path::new("test.series"))
+                .unwrap(),
+            "series"
+        );
+        assert_eq!(
+            loader.determine_data_type(Path::new("test.data")).unwrap(),
+            "observations"
+        );
+        assert_eq!(
+            loader.determine_data_type(Path::new("test.area")).unwrap(),
+            "lookup"
+        );
+        assert_eq!(
+            loader.determine_data_type(Path::new("test.item")).unwrap(),
+            "lookup"
+        );
+        assert_eq!(
+            loader
+                .determine_data_type(Path::new("test.survey"))
+                .unwrap(),
+            "survey"
+        );
+        assert_eq!(
+            loader
+                .determine_data_type(Path::new("test.unknown"))
+                .unwrap(),
+            "unknown"
+        );
     }
 
     #[test]
     fn test_loader_stage_validation() {
         let loader = LoaderStageImpl::new();
         let mut context = ProcessingContext::new(ProcessingConfig::default());
-        
+
         // Should fail with empty input paths
         assert!(loader.validate(&context).is_err());
-        
+
         // Should pass with input paths
         context.input_paths.push("test.data".to_string());
         assert!(loader.validate(&context).is_ok());
@@ -565,10 +622,10 @@ mod tests {
     fn test_can_process() {
         let loader = LoaderStageImpl::new();
         let mut context = ProcessingContext::new(ProcessingConfig::default());
-        
+
         // Should return false with no input paths
         assert!(!loader.can_process(&context).unwrap());
-        
+
         // Should return true with input paths
         context.input_paths.push("test.data".to_string());
         assert!(loader.can_process(&context).unwrap());
@@ -579,7 +636,7 @@ mod tests {
         let mut loader = LoaderStageImpl::new();
         assert_eq!(loader.stats().files_loaded, 0);
         assert_eq!(loader.stats().records_loaded, 0);
-        
+
         loader.reset_stats();
         assert_eq!(loader.stats().files_loaded, 0);
     }
@@ -595,11 +652,11 @@ mod tests {
     fn test_estimate_data_size() {
         let temp_dir = TempDir::new().unwrap();
         let file_path = create_test_file(&temp_dir, "test.data", "test content");
-        
+
         let loader = LoaderStageImpl::new();
         let paths = vec![file_path.to_string_lossy().to_string()];
         let size = loader.estimate_data_size_internal(&paths).unwrap();
-        
+
         assert!(size > 0);
     }
 
@@ -608,21 +665,21 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let series_path = create_test_file(&temp_dir, "test.series", "series data");
         let data_path = create_test_file(&temp_dir, "test.data", "observation data");
-        
+
         let loader = LoaderStageImpl::new();
         let paths = vec![series_path, data_path];
         let grouped = loader.group_paths_by_type(&paths).unwrap();
-        
+
         assert!(grouped.contains_key("series"));
         assert!(grouped.contains_key("observations"));
     }
 
-    #[test]
-    fn test_cleanup() {
+    #[tokio::test]
+    async fn test_cleanup() {
         let mut loader = LoaderStageImpl::new();
         let mut context = ProcessingContext::new(ProcessingConfig::default());
-        
+
         // Should not fail
-        assert!(loader.cleanup(&mut context).is_ok());
+        assert!(loader.cleanup(&mut context).await.is_ok());
     }
 }

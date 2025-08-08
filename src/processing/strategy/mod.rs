@@ -41,22 +41,22 @@
 //! )?;
 //! ```
 
-pub mod in_memory;
 pub mod chunked;
-pub mod mmap;
 pub mod factory;
+pub mod in_memory;
+pub mod mmap;
 
-use std::path::Path;
-use crate::processing::traits::{
-    DataProcessor, ProcessingStrategy, ProcessingConfig, ProcessingInput
-};
 use crate::error::types::{ProcessingError, Result};
+use crate::processing::traits::{
+    DataProcessor, ProcessingConfig, ProcessingInput, ProcessingStrategy,
+};
+use std::path::Path;
 
 // Re-export strategy implementations
-pub use in_memory::InMemoryProcessor;
 pub use chunked::ChunkedProcessor;
-pub use mmap::MemoryMappedProcessor;
 pub use factory::ProcessorFactory;
+pub use in_memory::InMemoryProcessor;
+pub use mmap::MemoryMappedProcessor;
 
 /// Create a processor instance for the specified strategy
 pub fn create_processor(
@@ -64,25 +64,20 @@ pub fn create_processor(
     config: ProcessingConfig,
 ) -> Result<Box<dyn DataProcessor>> {
     match strategy {
-        ProcessingStrategy::InMemory => {
-            Ok(Box::new(InMemoryProcessor::new(config)))
-        }
-        ProcessingStrategy::Chunked => {
-            Ok(Box::new(ChunkedProcessor::new(config)))
-        }
-        ProcessingStrategy::MemoryMapped => {
-            Ok(Box::new(MemoryMappedProcessor::new(config)))
-        }
+        ProcessingStrategy::InMemory => Ok(Box::new(InMemoryProcessor::new(config))),
+        ProcessingStrategy::Chunked => Ok(Box::new(ChunkedProcessor::new(config))),
+        ProcessingStrategy::MemoryMapped => Ok(Box::new(MemoryMappedProcessor::new(config))),
         ProcessingStrategy::Auto => {
             // For auto strategy, we need input to make a recommendation
             Err(ProcessingError::invalid_configuration(
-                "Auto strategy requires input analysis. Use recommend_strategy() first.".to_string()
+                "Auto strategy requires input analysis. Use recommend_strategy() first."
+                    .to_string(),
             ))
         }
         ProcessingStrategy::Streaming => {
             // Streaming strategy not yet implemented
             Err(ProcessingError::invalid_configuration(
-                "Streaming strategy is not yet implemented".to_string()
+                "Streaming strategy is not yet implemented".to_string(),
             ))
         }
     }
@@ -92,17 +87,21 @@ pub fn create_processor(
 pub fn recommend_strategy(input: &ProcessingInput) -> Result<ProcessingStrategy> {
     let total_size = estimate_total_input_size(input)?;
     let available_memory = get_available_memory();
-    
+
     // Strategy selection logic based on data size and available memory
-    if total_size < 100 * 1024 * 1024 { // < 100MB
+    if total_size < 100 * 1024 * 1024 {
+        // < 100MB
         Ok(ProcessingStrategy::InMemory)
-    } else if total_size < 1024 * 1024 * 1024 { // < 1GB
-        if available_memory > total_size * 3 { // 3x safety margin
+    } else if total_size < 1024 * 1024 * 1024 {
+        // < 1GB
+        if available_memory > total_size * 3 {
+            // 3x safety margin
             Ok(ProcessingStrategy::InMemory)
         } else {
             Ok(ProcessingStrategy::Chunked)
         }
-    } else if total_size < 10 * 1024 * 1024 * 1024 { // < 10GB
+    } else if total_size < 10 * 1024 * 1024 * 1024 {
+        // < 10GB
         Ok(ProcessingStrategy::Chunked)
     } else {
         Ok(ProcessingStrategy::MemoryMapped)
@@ -112,13 +111,16 @@ pub fn recommend_strategy(input: &ProcessingInput) -> Result<ProcessingStrategy>
 /// Estimate the total size of input data
 fn estimate_total_input_size(input: &ProcessingInput) -> Result<u64> {
     let mut total_size = 0u64;
-    
+
     for path_str in &input.paths {
         let path = Path::new(path_str);
         if path.exists() {
             if path.is_file() {
-                total_size += path.metadata()
-                    .map_err(|e| ProcessingError::io_error(format!("Failed to get file metadata: {}", e)))?
+                total_size += path
+                    .metadata()
+                    .map_err(|e| {
+                        ProcessingError::io_error(format!("Failed to get file metadata: {e}"))
+                    })?
                     .len();
             } else if path.is_dir() {
                 total_size += estimate_directory_size(path)?;
@@ -128,38 +130,42 @@ fn estimate_total_input_size(input: &ProcessingInput) -> Result<u64> {
             total_size += estimate_bls_file_size(path_str);
         }
     }
-    
+
     Ok(total_size)
 }
 
 /// Estimate the size of all files in a directory
 fn estimate_directory_size(dir: &Path) -> Result<u64> {
     let mut total_size = 0u64;
-    
+
     let entries = std::fs::read_dir(dir)
-        .map_err(|e| ProcessingError::io_error(format!("Failed to read directory: {}", e)))?;
-    
+        .map_err(|e| ProcessingError::io_error(format!("Failed to read directory: {e}")))?;
+
     for entry in entries {
-        let entry = entry
-            .map_err(|e| ProcessingError::io_error(format!("Failed to read directory entry: {}", e)))?;
+        let entry = entry.map_err(|e| {
+            ProcessingError::io_error(format!("Failed to read directory entry: {e}"))
+        })?;
         let path = entry.path();
-        
+
         if path.is_file() {
-            total_size += entry.metadata()
-                .map_err(|e| ProcessingError::io_error(format!("Failed to get file metadata: {}", e)))?
+            total_size += entry
+                .metadata()
+                .map_err(|e| {
+                    ProcessingError::io_error(format!("Failed to get file metadata: {e}"))
+                })?
                 .len();
         } else if path.is_dir() {
             total_size += estimate_directory_size(&path)?;
         }
     }
-    
+
     Ok(total_size)
 }
 
 /// Estimate BLS file size based on survey type and file extension
 fn estimate_bls_file_size(path: &str) -> u64 {
     let path_lower = path.to_lowercase();
-    
+
     // Estimate based on file type
     if path_lower.contains(".series") {
         50 * 1024 * 1024 // 50MB typical for series files
@@ -190,7 +196,7 @@ fn get_available_memory() -> u64 {
             }
         }
     }
-    
+
     // Fallback: assume 8GB available memory
     8 * 1024 * 1024 * 1024
 }

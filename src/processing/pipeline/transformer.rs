@@ -29,24 +29,22 @@
 //!
 //! let mut transformer = TransformerStageImpl::new();
 //! let mut context = ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
-//! 
+//!
 //! transformer.execute(&mut context)?;
 //! ```
 
+use async_trait::async_trait;
+use rayon::prelude::*;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
-use async_trait::async_trait;
-use rayon::prelude::*;
 
-use crate::processing::traits::{
-    PipelineStage, TransformerStage, ProcessingContext,
-    TransformationRule, TransformationRuleType,
-};
-use crate::data::model::{Series, Observation, Lookup, Survey};
+use crate::data::model::{Lookup, Observation, Series, Survey};
 use crate::error::types::{ProcessingError, Result};
-use crate::utils::format::{parse_date, format_currency, normalize_text};
-
+use crate::processing::traits::{
+    PipelineStage, ProcessingContext, TransformationRule, TransformationRuleType, TransformerStage,
+};
+use crate::utils::format::{format_currency, normalize_text, parse_date};
 
 /// Implementation of the transformer stage
 pub struct TransformerStageImpl {
@@ -200,10 +198,14 @@ impl TransformerStageImpl {
     }
 
     /// Transform series data
-    fn transform_series_data(&mut self, series: Vec<Series>, context: &mut ProcessingContext) -> Result<Vec<Series>> {
+    fn transform_series_data(
+        &mut self,
+        series: Vec<Series>,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Series>> {
         let start_time = Instant::now();
         let rules = self.get_transformation_rules_for_type("series")?;
-        
+
         let transformed_series = if self.config.enable_parallel_processing {
             series
                 .into_par_iter()
@@ -219,18 +221,29 @@ impl TransformerStageImpl {
         // Update statistics
         let elapsed = start_time.elapsed();
         self.stats.records_transformed += transformed_series.len() as u64;
-        self.stats.avg_transform_time_us = elapsed.as_micros() as f64 / transformed_series.len() as f64;
+        self.stats.avg_transform_time_us =
+            elapsed.as_micros() as f64 / transformed_series.len() as f64;
         self.stats.rules_applied += (rules.len() * transformed_series.len()) as u64;
 
         // Add metrics to context
-        context.add_metric("transformer_series_processed".to_string(), transformed_series.len() as f64);
-        context.add_metric("transformer_series_time_ms".to_string(), elapsed.as_millis() as f64);
+        context.add_metric(
+            "transformer_series_processed".to_string(),
+            transformed_series.len() as f64,
+        );
+        context.add_metric(
+            "transformer_series_time_ms".to_string(),
+            elapsed.as_millis() as f64,
+        );
 
         Ok(transformed_series)
     }
 
     /// Transform a single series record
-    fn transform_single_series(&self, mut series: Series, rules: &[TransformationRule]) -> Result<Series> {
+    fn transform_single_series(
+        &self,
+        mut series: Series,
+        rules: &[TransformationRule],
+    ) -> Result<Series> {
         // Create transformation context
         let mut original_data = HashMap::new();
         original_data.insert("series_id".to_string(), series.series_id.clone());
@@ -265,10 +278,14 @@ impl TransformerStageImpl {
     }
 
     /// Transform observations data
-    fn transform_observations_data(&mut self, observations: Vec<Observation>, context: &mut ProcessingContext) -> Result<Vec<Observation>> {
+    fn transform_observations_data(
+        &mut self,
+        observations: Vec<Observation>,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Observation>> {
         let start_time = Instant::now();
         let rules = self.get_transformation_rules_for_type("observations")?;
-        
+
         let transformed_observations = if self.config.enable_parallel_processing {
             observations
                 .into_par_iter()
@@ -287,14 +304,24 @@ impl TransformerStageImpl {
         self.stats.rules_applied += (rules.len() * transformed_observations.len()) as u64;
 
         // Add metrics to context
-        context.add_metric("transformer_observations_processed".to_string(), transformed_observations.len() as f64);
-        context.add_metric("transformer_observations_time_ms".to_string(), elapsed.as_millis() as f64);
+        context.add_metric(
+            "transformer_observations_processed".to_string(),
+            transformed_observations.len() as f64,
+        );
+        context.add_metric(
+            "transformer_observations_time_ms".to_string(),
+            elapsed.as_millis() as f64,
+        );
 
         Ok(transformed_observations)
     }
 
     /// Transform a single observation record
-    fn transform_single_observation(&self, mut observation: Observation, rules: &[TransformationRule]) -> Result<Observation> {
+    fn transform_single_observation(
+        &self,
+        mut observation: Observation,
+        rules: &[TransformationRule],
+    ) -> Result<Observation> {
         // Create transformation context
         let mut original_data = HashMap::new();
         original_data.insert("series_id".to_string(), observation.series_id.clone());
@@ -328,10 +355,14 @@ impl TransformerStageImpl {
     }
 
     /// Transform lookups data
-    fn transform_lookups_data(&mut self, lookups: Vec<Lookup>, context: &mut ProcessingContext) -> Result<Vec<Lookup>> {
+    fn transform_lookups_data(
+        &mut self,
+        lookups: Vec<Lookup>,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Lookup>> {
         let start_time = Instant::now();
         let rules = self.get_transformation_rules_for_type("lookups")?;
-        
+
         let transformed_lookups = if self.config.enable_parallel_processing {
             lookups
                 .into_par_iter()
@@ -350,14 +381,24 @@ impl TransformerStageImpl {
         self.stats.rules_applied += (rules.len() * transformed_lookups.len()) as u64;
 
         // Add metrics to context
-        context.add_metric("transformer_lookups_processed".to_string(), transformed_lookups.len() as f64);
-        context.add_metric("transformer_lookups_time_ms".to_string(), elapsed.as_millis() as f64);
+        context.add_metric(
+            "transformer_lookups_processed".to_string(),
+            transformed_lookups.len() as f64,
+        );
+        context.add_metric(
+            "transformer_lookups_time_ms".to_string(),
+            elapsed.as_millis() as f64,
+        );
 
         Ok(transformed_lookups)
     }
 
     /// Transform a single lookup record
-    fn transform_single_lookup(&self, mut lookup: Lookup, rules: &[TransformationRule]) -> Result<Lookup> {
+    fn transform_single_lookup(
+        &self,
+        mut lookup: Lookup,
+        rules: &[TransformationRule],
+    ) -> Result<Lookup> {
         // Create transformation context
         let mut original_data = HashMap::new();
         original_data.insert("code".to_string(), lookup.table_id.clone());
@@ -384,23 +425,19 @@ impl TransformerStageImpl {
     }
 
     /// Apply a single transformation rule
-    fn apply_transformation_rule(&self, rule: &TransformationRule, context: &mut TransformationContext) -> Result<()> {
+    fn apply_transformation_rule(
+        &self,
+        rule: &TransformationRule,
+        context: &mut TransformationContext,
+    ) -> Result<()> {
         match &rule.rule_type {
-            TransformationRuleType::FieldMapping => {
-                self.apply_field_mapping(rule, context)
-            }
-            TransformationRuleType::TypeConversion => {
-                self.apply_type_conversion(rule, context)
-            }
+            TransformationRuleType::FieldMapping => self.apply_field_mapping(rule, context),
+            TransformationRuleType::TypeConversion => self.apply_type_conversion(rule, context),
             TransformationRuleType::ValueTransformation => {
                 self.apply_value_transformation(rule, context)
             }
-            TransformationRuleType::Aggregation => {
-                self.apply_aggregation(rule, context)
-            }
-            TransformationRuleType::Filtering => {
-                self.apply_filtering(rule, context)
-            }
+            TransformationRuleType::Aggregation => self.apply_aggregation(rule, context),
+            TransformationRuleType::Filtering => self.apply_filtering(rule, context),
             TransformationRuleType::Custom(function_name) => {
                 self.apply_custom_transformation(function_name, rule, context)
             }
@@ -408,8 +445,14 @@ impl TransformerStageImpl {
     }
 
     /// Apply field mapping transformation
-    fn apply_field_mapping(&self, rule: &TransformationRule, context: &mut TransformationContext) -> Result<()> {
-        if let (Some(source_field), Some(target_field)) = (rule.source_field.as_ref(), rule.target_field.as_ref()) {
+    fn apply_field_mapping(
+        &self,
+        rule: &TransformationRule,
+        context: &mut TransformationContext,
+    ) -> Result<()> {
+        if let (Some(source_field), Some(target_field)) =
+            (rule.source_field.as_ref(), rule.target_field.as_ref())
+        {
             if let Some(value) = context.original_data.get(source_field) {
                 context.set_transformed(target_field.clone(), value.clone());
             }
@@ -418,7 +461,11 @@ impl TransformerStageImpl {
     }
 
     /// Apply type conversion transformation
-    fn apply_type_conversion(&self, rule: &TransformationRule, context: &mut TransformationContext) -> Result<()> {
+    fn apply_type_conversion(
+        &self,
+        rule: &TransformationRule,
+        context: &mut TransformationContext,
+    ) -> Result<()> {
         if let Some(field) = rule.source_field.as_ref() {
             if let Some(value) = context.get_transformed(field) {
                 let converted_value = match rule.parameters.get("target_type").map(|s| s.as_str()) {
@@ -435,7 +482,11 @@ impl TransformerStageImpl {
     }
 
     /// Apply value transformation
-    fn apply_value_transformation(&self, rule: &TransformationRule, context: &mut TransformationContext) -> Result<()> {
+    fn apply_value_transformation(
+        &self,
+        rule: &TransformationRule,
+        context: &mut TransformationContext,
+    ) -> Result<()> {
         if let Some(field) = rule.source_field.as_ref() {
             if let Some(value) = context.get_transformed(field) {
                 let transformed_value = match rule.parameters.get("operation").map(|s| s.as_str()) {
@@ -452,14 +503,22 @@ impl TransformerStageImpl {
     }
 
     /// Apply aggregation transformation
-    fn apply_aggregation(&self, _rule: &TransformationRule, _context: &mut TransformationContext) -> Result<()> {
+    fn apply_aggregation(
+        &self,
+        _rule: &TransformationRule,
+        _context: &mut TransformationContext,
+    ) -> Result<()> {
         // Aggregation transformations would be more complex and context-dependent
         // This is a placeholder for future implementation
         Ok(())
     }
 
     /// Apply filtering transformation
-    fn apply_filtering(&self, rule: &TransformationRule, context: &mut TransformationContext) -> Result<()> {
+    fn apply_filtering(
+        &self,
+        rule: &TransformationRule,
+        context: &mut TransformationContext,
+    ) -> Result<()> {
         if let Some(field) = rule.source_field.as_ref() {
             if let Some(value) = context.get_transformed(field) {
                 if let Some(filter_value) = rule.parameters.get("filter_value") {
@@ -473,7 +532,12 @@ impl TransformerStageImpl {
     }
 
     /// Apply custom transformation
-    fn apply_custom_transformation(&self, function_name: &str, rule: &TransformationRule, context: &mut TransformationContext) -> Result<()> {
+    fn apply_custom_transformation(
+        &self,
+        function_name: &str,
+        rule: &TransformationRule,
+        context: &mut TransformationContext,
+    ) -> Result<()> {
         if let Some(func) = self.custom_functions.get(function_name) {
             if let Some(field) = rule.source_field.as_ref() {
                 if let Some(value) = context.get_transformed(field) {
@@ -511,7 +575,10 @@ impl TransformerStageImpl {
     }
 
     /// Get transformation rules for a specific data type
-    fn get_transformation_rules_for_type(&self, data_type: &str) -> Result<Vec<TransformationRule>> {
+    fn get_transformation_rules_for_type(
+        &self,
+        data_type: &str,
+    ) -> Result<Vec<TransformationRule>> {
         // Check cache first
         if let Ok(cache) = self.rules_cache.lock() {
             if let Some(rules) = cache.get(data_type) {
@@ -531,7 +598,10 @@ impl TransformerStageImpl {
     }
 
     /// Load default transformation rules for a data type
-    fn load_default_transformation_rules(&self, data_type: &str) -> Result<Vec<TransformationRule>> {
+    fn load_default_transformation_rules(
+        &self,
+        data_type: &str,
+    ) -> Result<Vec<TransformationRule>> {
         let mut rules = Vec::new();
 
         match data_type {
@@ -602,7 +672,11 @@ impl TransformerStageImpl {
     }
 
     /// Enrich observation data with additional computed fields
-    fn enrich_observation(&self, _observation: &mut Observation, _context: &TransformationContext) -> Result<()> {
+    fn enrich_observation(
+        &self,
+        _observation: &mut Observation,
+        _context: &TransformationContext,
+    ) -> Result<()> {
         // Add computed fields or derived values
         // This is a placeholder for future enhancement
         Ok(())
@@ -639,14 +713,16 @@ impl PipelineStage for TransformerStageImpl {
 
     async fn execute(&mut self, _context: &mut ProcessingContext) -> Result<()> {
         log::info!("Starting transformer stage execution");
-        
+
         // Process different types of data
         // Note: This is a simplified implementation
         // In a real system, you'd extract data from readers and transform it
-        
-        log::info!("Transformer stage completed: {} records transformed", 
-                  self.stats.records_transformed);
-        
+
+        log::info!(
+            "Transformer stage completed: {} records transformed",
+            self.stats.records_transformed
+        );
+
         Ok(())
     }
 
@@ -659,15 +735,17 @@ impl PipelineStage for TransformerStageImpl {
         // Validate that data readers are available
         if context.data_readers.is_empty() {
             return Err(ProcessingError::InvalidConfiguration(
-                "No data readers available for transformer stage".to_string()
-            ).into());
+                "No data readers available for transformer stage".to_string(),
+            )
+            .into());
         }
 
         // Validate configuration
         if self.config.batch_size == 0 {
             return Err(ProcessingError::InvalidConfiguration(
-                "batch_size must be greater than 0".to_string()
-            ).into());
+                "batch_size must be greater than 0".to_string(),
+            )
+            .into());
         }
 
         Ok(())
@@ -678,26 +756,42 @@ impl PipelineStage for TransformerStageImpl {
         if let Ok(mut cache) = self.rules_cache.lock() {
             cache.clear();
         }
-        
+
         Ok(())
     }
 }
 
 #[async_trait]
 impl TransformerStage for TransformerStageImpl {
-    async fn transform_series(&mut self, series: Vec<Series>, context: &mut ProcessingContext) -> Result<Vec<Series>> {
+    async fn transform_series(
+        &mut self,
+        series: Vec<Series>,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Series>> {
         self.transform_series_data(series, context)
     }
 
-    async fn transform_observations(&mut self, observations: Vec<Observation>, context: &mut ProcessingContext) -> Result<Vec<Observation>> {
+    async fn transform_observations(
+        &mut self,
+        observations: Vec<Observation>,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Observation>> {
         self.transform_observations_data(observations, context)
     }
 
-    async fn transform_lookups(&mut self, lookups: Vec<Lookup>, context: &mut ProcessingContext) -> Result<Vec<Lookup>> {
+    async fn transform_lookups(
+        &mut self,
+        lookups: Vec<Lookup>,
+        context: &mut ProcessingContext,
+    ) -> Result<Vec<Lookup>> {
         self.transform_lookups_data(lookups, context)
     }
 
-    async fn transform_survey(&mut self, survey: Survey, _context: &mut ProcessingContext) -> Result<Survey> {
+    async fn transform_survey(
+        &mut self,
+        survey: Survey,
+        _context: &mut ProcessingContext,
+    ) -> Result<Survey> {
         // Survey transformation is typically simpler
         Ok(survey)
     }
@@ -705,13 +799,13 @@ impl TransformerStage for TransformerStageImpl {
     fn get_transformation_rules(&self) -> Vec<TransformationRule> {
         // Return all cached transformation rules
         let mut all_rules = Vec::new();
-        
+
         if let Ok(cache) = self.rules_cache.lock() {
             for rules in cache.values() {
                 all_rules.extend(rules.clone());
             }
         }
-        
+
         all_rules
     }
 }
@@ -739,30 +833,36 @@ mod tests {
     fn test_transformation_context() {
         let mut original_data = HashMap::new();
         original_data.insert("field1".to_string(), "value1".to_string());
-        
+
         let mut context = TransformationContext::new(original_data);
         assert!(context.is_successful());
-        
+
         context.add_error("Test error".to_string());
         assert!(!context.is_successful());
-        
+
         context.set_transformed("field2".to_string(), "value2".to_string());
-        assert_eq!(context.get_transformed("field2"), Some(&"value2".to_string()));
+        assert_eq!(
+            context.get_transformed("field2"),
+            Some(&"value2".to_string())
+        );
     }
 
     #[test]
     fn test_convert_to_numeric() {
         let transformer = TransformerStageImpl::new();
-        
+
         assert_eq!(transformer.convert_to_numeric("123.45").unwrap(), "123.45");
-        assert_eq!(transformer.convert_to_numeric("$1,234.56").unwrap(), "1234.56");
+        assert_eq!(
+            transformer.convert_to_numeric("$1,234.56").unwrap(),
+            "1234.56"
+        );
         assert_eq!(transformer.convert_to_numeric("invalid").unwrap(), "0");
     }
 
     #[test]
     fn test_convert_to_currency() {
         let transformer = TransformerStageImpl::new();
-        
+
         let result = transformer.convert_to_currency("1234.56").unwrap();
         assert!(result.contains("1234.56")); // Basic check
     }
@@ -770,28 +870,37 @@ mod tests {
     #[test]
     fn test_load_default_transformation_rules() {
         let transformer = TransformerStageImpl::new();
-        
-        let series_rules = transformer.load_default_transformation_rules("series").unwrap();
+
+        let series_rules = transformer
+            .load_default_transformation_rules("series")
+            .unwrap();
         assert!(!series_rules.is_empty());
-        
-        let obs_rules = transformer.load_default_transformation_rules("observations").unwrap();
+
+        let obs_rules = transformer
+            .load_default_transformation_rules("observations")
+            .unwrap();
         assert!(!obs_rules.is_empty());
-        
-        let lookup_rules = transformer.load_default_transformation_rules("lookups").unwrap();
+
+        let lookup_rules = transformer
+            .load_default_transformation_rules("lookups")
+            .unwrap();
         assert!(!lookup_rules.is_empty());
-        
-        let unknown_rules = transformer.load_default_transformation_rules("unknown").unwrap();
+
+        let unknown_rules = transformer
+            .load_default_transformation_rules("unknown")
+            .unwrap();
         assert!(unknown_rules.is_empty());
     }
 
     #[test]
     fn test_transformer_stage_validation() {
         let transformer = TransformerStageImpl::new();
-        let mut context = ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
-        
+        let mut context =
+            ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
+
         // Should fail with empty data readers
         assert!(transformer.validate(&context).is_err());
-        
+
         // Add a dummy reader (this would be a real reader in practice)
         // context.data_readers.push(Box::new(DummyReader));
         // assert!(transformer.validate(&context).is_ok());
@@ -800,11 +909,12 @@ mod tests {
     #[test]
     fn test_can_process() {
         let transformer = TransformerStageImpl::new();
-        let mut context = ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
-        
+        let mut context =
+            ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
+
         // Should return false with no data readers
         assert!(!transformer.can_process(&context).unwrap());
-        
+
         // Would return true with data readers
         // context.data_readers.push(Box::new(DummyReader));
         // assert!(transformer.can_process(&context).unwrap());
@@ -815,7 +925,7 @@ mod tests {
         let mut transformer = TransformerStageImpl::new();
         assert_eq!(transformer.stats().records_transformed, 0);
         assert_eq!(transformer.stats().rules_applied, 0);
-        
+
         transformer.reset_stats();
         assert_eq!(transformer.stats().records_transformed, 0);
     }
@@ -827,24 +937,25 @@ mod tests {
         assert_eq!(deps, vec!["loader"]);
     }
 
-    #[test]
-    fn test_cleanup() {
+    #[tokio::test]
+    async fn test_cleanup() {
         let mut transformer = TransformerStageImpl::new();
-        let mut context = ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
-        
+        let mut context =
+            ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
+
         // Should not fail
-        assert!(transformer.cleanup(&mut context).is_ok());
+        assert!(transformer.cleanup(&mut context).await.is_ok());
     }
 
     #[test]
     fn test_custom_function() {
         let mut transformer = TransformerStageImpl::new();
-        
+
         // Add a custom function
         transformer.add_custom_function("test_func".to_string(), |input| {
             Ok(format!("transformed_{}", input))
         });
-        
+
         assert!(transformer.custom_functions.contains_key("test_func"));
     }
 }

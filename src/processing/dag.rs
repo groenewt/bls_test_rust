@@ -5,13 +5,14 @@
 
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::time::{Duration, Instant};
-use async_trait::async_trait;
 use tokio::time::sleep;
-use tracing::{info, warn, error, debug};
+use tracing::{debug, error, info, warn};
 
-use crate::config::model::{DagsConfig, DagDefinition, TaskDefinition, RetryConfig, BackoffStrategy, SlaConfig};
-use crate::processing::traits::{ProcessingContext, PipelineStage};
-use crate::error::{Result, ProcessingError, ConfigError};
+use crate::config::model::{
+    BackoffStrategy, DagDefinition, DagsConfig, RetryConfig, TaskDefinition,
+};
+use crate::error::{ConfigError, ProcessingError, Result};
+use crate::processing::traits::{PipelineStage, ProcessingContext};
 
 /// DAG execution engine that manages task dependencies and execution
 pub struct DagExecutor {
@@ -80,9 +81,10 @@ impl DagExecutor {
             return Err(ProcessingError::PipelineError {
                 stage: name,
                 message: "Task already registered".to_string(),
-            }.into());
+            }
+            .into());
         }
-        
+
         self.tasks.insert(name, stage);
         Ok(())
     }
@@ -104,7 +106,8 @@ impl DagExecutor {
                 return Err(ConfigError::DagValidationError {
                     dag_name: dag.name.clone(),
                     message: format!("Duplicate task name: {}", task.name),
-                }.into());
+                }
+                .into());
             }
         }
 
@@ -114,8 +117,12 @@ impl DagExecutor {
                 if !task_names.contains(dep) {
                     return Err(ConfigError::DagValidationError {
                         dag_name: dag.name.clone(),
-                        message: format!("Task '{}' depends on non-existent task '{}'", task.name, dep),
-                    }.into());
+                        message: format!(
+                            "Task '{}' depends on non-existent task '{}'",
+                            task.name, dep
+                        ),
+                    }
+                    .into());
                 }
             }
         }
@@ -163,7 +170,7 @@ impl DagExecutor {
 
         while let Some(task) = queue.pop_front() {
             processed += 1;
-            
+
             // Process all neighbors
             if let Some(neighbors) = graph.get(&task) {
                 for neighbor in neighbors {
@@ -181,27 +188,35 @@ impl DagExecutor {
             return Err(ConfigError::DagValidationError {
                 dag_name: dag.name.clone(),
                 message: "Cycle detected in task dependencies".to_string(),
-            }.into());
+            }
+            .into());
         }
 
         Ok(())
     }
 
     /// Validate retry configuration
-    fn validate_retry_config(&self, retry: &RetryConfig, dag_name: &str, task_name: &str) -> Result<()> {
+    fn validate_retry_config(
+        &self,
+        retry: &RetryConfig,
+        dag_name: &str,
+        task_name: &str,
+    ) -> Result<()> {
         if retry.max_attempts == 0 {
             return Err(ConfigError::DagValidationError {
                 dag_name: dag_name.to_string(),
-                message: format!("Task '{}' has invalid retry max_attempts: 0", task_name),
-            }.into());
+                message: format!("Task '{task_name}' has invalid retry max_attempts: 0"),
+            }
+            .into());
         }
 
         if let Some(delay) = retry.initial_delay {
             if delay.as_secs() == 0 && delay.subsec_millis() == 0 {
                 return Err(ConfigError::DagValidationError {
                     dag_name: dag_name.to_string(),
-                    message: format!("Task '{}' has invalid retry initial_delay: 0", task_name),
-                }.into());
+                    message: format!("Task '{task_name}' has invalid retry initial_delay: 0"),
+                }
+                .into());
             }
         }
 
@@ -209,8 +224,15 @@ impl DagExecutor {
     }
 
     /// Execute a DAG by name
-    pub async fn execute_dag(&mut self, dag_name: &str, mut context: ProcessingContext) -> Result<DagExecutionContext> {
-        let dag = self.config.dags.iter()
+    pub async fn execute_dag(
+        &mut self,
+        dag_name: &str,
+        context: ProcessingContext,
+    ) -> Result<DagExecutionContext> {
+        let dag = self
+            .config
+            .dags
+            .iter()
             .find(|(_, d)| d.name == dag_name)
             .map(|(_, dag)| dag)
             .ok_or_else(|| ProcessingError::PipelineError {
@@ -230,59 +252,85 @@ impl DagExecutor {
 
         // Execute tasks in dependency order
         let dag_copy = dag.clone();
-        
+
         // Initialize task states
         for task in dag_copy.tasks.values() {
-            dag_context.task_states.insert(task.name.clone(), TaskState::Pending);
+            dag_context
+                .task_states
+                .insert(task.name.clone(), TaskState::Pending);
         }
-        
+
         self.execute_tasks(&dag_copy, &mut dag_context).await?;
 
         // Update statistics
         self.stats.total_execution_time = execution_start.elapsed();
         self.stats.total_tasks = dag_copy.tasks.values().len();
-        self.stats.completed_tasks = dag_context.task_states.values()
+        self.stats.completed_tasks = dag_context
+            .task_states
+            .values()
             .filter(|&state| *state == TaskState::Completed)
             .count();
-        self.stats.failed_tasks = dag_context.task_states.values()
+        self.stats.failed_tasks = dag_context
+            .task_states
+            .values()
             .filter(|&state| *state == TaskState::Failed)
             .count();
 
-        info!("DAG execution completed: {} ({}ms)", dag_name, self.stats.total_execution_time.as_millis());
+        info!(
+            "DAG execution completed: {} ({}ms)",
+            dag_name,
+            self.stats.total_execution_time.as_millis()
+        );
 
         Ok(dag_context)
     }
 
     /// Execute tasks in the DAG
-    async fn execute_tasks(&mut self, dag: &DagDefinition, context: &mut DagExecutionContext) -> Result<()> {
-        let mut remaining_tasks: HashSet<String> = dag.tasks.values().map(|t| t.name.clone()).collect();
+    async fn execute_tasks(
+        &mut self,
+        dag: &DagDefinition,
+        context: &mut DagExecutionContext,
+    ) -> Result<()> {
+        let mut remaining_tasks: HashSet<String> =
+            dag.tasks.values().map(|t| t.name.clone()).collect();
 
         while !remaining_tasks.is_empty() {
             let ready_tasks = self.find_ready_tasks(dag, context, &remaining_tasks);
-            
+
             if ready_tasks.is_empty() {
                 // Check if we have any failed tasks that are blocking progress
-                let failed_tasks: Vec<_> = context.task_states.iter()
+                let failed_tasks: Vec<_> = context
+                    .task_states
+                    .iter()
                     .filter(|(_, state)| **state == TaskState::Failed)
                     .map(|(name, _)| name.clone())
                     .collect();
-                
+
                 if !failed_tasks.is_empty() {
                     return Err(ProcessingError::PipelineError {
                         stage: "DAG".to_string(),
-                        message: format!("DAG execution blocked by failed tasks: {:?}", failed_tasks),
-                    }.into());
+                        message: format!(
+                            "DAG execution blocked by failed tasks: {failed_tasks:?}"
+                        ),
+                    }
+                    .into());
                 }
-                
+
                 return Err(ProcessingError::PipelineError {
                     stage: "DAG".to_string(),
                     message: "No ready tasks found, possible deadlock".to_string(),
-                }.into());
+                }
+                .into());
             }
 
             // Execute ready tasks (could be parallelized in the future)
             for task_name in ready_tasks {
-                let task_def = dag.tasks.iter().find(|(_, t)| t.name == task_name).map(|(_, t)| t).unwrap();
+                let task_def = dag
+                    .tasks
+                    .iter()
+                    .find(|(_, t)| t.name == task_name)
+                    .map(|(_, t)| t)
+                    .unwrap();
                 self.execute_task(task_def, context).await?;
                 remaining_tasks.remove(&task_name);
             }
@@ -292,7 +340,12 @@ impl DagExecutor {
     }
 
     /// Find tasks that are ready to execute (all dependencies completed)
-    fn find_ready_tasks(&self, dag: &DagDefinition, context: &DagExecutionContext, remaining: &HashSet<String>) -> Vec<String> {
+    fn find_ready_tasks(
+        &self,
+        dag: &DagDefinition,
+        context: &DagExecutionContext,
+        remaining: &HashSet<String>,
+    ) -> Vec<String> {
         let mut ready = Vec::new();
 
         for task in dag.tasks.values() {
@@ -305,9 +358,10 @@ impl DagExecutor {
             }
 
             // Check if all dependencies are completed
-            let all_deps_completed = task.depends_on.iter().all(|dep| {
-                context.task_states.get(dep) == Some(&TaskState::Completed)
-            });
+            let all_deps_completed = task
+                .depends_on
+                .iter()
+                .all(|dep| context.task_states.get(dep) == Some(&TaskState::Completed));
 
             if all_deps_completed {
                 ready.push(task.name.clone());
@@ -318,11 +372,17 @@ impl DagExecutor {
     }
 
     /// Execute a single task with retry logic
-    async fn execute_task(&mut self, task: &TaskDefinition, context: &mut DagExecutionContext) -> Result<()> {
+    async fn execute_task(
+        &mut self,
+        task: &TaskDefinition,
+        context: &mut DagExecutionContext,
+    ) -> Result<()> {
         let task_name = &task.name;
         info!("Executing task: {}", task_name);
 
-        context.task_states.insert(task_name.clone(), TaskState::Running);
+        context
+            .task_states
+            .insert(task_name.clone(), TaskState::Running);
         let task_start = Instant::now();
 
         let mut retry_count = 0;
@@ -332,11 +392,12 @@ impl DagExecutor {
         loop {
             // Execute the stage
             let execution_result = {
-                let stage = self.tasks.get_mut(task_name)
-                    .ok_or_else(|| ProcessingError::PipelineError {
+                let stage = self.tasks.get_mut(task_name).ok_or_else(|| {
+                    ProcessingError::PipelineError {
                         stage: task_name.clone(),
                         message: "Task implementation not found".to_string(),
-                    })?;
+                    }
+                })?;
 
                 stage.execute(&mut context.processing_context).await
             };
@@ -344,49 +405,73 @@ impl DagExecutor {
             match execution_result {
                 Ok(_) => {
                     let execution_time = task_start.elapsed();
-                    info!("Task completed: {} ({}ms)", task_name, execution_time.as_millis());
-                    
-                    context.task_states.insert(task_name.clone(), TaskState::Completed);
-                    context.task_results.insert(task_name.clone(), TaskExecutionResult {
-                        task_name: task_name.clone(),
-                        state: TaskState::Completed,
-                        execution_time,
-                        retry_count,
-                        error: None,
-                    });
-                    
-                    self.stats.task_execution_times.insert(task_name.clone(), execution_time);
+                    info!(
+                        "Task completed: {} ({}ms)",
+                        task_name,
+                        execution_time.as_millis()
+                    );
+
+                    context
+                        .task_states
+                        .insert(task_name.clone(), TaskState::Completed);
+                    context.task_results.insert(
+                        task_name.clone(),
+                        TaskExecutionResult {
+                            task_name: task_name.clone(),
+                            state: TaskState::Completed,
+                            execution_time,
+                            retry_count,
+                            error: None,
+                        },
+                    );
+
+                    self.stats
+                        .task_execution_times
+                        .insert(task_name.clone(), execution_time);
                     break;
                 }
                 Err(e) => {
                     retry_count += 1;
-                    warn!("Task failed: {} (attempt {}/{}): {}", task_name, retry_count, max_attempts, e);
+                    warn!(
+                        "Task failed: {} (attempt {}/{}): {}",
+                        task_name, retry_count, max_attempts, e
+                    );
 
                     if retry_count >= max_attempts {
                         let execution_time = task_start.elapsed();
-                        error!("Task failed permanently: {} after {} attempts", task_name, retry_count);
-                        
-                        context.task_states.insert(task_name.clone(), TaskState::Failed);
-                        context.task_results.insert(task_name.clone(), TaskExecutionResult {
-                            task_name: task_name.clone(),
-                            state: TaskState::Failed,
-                            execution_time,
-                            retry_count,
-                            error: Some(e.to_string()),
-                        });
-                        
+                        error!(
+                            "Task failed permanently: {} after {} attempts",
+                            task_name, retry_count
+                        );
+
+                        context
+                            .task_states
+                            .insert(task_name.clone(), TaskState::Failed);
+                        context.task_results.insert(
+                            task_name.clone(),
+                            TaskExecutionResult {
+                                task_name: task_name.clone(),
+                                state: TaskState::Failed,
+                                execution_time,
+                                retry_count,
+                                error: Some(e.to_string()),
+                            },
+                        );
+
                         self.stats.failed_tasks += 1;
                         return Err(e);
                     }
 
                     // Calculate delay before any mutable borrows
                     let delay = self.calculate_backoff_delay(&retry_config, retry_count);
-                    
+
                     // Update retry stats
                     self.stats.retried_tasks += 1;
-                    
+
                     // Apply backoff strategy
-                    context.task_states.insert(task_name.clone(), TaskState::Retrying);
+                    context
+                        .task_states
+                        .insert(task_name.clone(), TaskState::Retrying);
                     debug!("Retrying task {} in {}ms", task_name, delay.as_millis());
                     sleep(delay).await;
                 }
@@ -399,14 +484,20 @@ impl DagExecutor {
     /// Calculate backoff delay based on strategy and attempt number
     fn calculate_backoff_delay(&self, retry_config: &RetryConfig, attempt: u32) -> Duration {
         match retry_config.backoff {
-            BackoffStrategy::Fixed => retry_config.initial_delay.unwrap_or(Duration::from_millis(retry_config.delay)),
+            BackoffStrategy::Fixed => retry_config
+                .initial_delay
+                .unwrap_or(Duration::from_millis(retry_config.delay)),
             BackoffStrategy::Exponential => {
                 let multiplier = 2_u64.pow(attempt - 1);
-                let base_delay = retry_config.initial_delay.unwrap_or(Duration::from_millis(retry_config.delay));
+                let base_delay = retry_config
+                    .initial_delay
+                    .unwrap_or(Duration::from_millis(retry_config.delay));
                 Duration::from_millis(base_delay.as_millis() as u64 * multiplier)
             }
             BackoffStrategy::Linear => {
-                let base_delay = retry_config.initial_delay.unwrap_or(Duration::from_millis(retry_config.delay));
+                let base_delay = retry_config
+                    .initial_delay
+                    .unwrap_or(Duration::from_millis(retry_config.delay));
                 Duration::from_millis(base_delay.as_millis() as u64 * attempt as u64)
             }
         }
@@ -426,56 +517,53 @@ impl DagExecutor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::config::model::{TaskDefaults};
+    use crate::config::model::TaskDefaults;
     use std::time::Duration;
 
     fn create_test_dag() -> DagDefinition {
+        let mut tasks = HashMap::new();
+        tasks.insert("task1".to_string(), TaskDefinition {
+            name: "task1".to_string(),
+            task_type: "loader".to_string(),
+            depends_on: vec![],
+            retry: RetryConfig {
+                max_attempts: 3,
+                backoff: BackoffStrategy::Exponential,
+                delay: 100,
+                initial_delay: Some(Duration::from_millis(100)),
+            },
+            sla: None,
+            parameters: HashMap::new(),
+            description: Some("First task".to_string()),
+            stage: "loader".to_string(),
+            timeout: Some(Duration::from_secs(30)),
+        });
+        tasks.insert("task2".to_string(), TaskDefinition {
+            name: "task2".to_string(),
+            task_type: "transformer".to_string(),
+            depends_on: vec!["task1".to_string()],
+            retry: RetryConfig::default(),
+            sla: None,
+            parameters: HashMap::new(),
+            description: Some("Second task".to_string()),
+            stage: "transformer".to_string(),
+            timeout: None,
+        });
+        
         DagDefinition {
             name: "test_dag".to_string(),
             description: Some("Test DAG".to_string()),
-            tasks: vec![
-                TaskDefinition {
-                    name: "task1".to_string(),
-                    description: Some("First task".to_string()),
-                    depends_on: vec![],
-                    stage: "loader".to_string(),
-                    config: HashMap::new(),
-                    retry: Some(RetryConfig {
-                        max_attempts: 3,
-                        initial_delay: Some(Duration::from_millis(100)),
-                        backoff: BackoffStrategy::Exponential,
-                        delay: 100,
-                    }),
-                    sla: None,
-                    timeout: Some(Duration::from_secs(30)),
-                    task_type: "".to_string(),
-                    parameters: Default::default(),
-                },
-                TaskDefinition {
-                    name: "task2".to_string(),
-                    description: Some("Second task".to_string()),
-                    depends_on: vec!["task1".to_string()],
-                    stage: "transformer".to_string(),
-                    config: HashMap::new(),
-                    retry: None,
-                    sla: None,
-                    timeout: None,
-                    task_type: "".to_string(),
-                    parameters: Default::default(),
-                },
-            ],
+            tasks,
             defaults: TaskDefaults {
                 retry: Some(RetryConfig {
                     max_attempts: 1,
-                    initial_delay: Some(Duration::from_millis(50)),
                     backoff: BackoffStrategy::Fixed,
                     delay: 50,
+                    initial_delay: Some(Duration::from_millis(50)),
                 }),
                 sla: None,
-                timeout: Some(Duration::from_secs(60)),
+                timeout: Some(60),
             },
-            schedule: None,
-            enabled: true,
         }
     }
 
@@ -495,8 +583,8 @@ mod tests {
     fn test_dag_validation_cycle_detection() {
         let mut dag = create_test_dag();
         // Create a cycle: task1 -> task2 -> task1
-        dag.tasks[0].depends_on = vec!["task2".to_string()];
-        
+        dag.tasks.get_mut("task1").unwrap().depends_on = vec!["task2".to_string()];
+
         let mut dags = HashMap::new();
         dags.insert("test_dag".to_string(), dag);
         let config = DagsConfig {
@@ -510,8 +598,8 @@ mod tests {
     #[test]
     fn test_dag_validation_missing_dependency() {
         let mut dag = create_test_dag();
-        dag.tasks[1].depends_on = vec!["nonexistent_task".to_string()];
-        
+        dag.tasks.get_mut("task2").unwrap().depends_on = vec!["nonexistent_task".to_string()];
+
         let mut dags = HashMap::new();
         dags.insert("test_dag".to_string(), dag);
         let config = DagsConfig {
@@ -524,7 +612,10 @@ mod tests {
 
     #[test]
     fn test_backoff_calculation() {
-        let executor = DagExecutor::new(DagsConfig { config_version: 1, dags: HashMap::new() });
+        let executor = DagExecutor::new(DagsConfig {
+            config_version: 1,
+            dags: HashMap::new(),
+        });
         let retry_config = RetryConfig {
             max_attempts: 3,
             initial_delay: Some(Duration::from_millis(100)),
@@ -532,16 +623,28 @@ mod tests {
             delay: 100,
         };
 
-        assert_eq!(executor.calculate_backoff_delay(&retry_config, 1), Duration::from_millis(100));
-        assert_eq!(executor.calculate_backoff_delay(&retry_config, 2), Duration::from_millis(200));
-        assert_eq!(executor.calculate_backoff_delay(&retry_config, 3), Duration::from_millis(400));
+        assert_eq!(
+            executor.calculate_backoff_delay(&retry_config, 1),
+            Duration::from_millis(100)
+        );
+        assert_eq!(
+            executor.calculate_backoff_delay(&retry_config, 2),
+            Duration::from_millis(200)
+        );
+        assert_eq!(
+            executor.calculate_backoff_delay(&retry_config, 3),
+            Duration::from_millis(400)
+        );
     }
 
     #[test]
     fn test_find_ready_tasks() {
         let dag = create_test_dag();
-        let executor = DagExecutor::new(DagsConfig { config_version: 1, dags: HashMap::new() });
-        
+        let executor = DagExecutor::new(DagsConfig {
+            config_version: 1,
+            dags: HashMap::new(),
+        });
+
         let mut context = DagExecutionContext {
             processing_context: ProcessingContext::new(Default::default()),
             task_states: HashMap::new(),
@@ -550,15 +653,23 @@ mod tests {
         };
 
         // Initially, only task1 should be ready (no dependencies)
-        context.task_states.insert("task1".to_string(), TaskState::Pending);
-        context.task_states.insert("task2".to_string(), TaskState::Pending);
-        
-        let remaining: HashSet<String> = vec!["task1".to_string(), "task2".to_string()].into_iter().collect();
+        context
+            .task_states
+            .insert("task1".to_string(), TaskState::Pending);
+        context
+            .task_states
+            .insert("task2".to_string(), TaskState::Pending);
+
+        let remaining: HashSet<String> = vec!["task1".to_string(), "task2".to_string()]
+            .into_iter()
+            .collect();
         let ready = executor.find_ready_tasks(&dag, &context, &remaining);
         assert_eq!(ready, vec!["task1"]);
 
         // After task1 completes, task2 should be ready
-        context.task_states.insert("task1".to_string(), TaskState::Completed);
+        context
+            .task_states
+            .insert("task1".to_string(), TaskState::Completed);
         let remaining: HashSet<String> = vec!["task2".to_string()].into_iter().collect();
         let ready = executor.find_ready_tasks(&dag, &context, &remaining);
         assert_eq!(ready, vec!["task2"]);

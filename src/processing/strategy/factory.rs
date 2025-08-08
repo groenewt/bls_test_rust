@@ -14,21 +14,20 @@
 //! ## Usage
 //!
 
-
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
 use crate::Error;
-pub(crate) use crate::processing::traits::{
-    DataProcessor, ProcessingPipeline, ProcessingStrategy,
-    ProcessingConfig, ProcessingInput, ProcessingContext,
-};
-pub use crate::processing::traits::ProcessorFactory;
+use crate::error::types::{ProcessingError, Result};
+use crate::processing::pipeline::DefaultPipeline;
 use crate::processing::strategy::{
-    InMemoryProcessor, ChunkedProcessor, MemoryMappedProcessor,
+    ChunkedProcessor, InMemoryProcessor, MemoryMappedProcessor,
     recommend_strategy as strategy_recommend,
 };
-use crate::processing::pipeline::DefaultPipeline;
-use crate::error::types::{ProcessingError, Result};
+pub use crate::processing::traits::ProcessorFactory;
+pub(crate) use crate::processing::traits::{
+    DataProcessor, ProcessingConfig, ProcessingInput, ProcessingPipeline,
+    ProcessingStrategy,
+};
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 /// Default implementation of the ProcessorFactory trait
 pub struct DefaultProcessorFactory {
@@ -88,16 +87,23 @@ impl DefaultProcessorFactory {
         memory_used_mb: f64,
         success: bool,
     ) -> Result<()> {
-        let mut metrics = self.performance_metrics.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock metrics: {}", e)))?;
+        let mut metrics = self
+            .performance_metrics
+            .lock()
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock metrics: {e}")))?;
 
-        let entry = metrics.entry(strategy).or_insert_with(PerformanceMetrics::default);
-        
+        let entry = metrics
+            .entry(strategy)
+            .or_insert_with(PerformanceMetrics::default);
+
         // Update metrics using exponential moving average
         let alpha = 0.1; // Smoothing factor
-        entry.avg_time_per_mb = entry.avg_time_per_mb * (1.0 - alpha) + (processing_time / data_size_mb) * alpha;
-        entry.memory_efficiency = entry.memory_efficiency * (1.0 - alpha) + (data_size_mb / memory_used_mb) * alpha;
-        entry.success_rate = entry.success_rate * (1.0 - alpha) + if success { 1.0 } else { 0.0 } * alpha;
+        entry.avg_time_per_mb =
+            entry.avg_time_per_mb * (1.0 - alpha) + (processing_time / data_size_mb) * alpha;
+        entry.memory_efficiency =
+            entry.memory_efficiency * (1.0 - alpha) + (data_size_mb / memory_used_mb) * alpha;
+        entry.success_rate =
+            entry.success_rate * (1.0 - alpha) + if success { 1.0 } else { 0.0 } * alpha;
         entry.sample_count += 1;
 
         Ok(())
@@ -105,43 +111,57 @@ impl DefaultProcessorFactory {
 
     /// Get performance metrics for a strategy
     pub fn get_metrics(&self, strategy: ProcessingStrategy) -> Result<Option<PerformanceMetrics>> {
-        let metrics = self.performance_metrics.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock metrics: {}", e)))?;
-        
+        let metrics = self
+            .performance_metrics
+            .lock()
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock metrics: {e}")))?;
+
         Ok(metrics.get(&strategy).cloned())
     }
 
     /// Clear the processor cache
     pub fn clear_cache(&self) -> Result<()> {
-        let mut cache = self.processor_cache.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock cache: {}", e)))?;
-        
+        let mut cache = self
+            .processor_cache
+            .lock()
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock cache: {e}")))?;
+
         cache.clear();
         Ok(())
     }
 
     /// Get cache statistics
     pub fn cache_stats(&self) -> Result<(usize, usize)> {
-        let cache = self.processor_cache.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock cache: {}", e)))?;
-        
+        let cache = self
+            .processor_cache
+            .lock()
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock cache: {e}")))?;
+
         // Return (current_size, capacity)
         Ok((cache.len(), cache.capacity()))
     }
 
     /// Create a cache key for processor caching
     fn create_cache_key(&self, strategy: ProcessingStrategy, config: &ProcessingConfig) -> String {
-        format!("{:?}_{:?}_{}", strategy, config.strategy, config.max_threads)
+        format!(
+            "{:?}_{:?}_{}",
+            strategy, config.strategy, config.max_threads
+        )
     }
 
     /// Recommend strategy with performance considerations
-    fn recommend_strategy_with_metrics(&self, input: &ProcessingInput) -> Result<ProcessingStrategy> {
+    fn recommend_strategy_with_metrics(
+        &self,
+        input: &ProcessingInput,
+    ) -> Result<ProcessingStrategy> {
         // Start with basic recommendation
         let base_strategy = strategy_recommend(input)?;
-        
+
         // Consider performance metrics if available
-        let metrics = self.performance_metrics.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock metrics: {}", e)))?;
+        let metrics = self
+            .performance_metrics
+            .lock()
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock metrics: {e}")))?;
 
         if metrics.is_empty() {
             return Ok(base_strategy);
@@ -157,8 +177,9 @@ impl DefaultProcessorFactory {
             }
 
             // Calculate performance score (higher is better)
-            let score = perf_metrics.success_rate * perf_metrics.memory_efficiency / perf_metrics.avg_time_per_mb;
-            
+            let score = perf_metrics.success_rate * perf_metrics.memory_efficiency
+                / perf_metrics.avg_time_per_mb;
+
             if score > best_score {
                 best_score = score;
                 best_strategy = *strategy;
@@ -183,11 +204,12 @@ impl ProcessorFactory for DefaultProcessorFactory {
     ) -> Result<Box<dyn DataProcessor>> {
         // Check cache first
         let cache_key = self.create_cache_key(strategy, &config);
-        
+
         {
-            let cache = self.processor_cache.lock()
-                .map_err(|e| ProcessingError::system_error(format!("Failed to lock cache: {}", e)))?;
-            
+            let cache = self.processor_cache.lock().map_err(|e| {
+                ProcessingError::system_error(format!("Failed to lock cache: {e}"))
+            })?;
+
             if let Some(_cached_processor) = cache.get(&cache_key) {
                 // Note: We can't return the cached processor directly because of ownership issues
                 // In a real implementation, you might use Arc<Mutex<dyn DataProcessor>> or similar
@@ -197,23 +219,17 @@ impl ProcessorFactory for DefaultProcessorFactory {
 
         // Create new processor
         let processor: Box<dyn DataProcessor> = match strategy {
-            ProcessingStrategy::InMemory => {
-                Box::new(InMemoryProcessor::new(config))
-            }
-            ProcessingStrategy::Chunked => {
-                Box::new(ChunkedProcessor::new(config))
-            }
-            ProcessingStrategy::MemoryMapped => {
-                Box::new(MemoryMappedProcessor::new(config))
-            }
+            ProcessingStrategy::InMemory => Box::new(InMemoryProcessor::new(config)),
+            ProcessingStrategy::Chunked => Box::new(ChunkedProcessor::new(config)),
+            ProcessingStrategy::MemoryMapped => Box::new(MemoryMappedProcessor::new(config)),
             ProcessingStrategy::Auto => {
                 return Err(ProcessingError::invalid_configuration(
-                    "Auto strategy must be resolved before creating processor".to_string()
+                    "Auto strategy must be resolved before creating processor".to_string(),
                 ));
             }
             ProcessingStrategy::Streaming => {
                 return Err(Error::from(ProcessingError::unsupported_data_type(
-                    "Streaming strategy is not yet implemented".to_string()
+                    "Streaming strategy is not yet implemented".to_string(),
                 )));
             }
         };
@@ -247,28 +263,37 @@ pub fn create_factory() -> DefaultProcessorFactory {
 /// Create a processor factory with performance optimization enabled
 pub fn create_optimized_factory() -> DefaultProcessorFactory {
     let mut initial_metrics = HashMap::new();
-    
+
     // Add some baseline performance metrics
-    initial_metrics.insert(ProcessingStrategy::InMemory, PerformanceMetrics {
-        avg_time_per_mb: 0.5,
-        memory_efficiency: 0.8,
-        success_rate: 0.95,
-        sample_count: 10,
-    });
-    
-    initial_metrics.insert(ProcessingStrategy::Chunked, PerformanceMetrics {
-        avg_time_per_mb: 0.8,
-        memory_efficiency: 0.95,
-        success_rate: 0.98,
-        sample_count: 10,
-    });
-    
-    initial_metrics.insert(ProcessingStrategy::MemoryMapped, PerformanceMetrics {
-        avg_time_per_mb: 1.2,
-        memory_efficiency: 0.99,
-        success_rate: 0.92,
-        sample_count: 10,
-    });
+    initial_metrics.insert(
+        ProcessingStrategy::InMemory,
+        PerformanceMetrics {
+            avg_time_per_mb: 0.5,
+            memory_efficiency: 0.8,
+            success_rate: 0.95,
+            sample_count: 10,
+        },
+    );
+
+    initial_metrics.insert(
+        ProcessingStrategy::Chunked,
+        PerformanceMetrics {
+            avg_time_per_mb: 0.8,
+            memory_efficiency: 0.95,
+            success_rate: 0.98,
+            sample_count: 10,
+        },
+    );
+
+    initial_metrics.insert(
+        ProcessingStrategy::MemoryMapped,
+        PerformanceMetrics {
+            avg_time_per_mb: 1.2,
+            memory_efficiency: 0.99,
+            success_rate: 0.92,
+            sample_count: 10,
+        },
+    );
 
     DefaultProcessorFactory::with_metrics(initial_metrics)
 }
@@ -370,10 +395,10 @@ mod tests {
     #[test]
     fn test_cache_operations() {
         let factory = DefaultProcessorFactory::new();
-        
+
         // Initially empty
         assert_eq!(factory.cache_stats().unwrap(), (0, 0));
-        
+
         // Clear cache (should not error even when empty)
         assert!(factory.clear_cache().is_ok());
     }

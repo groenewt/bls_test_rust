@@ -5,9 +5,9 @@
 
 use std::collections::HashMap;
 
-use crate::output::traits::{OutputFactory, OutputGenerator, FormatWriter, OutputConfig};
-use crate::output::format::{create_format_generator, create_format_writer, supported_formats};
 use crate::error::types::{ProcessingError, Result};
+use crate::output::format::{create_format_generator, create_format_writer, supported_formats};
+use crate::output::traits::{FormatWriter, OutputConfig, OutputFactory, OutputGenerator};
 
 /// Default implementation of the output factory
 pub struct DefaultOutputFactory {
@@ -45,7 +45,7 @@ impl DefaultOutputFactory {
             config: FactoryConfig::default(),
             default_configs: HashMap::new(),
         };
-        
+
         // Initialize default configurations for supported formats
         factory.initialize_default_configs();
         factory
@@ -57,7 +57,7 @@ impl DefaultOutputFactory {
             config,
             default_configs: HashMap::new(),
         };
-        
+
         factory.initialize_default_configs();
         factory
     }
@@ -120,30 +120,31 @@ impl DefaultOutputFactory {
             },
             metadata: HashMap::new(),
         };
-        self.default_configs.insert("parquet".to_string(), parquet_config);
+        self.default_configs
+            .insert("parquet".to_string(), parquet_config);
     }
 
     /// Validate format and configuration
     fn validate_format_and_config(&self, format: &str, config: &OutputConfig) -> Result<()> {
         // Check if format is supported
         if !self.supports_format(format) {
-            return Err(ProcessingError::resource_exhausted(
-                format!("Unsupported format: {}", format)
-            ));
+            return Err(ProcessingError::resource_exhausted(format!(
+                "Unsupported format: {format}"
+            )));
         }
 
         // Check if config format matches requested format
         if config.format.to_lowercase() != format.to_lowercase() {
-            return Err(ProcessingError::resource_exhausted(
-                format!("Configuration format '{}' does not match requested format '{}'", 
-                       config.format, format)
-            ));
+            return Err(ProcessingError::resource_exhausted(format!(
+                "Configuration format '{}' does not match requested format '{}'",
+                config.format, format
+            )));
         }
 
         // Validate destination path
         if config.destination.is_empty() {
             return Err(ProcessingError::resource_exhausted(
-                "Output destination cannot be empty".to_string()
+                "Output destination cannot be empty".to_string(),
             ));
         }
 
@@ -158,12 +159,16 @@ impl Default for DefaultOutputFactory {
 }
 
 impl OutputFactory for DefaultOutputFactory {
-    fn create_generator(&self, format: &str, config: OutputConfig) -> Result<Box<dyn OutputGenerator>> {
+    fn create_generator(
+        &self,
+        format: &str,
+        config: OutputConfig,
+    ) -> Result<Box<dyn OutputGenerator>> {
         // Validate format and configuration
         self.validate_format_and_config(format, &config)?;
 
         // Create the generator using the format module
-        let mut generator = create_format_generator(format)?;
+        let generator = create_format_generator(format)?;
 
         // Validate the configuration with the generator
         generator.validate_config(&config)?;
@@ -174,9 +179,9 @@ impl OutputFactory for DefaultOutputFactory {
     fn create_writer(&self, format: &str) -> Result<Box<dyn FormatWriter>> {
         // Check if format is supported
         if !self.supports_format(format) {
-            return Err(ProcessingError::resource_exhausted(
-                format!("Unsupported format: {}", format)
-            ));
+            return Err(ProcessingError::resource_exhausted(format!(
+                "Unsupported format: {format}"
+            )));
         }
 
         // Create the writer using the format module
@@ -193,13 +198,13 @@ impl OutputFactory for DefaultOutputFactory {
 
     fn default_config_for_format(&self, format: &str) -> Result<OutputConfig> {
         let format_lower = format.to_lowercase();
-        
+
         if let Some(config) = self.default_configs.get(&format_lower) {
             Ok(config.clone())
         } else {
-            Err(ProcessingError::resource_exhausted(
-                format!("No default configuration available for format: {}", format)
-            ))
+            Err(ProcessingError::resource_exhausted(format!(
+                "No default configuration available for format: {format}"
+            )))
         }
     }
 }
@@ -268,12 +273,16 @@ impl Default for OutputFactoryImpl {
 }
 
 impl OutputFactory for OutputFactoryImpl {
-    fn create_generator(&self, format: &str, config: OutputConfig) -> Result<Box<dyn OutputGenerator>> {
+    fn create_generator(
+        &self,
+        format: &str,
+        config: OutputConfig,
+    ) -> Result<Box<dyn OutputGenerator>> {
         let format_lower = format.to_lowercase();
-        
+
         // Check for custom generator first
         if let Some(creator) = self.custom_generators.get(&format_lower) {
-            let mut generator = creator();
+            let generator = creator();
             generator.validate_config(&config)?;
             return Ok(generator);
         }
@@ -284,7 +293,7 @@ impl OutputFactory for OutputFactoryImpl {
 
     fn create_writer(&self, format: &str) -> Result<Box<dyn FormatWriter>> {
         let format_lower = format.to_lowercase();
-        
+
         // Check for custom writer first
         if let Some(creator) = self.custom_writers.get(&format_lower) {
             return Ok(creator());
@@ -304,19 +313,20 @@ impl OutputFactory for OutputFactoryImpl {
 
     fn supports_format(&self, format: &str) -> bool {
         let format_lower = format.to_lowercase();
-        self.custom_generators.contains_key(&format_lower) ||
-        self.custom_writers.contains_key(&format_lower) ||
-        self.base_factory.supports_format(format)
+        self.custom_generators.contains_key(&format_lower)
+            || self.custom_writers.contains_key(&format_lower)
+            || self.base_factory.supports_format(format)
     }
 
     fn default_config_for_format(&self, format: &str) -> Result<OutputConfig> {
         // For custom formats, create a basic default config
         let format_lower = format.to_lowercase();
-        if self.custom_generators.contains_key(&format_lower) || 
-           self.custom_writers.contains_key(&format_lower) {
+        if self.custom_generators.contains_key(&format_lower)
+            || self.custom_writers.contains_key(&format_lower)
+        {
             return Ok(OutputConfig {
                 format: format_lower,
-                destination: format!("data/processed/output.{}", format),
+                destination: format!("data/processed/output.{format}"),
                 ..Default::default()
             });
         }
@@ -346,7 +356,7 @@ mod tests {
             max_cache_size: 50,
             default_output_dir: "/tmp/output".to_string(),
         };
-        
+
         let factory = DefaultOutputFactory::with_config(config);
         assert!(!factory.config().enable_caching);
         assert_eq!(factory.config().max_cache_size, 50);
@@ -357,10 +367,10 @@ mod tests {
     fn test_create_csv_generator() {
         let factory = DefaultOutputFactory::new();
         let config = factory.default_config_for_format("csv").unwrap();
-        
+
         let generator = factory.create_generator("csv", config);
         assert!(generator.is_ok());
-        
+
         let generator = generator.unwrap();
         assert_eq!(generator.name(), "csv_generator");
     }
@@ -370,7 +380,7 @@ mod tests {
         let factory = DefaultOutputFactory::new();
         let writer = factory.create_writer("csv");
         assert!(writer.is_ok());
-        
+
         let writer = writer.unwrap();
         assert_eq!(writer.format_name(), "csv");
     }
@@ -379,7 +389,7 @@ mod tests {
     fn test_create_unsupported_generator() {
         let factory = DefaultOutputFactory::new();
         let config = OutputConfig::default();
-        
+
         let result = factory.create_generator("unknown", config);
         assert!(result.is_err());
     }
@@ -387,15 +397,15 @@ mod tests {
     #[test]
     fn test_default_config_for_formats() {
         let factory = DefaultOutputFactory::new();
-        
+
         let csv_config = factory.default_config_for_format("csv");
         assert!(csv_config.is_ok());
         assert_eq!(csv_config.unwrap().format, "csv");
-        
+
         let json_config = factory.default_config_for_format("json");
         assert!(json_config.is_ok());
         assert_eq!(json_config.unwrap().format, "json");
-        
+
         let parquet_config = factory.default_config_for_format("parquet");
         assert!(parquet_config.is_ok());
         assert_eq!(parquet_config.unwrap().format, "parquet");
@@ -404,45 +414,61 @@ mod tests {
     #[test]
     fn test_validate_format_and_config() {
         let factory = DefaultOutputFactory::new();
-        
+
         let valid_config = OutputConfig {
             format: "csv".to_string(),
             destination: "output.csv".to_string(),
             ..Default::default()
         };
-        assert!(factory.validate_format_and_config("csv", &valid_config).is_ok());
-        
+        assert!(
+            factory
+                .validate_format_and_config("csv", &valid_config)
+                .is_ok()
+        );
+
         let invalid_format_config = OutputConfig {
             format: "json".to_string(),
             destination: "output.json".to_string(),
             ..Default::default()
         };
-        assert!(factory.validate_format_and_config("csv", &invalid_format_config).is_err());
-        
+        assert!(
+            factory
+                .validate_format_and_config("csv", &invalid_format_config)
+                .is_err()
+        );
+
         let empty_destination_config = OutputConfig {
             format: "csv".to_string(),
             destination: "".to_string(),
             ..Default::default()
         };
-        assert!(factory.validate_format_and_config("csv", &empty_destination_config).is_err());
+        assert!(
+            factory
+                .validate_format_and_config("csv", &empty_destination_config)
+                .is_err()
+        );
     }
 
     #[test]
     fn test_enhanced_factory() {
         let mut factory = OutputFactoryImpl::new();
-        
+
         // Should support base formats
         assert!(factory.supports_format("csv"));
         assert!(factory.supports_format("json"));
-        
+
         // Register a custom generator
         factory.register_generator_creator("custom".to_string(), || {
             Box::new(crate::output::format::CsvOutputGenerator::new())
         });
-        
+
         assert!(factory.supports_format("custom"));
-        assert!(factory.list_custom_formats().contains(&"custom".to_string()));
-        
+        assert!(
+            factory
+                .list_custom_formats()
+                .contains(&"custom".to_string())
+        );
+
         // Unregister custom generator
         assert!(factory.unregister_generator_creator("custom"));
         assert!(!factory.supports_format("custom"));
@@ -451,7 +477,7 @@ mod tests {
     #[test]
     fn test_enhanced_factory_custom_config() {
         let factory = OutputFactoryImpl::new();
-        
+
         // Test default config for non-existent custom format
         let config = factory.default_config_for_format("unknown");
         assert!(config.is_err());

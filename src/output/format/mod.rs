@@ -8,12 +8,12 @@ pub mod json;
 pub mod parquet;
 
 // Re-export format implementations
-pub use csv::{CsvWriter, CsvOutputGenerator};
-pub use json::{JsonWriter, JsonOutputGenerator};
-pub use parquet::{ParquetWriter, ParquetOutputGenerator};
+pub use csv::{CsvOutputGenerator, CsvWriter};
+pub use json::{JsonOutputGenerator, JsonWriter};
+pub use parquet::{ParquetOutputGenerator, ParquetWriter};
 
-use crate::output::traits::{FormatWriter, OutputGenerator};
 use crate::error::types::{ProcessingError, Result};
+use crate::output::traits::{FormatWriter, OutputGenerator};
 
 /// Create a format writer for the specified format
 pub fn create_format_writer(format: &str) -> Result<Box<dyn FormatWriter>> {
@@ -22,9 +22,10 @@ pub fn create_format_writer(format: &str) -> Result<Box<dyn FormatWriter>> {
         "json" => Ok(Box::new(JsonWriter::new())),
         "parquet" => Ok(Box::new(ParquetWriter::new())),
         _ => Err(ProcessingError::UnsupportedOperation {
-            operation: format!("format_writer_{}", format),
-            message: format!("Unsupported format: {}", format),
-        }.into()),
+            operation: format!("format_writer_{format}"),
+            message: format!("Unsupported format: {format}"),
+        }
+        .into()),
     }
 }
 
@@ -35,19 +36,16 @@ pub fn create_format_generator(format: &str) -> Result<Box<dyn OutputGenerator>>
         "json" => Ok(Box::new(JsonOutputGenerator::new())),
         "parquet" => Ok(Box::new(ParquetOutputGenerator::new())),
         _ => Err(ProcessingError::UnsupportedOperation {
-            operation: format!("format_generator_{}", format),
-            message: format!("Unsupported format: {}", format),
-        }.into()),
+            operation: format!("format_generator_{format}"),
+            message: format!("Unsupported format: {format}"),
+        }
+        .into()),
     }
 }
 
 /// Get list of all supported formats
 pub fn supported_formats() -> Vec<String> {
-    vec![
-        "csv".to_string(),
-        "json".to_string(),
-        "parquet".to_string(),
-    ]
+    vec!["csv".to_string(), "json".to_string(), "parquet".to_string()]
 }
 
 /// Check if a format is supported

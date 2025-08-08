@@ -23,12 +23,12 @@
 //! let survey = Survey::with_metadata("AP", "Average Price Data", metadata);
 //! ```
 
+use crate::data::model::{CommonMetadata, DataStatus, Frequency};
+use crate::utils::validation::BLSValidationRules;
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use validator::Validate;
-use chrono::{DateTime, Utc};
-use crate::data::model::{CommonMetadata, DataStatus, Frequency};
-use crate::utils::validation::BLSValidationRules;
 
 /// BLS survey
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
@@ -37,15 +37,15 @@ pub struct Survey {
     #[validate(length(min = 2, max = 2))]
     #[validate(custom = "validate_survey_code")]
     pub survey_code: String,
-    
+
     /// Survey name/title
     #[validate(length(min = 1, max = 200))]
     pub name: String,
-    
+
     /// Survey metadata
     #[validate]
     pub metadata: SurveyMetadata,
-    
+
     /// Common metadata (timestamps, version, etc.)
     #[validate]
     pub common: CommonMetadata,
@@ -132,10 +132,12 @@ impl Survey {
             &format!("{}TEMP", self.survey_code),
             &self.name,
             &self.survey_code,
-        ).map_err(|e| e.to_string())?;
+        )
+        .map_err(|e| e.to_string())?;
 
         // Validate using validator crate
-        self.validate().map_err(|e| format!("Validation error: {:?}", e))?;
+        self.validate()
+            .map_err(|e| format!("Validation error: {e:?}"))?;
 
         Ok(())
     }
@@ -146,51 +148,51 @@ impl Survey {
 pub struct SurveyMetadata {
     /// Survey description
     pub description: Option<String>,
-    
+
     /// Survey status
     pub status: DataStatus,
-    
+
     /// Primary data frequency
     pub frequency: Frequency,
-    
+
     /// Survey contact information
     pub contact: Option<SurveyContact>,
-    
+
     /// Survey start date
     pub start_date: Option<DateTime<Utc>>,
-    
+
     /// Survey end date (if discontinued)
     pub end_date: Option<DateTime<Utc>>,
-    
+
     /// Last update date
     pub last_updated: Option<DateTime<Utc>>,
-    
+
     /// Survey methodology notes
     pub methodology: Option<String>,
-    
+
     /// Data collection method
     pub collection_method: Option<String>,
-    
+
     /// Sample size information
     pub sample_size: Option<String>,
-    
+
     /// Coverage information
     pub coverage: Option<String>,
-    
+
     /// Reference period information
     pub reference_period: Option<String>,
-    
+
     /// Publication schedule
     pub publication_schedule: Option<String>,
-    
+
     /// Related surveys
     #[serde(default)]
     pub related_surveys: Vec<String>,
-    
+
     /// Survey-specific settings
     #[serde(default)]
     pub settings: HashMap<String, String>,
-    
+
     /// Custom attributes
     #[serde(default)]
     pub attributes: HashMap<String, String>,
@@ -209,8 +211,7 @@ impl SurveyMetadata {
 
     /// Check if the survey is currently active
     pub fn is_currently_active(&self) -> bool {
-        self.status == DataStatus::Active && 
-        self.end_date.map_or(true, |end| end > Utc::now())
+        self.status == DataStatus::Active && self.end_date.is_none_or(|end| end > Utc::now())
     }
 
     /// Add a related survey
@@ -267,20 +268,20 @@ pub struct SurveyContact {
     /// Contact name
     #[validate(length(min = 1, max = 100))]
     pub name: String,
-    
+
     /// Contact title/position
     pub title: Option<String>,
-    
+
     /// Contact email
     #[validate(email)]
     pub email: String,
-    
+
     /// Contact phone number
     pub phone: Option<String>,
-    
+
     /// Organization/department
     pub organization: Option<String>,
-    
+
     /// Mailing address
     pub address: Option<String>,
 }
@@ -512,7 +513,10 @@ mod tests {
             .build();
 
         let survey = Survey::with_metadata("ap", "Average Price Data", metadata);
-        assert_eq!(survey.description(), Some("Consumer price data for selected items"));
+        assert_eq!(
+            survey.description(),
+            Some("Consumer price data for selected items")
+        );
         assert_eq!(survey.frequency(), &Frequency::Monthly);
         assert!(survey.is_active());
     }
@@ -542,19 +546,40 @@ mod tests {
             .attribute("priority", "high")
             .build();
 
-        assert_eq!(metadata.description, Some("Test survey description".to_string()));
+        assert_eq!(
+            metadata.description,
+            Some("Test survey description".to_string())
+        );
         assert_eq!(metadata.status, DataStatus::Active);
         assert_eq!(metadata.frequency, Frequency::Quarterly);
         assert!(metadata.contact.is_some());
-        assert_eq!(metadata.methodology, Some("Sample-based survey".to_string()));
-        assert_eq!(metadata.collection_method, Some("Electronic data collection".to_string()));
-        assert_eq!(metadata.sample_size, Some("10,000 establishments".to_string()));
+        assert_eq!(
+            metadata.methodology,
+            Some("Sample-based survey".to_string())
+        );
+        assert_eq!(
+            metadata.collection_method,
+            Some("Electronic data collection".to_string())
+        );
+        assert_eq!(
+            metadata.sample_size,
+            Some("10,000 establishments".to_string())
+        );
         assert_eq!(metadata.coverage, Some("All industries".to_string()));
-        assert_eq!(metadata.reference_period, Some("Calendar quarter".to_string()));
-        assert_eq!(metadata.publication_schedule, Some("45 days after reference period".to_string()));
+        assert_eq!(
+            metadata.reference_period,
+            Some("Calendar quarter".to_string())
+        );
+        assert_eq!(
+            metadata.publication_schedule,
+            Some("45 days after reference period".to_string())
+        );
         assert_eq!(metadata.related_surveys, vec!["BD", "CE"]);
         assert_eq!(metadata.settings.get("max_retries"), Some(&"3".to_string()));
-        assert_eq!(metadata.attributes.get("priority"), Some(&"high".to_string()));
+        assert_eq!(
+            metadata.attributes.get("priority"),
+            Some(&"high".to_string())
+        );
     }
 
     #[test]
@@ -570,29 +595,38 @@ mod tests {
         assert_eq!(contact.email, "jane.smith@bls.gov");
         assert_eq!(contact.title, Some("Senior Economist".to_string()));
         assert_eq!(contact.phone, Some("202-555-0456".to_string()));
-        assert_eq!(contact.organization, Some("Bureau of Labor Statistics".to_string()));
-        assert_eq!(contact.address, Some("2 Massachusetts Ave NE, Washington, DC 20212".to_string()));
+        assert_eq!(
+            contact.organization,
+            Some("Bureau of Labor Statistics".to_string())
+        );
+        assert_eq!(
+            contact.address,
+            Some("2 Massachusetts Ave NE, Washington, DC 20212".to_string())
+        );
     }
 
     #[test]
     fn test_survey_metadata_operations() {
         let mut metadata = SurveyMetadata::default();
-        
+
         // Test related surveys
         metadata.add_related_survey("bd");
         metadata.add_related_survey("ce");
         metadata.add_related_survey("BD"); // Duplicate should not be added
         assert_eq!(metadata.related_surveys, vec!["BD", "CE"]);
-        
+
         metadata.remove_related_survey("bd");
         assert_eq!(metadata.related_surveys, vec!["CE"]);
-        
+
         // Test settings and attributes
         metadata.add_setting("timeout", "30");
         metadata.add_attribute("category", "economic");
-        
+
         assert_eq!(metadata.settings.get("timeout"), Some(&"30".to_string()));
-        assert_eq!(metadata.attributes.get("category"), Some(&"economic".to_string()));
+        assert_eq!(
+            metadata.attributes.get("category"),
+            Some(&"economic".to_string())
+        );
     }
 
     #[test]
@@ -655,7 +689,7 @@ mod tests {
         let survey = Survey::new("AP", "Average Price Data");
         let serialized = serde_json::to_string(&survey).unwrap();
         let deserialized: Survey = serde_json::from_str(&serialized).unwrap();
-        
+
         assert_eq!(survey.survey_code, deserialized.survey_code);
         assert_eq!(survey.name, deserialized.name);
         assert_eq!(survey.is_active(), deserialized.is_active());

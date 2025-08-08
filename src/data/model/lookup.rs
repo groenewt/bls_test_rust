@@ -21,10 +21,10 @@
 //! assert_eq!(entry.description, "California");
 //! ```
 
+use crate::data::model::CommonMetadata;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use validator::Validate;
-use crate::data::model::CommonMetadata;
 
 /// BLS lookup table
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
@@ -32,19 +32,19 @@ pub struct Lookup {
     /// Lookup table identifier (e.g., "area", "item", "industry")
     #[validate(length(min = 1, max = 50))]
     pub table_id: String,
-    
+
     /// Human-readable table name
     #[validate(length(min = 1, max = 200))]
     pub table_name: String,
-    
+
     /// Survey code this lookup belongs to
     #[validate(length(min = 2, max = 2))]
     pub survey_code: String,
-    
+
     /// Lookup entries indexed by code
     #[validate]
     pub entries: HashMap<String, LookupEntry>,
-    
+
     /// Common metadata (timestamps, version, etc.)
     #[validate]
     pub common: CommonMetadata,
@@ -74,7 +74,12 @@ impl Lookup {
     }
 
     /// Add an entry to the lookup table
-    pub fn add_entry(&mut self, code: &str, description: &str, parent_code: Option<&str>) -> &mut LookupEntry {
+    pub fn add_entry(
+        &mut self,
+        code: &str,
+        description: &str,
+        parent_code: Option<&str>,
+    ) -> &mut LookupEntry {
         let entry = LookupEntry::new(code, description, parent_code);
         self.entries.insert(code.to_string(), entry);
         self.common.update();
@@ -139,7 +144,7 @@ impl Lookup {
     pub fn get_hierarchy_path(&self, code: &str) -> Vec<String> {
         let mut path = Vec::new();
         let mut current_code = Some(code.to_string());
-        
+
         while let Some(code) = current_code {
             if let Some(entry) = self.get_entry(&code) {
                 path.insert(0, code.clone());
@@ -148,7 +153,7 @@ impl Lookup {
                 break;
             }
         }
-        
+
         path
     }
 
@@ -191,7 +196,7 @@ impl Lookup {
         for (code, entry) in &self.entries {
             if let Some(parent_code) = &entry.parent_code {
                 if self.has_circular_reference(code, parent_code) {
-                    return Err(format!("Circular reference detected for entry '{}'", code));
+                    return Err(format!("Circular reference detected for entry '{code}'"));
                 }
             }
         }
@@ -200,7 +205,9 @@ impl Lookup {
         for (code, entry) in &self.entries {
             if let Some(parent_code) = &entry.parent_code {
                 if !self.contains_entry(parent_code) {
-                    return Err(format!("Entry '{}' references non-existent parent '{}'", code, parent_code));
+                    return Err(format!(
+                        "Entry '{code}' references non-existent parent '{parent_code}'"
+                    ));
                 }
             }
         }
@@ -228,7 +235,8 @@ impl Lookup {
         let total_entries = self.entries.len();
         let root_entries = self.get_roots().len();
         let max_depth = self.calculate_max_depth();
-        let entries_with_children = self.entries
+        let entries_with_children = self
+            .entries
             .keys()
             .filter(|code| !self.get_children(code).is_empty())
             .count();
@@ -257,25 +265,25 @@ pub struct LookupEntry {
     /// Entry code
     #[validate(length(min = 1, max = 50))]
     pub code: String,
-    
+
     /// Human-readable description
     #[validate(length(min = 1, max = 500))]
     pub description: String,
-    
+
     /// Parent entry code (for hierarchical lookups)
     pub parent_code: Option<String>,
-    
+
     /// Entry status (active, inactive, etc.)
     #[serde(default = "default_active")]
     pub active: bool,
-    
+
     /// Sort order for display
     pub sort_order: Option<u32>,
-    
+
     /// Additional attributes
     #[serde(default)]
     pub attributes: HashMap<String, String>,
-    
+
     /// Common metadata
     #[validate]
     pub common: CommonMetadata,
@@ -445,17 +453,17 @@ mod tests {
     #[test]
     fn test_add_and_get_entry() {
         let mut lookup = Lookup::new("area", "Geographic Areas");
-        
+
         lookup.add_entry("US", "United States", None);
         lookup.add_entry("CA", "California", Some("US"));
-        
+
         assert_eq!(lookup.entry_count(), 2);
         assert!(!lookup.is_empty());
-        
+
         let us_entry = lookup.get_entry("US").unwrap();
         assert_eq!(us_entry.description, "United States");
         assert!(us_entry.parent_code.is_none());
-        
+
         let ca_entry = lookup.get_entry("CA").unwrap();
         assert_eq!(ca_entry.description, "California");
         assert_eq!(ca_entry.parent_code, Some("US".to_string()));
@@ -464,47 +472,50 @@ mod tests {
     #[test]
     fn test_hierarchy_operations() {
         let mut lookup = Lookup::new("area", "Geographic Areas");
-        
+
         lookup.add_entry("US", "United States", None);
         lookup.add_entry("CA", "California", Some("US"));
         lookup.add_entry("LA", "Los Angeles", Some("CA"));
         lookup.add_entry("NY", "New York", Some("US"));
-        
+
         // Test get_children
         let us_children = lookup.get_children("US");
         assert_eq!(us_children.len(), 2);
         assert!(us_children.iter().any(|e| e.code == "CA"));
         assert!(us_children.iter().any(|e| e.code == "NY"));
-        
+
         let ca_children = lookup.get_children("CA");
         assert_eq!(ca_children.len(), 1);
         assert_eq!(ca_children[0].code, "LA");
-        
+
         // Test get_roots
         let roots = lookup.get_roots();
         assert_eq!(roots.len(), 1);
         assert_eq!(roots[0].code, "US");
-        
+
         // Test hierarchy path
         let la_path = lookup.get_hierarchy_path("LA");
         assert_eq!(la_path, vec!["US", "CA", "LA"]);
-        
+
         let description_path = lookup.get_description_path("LA");
-        assert_eq!(description_path, vec!["United States", "California", "Los Angeles"]);
+        assert_eq!(
+            description_path,
+            vec!["United States", "California", "Los Angeles"]
+        );
     }
 
     #[test]
     fn test_search_by_description() {
         let mut lookup = Lookup::new("area", "Geographic Areas");
-        
+
         lookup.add_entry("US", "United States", None);
         lookup.add_entry("CA", "California", Some("US"));
         lookup.add_entry("NY", "New York", Some("US"));
-        
+
         let results = lookup.search_by_description("new");
         assert_eq!(results.len(), 1);
         assert_eq!(results[0].code, "NY");
-        
+
         let results = lookup.search_by_description("states");
         assert_eq!(results.len(), 1);
         assert_eq!(results[0].code, "US");
@@ -518,7 +529,7 @@ mod tests {
             .sort_order(1)
             .attribute("region", "West")
             .build();
-        
+
         assert_eq!(entry.code, "CA");
         assert_eq!(entry.description, "California");
         assert_eq!(entry.parent_code, Some("US".to_string()));
@@ -530,13 +541,13 @@ mod tests {
     #[test]
     fn test_lookup_entry_attributes() {
         let mut entry = LookupEntry::new("CA", "California", None);
-        
+
         entry.add_attribute("region", "West");
         entry.add_attribute("population", "39538223");
-        
+
         assert!(entry.has_attribute("region"));
         assert_eq!(entry.get_attribute("region"), Some(&"West".to_string()));
-        
+
         let removed = entry.remove_attribute("population");
         assert_eq!(removed, Some("39538223".to_string()));
         assert!(!entry.has_attribute("population"));
@@ -545,16 +556,16 @@ mod tests {
     #[test]
     fn test_validate_structure() {
         let mut lookup = Lookup::new("area", "Geographic Areas");
-        
+
         // Valid structure
         lookup.add_entry("US", "United States", None);
         lookup.add_entry("CA", "California", Some("US"));
         assert!(lookup.validate_structure().is_ok());
-        
+
         // Add orphaned entry
         lookup.add_entry("ORPHAN", "Orphaned Entry", Some("NONEXISTENT"));
         assert!(lookup.validate_structure().is_err());
-        
+
         // Remove orphaned entry and add circular reference
         lookup.remove_entry("ORPHAN");
         lookup.add_entry("CIRCULAR", "Circular Entry", Some("CIRCULAR"));
@@ -564,12 +575,12 @@ mod tests {
     #[test]
     fn test_lookup_statistics() {
         let mut lookup = Lookup::new("area", "Geographic Areas");
-        
+
         lookup.add_entry("US", "United States", None);
         lookup.add_entry("CA", "California", Some("US"));
         lookup.add_entry("NY", "New York", Some("US"));
         lookup.add_entry("LA", "Los Angeles", Some("CA"));
-        
+
         let stats = lookup.get_statistics();
         assert_eq!(stats.total_entries, 4);
         assert_eq!(stats.root_entries, 1);
@@ -580,22 +591,22 @@ mod tests {
     #[test]
     fn test_lookup_operations() {
         let mut lookup = Lookup::new("area", "Geographic Areas");
-        
+
         lookup.add_entry("US", "United States", None);
         lookup.add_entry("CA", "California", Some("US"));
-        
+
         assert!(lookup.contains_entry("US"));
         assert!(lookup.contains_entry("CA"));
         assert!(!lookup.contains_entry("TX"));
-        
+
         let codes = lookup.get_codes();
         assert_eq!(codes, vec!["CA", "US"]); // Sorted
-        
+
         let removed = lookup.remove_entry("CA");
         assert!(removed.is_some());
         assert_eq!(removed.unwrap().description, "California");
         assert!(!lookup.contains_entry("CA"));
-        
+
         lookup.clear();
         assert!(lookup.is_empty());
         assert_eq!(lookup.entry_count(), 0);
@@ -605,10 +616,10 @@ mod tests {
     fn test_serialization() {
         let mut lookup = Lookup::new("area", "Geographic Areas");
         lookup.add_entry("US", "United States", None);
-        
+
         let serialized = serde_json::to_string(&lookup).unwrap();
         let deserialized: Lookup = serde_json::from_str(&serialized).unwrap();
-        
+
         assert_eq!(lookup.table_id, deserialized.table_id);
         assert_eq!(lookup.table_name, deserialized.table_name);
         assert_eq!(lookup.entry_count(), deserialized.entry_count());

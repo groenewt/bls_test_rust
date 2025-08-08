@@ -6,10 +6,10 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
-use crate::processing::traits::{
-    ProcessorRegistry, DataProcessor, ProcessingStrategy, ProcessingConfig,
-};
 use crate::error::types::{ProcessingError, Result};
+use crate::processing::traits::{
+    DataProcessor, ProcessingStrategy, ProcessorRegistry,
+};
 
 /// Default implementation of the processor registry
 pub struct DefaultProcessorRegistry {
@@ -40,8 +40,9 @@ impl DefaultProcessorRegistry {
 
     /// Get processor count
     pub fn processor_count(&self) -> Result<usize> {
-        let processors = self.processors.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock processors: {}", e)))?;
+        let processors = self.processors.lock().map_err(|e| {
+            ProcessingError::system_error(format!("Failed to lock processors: {e}"))
+        })?;
         Ok(processors.len())
     }
 }
@@ -53,49 +54,62 @@ impl Default for DefaultProcessorRegistry {
 }
 
 impl ProcessorRegistry for DefaultProcessorRegistry {
-    fn register_processor(&mut self, name: String, processor: Box<dyn DataProcessor>) -> Result<()> {
-        let mut processors = self.processors.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock processors: {}", e)))?;
-        
+    fn register_processor(
+        &mut self,
+        name: String,
+        processor: Box<dyn DataProcessor>,
+    ) -> Result<()> {
+        let mut processors = self.processors.lock().map_err(|e| {
+            ProcessingError::system_error(format!("Failed to lock processors: {e}"))
+        })?;
+
         if processors.contains_key(&name) {
-            return Err(ProcessingError::invalid_configuration(
-                format!("Processor '{}' is already registered", name)
-            ));
+            return Err(ProcessingError::invalid_configuration(format!(
+                "Processor '{name}' is already registered"
+            )));
         }
-        
+
         processors.insert(name, processor);
         Ok(())
     }
 
     fn unregister_processor(&mut self, name: &str) -> Result<()> {
-        let mut processors = self.processors.lock()
-            .map_err(|e| crate::error::types::Error::Processing(ProcessingError::system_error(format!("Failed to lock processors: {}", e))))?;
-        
+        let mut processors = self.processors.lock().map_err(|e| {
+            crate::error::types::Error::Processing(ProcessingError::system_error(format!(
+                "Failed to lock processors: {e}"
+            )))
+        })?;
+
         if processors.remove(name).is_none() {
-            return Err(ProcessingError::invalid_configuration(
-                format!("Processor '{}' is not registered", name)
-            ));
+            return Err(ProcessingError::invalid_configuration(format!(
+                "Processor '{name}' is not registered"
+            )));
         }
-        
+
         Ok(())
     }
 
     fn get_processor(&self, name: &str) -> Result<&dyn DataProcessor> {
         // Note: This implementation has lifetime issues with the mutex guard
         // In a real implementation, you'd need to use Arc<dyn DataProcessor> or similar
-        Err(crate::error::types::Error::Processing(ProcessingError::UnsupportedOperation {
-            operation: "get_processor".to_string(),
-            message: "Direct processor access not supported in this implementation".to_string()
-        }))
+        Err(crate::error::types::Error::Processing(
+            ProcessingError::UnsupportedOperation {
+                operation: "get_processor".to_string(),
+                message: "Direct processor access not supported in this implementation".to_string(),
+            },
+        ))
     }
 
     fn get_processor_mut(&mut self, name: &str) -> Result<&mut dyn DataProcessor> {
         // Note: This implementation has lifetime issues with the mutex guard
         // In a real implementation, you'd need to use Arc<Mutex<dyn DataProcessor>> or similar
-        Err(crate::error::types::Error::Processing(ProcessingError::UnsupportedOperation {
-            operation: "get_processor_mut".to_string(),
-            message: "Direct mutable processor access not supported in this implementation".to_string()
-        }))
+        Err(crate::error::types::Error::Processing(
+            ProcessingError::UnsupportedOperation {
+                operation: "get_processor_mut".to_string(),
+                message: "Direct mutable processor access not supported in this implementation"
+                    .to_string(),
+            },
+        ))
     }
 
     fn list_processors(&self) -> Vec<String> {
@@ -186,17 +200,19 @@ impl ProcessorRegistryImpl {
 
     /// Get processor information
     pub fn get_processor_info(&self, name: &str) -> Result<Option<ProcessorInfo>> {
-        let processors = self.processors.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock processors: {}", e)))?;
-        
+        let processors = self.processors.lock().map_err(|e| {
+            ProcessingError::system_error(format!("Failed to lock processors: {e}"))
+        })?;
+
         Ok(processors.get(name).cloned())
     }
 
     /// List all processor information
     pub fn list_processor_info(&self) -> Result<Vec<ProcessorInfo>> {
-        let processors = self.processors.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock processors: {}", e)))?;
-        
+        let processors = self.processors.lock().map_err(|e| {
+            ProcessingError::system_error(format!("Failed to lock processors: {e}"))
+        })?;
+
         Ok(processors.values().cloned().collect())
     }
 
@@ -206,89 +222,97 @@ impl ProcessorRegistryImpl {
             return Ok(());
         }
 
-        let mut processors = self.processors.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock processors: {}", e)))?;
-        
+        let mut processors = self.processors.lock().map_err(|e| {
+            ProcessingError::system_error(format!("Failed to lock processors: {e}"))
+        })?;
+
         if let Some(info) = processors.get_mut(name) {
             info.usage_count += 1;
         }
-        
+
         Ok(())
     }
 
     /// Get processors by strategy
     pub fn get_processors_by_strategy(&self, strategy: ProcessingStrategy) -> Result<Vec<String>> {
-        let processors = self.processors.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock processors: {}", e)))?;
-        
+        let processors = self.processors.lock().map_err(|e| {
+            ProcessingError::system_error(format!("Failed to lock processors: {e}"))
+        })?;
+
         let matching_processors = processors
             .values()
             .filter(|info| info.supported_strategies.contains(&strategy))
             .map(|info| info.name.clone())
             .collect();
-        
+
         Ok(matching_processors)
     }
 
     /// Register processor information
     pub fn register_processor_info(&self, info: ProcessorInfo) -> Result<()> {
-        let mut processors = self.processors.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock processors: {}", e)))?;
-        
+        let mut processors = self.processors.lock().map_err(|e| {
+            ProcessingError::system_error(format!("Failed to lock processors: {e}"))
+        })?;
+
         if processors.len() >= self.config.max_processors {
-            return Err(ProcessingError::resource_exhausted(
-                format!("Registry is full (max: {})", self.config.max_processors)
-            ));
+            return Err(ProcessingError::resource_exhausted(format!(
+                "Registry is full (max: {})",
+                self.config.max_processors
+            )));
         }
-        
+
         if processors.contains_key(&info.name) {
-            return Err(ProcessingError::invalid_configuration(
-                format!("Processor '{}' is already registered", info.name)
-            ));
+            return Err(ProcessingError::invalid_configuration(format!(
+                "Processor '{}' is already registered",
+                info.name
+            )));
         }
-        
+
         processors.insert(info.name.clone(), info);
         Ok(())
     }
 
     /// Unregister processor information
     pub fn unregister_processor_info(&self, name: &str) -> Result<()> {
-        let mut processors = self.processors.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock processors: {}", e)))?;
-        
+        let mut processors = self.processors.lock().map_err(|e| {
+            ProcessingError::system_error(format!("Failed to lock processors: {e}"))
+        })?;
+
         if processors.remove(name).is_none() {
-            return Err(ProcessingError::invalid_configuration(
-                format!("Processor '{}' is not registered", name)
-            ));
+            return Err(ProcessingError::invalid_configuration(format!(
+                "Processor '{name}' is not registered"
+            )));
         }
-        
+
         Ok(())
     }
 
     /// Clear all processor information
     pub fn clear_all(&self) -> Result<()> {
-        let mut processors = self.processors.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock processors: {}", e)))?;
-        
+        let mut processors = self.processors.lock().map_err(|e| {
+            ProcessingError::system_error(format!("Failed to lock processors: {e}"))
+        })?;
+
         processors.clear();
         Ok(())
     }
 
     /// Get registry statistics
     pub fn get_statistics(&self) -> Result<RegistryStatistics> {
-        let processors = self.processors.lock()
-            .map_err(|e| ProcessingError::system_error(format!("Failed to lock processors: {}", e)))?;
-        
+        let processors = self.processors.lock().map_err(|e| {
+            ProcessingError::system_error(format!("Failed to lock processors: {e}"))
+        })?;
+
         let total_processors = processors.len();
         let total_usage = processors.values().map(|info| info.usage_count).sum();
-        
+
         let mut strategy_counts = HashMap::new();
         for info in processors.values() {
             for strategy in &info.supported_strategies {
                 *strategy_counts.entry(*strategy).or_insert(0) += 1;
             }
         }
-        
+
         Ok(RegistryStatistics {
             total_processors,
             total_usage,
@@ -329,7 +353,7 @@ mod tests {
     #[test]
     fn test_register_processor_info() {
         let registry = ProcessorRegistryImpl::default();
-        
+
         let info = ProcessorInfo {
             name: "test_processor".to_string(),
             description: "Test processor".to_string(),
@@ -337,15 +361,20 @@ mod tests {
             registered_at: std::time::SystemTime::now(),
             usage_count: 0,
         };
-        
+
         assert!(registry.register_processor_info(info).is_ok());
-        assert!(registry.get_processor_info("test_processor").unwrap().is_some());
+        assert!(
+            registry
+                .get_processor_info("test_processor")
+                .unwrap()
+                .is_some()
+        );
     }
 
     #[test]
     fn test_register_duplicate_processor_info() {
         let registry = ProcessorRegistryImpl::default();
-        
+
         let info1 = ProcessorInfo {
             name: "test_processor".to_string(),
             description: "Test processor 1".to_string(),
@@ -353,7 +382,7 @@ mod tests {
             registered_at: std::time::SystemTime::now(),
             usage_count: 0,
         };
-        
+
         let info2 = ProcessorInfo {
             name: "test_processor".to_string(),
             description: "Test processor 2".to_string(),
@@ -361,7 +390,7 @@ mod tests {
             registered_at: std::time::SystemTime::now(),
             usage_count: 0,
         };
-        
+
         assert!(registry.register_processor_info(info1).is_ok());
         assert!(registry.register_processor_info(info2).is_err());
     }
@@ -369,7 +398,7 @@ mod tests {
     #[test]
     fn test_unregister_processor_info() {
         let registry = ProcessorRegistryImpl::default();
-        
+
         let info = ProcessorInfo {
             name: "test_processor".to_string(),
             description: "Test processor".to_string(),
@@ -377,16 +406,21 @@ mod tests {
             registered_at: std::time::SystemTime::now(),
             usage_count: 0,
         };
-        
+
         registry.register_processor_info(info).unwrap();
         assert!(registry.unregister_processor_info("test_processor").is_ok());
-        assert!(registry.get_processor_info("test_processor").unwrap().is_none());
+        assert!(
+            registry
+                .get_processor_info("test_processor")
+                .unwrap()
+                .is_none()
+        );
     }
 
     #[test]
     fn test_get_processors_by_strategy() {
         let registry = ProcessorRegistryImpl::default();
-        
+
         let info1 = ProcessorInfo {
             name: "memory_processor".to_string(),
             description: "Memory processor".to_string(),
@@ -394,7 +428,7 @@ mod tests {
             registered_at: std::time::SystemTime::now(),
             usage_count: 0,
         };
-        
+
         let info2 = ProcessorInfo {
             name: "chunked_processor".to_string(),
             description: "Chunked processor".to_string(),
@@ -402,21 +436,25 @@ mod tests {
             registered_at: std::time::SystemTime::now(),
             usage_count: 0,
         };
-        
+
         registry.register_processor_info(info1).unwrap();
         registry.register_processor_info(info2).unwrap();
-        
-        let memory_processors = registry.get_processors_by_strategy(ProcessingStrategy::InMemory).unwrap();
+
+        let memory_processors = registry
+            .get_processors_by_strategy(ProcessingStrategy::InMemory)
+            .unwrap();
         assert_eq!(memory_processors.len(), 2);
-        
-        let chunked_processors = registry.get_processors_by_strategy(ProcessingStrategy::Chunked).unwrap();
+
+        let chunked_processors = registry
+            .get_processors_by_strategy(ProcessingStrategy::Chunked)
+            .unwrap();
         assert_eq!(chunked_processors.len(), 1);
     }
 
     #[test]
     fn test_increment_usage() {
         let registry = ProcessorRegistryImpl::default();
-        
+
         let info = ProcessorInfo {
             name: "test_processor".to_string(),
             description: "Test processor".to_string(),
@@ -424,19 +462,22 @@ mod tests {
             registered_at: std::time::SystemTime::now(),
             usage_count: 0,
         };
-        
+
         registry.register_processor_info(info).unwrap();
-        
+
         assert!(registry.increment_usage("test_processor").is_ok());
-        
-        let updated_info = registry.get_processor_info("test_processor").unwrap().unwrap();
+
+        let updated_info = registry
+            .get_processor_info("test_processor")
+            .unwrap()
+            .unwrap();
         assert_eq!(updated_info.usage_count, 1);
     }
 
     #[test]
     fn test_registry_statistics() {
         let registry = ProcessorRegistryImpl::default();
-        
+
         let info1 = ProcessorInfo {
             name: "processor1".to_string(),
             description: "Processor 1".to_string(),
@@ -444,7 +485,7 @@ mod tests {
             registered_at: std::time::SystemTime::now(),
             usage_count: 5,
         };
-        
+
         let info2 = ProcessorInfo {
             name: "processor2".to_string(),
             description: "Processor 2".to_string(),
@@ -452,21 +493,27 @@ mod tests {
             registered_at: std::time::SystemTime::now(),
             usage_count: 3,
         };
-        
+
         registry.register_processor_info(info1).unwrap();
         registry.register_processor_info(info2).unwrap();
-        
+
         let stats = registry.get_statistics().unwrap();
         assert_eq!(stats.total_processors, 2);
         assert_eq!(stats.total_usage, 8);
-        assert_eq!(stats.strategy_counts.get(&ProcessingStrategy::InMemory), Some(&1));
-        assert_eq!(stats.strategy_counts.get(&ProcessingStrategy::Chunked), Some(&1));
+        assert_eq!(
+            stats.strategy_counts.get(&ProcessingStrategy::InMemory),
+            Some(&1)
+        );
+        assert_eq!(
+            stats.strategy_counts.get(&ProcessingStrategy::Chunked),
+            Some(&1)
+        );
     }
 
     #[test]
     fn test_clear_all() {
         let registry = ProcessorRegistryImpl::default();
-        
+
         let info = ProcessorInfo {
             name: "test_processor".to_string(),
             description: "Test processor".to_string(),
@@ -474,10 +521,10 @@ mod tests {
             registered_at: std::time::SystemTime::now(),
             usage_count: 0,
         };
-        
+
         registry.register_processor_info(info).unwrap();
         assert_eq!(registry.get_statistics().unwrap().total_processors, 1);
-        
+
         assert!(registry.clear_all().is_ok());
         assert_eq!(registry.get_statistics().unwrap().total_processors, 0);
     }

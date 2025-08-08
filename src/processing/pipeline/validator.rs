@@ -4,16 +4,14 @@
 //! The validator stage validates data integrity, business rules, and data quality.
 
 use std::collections::HashMap;
-use std::time::Instant;
 
-use async_trait::async_trait;
-use crate::processing::traits::{
-    PipelineStage, ValidatorStage, ProcessingContext, ProcessingConfig,
-    ValidationResult, ValidationRule, ValidationRuleType, ValidationSeverity,
-    ValidationError, ValidationWarning,
-};
-use crate::data::model::{Series, Observation, Lookup, Survey};
+use crate::data::model::{Lookup, Observation, Series, Survey};
 use crate::error::types::{ProcessingError, Result};
+use crate::processing::traits::{
+    PipelineStage, ProcessingContext, ValidationResult,
+    ValidationRule, ValidatorStage,
+};
+use async_trait::async_trait;
 
 /// Implementation of the validator stage
 pub struct ValidatorStageImpl {
@@ -92,13 +90,15 @@ impl PipelineStage for ValidatorStageImpl {
 
     async fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
         log::info!("Starting validator stage execution");
-        
+
         // Basic validation implementation
         self.stats.records_validated += 1;
-        
-        log::info!("Validator stage completed: {} records validated", 
-                  self.stats.records_validated);
-        
+
+        log::info!(
+            "Validator stage completed: {} records validated",
+            self.stats.records_validated
+        );
+
         Ok(())
     }
 
@@ -109,7 +109,7 @@ impl PipelineStage for ValidatorStageImpl {
     fn validate(&self, context: &ProcessingContext) -> Result<()> {
         if context.data_readers.is_empty() {
             return Err(ProcessingError::invalid_configuration(
-                "No data available for validation".to_string()
+                "No data available for validation".to_string(),
             ));
         }
         Ok(())
@@ -122,7 +122,11 @@ impl PipelineStage for ValidatorStageImpl {
 
 #[async_trait]
 impl ValidatorStage for ValidatorStageImpl {
-    async fn validate_series(&mut self, _series: &[Series], _context: &mut ProcessingContext) -> Result<ValidationResult> {
+    async fn validate_series(
+        &mut self,
+        _series: &[Series],
+        _context: &mut ProcessingContext,
+    ) -> Result<ValidationResult> {
         Ok(ValidationResult {
             passed: false,
             is_valid: true,
@@ -133,7 +137,11 @@ impl ValidatorStage for ValidatorStageImpl {
         })
     }
 
-    async fn validate_observations(&mut self, _observations: &[Observation], _context: &mut ProcessingContext) -> Result<ValidationResult> {
+    async fn validate_observations(
+        &mut self,
+        _observations: &[Observation],
+        _context: &mut ProcessingContext,
+    ) -> Result<ValidationResult> {
         Ok(ValidationResult {
             passed: false,
             is_valid: true,
@@ -144,7 +152,11 @@ impl ValidatorStage for ValidatorStageImpl {
         })
     }
 
-    async fn validate_lookups(&mut self, _lookups: &[Lookup], _context: &mut ProcessingContext) -> Result<ValidationResult> {
+    async fn validate_lookups(
+        &mut self,
+        _lookups: &[Lookup],
+        _context: &mut ProcessingContext,
+    ) -> Result<ValidationResult> {
         Ok(ValidationResult {
             passed: false,
             is_valid: true,
@@ -155,7 +167,11 @@ impl ValidatorStage for ValidatorStageImpl {
         })
     }
 
-    async fn validate_survey(&mut self, _survey: &Survey, _context: &mut ProcessingContext) -> Result<ValidationResult> {
+    async fn validate_survey(
+        &mut self,
+        _survey: &Survey,
+        _context: &mut ProcessingContext,
+    ) -> Result<ValidationResult> {
         Ok(ValidationResult {
             passed: false,
             is_valid: true,

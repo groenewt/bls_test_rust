@@ -4,12 +4,12 @@
 //! The traits are designed to be flexible, performant, and support different writing
 //! strategies based on output format and performance requirements.
 
-use std::any::Any;
-use std::path::Path;
+use crate::data::model::{Lookup, Observation, Series, Survey};
+use crate::error::types::Result;
 use async_trait::async_trait;
 use serde::Serialize;
-use crate::data::model::{Series, Observation, Lookup, Survey};
-use crate::error::types::{DataError, Result};
+use std::any::Any;
+use std::path::Path;
 
 /// Configuration for writer behavior
 #[derive(Debug, Clone)]
@@ -80,37 +80,37 @@ pub struct WriteStats {
 pub trait DataWriter: Send + Sync {
     /// Writer configuration
     fn config(&self) -> &WriterConfig;
-    
+
     /// Get writing statistics
     fn stats(&self) -> &WriteStats;
-    
+
     /// Reset statistics
     fn reset_stats(&mut self);
-    
+
     /// Check if the writer can handle the given output path
     fn can_write(&self, path: &Path) -> Result<bool>;
-    
+
     /// Open a file for writing
     async fn open(&mut self, path: &Path) -> Result<()>;
-    
+
     /// Close the currently open file
     async fn close(&mut self) -> Result<()>;
-    
+
     /// Flush any buffered data to disk
     async fn flush(&mut self) -> Result<()>;
-    
+
     /// Check if a file is currently open
     fn is_open(&self) -> bool;
-    
+
     /// Get the path of the currently open file
     fn current_file(&self) -> Option<&Path>;
-    
+
     /// Get the supported file extensions
     fn supported_extensions(&self) -> Vec<String>;
-    
+
     /// Enable downcasting to concrete types
     fn as_any(&self) -> &dyn Any;
-    
+
     /// Enable mutable downcasting to concrete types
     fn as_any_mut(&mut self) -> &mut dyn Any;
 }
@@ -120,7 +120,7 @@ pub trait DataWriter: Send + Sync {
 pub trait SeriesWriter: DataWriter {
     /// Write a single series record
     async fn write_series(&mut self, series: &Series) -> Result<()>;
-    
+
     /// Write multiple series records
     async fn write_series_batch(&mut self, series: &[Series]) -> Result<()>;
 }
@@ -130,12 +130,16 @@ pub trait SeriesWriter: DataWriter {
 pub trait ObservationWriter: DataWriter {
     /// Write a single observation record
     async fn write_observation(&mut self, observation: &Observation) -> Result<()>;
-    
+
     /// Write multiple observation records
     async fn write_observations_batch(&mut self, observations: &[Observation]) -> Result<()>;
-    
+
     /// Write observations for a specific series
-    async fn write_observations_for_series(&mut self, series_id: &str, observations: &[Observation]) -> Result<()>;
+    async fn write_observations_for_series(
+        &mut self,
+        series_id: &str,
+        observations: &[Observation],
+    ) -> Result<()>;
 }
 
 /// Trait for writing lookup table files
@@ -143,7 +147,7 @@ pub trait ObservationWriter: DataWriter {
 pub trait LookupWriter: DataWriter {
     /// Write a single lookup record
     async fn write_lookup(&mut self, lookup: &Lookup) -> Result<()>;
-    
+
     /// Write multiple lookup records
     async fn write_lookups_batch(&mut self, lookups: &[Lookup]) -> Result<()>;
 }
@@ -160,10 +164,10 @@ pub trait SurveyWriter: DataWriter {
 pub trait StreamingWriter: DataWriter {
     /// Start a streaming write session
     async fn start_stream(&mut self) -> Result<()>;
-    
+
     /// Write a chunk of data to the stream
     async fn write_chunk(&mut self, data: &[u8]) -> Result<()>;
-    
+
     /// End the streaming write session
     async fn end_stream(&mut self) -> Result<()>;
 }
@@ -173,10 +177,10 @@ pub trait StreamingWriter: DataWriter {
 pub trait CompressedWriter: DataWriter {
     /// Set compression level (0-9)
     fn set_compression_level(&mut self, level: u8) -> Result<()>;
-    
+
     /// Get current compression level
     fn compression_level(&self) -> u8;
-    
+
     /// Get compression statistics
     fn compression_stats(&self) -> (u64, u64, f64); // (uncompressed, compressed, ratio)
 }
@@ -186,13 +190,13 @@ pub trait CompressedWriter: DataWriter {
 pub trait TransactionalWriter: DataWriter {
     /// Begin a transaction
     async fn begin_transaction(&mut self) -> Result<()>;
-    
+
     /// Commit the current transaction
     async fn commit_transaction(&mut self) -> Result<()>;
-    
+
     /// Rollback the current transaction
     async fn rollback_transaction(&mut self) -> Result<()>;
-    
+
     /// Check if a transaction is active
     fn has_active_transaction(&self) -> bool;
 }
@@ -201,34 +205,62 @@ pub trait TransactionalWriter: DataWriter {
 pub trait WriterFactory: Send + Sync {
     /// Create a writer for the given format and configuration
     fn create_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn DataWriter>>;
-    
+
     /// Create a series writer
-    fn create_series_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn SeriesWriter>>;
-    
+    fn create_series_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn SeriesWriter>>;
+
     /// Create an observation writer
-    fn create_observation_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn ObservationWriter>>;
-    
+    fn create_observation_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn ObservationWriter>>;
+
     /// Create a lookup writer
-    fn create_lookup_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn LookupWriter>>;
-    
+    fn create_lookup_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn LookupWriter>>;
+
     /// Create a survey writer
-    fn create_survey_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn SurveyWriter>>;
-    
+    fn create_survey_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn SurveyWriter>>;
+
     /// Create a streaming writer
-    fn create_streaming_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn StreamingWriter>>;
-    
+    fn create_streaming_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn StreamingWriter>>;
+
     /// Create a compressed writer
-    fn create_compressed_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn CompressedWriter>>;
-    
+    fn create_compressed_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn CompressedWriter>>;
+
     /// Create a transactional writer
-    fn create_transactional_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn TransactionalWriter>>;
-    
+    fn create_transactional_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn TransactionalWriter>>;
+
     /// Get supported output formats
     fn supported_formats(&self) -> Vec<String>;
-    
+
     /// Check if a format supports compression
     fn supports_compression(&self, format: &str) -> bool;
-    
+
     /// Check if a format supports transactions
     fn supports_transactions(&self, format: &str) -> bool;
 }
@@ -294,9 +326,13 @@ pub trait SeriesWriterExt: SeriesWriter {
         }
         Ok(())
     }
-    
+
     /// Write series with a custom serializer
-    async fn write_series_with_serializer<F>(&mut self, series: &Series, _serializer: F) -> Result<()>
+    async fn write_series_with_serializer<F>(
+        &mut self,
+        series: &Series,
+        _serializer: F,
+    ) -> Result<()>
     where
         F: Fn(&Series) -> Result<String> + Send + Sync,
     {
@@ -318,9 +354,13 @@ pub trait ObservationWriterExt: ObservationWriter {
         }
         Ok(())
     }
-    
+
     /// Write observations with a custom serializer
-    async fn write_observations_with_serializer<F>(&mut self, observations: &[Observation], _serializer: F) -> Result<()>
+    async fn write_observations_with_serializer<F>(
+        &mut self,
+        observations: &[Observation],
+        _serializer: F,
+    ) -> Result<()>
     where
         F: Fn(&Observation) -> Result<String> + Send + Sync,
     {
@@ -342,9 +382,13 @@ pub trait LookupWriterExt: LookupWriter {
         }
         Ok(())
     }
-    
+
     /// Write lookups with a custom serializer
-    async fn write_lookups_with_serializer<F>(&mut self, lookups: &[Lookup], _serializer: F) -> Result<()>
+    async fn write_lookups_with_serializer<F>(
+        &mut self,
+        lookups: &[Lookup],
+        _serializer: F,
+    ) -> Result<()>
     where
         F: Fn(&Lookup) -> Result<String> + Send + Sync,
     {
@@ -428,7 +472,7 @@ mod tests {
             schema: None,
             custom: std::collections::HashMap::new(),
         };
-        
+
         assert_eq!(metadata.format, "CSV");
         assert_eq!(metadata.file_size, 1024);
         assert_eq!(metadata.record_count, 100);

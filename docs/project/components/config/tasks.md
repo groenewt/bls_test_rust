@@ -1,6 +1,29 @@
 # Configuration Module: Tasks and Roadmap
 
-This document outlines the planned tasks and roadmap for the Configuration module in the Rusty BLS Data Processing system.
+![Configuration Banner](../../../resources/subheader_02.png)
+
+This document outlines the planned tasks and roadmap for the Configuration module in the Rusty BLS Data Processing system. Use this page to quickly grasp how configuration flows through the system.
+
+### At a Glance
+- Sources: YAML, JSON, Env Vars, CLI
+- Stages: Load → Parse → Validate → Cache → Provide
+- Key concerns: Schema validation, hot reload, caching
+- Status: Core Implementation phase
+
+### Configuration Flow
+```mermaid
+flowchart LR
+    S[Start] --> L[Load Sources]
+    L --> P[Parse Files & Inputs]
+    P --> V{Validate}
+    V -- Invalid --> ERR[Report Validation Errors]
+    V -- Valid --> C[Cache Config]
+    C --> D[Distribute to Components]
+    D --> Data[Data]
+    D --> Proc[Processing]
+    D --> Out[Output]
+    D --> Plug[Plugin]
+```
 
 ## Current Status
 
@@ -205,3 +228,12 @@ The Configuration module is currently in the **Core Implementation** phase of th
 - **Configuration Analytics**: Usage analytics and optimization recommendations
 - **Cloud Integration**: Support for cloud-based configuration storage
 - **Multi-tenant Support**: Support for multi-tenant configuration management
+
+
+---
+
+### Navigation
+- [Docs Home](../../README.md)
+- [Component Index](index.md)
+- [Component README](README.md)
+- [Test Specifications](test_specifications.md)

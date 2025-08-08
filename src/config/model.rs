@@ -2,13 +2,13 @@
 //!
 //! This module defines the data structures for the modular BLS survey configuration system.
 
+use crate::utils::validation::BLSValidationRules;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::time::Duration;
 use validator::{Validate, ValidationError};
-use crate::utils::validation::BLSValidationRules;
 
 /// Overview configuration from overview.yml
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
@@ -585,13 +585,13 @@ impl SurveyConfig {
             created_at: now,
             updated_at: now,
             code: code.clone(),
-            name: format!("{} Survey", code),
+            name: format!("{code} Survey"),
 
             overview: OverviewConfig {
                 config_version: 1,
                 survey: SurveyInfo {
                     code: code.clone(),
-                    name: format!("{} Survey", code),
+                    name: format!("{code} Survey"),
                     description: String::new(),
                     size_class: default_size_class(),
                     characteristics: SurveyCharacteristics::default(),
@@ -680,7 +680,11 @@ impl SurveyConfig {
     }
 
     /// Merge override configuration with proper precedence
-    pub fn merge_override(&mut self, override_config: &OverrideConfig, source: &str) -> Result<(), String> {
+    pub fn merge_override(
+        &mut self,
+        override_config: &OverrideConfig,
+        source: &str,
+    ) -> Result<(), String> {
         if let Some(ref processing_override) = override_config.processing {
             Self::apply_yaml_override(&mut self.processing, processing_override)?;
         }
@@ -747,19 +751,25 @@ impl SurveyConfig {
         Ok(())
     }
 
-    fn apply_yaml_override<T>(target: &mut T, override_value: &serde_yaml::Value) -> Result<(), String>
+    fn apply_yaml_override<T>(
+        target: &mut T,
+        override_value: &serde_yaml::Value,
+    ) -> Result<(), String>
     where
         T: serde::Serialize + serde::de::DeserializeOwned,
     {
         let mut target_value = serde_yaml::to_value(&*target)
-            .map_err(|e| format!("Failed to serialize target: {}", e))?;
+            .map_err(|e| format!("Failed to serialize target: {e}"))?;
         Self::merge_yaml_values(&mut target_value, override_value)?;
         *target = serde_yaml::from_value(target_value)
-            .map_err(|e| format!("Failed to deserialize merged config: {}", e))?;
+            .map_err(|e| format!("Failed to deserialize merged config: {e}"))?;
         Ok(())
     }
 
-    fn merge_yaml_values(target: &mut serde_yaml::Value, override_value: &serde_yaml::Value) -> Result<(), String> {
+    fn merge_yaml_values(
+        target: &mut serde_yaml::Value,
+        override_value: &serde_yaml::Value,
+    ) -> Result<(), String> {
         use serde_yaml::Value;
         match override_value {
             Value::Mapping(override_map) => {
@@ -808,11 +818,23 @@ pub struct FieldDefinition {
 /// Validation rules for fields
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ValidationRule {
-    Length { min: Option<usize>, max: Option<usize> },
-    Range { min: Option<f64>, max: Option<f64> },
-    Pattern { pattern: String },
-    Enum { values: Vec<String> },
-    Custom { function: String },
+    Length {
+        min: Option<usize>,
+        max: Option<usize>,
+    },
+    Range {
+        min: Option<f64>,
+        max: Option<f64>,
+    },
+    Pattern {
+        pattern: String,
+    },
+    Enum {
+        values: Vec<String>,
+    },
+    Custom {
+        function: String,
+    },
 }
 
 /// Processing strategies
@@ -858,14 +880,30 @@ impl std::fmt::Display for OutputFormat {
 }
 
 // Default functions for serde defaults (single source of truth)
-fn default_size_class() -> String { "medium".to_string() }
-fn default_max_threads() -> u32 { num_cpus::get() as u32 }
-fn default_chunk_size() -> usize { 10000 }
-fn default_memory_limit() -> usize { 1024 } // keep test-friendly default
-fn default_parallel() -> bool { true }
-fn default_output_dir() -> String { "data/processed".to_string() }
-fn default_create_subdirs() -> bool { true }
-fn default_filename_pattern() -> String { "{survey}_{table}_{timestamp}".to_string() }
+fn default_size_class() -> String {
+    "medium".to_string()
+}
+fn default_max_threads() -> u32 {
+    num_cpus::get() as u32
+}
+fn default_chunk_size() -> usize {
+    10000
+}
+fn default_memory_limit() -> usize {
+    1024
+} // keep test-friendly default
+fn default_parallel() -> bool {
+    true
+}
+fn default_output_dir() -> String {
+    "data/processed".to_string()
+}
+fn default_create_subdirs() -> bool {
+    true
+}
+fn default_filename_pattern() -> String {
+    "{survey}_{table}_{timestamp}".to_string()
+}
 
 // Validation functions (single definitions)
 fn validate_survey_code(code: &str) -> Result<(), ValidationError> {
@@ -917,10 +955,18 @@ impl Default for ErrorHandlingConfig {
 }
 
 // Error handling defaults and validators
-fn default_on_error() -> String { "continue".to_string() }
-fn default_max_errors() -> usize { 1000 }
-fn default_log_errors() -> bool { true }
-fn default_create_reports() -> bool { true }
+fn default_on_error() -> String {
+    "continue".to_string()
+}
+fn default_max_errors() -> usize {
+    1000
+}
+fn default_log_errors() -> bool {
+    true
+}
+fn default_create_reports() -> bool {
+    true
+}
 
 fn validate_error_action(action: &str) -> Result<(), ValidationError> {
     let valid_actions = ["continue", "abort", "skip"];
@@ -977,14 +1023,14 @@ impl ConfigValue {
             _ => None,
         }
     }
-    
+
     pub fn as_integer(&self) -> Option<i64> {
         match self {
             ConfigValue::Integer(i) => Some(*i),
             _ => None,
         }
     }
-    
+
     pub fn as_float(&self) -> Option<f64> {
         match self {
             ConfigValue::Float(f) => Some(*f),
@@ -992,14 +1038,14 @@ impl ConfigValue {
             _ => None,
         }
     }
-    
+
     pub fn as_boolean(&self) -> Option<bool> {
         match self {
             ConfigValue::Boolean(b) => Some(*b),
             _ => None,
         }
     }
-    
+
     pub fn is_null(&self) -> bool {
         matches!(self, ConfigValue::Null)
     }
@@ -1025,7 +1071,9 @@ impl Config {
         }
     }
 
-    pub fn load_from_file<P: AsRef<std::path::Path>>(_path: P) -> crate::error::types::Result<Self> {
+    pub fn load_from_file<P: AsRef<std::path::Path>>(
+        _path: P,
+    ) -> crate::error::types::Result<Self> {
         Ok(Self::new("DEFAULT"))
     }
 

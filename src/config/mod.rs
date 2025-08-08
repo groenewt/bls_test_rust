@@ -25,76 +25,81 @@
 //! ```
 
 // Module declarations
-pub mod model;
 pub mod loader;
+pub mod model;
 pub mod validator;
+pub mod yaml_adapter;
 
 // Re-export commonly used types and functions
+pub use loader::{ConfigFormat, ConfigLoader, ConfigSource};
 pub use model::{
-    Config, ConfigValue, SurveyConfig, OverviewConfig, ModelConfig, IoConfig, ProcessingConfig, 
-    OutputConfig, DagsConfig, QualityConfig, RuntimeConfig, Overrides,
-    FieldDefinition, ValidationRule, ProcessingStrategy, OutputFormat,
-    CompressionAlgorithm, PartitioningStrategy, BackoffStrategy, QualityCheckType,
-    QualitySeverity, LogLevel
+    BackoffStrategy, CompressionAlgorithm, Config, ConfigValue, DagsConfig, FieldDefinition,
+    IoConfig, LogLevel, ModelConfig, OutputConfig, OutputFormat, Overrides, OverviewConfig,
+    PartitioningStrategy, ProcessingConfig, ProcessingStrategy, QualityCheckType, QualityConfig,
+    QualitySeverity, RuntimeConfig, SurveyConfig, ValidationRule,
 };
-pub use loader::{ConfigLoader, ConfigSource, ConfigFormat};
-pub use validator::{ConfigValidator, ValidationResult, ValidationError, ValidationWarning};
+pub use validator::{ConfigValidator, ValidationError, ValidationResult, ValidationWarning};
 
 // Convenience type aliases
 pub type Result<T> = std::result::Result<T, crate::error::ConfigError>;
 
 /// Load and validate a survey configuration with environment support
-/// 
+///
 /// This is the main entry point for loading survey configurations.
 /// It handles the complete load + merge + validate workflow.
-/// 
+///
 /// # Arguments
 /// * `survey_code` - The survey code (e.g., "AP", "BD")
 /// * `env` - Optional environment ("dev", "stage", "prod"). Defaults to "dev"
-/// 
+///
 /// # Returns
 /// A fully loaded and validated `SurveyConfig`
-/// 
+///
 /// # Example
 /// ```rust
 /// use rusty::config::load_survey_config;
-/// 
+///
 /// // Load with default environment (dev)
 /// let config = load_survey_config("AP", None)?;
-/// 
+///
 /// // Load with specific environment
 /// let config = load_survey_config("AP", Some("prod"))?;
 /// ```
 pub fn load_survey_config(survey_code: &str, env: Option<&str>) -> Result<SurveyConfig> {
     let loader = ConfigLoader::new();
     let environment = env.unwrap_or("dev");
-    
+
     // Load the configuration
-    let mut config = loader.load_survey_config(survey_code, Some(environment))
+    let mut config = loader
+        .load_survey_config(survey_code, Some(environment))
         .map_err(|e| crate::error::ConfigError::LoadError {
-            path: format!("survey config for {}", survey_code),
-            source: format!("{}", e),
+            path: format!("survey config for {survey_code}"),
+            source: format!("{e}"),
         })?;
-    
+
     // Validate the configuration
     let validator = ConfigValidator::new();
-    let validation_result = validator.validate_survey_config(&config)
-        .map_err(|e| crate::error::ConfigError::ValidationError {
-            message: format!("Validation error: {}", e),
+    let validation_result = validator.validate_survey_config(&config).map_err(|e| {
+        crate::error::ConfigError::ValidationError {
+            message: format!("Validation error: {e}"),
             field: None,
-        })?;
-    
+        }
+    })?;
+
     if !validation_result.is_valid() {
         return Err(crate::error::ConfigError::ValidationError {
-            message: format!("Configuration validation failed for survey {}: {:?}", 
-                           survey_code, validation_result.errors()),
+            message: format!(
+                "Configuration validation failed for survey {}: {:?}",
+                survey_code,
+                validation_result.errors()
+            ),
             field: None,
         });
     }
-    
+
     // Update metadata after successful load and validation
     config.update();
-    
+
     Ok(config)
 }
 

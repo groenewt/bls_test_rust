@@ -41,9 +41,9 @@
 //! let context = error_context!("Processing failed for series {}", series_id);
 //! ```
 
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::time::SystemTime;
-use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::error::{Error, Result};
@@ -64,10 +64,10 @@ pub struct Location {
 impl Location {
     /// Create a new Location
     pub fn new(file: &'static str, line: u32, column: u32) -> Self {
-        Self { 
-            file: file.to_string(), 
-            line, 
-            column 
+        Self {
+            file: file.to_string(),
+            line,
+            column,
         }
     }
 }
@@ -100,12 +100,7 @@ pub struct ErrorContext {
 
 impl ErrorContext {
     /// Create a new ErrorContext
-    pub fn new<S: Into<String>>(
-        message: S,
-        file: &'static str,
-        line: u32,
-        column: u32,
-    ) -> Self {
+    pub fn new<S: Into<String>>(message: S, file: &'static str, line: u32, column: u32) -> Self {
         Self {
             message: message.into(),
             location: Some(Location::new(file, line, column)),
@@ -155,7 +150,7 @@ impl fmt::Display for ErrorContext {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.message)?;
         if let Some(location) = &self.location {
-            write!(f, " at {}", location)?;
+            write!(f, " at {location}")?;
         }
         write!(f, " [{}]", self.component)?;
         Ok(())

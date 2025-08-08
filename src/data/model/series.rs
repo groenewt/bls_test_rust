@@ -6,14 +6,12 @@
 //! ## Usage
 //!
 
+use crate::data::model::{Area, CommonMetadata, DataQuality, DataStatus, Frequency, Item, Unit};
+use crate::utils::validation::BLSValidationRules;
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use validator::Validate;
-use chrono::{DateTime, Utc};
-use crate::data::model::{
-    CommonMetadata, DataQuality, DataStatus, Frequency, Unit, Area, Item
-};
-use crate::utils::validation::BLSValidationRules;
 
 /// BLS data series
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
@@ -22,37 +20,36 @@ pub struct Series {
     #[validate(length(min = 10, max = 25))]
     #[validate(custom = "validate_series_id")]
     pub series_id: String,
-    
+
     /// Series title/description
     #[validate(length(min = 1, max = 500))]
     pub title: String,
-    
+
     /// Survey code (e.g., "AP")
     #[validate(length(min = 2, max = 2))]
     #[validate(custom = "validate_survey_code")]
     pub survey_code: String,
 
-
     /// Series metadata
     #[validate]
     pub metadata: SeriesMetadata,
-    
+
     /// Common metadata (timestamps, version, etc.)
     #[validate]
     pub common: CommonMetadata,
-    
+
     /// Periodicity code
     pub periodicity_code: String,
-    
+
     /// Seasonal adjustment code
     pub seasonal: String,
-    
+
     /// Item code
     pub item_code: String,
-    
+
     /// Base period
     pub base_period: String,
-    
+
     /// Base code
     pub base_code: String,
     pub area_code: String,
@@ -73,12 +70,17 @@ impl Series {
             item_code: String::new(),
             base_period: String::new(),
             base_code: String::new(),
-            area_code: String::new()
+            area_code: String::new(),
         }
     }
 
     /// Create a series with full metadata
-    pub fn with_metadata(series_id: &str, title: &str, area_code: &str, metadata: SeriesMetadata) -> Self {
+    pub fn with_metadata(
+        series_id: &str,
+        title: &str,
+        area_code: &str,
+        metadata: SeriesMetadata,
+    ) -> Self {
         let survey_code = extract_survey_code(series_id);
         Self {
             series_id: series_id.to_string(),
@@ -159,10 +161,12 @@ impl Series {
             &self.series_id,
             &self.title,
             &self.survey_code,
-        ).map_err(|e| e.to_string())?;
+        )
+        .map_err(|e| e.to_string())?;
 
         // Validate using validator crate
-        self.validate().map_err(|e| format!("Validation error: {:?}", e))?;
+        self.validate()
+            .map_err(|e| format!("Validation error: {e:?}"))?;
 
         Ok(())
     }
@@ -173,40 +177,40 @@ impl Series {
 pub struct SeriesMetadata {
     /// Data frequency
     pub frequency: Frequency,
-    
+
     /// Data status
     pub status: DataStatus,
-    
+
     /// Data quality indicator
     pub quality: DataQuality,
-    
+
     /// Unit of measurement
     pub unit: Option<Unit>,
-    
+
     /// Geographic area
     pub area: Option<Area>,
-    
+
     /// Item/industry information
     pub item: Option<Item>,
-    
+
     /// Start date of the series
     pub start_date: Option<DateTime<Utc>>,
-    
+
     /// End date of the series (if discontinued)
     pub end_date: Option<DateTime<Utc>>,
-    
+
     /// Last update date
     pub last_updated: Option<DateTime<Utc>>,
-    
+
     /// Seasonal adjustment indicator
     pub seasonal_adjustment: Option<String>,
-    
+
     /// Base period for index series
     pub base_period: Option<String>,
-    
+
     /// Additional notes or comments
     pub notes: Option<String>,
-    
+
     /// Custom attributes
     #[serde(default)]
     pub attributes: HashMap<String, String>,
@@ -373,21 +377,19 @@ fn extract_survey_code(series_id: &str) -> String {
 
 // Custom validation functions
 fn validate_series_id(series_id: &str) -> Result<(), validator::ValidationError> {
-    crate::utils::validation::validate_series_id(series_id)
-        .map_err(|e| {
-            let mut error = validator::ValidationError::new("invalid_series_id");
-            error.message = Some(format!("Invalid series ID: {}", e).into());
-            error
-        })
+    crate::utils::validation::validate_series_id(series_id).map_err(|e| {
+        let mut error = validator::ValidationError::new("invalid_series_id");
+        error.message = Some(format!("Invalid series ID: {e}").into());
+        error
+    })
 }
 
 fn validate_survey_code(survey_code: &str) -> Result<(), validator::ValidationError> {
-    crate::utils::validation::validate_survey_code(survey_code)
-        .map_err(|e| {
-            let mut error = validator::ValidationError::new("invalid_survey_code");
-            error.message = Some(format!("Invalid survey code: {}", e).into());
-            error
-        })
+    crate::utils::validation::validate_survey_code(survey_code).map_err(|e| {
+        let mut error = validator::ValidationError::new("invalid_survey_code");
+        error.message = Some(format!("Invalid survey code: {e}").into());
+        error
+    })
 }
 
 #[cfg(test)]
@@ -414,7 +416,7 @@ mod tests {
     fn test_series_metadata_builder() {
         let unit = Unit::with_symbol("USD", "US Dollars", "$");
         let area = Area::new("US", "United States", "Country");
-        
+
         let metadata = SeriesMetadata::builder()
             .frequency(Frequency::Monthly)
             .status(DataStatus::Active)
@@ -433,7 +435,10 @@ mod tests {
         assert!(metadata.area.is_some());
         assert!(metadata.is_seasonally_adjusted());
         assert_eq!(metadata.notes, Some("Test series".to_string()));
-        assert_eq!(metadata.attributes.get("test_key"), Some(&"test_value".to_string()));
+        assert_eq!(
+            metadata.attributes.get("test_key"),
+            Some(&"test_value".to_string())
+        );
     }
 
     #[test]
@@ -443,7 +448,8 @@ mod tests {
             .status(DataStatus::Inactive)
             .build();
 
-        let series = Series::with_metadata("BDUS00000000", "Business Dynamics", "US00000000", metadata);
+        let series =
+            Series::with_metadata("BDUS00000000", "Business Dynamics", "US00000000", metadata);
         assert_eq!(series.frequency(), &Frequency::Quarterly);
         assert!(!series.is_active());
     }
@@ -468,8 +474,14 @@ mod tests {
         series.add_attribute("source", "BLS");
         series.add_attribute("category", "Energy");
 
-        assert_eq!(series.common.attributes.get("source"), Some(&"BLS".to_string()));
-        assert_eq!(series.common.attributes.get("category"), Some(&"Energy".to_string()));
+        assert_eq!(
+            series.common.attributes.get("source"),
+            Some(&"BLS".to_string())
+        );
+        assert_eq!(
+            series.common.attributes.get("category"),
+            Some(&"Energy".to_string())
+        );
     }
 
     #[test]
@@ -511,7 +523,7 @@ mod tests {
         let series = Series::new("APUS49074714", "Test Series");
         let serialized = serde_json::to_string(&series).unwrap();
         let deserialized: Series = serde_json::from_str(&serialized).unwrap();
-        
+
         assert_eq!(series.series_id, deserialized.series_id);
         assert_eq!(series.title, deserialized.title);
         assert_eq!(series.survey_code, deserialized.survey_code);

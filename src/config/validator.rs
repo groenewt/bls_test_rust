@@ -31,10 +31,10 @@
 //! }
 //! ```
 
-use std::collections::HashSet;
 use crate::config::model::{Config, ValidationRule};
 use crate::error::Result;
 use crate::utils::validation::ValidationUtils;
+use std::collections::HashSet;
 
 /// Validation result containing errors and warnings
 #[derive(Debug, Clone)]
@@ -130,7 +130,11 @@ impl ValidationError {
 impl std::fmt::Display for ValidationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(field_path) = &self.field_path {
-            write!(f, "[{}] {}: {} (field: {})", self.severity, self.code, self.message, field_path)
+            write!(
+                f,
+                "[{}] {}: {} (field: {})",
+                self.severity, self.code, self.message, field_path
+            )
         } else {
             write!(f, "[{}] {}: {}", self.severity, self.code, self.message)
         }
@@ -171,7 +175,11 @@ impl ValidationWarning {
 impl std::fmt::Display for ValidationWarning {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(field_path) = &self.field_path {
-            write!(f, "[WARNING] {}: {} (field: {})", self.code, self.message, field_path)
+            write!(
+                f,
+                "[WARNING] {}: {} (field: {})",
+                self.code, self.message, field_path
+            )
         } else {
             write!(f, "[WARNING] {}: {}", self.code, self.message)
         }
@@ -248,7 +256,11 @@ impl ConfigValidator {
     }
 
     /// Validate business rules
-    fn validate_business_rules(&self, _config: &Config, _result: &mut ValidationResult) -> Result<()> {
+    fn validate_business_rules(
+        &self,
+        _config: &Config,
+        _result: &mut ValidationResult,
+    ) -> Result<()> {
         // TODO: Implement business rule validation when Config struct is complete
         // Currently stubbed out due to missing Config fields
         Ok(())
@@ -275,7 +287,9 @@ impl ConfigValidator {
         rule_index: usize,
         result: &mut ValidationResult,
     ) -> Result<()> {
-        let field_path = format!("files.{}.schema[{}].validation[{}]", file_name, field_index, rule_index);
+        let field_path = format!(
+            "files.{file_name}.schema[{field_index}].validation[{rule_index}]"
+        );
 
         match rule {
             ValidationRule::Length { min, max } => {
@@ -283,7 +297,9 @@ impl ConfigValidator {
                     if min_val > max_val {
                         result.add_error(ValidationError::with_field(
                             "INVALID_LENGTH_RANGE",
-                            &format!("Invalid length range for field '{}': min ({}) > max ({})", field_name, min_val, max_val),
+                            &format!(
+                                "Invalid length range for field '{field_name}': min ({min_val}) > max ({max_val})"
+                            ),
                             &field_path,
                         ));
                     }
@@ -294,7 +310,9 @@ impl ConfigValidator {
                     if min_val > max_val {
                         result.add_error(ValidationError::with_field(
                             "INVALID_NUMERIC_RANGE",
-                            &format!("Invalid numeric range for field '{}': min ({}) > max ({})", field_name, min_val, max_val),
+                            &format!(
+                                "Invalid numeric range for field '{field_name}': min ({min_val}) > max ({max_val})"
+                            ),
                             &field_path,
                         ));
                     }
@@ -304,7 +322,7 @@ impl ConfigValidator {
                 if let Err(e) = regex::Regex::new(pattern) {
                     result.add_error(ValidationError::with_field(
                         "INVALID_REGEX_PATTERN",
-                        &format!("Invalid regex pattern for field '{}': {}", field_name, e),
+                        &format!("Invalid regex pattern for field '{field_name}': {e}"),
                         &field_path,
                     ));
                 }
@@ -313,7 +331,7 @@ impl ConfigValidator {
                 if values.is_empty() {
                     result.add_error(ValidationError::with_field(
                         "EMPTY_ENUM_VALUES",
-                        &format!("Empty enum values for field '{}'", field_name),
+                        &format!("Empty enum values for field '{field_name}'"),
                         &field_path,
                     ));
                 }
@@ -324,7 +342,9 @@ impl ConfigValidator {
                     if !unique_values.insert(value) {
                         result.add_warning(ValidationWarning::with_field(
                             "DUPLICATE_ENUM_VALUE",
-                            &format!("Duplicate enum value '{}' for field '{}'", value, field_name),
+                            &format!(
+                                "Duplicate enum value '{value}' for field '{field_name}'"
+                            ),
                             &field_path,
                         ));
                     }
@@ -334,7 +354,9 @@ impl ConfigValidator {
                 if function.trim().is_empty() {
                     result.add_error(ValidationError::with_field(
                         "EMPTY_CUSTOM_FUNCTION",
-                        &format!("Empty custom validation function for field '{}'", field_name),
+                        &format!(
+                            "Empty custom validation function for field '{field_name}'"
+                        ),
                         &field_path,
                     ));
                 }
@@ -345,25 +367,41 @@ impl ConfigValidator {
     }
 
     /// Validate cross-references between configuration sections
-    fn validate_cross_references(&self, _config: &Config, _result: &mut ValidationResult) -> Result<()> {
+    fn validate_cross_references(
+        &self,
+        _config: &Config,
+        _result: &mut ValidationResult,
+    ) -> Result<()> {
         // TODO: Implement cross-reference validation when Config struct is complete
         Ok(())
     }
 
     /// Validate security-related rules
-    fn validate_security_rules(&self, _config: &Config, _result: &mut ValidationResult) -> Result<()> {
+    fn validate_security_rules(
+        &self,
+        _config: &Config,
+        _result: &mut ValidationResult,
+    ) -> Result<()> {
         // TODO: Implement security validation when Config struct is complete
         Ok(())
     }
 
     /// Validate performance-related settings
-    fn validate_performance_settings(&self, _config: &Config, _result: &mut ValidationResult) -> Result<()> {
+    fn validate_performance_settings(
+        &self,
+        _config: &Config,
+        _result: &mut ValidationResult,
+    ) -> Result<()> {
         // TODO: Implement performance validation when Config struct is complete
         Ok(())
     }
 
     /// Validate configuration against a schema
-    pub fn validate_against_schema(&self, _config: &Config, _schema: &Config) -> Result<ValidationResult> {
+    pub fn validate_against_schema(
+        &self,
+        _config: &Config,
+        _schema: &Config,
+    ) -> Result<ValidationResult> {
         // TODO: Implement schema validation when Config struct is complete
         Ok(ValidationResult::new())
     }
@@ -372,7 +410,7 @@ impl ConfigValidator {
     fn compare_file_schemas(
         &self,
         _file_name: &str,
-        _config_schema: &str, // Changed from FileSchema to str as placeholder
+        _config_schema: &str,   // Changed from FileSchema to str as placeholder
         _expected_schema: &str, // Changed from FileSchema to str as placeholder
         _result: &mut ValidationResult,
     ) -> Result<()> {
@@ -381,7 +419,10 @@ impl ConfigValidator {
     }
 
     /// Validate a comprehensive survey configuration
-    pub fn validate_survey_config(&self, _config: &crate::config::model::SurveyConfig) -> Result<ValidationResult> {
+    pub fn validate_survey_config(
+        &self,
+        _config: &crate::config::model::SurveyConfig,
+    ) -> Result<ValidationResult> {
         // TODO: Implement survey config validation when SurveyConfig struct is complete
         Ok(ValidationResult::new())
     }
@@ -396,7 +437,7 @@ impl Default for ConfigValidator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::config::model::{Config, ProcessingStrategy, OutputFormat, FieldDefinition};
+    use crate::config::model::{Config, FieldDefinition, OutputFormat, ProcessingStrategy};
 
     #[test]
     fn test_validation_result() {
@@ -409,7 +450,10 @@ mod tests {
         assert!(!result.is_valid());
         assert_eq!(result.errors().len(), 1);
 
-        result.add_warning(ValidationWarning::new("TEST_WARNING", "Test warning message"));
+        result.add_warning(ValidationWarning::new(
+            "TEST_WARNING",
+            "Test warning message",
+        ));
         assert_eq!(result.warnings().len(), 1);
     }
 
@@ -420,7 +464,8 @@ mod tests {
         assert!(display.contains("TEST_CODE"));
         assert!(display.contains("Test message"));
 
-        let error_with_field = ValidationError::with_field("TEST_CODE", "Test message", "test.field");
+        let error_with_field =
+            ValidationError::with_field("TEST_CODE", "Test message", "test.field");
         let display_with_field = format!("{}", error_with_field);
         assert!(display_with_field.contains("test.field"));
     }
@@ -438,7 +483,7 @@ mod tests {
     fn test_validate_basic_config() {
         let validator = ConfigValidator::new();
         let config = Config::new("AP");
-        
+
         let result = validator.validate(&config).unwrap();
         // Basic config should be valid (currently stubbed)
         assert!(result.is_valid());
@@ -449,7 +494,7 @@ mod tests {
         let validator = ConfigValidator::new();
         let config = Config::new("INVALID");
         // TODO: Test invalid survey code when validation is implemented
-        
+
         let result = validator.validate(&config).unwrap();
         // Currently stubbed, so it will be valid
         assert!(result.is_valid());
@@ -459,7 +504,7 @@ mod tests {
     fn test_validate_file_schema() {
         let validator = ConfigValidator::new();
         let config = Config::new("AP");
-        
+
         // TODO: Test file schema validation when FileSchema type is available
         let result = validator.validate(&config).unwrap();
         // Currently stubbed, so it will be valid
@@ -470,7 +515,7 @@ mod tests {
     fn test_validate_performance_settings() {
         let validator = ConfigValidator::new();
         let config = Config::new("AP");
-        
+
         // TODO: Test performance settings when Config has processing fields
         let result = validator.validate(&config).unwrap();
         // Currently stubbed, so it will be valid
@@ -481,7 +526,7 @@ mod tests {
     fn test_validate_cross_references() {
         let validator = ConfigValidator::new();
         let config = Config::new("AP");
-        
+
         // TODO: Test cross-references when Config has processing fields
         let result = validator.validate(&config).unwrap();
         // Currently stubbed, so it will be valid
@@ -493,7 +538,7 @@ mod tests {
         let validator = ConfigValidator::new();
         let schema = Config::new("AP");
         let config = Config::new("BD"); // Different survey code
-        
+
         let result = validator.validate_against_schema(&config, &schema).unwrap();
         // Currently stubbed, so it will be valid
         assert!(result.is_valid());

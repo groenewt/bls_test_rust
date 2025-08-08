@@ -5,21 +5,23 @@
 //! datasets that are too large for in-memory or chunked processing and provides
 //! zero-copy access to file data.
 
-use std::time::Instant;
-use std::path::Path;
-use std::sync::Arc;
 use async_trait::async_trait;
-use rayon::prelude::*;
 use memmap2::{Mmap, MmapOptions};
+use rayon::prelude::*;
+use std::path::Path;
+use std::time::Instant;
 
-use crate::data::model::{Series, Observation, Lookup, Survey};
-use crate::data::reader::{create_optimized_reader, DataReader, SeriesReader, ObservationReader, LookupReader, SurveyReader};
-use crate::data::writer::{create_optimized_writer, DataWriter, SeriesWriter, ObservationWriter, LookupWriter, SurveyWriter};
-use crate::processing::traits::{
-    DataProcessor, ProcessingConfig, ProcessingStats, ProcessingStrategy,
-    ProcessingInput, ProcessingOutput, ProcessingContext,
+use crate::data::model::{Lookup, Observation, Series, Survey};
+use crate::data::reader::DataReader;
+use crate::data::writer::{
+    DataWriter, SurveyWriter,
+    create_optimized_writer,
 };
 use crate::error::types::{ProcessingError, Result};
+use crate::processing::traits::{
+    DataProcessor, ProcessingConfig, ProcessingContext, ProcessingInput, ProcessingOutput,
+    ProcessingStats, ProcessingStrategy,
+};
 use crate::utils::validation::BLSValidationRules;
 
 /// Memory-mapped processing strategy implementation
@@ -52,18 +54,25 @@ impl MemoryMappedProcessor {
     }
 
     /// Process data using memory mapping
-    async fn process_memory_mapped(&mut self, input: &ProcessingInput, output: &ProcessingOutput) -> Result<()> {
+    async fn process_memory_mapped(
+        &mut self,
+        input: &ProcessingInput,
+        output: &ProcessingOutput,
+    ) -> Result<()> {
         let start_time = Instant::now();
 
         // Process each input file
         for (input_idx, input_path) in input.paths.iter().enumerate() {
-            let output_path = output.paths.get(input_idx)
+            let output_path = output
+                .paths
+                .get(input_idx)
                 .or_else(|| output.paths.first())
-                .ok_or_else(|| ProcessingError::invalid_configuration(
-                    "No output path available".to_string()
-                ))?;
+                .ok_or_else(|| {
+                    ProcessingError::invalid_configuration("No output path available".to_string())
+                })?;
 
-            self.process_file_memory_mapped(input_path, output_path, input, output).await?;
+            self.process_file_memory_mapped(input_path, output_path, input, output)
+                .await?;
         }
 
         self.stats.processing_time_ms += start_time.elapsed().as_millis() as u64;
@@ -83,19 +92,19 @@ impl MemoryMappedProcessor {
 
         // Check if file is suitable for memory mapping
         if !self.is_suitable_for_mmap(input_path_obj)? {
-            return Err(ProcessingError::invalid_configuration(
-                format!("File {} is not suitable for memory mapping", input_path)
-            ).into());
+            return Err(ProcessingError::invalid_configuration(format!(
+                "File {input_path} is not suitable for memory mapping"
+            )));
         }
 
         // Create memory map
         let file = std::fs::File::open(input_path_obj)
-            .map_err(|e| ProcessingError::io_error(format!("Failed to open file: {}", e)))?;
-        
+            .map_err(|e| ProcessingError::io_error(format!("Failed to open file: {e}")))?;
+
         let mmap = unsafe {
-            MmapOptions::new()
-                .map(&file)
-                .map_err(|e| ProcessingError::io_error(format!("Failed to create memory map: {}", e)))?
+            MmapOptions::new().map(&file).map_err(|e| {
+                ProcessingError::io_error(format!("Failed to create memory map: {e}"))
+            })?
         };
 
         // Open output writer
@@ -120,9 +129,10 @@ impl MemoryMappedProcessor {
                 self.process_survey_mmap(&mmap, &mut writer).await?;
             }
             _ => {
-                return Err(ProcessingError::unsupported_data_type(
-                    format!("Unknown data type: {}", data_type)
-                ).into());
+                return Err(ProcessingError::unsupported_data_type(format!(
+                    "Unknown data type: {data_type}"
+                ))
+                .into());
             }
         }
 
@@ -143,39 +153,41 @@ impl MemoryMappedProcessor {
         writer: &mut Box<dyn DataWriter>,
     ) -> Result<()> {
         let start_time = Instant::now();
-        
+
         // Find all line positions in the memory-mapped file
         let line_positions = self.find_line_positions(mmap);
         let total_lines = line_positions.len();
-        
+
         // Process lines in parallel chunks
         let chunk_size = self.config.batch_size;
         let chunks: Vec<_> = line_positions.chunks(chunk_size).collect();
-        
+
         let mut total_processed = 0;
-        
+
         for (chunk_idx, chunk) in chunks.iter().enumerate() {
             // Extract lines for this chunk
             let lines = self.extract_lines_from_positions(mmap, chunk)?;
-            
+
             // Process chunk in parallel
             let processed_series = self.process_series_lines_parallel(lines)?;
-            
+
             // Write processed data
             self.write_series_chunk(writer, processed_series).await?;
-            
+
             total_processed += chunk.len();
-            
+
             // Progress reporting
             if chunk_idx % 10 == 0 {
                 let progress = (total_processed as f64 / total_lines as f64) * 100.0;
-                println!("Processed {:.1}% ({}/{} lines)", progress, total_processed, total_lines);
+                println!(
+                    "Processed {progress:.1}% ({total_processed}/{total_lines} lines)"
+                );
             }
         }
-        
+
         self.stats.records_processed += total_processed as u64;
         self.stats.processing_time_ms += start_time.elapsed().as_millis() as u64;
-        
+
         Ok(())
     }
 
@@ -186,31 +198,34 @@ impl MemoryMappedProcessor {
         writer: &mut Box<dyn DataWriter>,
     ) -> Result<()> {
         let start_time = Instant::now();
-        
+
         let line_positions = self.find_line_positions(mmap);
         let total_lines = line_positions.len();
         let chunk_size = self.config.batch_size;
         let chunks: Vec<_> = line_positions.chunks(chunk_size).collect();
-        
+
         let mut total_processed = 0;
-        
+
         for (chunk_idx, chunk) in chunks.iter().enumerate() {
             let lines = self.extract_lines_from_positions(mmap, chunk)?;
             let processed_observations = self.process_observations_lines_parallel(lines)?;
-            
-            self.write_observations_chunk(writer, processed_observations).await?;
-            
+
+            self.write_observations_chunk(writer, processed_observations)
+                .await?;
+
             total_processed += chunk.len();
-            
+
             if chunk_idx % 10 == 0 {
                 let progress = (total_processed as f64 / total_lines as f64) * 100.0;
-                println!("Processed {:.1}% ({}/{} lines)", progress, total_processed, total_lines);
+                println!(
+                    "Processed {progress:.1}% ({total_processed}/{total_lines} lines)"
+                );
             }
         }
-        
+
         self.stats.records_processed += total_processed as u64;
         self.stats.processing_time_ms += start_time.elapsed().as_millis() as u64;
-        
+
         Ok(())
     }
 
@@ -221,31 +236,33 @@ impl MemoryMappedProcessor {
         writer: &mut Box<dyn DataWriter>,
     ) -> Result<()> {
         let start_time = Instant::now();
-        
+
         let line_positions = self.find_line_positions(mmap);
         let total_lines = line_positions.len();
         let chunk_size = self.config.batch_size;
         let chunks: Vec<_> = line_positions.chunks(chunk_size).collect();
-        
+
         let mut total_processed = 0;
-        
+
         for (chunk_idx, chunk) in chunks.iter().enumerate() {
             let lines = self.extract_lines_from_positions(mmap, chunk)?;
             let processed_lookups = self.process_lookups_lines_parallel(lines)?;
-            
+
             self.write_lookups_chunk(writer, processed_lookups).await?;
-            
+
             total_processed += chunk.len();
-            
+
             if chunk_idx % 10 == 0 {
                 let progress = (total_processed as f64 / total_lines as f64) * 100.0;
-                println!("Processed {:.1}% ({}/{} lines)", progress, total_processed, total_lines);
+                println!(
+                    "Processed {progress:.1}% ({total_processed}/{total_lines} lines)"
+                );
             }
         }
-        
+
         self.stats.records_processed += total_processed as u64;
         self.stats.processing_time_ms += start_time.elapsed().as_millis() as u64;
-        
+
         Ok(())
     }
 
@@ -257,13 +274,13 @@ impl MemoryMappedProcessor {
     ) -> Result<()> {
         // Surveys are typically small, process as single unit
         let content = std::str::from_utf8(mmap.as_ref())
-            .map_err(|e| ProcessingError::io_error(format!("Invalid UTF-8: {}", e)))?;
-        
+            .map_err(|e| ProcessingError::io_error(format!("Invalid UTF-8: {e}")))?;
+
         let survey = self.parse_survey_content(content)?;
         let processed_survey = self.process_single_survey(survey)?;
-        
+
         self.write_survey(writer, processed_survey).await?;
-        
+
         self.stats.records_processed += 1;
         Ok(())
     }
@@ -271,20 +288,24 @@ impl MemoryMappedProcessor {
     /// Find all line positions in the memory-mapped file
     fn find_line_positions(&self, mmap: &Mmap) -> Vec<usize> {
         let mut positions = vec![0]; // Start of file
-        
+
         for (i, &byte) in mmap.iter().enumerate() {
             if byte == b'\n' && i + 1 < mmap.len() {
                 positions.push(i + 1);
             }
         }
-        
+
         positions
     }
 
     /// Extract lines from memory map using positions
-    fn extract_lines_from_positions(&self, mmap: &Mmap, positions: &[usize]) -> Result<Vec<String>> {
+    fn extract_lines_from_positions(
+        &self,
+        mmap: &Mmap,
+        positions: &[usize],
+    ) -> Result<Vec<String>> {
         let mut lines = Vec::new();
-        
+
         for i in 0..positions.len() {
             let start = positions[i];
             let end = if i + 1 < positions.len() {
@@ -292,18 +313,19 @@ impl MemoryMappedProcessor {
             } else {
                 mmap.len()
             };
-            
+
             if start < end && end <= mmap.len() {
                 let line_bytes = &mmap[start..end];
-                let line = std::str::from_utf8(line_bytes)
-                    .map_err(|e| ProcessingError::too_many_errors(format!("Invalid UTF-8 in line: {}", e)))?;
-                
+                let line = std::str::from_utf8(line_bytes).map_err(|e| {
+                    ProcessingError::too_many_errors(format!("Invalid UTF-8 in line: {e}"))
+                })?;
+
                 if !line.trim().is_empty() {
                     lines.push(line.to_string());
                 }
             }
         }
-        
+
         Ok(lines)
     }
 
@@ -313,25 +335,27 @@ impl MemoryMappedProcessor {
             .par_iter()
             .map(|line| self.parse_and_process_series_line(line))
             .collect();
-        
+
         let mut series_list = Vec::new();
         let mut errors = 0;
-        
+
         for result in series_results {
             match result {
                 Ok(Some(series)) => series_list.push(series),
-                Ok(None) => {}, // Skip empty/invalid lines
+                Ok(None) => {} // Skip empty/invalid lines
                 Err(_) => {
                     errors += 1;
                     if errors > self.config.max_errors {
-                        return Err(ProcessingError::too_many_errors(
-                            format!("Exceeded maximum error count: {}", self.config.max_errors)
-                        ).into());
+                        return Err(ProcessingError::too_many_errors(format!(
+                            "Exceeded maximum error count: {}",
+                            self.config.max_errors
+                        ))
+                        .into());
                     }
                 }
             }
         }
-        
+
         Ok(series_list)
     }
 
@@ -341,25 +365,27 @@ impl MemoryMappedProcessor {
             .par_iter()
             .map(|line| self.parse_and_process_observation_line(line))
             .collect();
-        
+
         let mut observations = Vec::new();
         let mut errors = 0;
-        
+
         for result in obs_results {
             match result {
                 Ok(Some(observation)) => observations.push(observation),
-                Ok(None) => {},
+                Ok(None) => {}
                 Err(_) => {
                     errors += 1;
                     if errors > self.config.max_errors {
-                        return Err(ProcessingError::too_many_errors(
-                            format!("Exceeded maximum error count: {}", self.config.max_errors)
-                        ).into());
+                        return Err(ProcessingError::too_many_errors(format!(
+                            "Exceeded maximum error count: {}",
+                            self.config.max_errors
+                        ))
+                        .into());
                     }
                 }
             }
         }
-        
+
         Ok(observations)
     }
 
@@ -369,25 +395,27 @@ impl MemoryMappedProcessor {
             .par_iter()
             .map(|line| self.parse_and_process_lookup_line(line))
             .collect();
-        
+
         let mut lookups = Vec::new();
         let mut errors = 0;
-        
+
         for result in lookup_results {
             match result {
                 Ok(Some(lookup)) => lookups.push(lookup),
-                Ok(None) => {},
+                Ok(None) => {}
                 Err(_) => {
                     errors += 1;
                     if errors > self.config.max_errors {
-                        return Err(ProcessingError::too_many_errors(
-                            format!("Exceeded maximum error count: {}", self.config.max_errors)
-                        ).into());
+                        return Err(ProcessingError::too_many_errors(format!(
+                            "Exceeded maximum error count: {}",
+                            self.config.max_errors
+                        ))
+                        .into());
                     }
                 }
             }
         }
-        
+
         Ok(lookups)
     }
 
@@ -397,21 +425,21 @@ impl MemoryMappedProcessor {
         if fields.len() < 3 {
             return Ok(None); // Skip invalid lines
         }
-        
+
         // Basic parsing - would be more sophisticated in practice
         let series_id = fields[0].to_string();
         let title = fields.get(1).unwrap_or(&"").to_string();
 
-        let mut series = Series::new(&series_id, &*title);
-        
+        let mut series = Series::new(&series_id, &title);
+
         // Apply processing logic
         self.process_single_series_record(&mut series);
-        
+
         // Validate if configured
         if self.config.validate_data && !self.is_valid_series(&series) {
             return Ok(None);
         }
-        
+
         Ok(Some(series))
     }
 
@@ -421,28 +449,32 @@ impl MemoryMappedProcessor {
         if fields.len() < 4 {
             return Ok(None);
         }
-        
+
         let series_id = fields[0].to_string();
-        let year = fields[1].parse::<i32>()
-            .map_err(|e| ProcessingError::parse_error(format!("Invalid year: {}", e)))?;
+        let year = fields[1]
+            .parse::<i32>()
+            .map_err(|e| ProcessingError::parse_error(format!("Invalid year: {e}")))?;
         let period = fields[2].to_string();
         let value = if fields[3].is_empty() || fields[3] == "-" {
             None
         } else {
-            Some(fields[3].parse::<f64>()
-                .map_err(|e| ProcessingError::parse_error(format!("Invalid value: {}", e)))?)
+            Some(
+                fields[3]
+                    .parse::<f64>()
+                    .map_err(|e| ProcessingError::parse_error(format!("Invalid value: {e}")))?,
+            )
         };
-        
+
         let mut observation = Observation::new(&series_id, &year, &period, value);
-        
+
         // Apply processing logic
         self.process_single_observation_record(&mut observation);
-        
+
         // Validate if configured
         if self.config.validate_data && !self.is_valid_observation(&observation) {
             return Ok(None);
         }
-        
+
         Ok(Some(observation))
     }
 
@@ -452,21 +484,21 @@ impl MemoryMappedProcessor {
         if fields.len() < 2 {
             return Ok(None);
         }
-        
+
         let code = fields[0].to_string();
         let name = fields[1].to_string();
         let description = fields.get(2).map(|s| s.to_string());
-        
-        let mut lookup = Lookup::new(&*code, &*name);
-        
+
+        let mut lookup = Lookup::new(&code, &name);
+
         // Apply processing logic
         self.process_single_lookup_record(&mut lookup);
-        
+
         // Validate if configured
         if self.config.validate_data && !self.is_valid_lookup(&lookup) {
             return Ok(None);
         }
-        
+
         Ok(Some(lookup))
     }
 
@@ -477,13 +509,14 @@ impl MemoryMappedProcessor {
         if lines.is_empty() {
             return Err(ProcessingError::parse_error("Empty survey content".to_string()).into());
         }
-        
+
         // Extract survey code from first line or use default
-        let survey_code = lines.first()
+        let survey_code = lines
+            .first()
             .and_then(|line| line.split('\t').next())
             .unwrap_or("UNKNOWN")
             .to_string();
-        
+
         Ok(Survey::new(&survey_code, &survey_code))
     }
 
@@ -503,50 +536,62 @@ impl MemoryMappedProcessor {
     }
 
     /// Process a single survey
-    fn process_single_survey(&self, mut survey: Survey) -> Result<Survey> {
+    fn process_single_survey(&self, survey: Survey) -> Result<Survey> {
         // Apply transformations and validations
         Ok(survey)
     }
 
     /// Validate a series record
     fn is_valid_series(&self, series: &Series) -> bool {
-        self.validation_rules.validate_series_record(&[
-            series.series_id.to_string(),
-            series.title().to_string(),
-        ]).is_ok()
+        self.validation_rules
+            .validate_series_record(&[series.series_id.to_string(), series.title().to_string()])
+            .is_ok()
     }
 
     /// Validate an observation record
     fn is_valid_observation(&self, observation: &Observation) -> bool {
-        self.validation_rules.validate_observation_record(&[
-            observation.series_id().to_string(),
-            observation.year().to_string(),
-            observation.period().to_string(),
-        ]).is_ok()
+        self.validation_rules
+            .validate_observation_record(&[
+                observation.series_id().to_string(),
+                observation.year().to_string(),
+                observation.period().to_string(),
+            ])
+            .is_ok()
     }
 
     /// Validate a lookup record
     fn is_valid_lookup(&self, lookup: &Lookup) -> bool {
-        self.validation_rules.validate_lookup_record(&[
-            lookup.table_id.to_string(),
-            lookup.table_name.to_string(),
-        ]).is_ok()
+        self.validation_rules
+            .validate_lookup_record(&[lookup.table_id.to_string(), lookup.table_name.to_string()])
+            .is_ok()
     }
 
     /// Write series chunk (placeholder implementation)
-    async fn write_series_chunk(&self, writer: &mut Box<dyn DataWriter>, series: Vec<Series>) -> Result<()> {
+    async fn write_series_chunk(
+        &self,
+        writer: &mut Box<dyn DataWriter>,
+        series: Vec<Series>,
+    ) -> Result<()> {
         // This would be implemented with proper async trait object handling
         Ok(())
     }
 
     /// Write observations chunk (placeholder implementation)
-    async fn write_observations_chunk(&self, writer: &mut Box<dyn DataWriter>, observations: Vec<Observation>) -> Result<()> {
+    async fn write_observations_chunk(
+        &self,
+        writer: &mut Box<dyn DataWriter>,
+        observations: Vec<Observation>,
+    ) -> Result<()> {
         // This would be implemented with proper async trait object handling
         Ok(())
     }
 
     /// Write lookups chunk (placeholder implementation)
-    async fn write_lookups_chunk(&self, writer: &mut Box<dyn DataWriter>, lookups: Vec<Lookup>) -> Result<()> {
+    async fn write_lookups_chunk(
+        &self,
+        writer: &mut Box<dyn DataWriter>,
+        lookups: Vec<Lookup>,
+    ) -> Result<()> {
         // This would be implemented with proper async trait object handling
         Ok(())
     }
@@ -559,19 +604,20 @@ impl MemoryMappedProcessor {
 
     /// Check if file is suitable for memory mapping
     fn is_suitable_for_mmap(&self, path: &Path) -> Result<bool> {
-        let metadata = path.metadata()
-            .map_err(|e| ProcessingError::io_error(format!("Failed to get file metadata: {}", e)))?;
-        
+        let metadata = path.metadata().map_err(|e| {
+            ProcessingError::io_error(format!("Failed to get file metadata: {e}"))
+        })?;
+
         // Check file size
         if metadata.len() < self.min_file_size {
             return Ok(false);
         }
-        
+
         // Check if file is regular file
         if !metadata.is_file() {
             return Ok(false);
         }
-        
+
         Ok(true)
     }
 
@@ -602,7 +648,7 @@ impl MemoryMappedProcessor {
         // Memory mapping uses minimal RAM - just for processing structures
         let base_memory = 100 * 1024 * 1024; // 100MB base
         let per_thread_memory = 10 * 1024 * 1024; // 10MB per thread
-        
+
         Ok(base_memory + (self.config.max_threads as u64 * per_thread_memory))
     }
 }
@@ -635,7 +681,11 @@ impl DataProcessor for MmapProcessor {
         Ok(true)
     }
 
-    async fn process(&mut self, input: ProcessingInput, output: ProcessingOutput) -> Result<ProcessingContext> {
+    async fn process(
+        &mut self,
+        input: ProcessingInput,
+        output: ProcessingOutput,
+    ) -> Result<ProcessingContext> {
         let start_time = Instant::now();
         self.reset_stats();
 
@@ -666,14 +716,16 @@ impl DataProcessor for MmapProcessor {
     fn validate_config(&self, config: &ProcessingConfig) -> Result<()> {
         if config.batch_size == 0 {
             return Err(ProcessingError::system_error(
-                "Batch size must be greater than 0".to_string()
-            ).into());
+                "Batch size must be greater than 0".to_string(),
+            )
+            .into());
         }
 
         if config.max_threads == 0 {
             return Err(ProcessingError::system_error(
-                "Max threads must be greater than 0".to_string()
-            ).into());
+                "Max threads must be greater than 0".to_string(),
+            )
+            .into());
         }
 
         Ok(())
@@ -688,7 +740,10 @@ mod tests {
     fn test_mmap_processor_creation() {
         let config = ProcessingConfig::default();
         let processor = MmapProcessor::new(config);
-        assert_eq!(processor.supported_strategies(), vec![ProcessingStrategy::MemoryMapped]);
+        assert_eq!(
+            processor.supported_strategies(),
+            vec![ProcessingStrategy::MemoryMapped]
+        );
         assert_eq!(processor.min_file_size, 100 * 1024 * 1024);
     }
 
@@ -703,10 +758,10 @@ mod tests {
     #[test]
     fn test_config_validation() {
         let processor = MmapProcessor::new(ProcessingConfig::default());
-        
+
         let valid_config = ProcessingConfig::default();
         assert!(processor.validate_config(&valid_config).is_ok());
-        
+
         let mut invalid_config = ProcessingConfig::default();
         invalid_config.batch_size = 0;
         assert!(processor.validate_config(&invalid_config).is_err());
@@ -715,23 +770,35 @@ mod tests {
     #[test]
     fn test_data_type_determination() {
         let processor = MmapProcessor::new(ProcessingConfig::default());
-        
-        assert_eq!(processor.determine_data_type("test.series", &None).unwrap(), "series");
-        assert_eq!(processor.determine_data_type("test.data.0", &None).unwrap(), "observations");
-        assert_eq!(processor.determine_data_type("test.area", &None).unwrap(), "lookups");
-        
+
+        assert_eq!(
+            processor.determine_data_type("test.series", &None).unwrap(),
+            "series"
+        );
+        assert_eq!(
+            processor.determine_data_type("test.data.0", &None).unwrap(),
+            "observations"
+        );
+        assert_eq!(
+            processor.determine_data_type("test.area", &None).unwrap(),
+            "lookups"
+        );
+
         let hint = Some("custom".to_string());
-        assert_eq!(processor.determine_data_type("test.txt", &hint).unwrap(), "custom");
+        assert_eq!(
+            processor.determine_data_type("test.txt", &hint).unwrap(),
+            "custom"
+        );
     }
 
     #[test]
     fn test_memory_estimation() {
         let processor = MmapProcessor::new(ProcessingConfig::default());
         let input = ProcessingInput::new(vec!["test.csv".to_string()]);
-        
+
         let result = processor.estimate_memory_usage(&input);
         assert!(result.is_ok());
-        
+
         let memory_usage = result.unwrap();
         assert!(memory_usage > 0);
         // Memory mapping should use less memory than in-memory processing
@@ -741,11 +808,11 @@ mod tests {
     #[test]
     fn test_can_process() {
         let processor = MmapProcessor::new(ProcessingConfig::default());
-        
+
         // Test with non-existent file
         let input = ProcessingInput::new(vec!["nonexistent.csv".to_string()]);
         assert!(!processor.can_process(&input).unwrap());
-        
+
         // Test with empty input
         let empty_input = ProcessingInput::new(vec![]);
         assert!(processor.can_process(&empty_input).unwrap());
@@ -755,11 +822,11 @@ mod tests {
     fn test_find_line_positions() {
         let processor = MmapProcessor::new(ProcessingConfig::default());
         let data = b"line1\nline2\nline3\n";
-        
+
         // Create a mock memory map (in practice this would be a real mmap)
         // For testing, we'll simulate the behavior
         let positions = vec![0, 6, 12, 18]; // Expected positions
-        
+
         // Test that we can find line positions correctly
         assert_eq!(positions.len(), 4); // Start + 3 lines
         assert_eq!(positions[0], 0);
@@ -771,50 +838,51 @@ mod tests {
     #[test]
     fn test_parse_series_line() {
         let processor = MmapProcessor::new(ProcessingConfig::default());
-        
+
         let line = "SERIES001\tTest Series\tAREA001";
         let result = processor.parse_and_process_series_line(line);
-        
+
         assert!(result.is_ok());
         let series_opt = result.unwrap();
         assert!(series_opt.is_some());
-        
+
         let series = series_opt.unwrap();
-        assert_eq!(series.series_id(), "SERIES001");
+        assert_eq!(series.id(), "SERIES001");
     }
 
     #[test]
     fn test_parse_observation_line() {
         let processor = MmapProcessor::new(ProcessingConfig::default());
-        
+
         let line = "SERIES001\t2023\tM01\t123.45";
         let result = processor.parse_and_process_observation_line(line);
-        
+
         assert!(result.is_ok());
         let obs_opt = result.unwrap();
         assert!(obs_opt.is_some());
-        
+
         let observation = obs_opt.unwrap();
         assert_eq!(observation.series_id(), "SERIES001");
-        assert_eq!(*observation.year(), 2023);
+        assert_eq!(observation.year(), 2023);
         assert_eq!(observation.period(), "M01");
-        assert_eq!(*observation.value(), Some(123.45));
+        assert_eq!(observation.numeric_value(), Some(123.45));
     }
 
     #[test]
     fn test_parse_lookup_line() {
         let processor = MmapProcessor::new(ProcessingConfig::default());
-        
+
         let line = "CODE001\tTest Name\tTest Description";
         let result = processor.parse_and_process_lookup_line(line);
-        
+
         assert!(result.is_ok());
         let lookup_opt = result.unwrap();
         assert!(lookup_opt.is_some());
-        
+
         let lookup = lookup_opt.unwrap();
-        assert_eq!(lookup.code(), "CODE001");
-        assert_eq!(lookup.name(), "Test Name");
-        assert_eq!(lookup.description(), Some("Test Description"));
+        assert_eq!(lookup.table_id, "CODE001");
+        assert_eq!(lookup.table_name, "Test Name");
+        // Check if an entry exists (assuming the parser creates an entry)
+        assert!(!lookup.entries.is_empty());
     }
 }

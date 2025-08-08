@@ -37,37 +37,31 @@
 //!     let mut generator = factory.create_generator("csv", config.clone())?;
 //!     let result = generator.generate(data, config).await?;
 //!     
-//!     println!("Generated {} files with {} records", 
+//!     println!("Generated {} files with {} records",
 //!              result.output_paths.len(), result.records_written);
 //!     Ok(())
 //! }
 //! ```
 
-pub mod traits;
+pub mod factory;
 pub mod format;
 pub mod registry;
-pub mod factory;
+pub mod traits;
 
 // Re-export commonly used types and traits
 pub use traits::{
-    OutputGenerator, FormatWriter, OutputRegistry, OutputFactory,
-    OutputConfig, OutputResult, OutputStats, CompressionConfig,
-    PartitioningConfig, PartitionNamingStrategy,
+    CompressionConfig, FormatWriter, OutputConfig, OutputFactory, OutputGenerator, OutputRegistry,
+    OutputResult, OutputStats, PartitionNamingStrategy, PartitioningConfig,
 };
 
 pub use format::{
-    CsvWriter, CsvOutputGenerator,
-    JsonWriter, JsonOutputGenerator,
-    ParquetWriter, ParquetOutputGenerator,
+    CsvOutputGenerator, CsvWriter, JsonOutputGenerator, JsonWriter, ParquetOutputGenerator,
+    ParquetWriter,
 };
 
-pub use registry::{
-    DefaultOutputRegistry, OutputRegistryImpl,
-};
+pub use registry::{DefaultOutputRegistry, OutputRegistryImpl};
 
-pub use factory::{
-    DefaultOutputFactory, OutputFactoryImpl,
-};
+pub use factory::{DefaultOutputFactory, OutputFactoryImpl};
 
 /// Create a default output factory with all standard formats
 pub fn create_factory() -> DefaultOutputFactory {
@@ -75,7 +69,10 @@ pub fn create_factory() -> DefaultOutputFactory {
 }
 
 /// Create an output generator for the specified format
-pub fn create_generator(format: &str, config: OutputConfig) -> crate::error::Result<Box<dyn OutputGenerator>> {
+pub fn create_generator(
+    format: &str,
+    config: OutputConfig,
+) -> crate::error::Result<Box<dyn OutputGenerator>> {
     let factory = create_factory();
     factory.create_generator(format, config)
 }
@@ -130,7 +127,7 @@ mod tests {
     fn test_default_config_for_csv() {
         let config = default_config_for_format("csv");
         assert!(config.is_ok());
-        
+
         let config = config.unwrap();
         assert_eq!(config.format, "csv");
     }
@@ -139,7 +136,7 @@ mod tests {
     fn test_create_csv_writer() {
         let writer = create_writer("csv");
         assert!(writer.is_ok());
-        
+
         let writer = writer.unwrap();
         assert_eq!(writer.format_name(), "csv");
     }
@@ -151,10 +148,10 @@ mod tests {
             destination: "test.csv".to_string(),
             ..Default::default()
         };
-        
+
         let generator = create_generator("csv", config);
         assert!(generator.is_ok());
-        
+
         let generator = generator.unwrap();
         assert_eq!(generator.name(), "csv_generator");
     }

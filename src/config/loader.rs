@@ -14,14 +14,15 @@
 //!
 //! ## Usage
 
-use std::path::{Path, PathBuf};
-use std::collections::HashMap;
-use serde::de::DeserializeOwned;
-use serde_yaml::Value;
-use tracing::{info, warn, debug, error};
-use crate::config::model::{SurveyConfig, OverviewConfig, ModelConfig, IoConfig, ProcessingConfig, OutputConfig, QualityConfig, RuntimeConfig, DagsConfig, OverrideConfig, Config};
-use crate::error::{Result, ConfigError};
+use crate::config::model::{
+    Config, DagsConfig, IoConfig, ModelConfig, OutputConfig, OverrideConfig, OverviewConfig,
+    ProcessingConfig, QualityConfig, RuntimeConfig, SurveyConfig,
+};
+use crate::error::{ConfigError, Result};
 use crate::utils::{file, path};
+use serde::de::DeserializeOwned;
+use std::path::{Path, PathBuf};
+use tracing::{debug, info, warn};
 
 /// Configuration source enumeration
 #[derive(Debug, Clone)]
@@ -72,13 +73,14 @@ impl ConfigLoader {
     /// Load configuration from a file
     pub fn load_from_file<P: AsRef<Path>>(&self, path: P) -> Result<Config> {
         let path = path.as_ref();
-        
+
         // Validate the path
         let path_utils = path::PathUtils::new();
-        path_utils.validate_path(path)
-            .map_err(|e| ConfigError::LoadError { 
-                path: path.display().to_string(), 
-                source: format!("Invalid path: {}", e) 
+        path_utils
+            .validate_path(path)
+            .map_err(|e| ConfigError::LoadError {
+                path: path.display().to_string(),
+                source: format!("Invalid path: {e}"),
             })?;
 
         // Resolve relative paths
@@ -98,28 +100,38 @@ impl ConfigLoader {
 
         // Read file content
         let content = file::read_to_string(&full_path)
-            .map_err(|e| ConfigError::InvalidArgument(format!("Failed to read file: {}", e)))?;
+            .map_err(|e| ConfigError::InvalidArgument(format!("Failed to read file: {e}")))?;
 
         // Parse configuration
         self.parse_config(&content, format)
     }
 
     /// Load configuration for a specific survey with layered precedence
-    pub fn load_survey_config(&self, survey_code: &str, environment: Option<&str>) -> Result<SurveyConfig> {
+    pub fn load_survey_config(
+        &self,
+        survey_code: &str,
+        environment: Option<&str>,
+    ) -> Result<SurveyConfig> {
         let survey_code = survey_code.to_uppercase();
         let env = environment.unwrap_or("dev");
-        
-        info!("Loading survey config for {} in {} environment", survey_code, env);
-        
+
+        info!(
+            "Loading survey config for {} in {} environment",
+            survey_code, env
+        );
+
         // Check if modular directory structure exists
         let survey_dir = path::survey_dir(&survey_code);
         let survey_path = self.config_dir.join(&survey_dir);
-        
+
         if survey_path.exists() {
             self.load_modular_config(&survey_code, env)
         } else {
             // Fall back to monolithic config for backward compatibility
-            warn!("Modular config directory not found for {}, falling back to monolithic config", survey_code);
+            warn!(
+                "Modular config directory not found for {}, falling back to monolithic config",
+                survey_code
+            );
             self.load_legacy_config(&survey_code)
         }
     }
@@ -128,7 +140,7 @@ impl ConfigLoader {
     pub fn load_for_survey(&self, survey_code: &str) -> Result<Config> {
         // Validate survey code
         crate::utils::validation::validate_survey_code(survey_code)
-            .map_err(|e| ConfigError::InvalidArgument(format!("Invalid survey code: {}", e)))?;
+            .map_err(|e| ConfigError::InvalidArgument(format!("Invalid survey code: {e}")))?;
 
         // Try different file extensions
         let survey_code_lower = survey_code.to_lowercase();
@@ -146,7 +158,10 @@ impl ConfigLoader {
         }
 
         // If no configuration file found, create a default configuration
-        tracing::warn!("No configuration file found for survey '{}', using default configuration", survey_code);
+        tracing::warn!(
+            "No configuration file found for survey '{}', using default configuration",
+            survey_code
+        );
         Ok(Config::new(survey_code))
     }
 
@@ -166,38 +181,42 @@ impl ConfigLoader {
                 "in_memory" => crate::config::model::ProcessingStrategy::InMemory,
                 "chunked" => crate::config::model::ProcessingStrategy::Chunked,
                 "mmap" => crate::config::model::ProcessingStrategy::Mmap,
-                _ => return Err(ConfigError::ValidationError { 
-                    message: format!("Invalid processing strategy: {}", strategy),
-                    field: Some("strategy".to_string()),
-                }.into()),
+                _ => {
+                    return Err(ConfigError::ValidationError {
+                        message: format!("Invalid processing strategy: {strategy}"),
+                        field: Some("strategy".to_string()),
+                    }
+                    .into());
+                }
             };
         }
 
         if let Ok(threads) = std::env::var("RUSTY_MAX_THREADS") {
-            config.processing.max_threads = threads.parse()
-                .map_err(|e| ConfigError::ValidationError { 
-                    message: format!("Invalid max_threads: {}", e),
+            config.processing.max_threads =
+                threads.parse().map_err(|e| ConfigError::ValidationError {
+                    message: format!("Invalid max_threads: {e}"),
                     field: Some("max_threads".to_string()),
                 })?;
         }
 
         if let Ok(chunk_size) = std::env::var("RUSTY_CHUNK_SIZE") {
-            config.processing.chunk_size = chunk_size.parse()
-                .map_err(|e| ConfigError::MergeError(format!("Invalid chunk_size: {}", e)))?;
+            config.processing.chunk_size = chunk_size
+                .parse()
+                .map_err(|e| ConfigError::MergeError(format!("Invalid chunk_size: {e}")))?;
         }
 
         if let Ok(output_dir) = std::env::var("RUSTY_OUTPUT_DIR") {
             config.output.output_dir = output_dir;
         }
 
-            //    if let Ok(on_error) = std::env::var("RUSTY_ON_ERROR") {
- //        config.error_handling.on_error = on_error;
- //    }
+        //    if let Ok(on_error) = std::env::var("RUSTY_ON_ERROR") {
+        //        config.error_handling.on_error = on_error;
+        //    }
 
-            //    if let Ok(max_errors) = std::env::var("RUSTY_MAX_ERRORS") {
- //        config.error_handling.max_errors = max_errors.parse()
-                //            .map_err(|e| ConfigError::ValidationError { message: format!("Invalid max_errors: {}", e), field: Some("max_errors".to_string()) })?;
- //    }
+        //    if let Ok(max_errors) = std::env::var("RUSTY_MAX_ERRORS") {
+        //        config.error_handling.max_errors = max_errors.parse()
+        //            .map_err(|e| ConfigError::ValidationError { message: format!("Invalid max_errors: {}", e), field: Some("max_errors".to_string()) })?;
+        //    }
 
         Ok(config)
     }
@@ -205,22 +224,22 @@ impl ConfigLoader {
     /// Load modular configuration with layered precedence
     fn load_modular_config(&self, survey_code: &str, environment: &str) -> Result<SurveyConfig> {
         let mut config = SurveyConfig::new(survey_code);
-        
+
         // Layer 1: Load shared base configurations
         self.load_shared_configs(&mut config)?;
-        
+
         // Layer 2: Load survey-specific configurations
         self.load_survey_configs(&mut config, survey_code)?;
-        
+
         // Layer 3: Load overrides with precedence: defaults → env → local
         self.load_override_configs(&mut config, survey_code, environment)?;
-        
+
         // Update metadata after all merges
         config.update();
-        
+
         Ok(config)
     }
-    
+
     /// Load legacy monolithic configuration and map to SurveyConfig
     fn load_legacy_config(&self, survey_code: &str) -> Result<SurveyConfig> {
         // Try to load legacy monolithic config
@@ -241,150 +260,243 @@ impl ConfigLoader {
         }
 
         // If no configuration file found, create a default configuration
-        warn!("No configuration file found for survey '{}', using default configuration", survey_code);
+        warn!(
+            "No configuration file found for survey '{}', using default configuration",
+            survey_code
+        );
         Ok(SurveyConfig::new(survey_code))
     }
-    
+
     /// Load shared base configurations
     fn load_shared_configs(&self, config: &mut SurveyConfig) -> Result<()> {
         let shared_dir = self.config_dir.join("surveys/_shared");
-        
+
         // Load base processing config if it exists
         let base_processing_path = shared_dir.join("base_processing.yml");
         if base_processing_path.exists() {
             if let Ok(base_processing) = file::read_yaml(&base_processing_path) {
-                config.merge_processing_config(&base_processing)
-                    .map_err(|e| ConfigError::MergeError(format!("Failed to merge base processing config: {}", e)))?;
+                config
+                    .merge_processing_config(&base_processing)
+                    .map_err(|e| {
+                        ConfigError::MergeError(format!(
+                            "Failed to merge base processing config: {e}"
+                        ))
+                    })?;
                 debug!("Merged shared base processing config");
             }
         }
-        
+
         // Load other shared base configs as needed
         // TODO: Add more shared base configs (base_output.yml, base_quality.yml, etc.)
-        
+
         Ok(())
     }
-    
+
     /// Load survey-specific configurations
     fn load_survey_configs(&self, config: &mut SurveyConfig, survey_code: &str) -> Result<()> {
         let survey_dir = self.config_dir.join(path::survey_dir(survey_code));
-        
+
         // Load overview.yml (required)
         let overview_path = survey_dir.join("overview.yml");
         if overview_path.exists() {
-            let overview_config = file::read_yaml::<OverviewConfig, _>(&overview_path)
-                .map_err(|e| ConfigError::LoadError { 
-                    path: overview_path.display().to_string(), 
-                    source: format!("Failed to load overview.yml: {}", e) 
+            let overview_config =
+                file::read_yaml::<OverviewConfig, _>(&overview_path).map_err(|e| {
+                    ConfigError::LoadError {
+                        path: overview_path.display().to_string(),
+                        source: format!("Failed to load overview.yml: {e}"),
+                    }
                 })?;
-            config.merge_overview_config(&overview_config)
-                .map_err(|e| ConfigError::MergeError(format!("Failed to merge overview config: {}", e)))?;
+            config
+                .merge_overview_config(&overview_config)
+                .map_err(|e| {
+                    ConfigError::MergeError(format!("Failed to merge overview config: {e}"))
+                })?;
             debug!("Loaded overview.yml for {}", survey_code);
         } else {
-            return Err(ConfigError::MissingFile(format!("Required file overview.yml not found for survey {}", survey_code)));
+            return Err(ConfigError::MissingFile(format!(
+                "Required file overview.yml not found for survey {survey_code}"
+            )));
         }
-        
+
         // Load model.yml (required)
         let model_path = survey_dir.join("model.yml");
         if model_path.exists() {
-            let model_config = file::read_yaml::<ModelConfig, _>(&model_path)
-                .map_err(|e| ConfigError::LoadError {
-                    path: model_path.display().to_string(),
-                    source: format!("Failed to load model.yml: {}", e),
-                })?;
-            config.merge_model_config(&model_config)
-                .map_err(|e| ConfigError::MergeError(format!("Failed to merge model config: {}", e)))?;
+            // Try to load using the YAML adapter first for BLS-style configs
+            use crate::config::yaml_adapter;
+            let model_config = match yaml_adapter::load_yaml_model_config(&model_path) {
+                Ok(config) => config,
+                Err(_) => {
+                    // Fall back to direct loading for configs that already match ModelConfig structure
+                    file::read_yaml::<ModelConfig, _>(&model_path).map_err(|e| {
+                        ConfigError::LoadError {
+                            path: model_path.display().to_string(),
+                            source: format!("Failed to load model.yml: {e}"),
+                        }
+                    })?
+                }
+            };
+            config.merge_model_config(&model_config).map_err(|e| {
+                ConfigError::MergeError(format!("Failed to merge model config: {e}"))
+            })?;
             debug!("Loaded model.yml for {}", survey_code);
         } else {
-            return Err(ConfigError::MissingFile(format!("Required file model.yml not found for survey {}", survey_code)));
+            return Err(ConfigError::MissingFile(format!(
+                "Required file model.yml not found for survey {survey_code}"
+            )));
         }
-        
+
         // Load other required configs
-        self.load_optional_survey_config(config, &survey_dir, "io.yml", |c, cfg: IoConfig| c.merge_io_config(&cfg).map_err(|e| ConfigError::MergeError(e).into()))?;
-        self.load_optional_survey_config(config, &survey_dir, "processing.yml", |c, cfg: ProcessingConfig| c.merge_processing_config(&cfg).map_err(|e| ConfigError::MergeError(e).into()))?;
-        self.load_optional_survey_config(config, &survey_dir, "output.yml", |c, cfg: OutputConfig| c.merge_output_config(&cfg).map_err(|e| ConfigError::MergeError(e).into()))?;
-        self.load_optional_survey_config(config, &survey_dir, "quality.yml", |c, cfg: QualityConfig| c.merge_quality_config(&cfg).map_err(|e| ConfigError::MergeError(e).into()))?;
-        self.load_optional_survey_config(config, &survey_dir, "runtime.yml", |c, cfg: RuntimeConfig| c.merge_runtime_config(&cfg).map_err(|e| ConfigError::MergeError(e).into()))?;
-        
+        self.load_optional_survey_config(config, &survey_dir, "io.yml", |c, cfg: IoConfig| {
+            c.merge_io_config(&cfg)
+                .map_err(ConfigError::MergeError)
+        })?;
+        self.load_optional_survey_config(
+            config,
+            &survey_dir,
+            "processing.yml",
+            |c, cfg: ProcessingConfig| {
+                c.merge_processing_config(&cfg)
+                    .map_err(ConfigError::MergeError)
+            },
+        )?;
+        self.load_optional_survey_config(
+            config,
+            &survey_dir,
+            "output.yml",
+            |c, cfg: OutputConfig| {
+                c.merge_output_config(&cfg)
+                    .map_err(ConfigError::MergeError)
+            },
+        )?;
+        self.load_optional_survey_config(
+            config,
+            &survey_dir,
+            "quality.yml",
+            |c, cfg: QualityConfig| {
+                c.merge_quality_config(&cfg)
+                    .map_err(ConfigError::MergeError)
+            },
+        )?;
+        self.load_optional_survey_config(
+            config,
+            &survey_dir,
+            "runtime.yml",
+            |c, cfg: RuntimeConfig| {
+                c.merge_runtime_config(&cfg)
+                    .map_err(ConfigError::MergeError)
+            },
+        )?;
+
         // Load optional DAGs config
         let dags_path = survey_dir.join("dags.yml");
         if dags_path.exists() {
-            let dags_config = file::read_yaml::<DagsConfig, _>(&dags_path)
-                .map_err(|e| ConfigError::LoadError {
-                    path: dags_path.display().to_string(),
-                    source: format!("Failed to load dags.yml: {}", e),
-                })?;
-            config.dags = Some(dags_config);
-            debug!("Loaded dags.yml for {}", survey_code);
+            match file::read_yaml::<DagsConfig, _>(&dags_path) {
+                Ok(dags_config) => {
+                    config.dags = Some(dags_config);
+                    debug!("Loaded dags.yml for {}", survey_code);
+                }
+                Err(e) => {
+                    warn!("Failed to parse dags.yml (may have different structure): {}, skipping", e);
+                }
+            }
         }
-        
+
         Ok(())
     }
-    
+
     /// Load optional survey configuration file
-    fn load_optional_survey_config<T, F>(&self, config: &mut SurveyConfig, survey_dir: &Path, filename: &str, merge_fn: F) -> Result<()>
+    fn load_optional_survey_config<T, F>(
+        &self,
+        config: &mut SurveyConfig,
+        survey_dir: &Path,
+        filename: &str,
+        merge_fn: F,
+    ) -> Result<()>
     where
         T: DeserializeOwned,
         F: FnOnce(&mut SurveyConfig, T) -> Result<()>,
     {
         let config_path = survey_dir.join(filename);
         if config_path.exists() {
-            let cfg = file::read_yaml::<T, _>(&config_path)
-                .map_err(|e| ConfigError::LoadError {
-                    path: config_path.display().to_string(),
-                    source: format!("Failed to load {}: {}", filename, e),
-                })?;
-            merge_fn(config, cfg)
-                .map_err(|e| ConfigError::MergeError(format!("Failed to merge {}: {}", filename, e)))?;
-            debug!("Loaded {} for survey", filename);
+            // Try to load and merge the config, but don't fail if it has a different structure
+            // This allows for gradual migration of YAML formats
+            match file::read_yaml::<T, _>(&config_path) {
+                Ok(cfg) => {
+                    match merge_fn(config, cfg) {
+                        Ok(_) => debug!("Loaded {} for survey", filename),
+                        Err(e) => {
+                            warn!("Failed to merge {}: {}, skipping", filename, e);
+                        }
+                    }
+                }
+                Err(e) => {
+                    warn!("Failed to parse {} (may have different structure): {}, skipping", filename, e);
+                }
+            }
         }
         Ok(())
     }
-    
+
     /// Load override configurations with precedence
-    fn load_override_configs(&self, config: &mut SurveyConfig, survey_code: &str, environment: &str) -> Result<()> {
+    fn load_override_configs(
+        &self,
+        config: &mut SurveyConfig,
+        survey_code: &str,
+        environment: &str,
+    ) -> Result<()> {
         let survey_dir = self.config_dir.join(path::survey_dir(survey_code));
         let overrides_dir = survey_dir.join("overrides");
-        
+
         // Load defaults.yml
         let defaults_path = overrides_dir.join("defaults.yml");
         if defaults_path.exists() {
-            let override_config = file::read_yaml::<OverrideConfig, _>(&defaults_path)
-                .map_err(|e| ConfigError::LoadError {
-                    path: defaults_path.display().to_string(),
-                    source: format!("Failed to load defaults.yml: {}", e),
-                })?;
-            config.merge_override(&override_config, "defaults")
-                .map_err(|e| ConfigError::MergeError(format!("Failed to merge defaults: {}", e)))?;
-            debug!("Loaded defaults.yml for {}", survey_code);
+            match file::read_yaml::<OverrideConfig, _>(&defaults_path) {
+                Ok(override_config) => {
+                    match config.merge_override(&override_config, "defaults") {
+                        Ok(_) => debug!("Loaded defaults.yml for {}", survey_code),
+                        Err(e) => warn!("Failed to merge defaults.yml: {}, skipping", e),
+                    }
+                }
+                Err(e) => {
+                    warn!("Failed to parse defaults.yml (may have different structure): {}, skipping", e);
+                }
+            }
         }
-        
+
         // Load environment-specific overrides
-        let env_path = overrides_dir.join("env").join(format!("{}.yml", environment));
+        let env_path = overrides_dir
+            .join("env")
+            .join(format!("{environment}.yml"));
         if env_path.exists() {
-            let override_config = file::read_yaml::<OverrideConfig, _>(&env_path)
-                .map_err(|e| ConfigError::LoadError {
-                    path: env_path.display().to_string(),
-                    source: format!("Failed to load {}.yml: {}", environment, e),
-                })?;
-            config.merge_override(&override_config, &format!("env/{}", environment))
-                .map_err(|e| ConfigError::MergeError(format!("Failed to merge env overrides: {}", e)))?;
-            debug!("Loaded {}.yml for {}", environment, survey_code);
+            match file::read_yaml::<OverrideConfig, _>(&env_path) {
+                Ok(override_config) => {
+                    match config.merge_override(&override_config, &format!("env/{environment}")) {
+                        Ok(_) => debug!("Loaded {}.yml for {}", environment, survey_code),
+                        Err(e) => warn!("Failed to merge {}.yml: {}, skipping", environment, e),
+                    }
+                }
+                Err(e) => {
+                    warn!("Failed to parse {}.yml (may have different structure): {}, skipping", environment, e);
+                }
+            }
         }
-        
+
         // Load local.yml (highest precedence)
         let local_path = overrides_dir.join("local.yml");
         if local_path.exists() {
-            let override_config = file::read_yaml::<OverrideConfig, _>(&local_path)
-                .map_err(|e| ConfigError::LoadError {
-                    path: local_path.display().to_string(),
-                    source: format!("Failed to load local.yml: {}", e),
-                })?;
-            config.merge_override(&override_config, "local")
-                .map_err(|e| ConfigError::MergeError(format!("Failed to merge local overrides: {}", e)))?;
-            debug!("Loaded local.yml for {}", survey_code);
+            match file::read_yaml::<OverrideConfig, _>(&local_path) {
+                Ok(override_config) => {
+                    match config.merge_override(&override_config, "local") {
+                        Ok(_) => debug!("Loaded local.yml for {}", survey_code),
+                        Err(e) => warn!("Failed to merge local.yml: {}, skipping", e),
+                    }
+                }
+                Err(e) => {
+                    warn!("Failed to parse local.yml (may have different structure): {}, skipping", e);
+                }
+            }
         }
-        
+
         Ok(())
     }
 
@@ -414,15 +526,18 @@ impl ConfigLoader {
             }
         }
 
-        config.ok_or_else(|| crate::error::types::Error::Config(ConfigError::LoadError {
-            path: "multiple sources".to_string(),
-            source: "No valid configuration source found".to_string(),
-        }))
+        config.ok_or_else(|| {
+            crate::error::types::Error::Config(ConfigError::LoadError {
+                path: "multiple sources".to_string(),
+                source: "No valid configuration source found".to_string(),
+            })
+        })
     }
 
     /// Detect configuration format from file extension
     fn detect_format(&self, path: &Path) -> Result<ConfigFormat> {
-        let extension = path.extension()
+        let extension = path
+            .extension()
             .and_then(|ext| ext.to_str())
             .map(|ext| ext.to_lowercase());
 
@@ -430,40 +545,44 @@ impl ConfigLoader {
             Some("yml") | Some("yaml") => Ok(ConfigFormat::Yaml),
             Some("json") => Ok(ConfigFormat::Json),
             Some(ext) => Err(ConfigError::UnsupportedFormat(ext.to_string())),
-            None => Err(ConfigError::UnsupportedFormat("No file extension".to_string())),
+            None => Err(ConfigError::UnsupportedFormat(
+                "No file extension".to_string(),
+            )),
         }
     }
 
     /// Parse configuration content based on format
     fn parse_config(&self, content: &str, format: ConfigFormat) -> Result<Config> {
         match format {
-            ConfigFormat::Yaml => {
-                serde_yaml::from_str(content)
-                    .map_err(|e| ConfigError::ParseError {
-                        message: format!("YAML parse error: {}", e),
-                        line: None,
-                        column: None,
-                    }.into())
-            }
-            ConfigFormat::Json => {
-                serde_json::from_str(content)
-                    .map_err(|e| ConfigError::ParseError {
-                        message: format!("JSON parse error: {}", e),
-                        line: None,
-                        column: None,
-                    }.into())
-            }
+            ConfigFormat::Yaml => serde_yaml::from_str(content).map_err(|e| {
+                ConfigError::ParseError {
+                    message: format!("YAML parse error: {e}"),
+                    line: None,
+                    column: None,
+                }
+                .into()
+            }),
+            ConfigFormat::Json => serde_json::from_str(content).map_err(|e| {
+                ConfigError::ParseError {
+                    message: format!("JSON parse error: {e}"),
+                    line: None,
+                    column: None,
+                }
+                .into()
+            }),
             ConfigFormat::Auto => {
                 // Try YAML first, then JSON
                 if let Ok(config) = serde_yaml::from_str::<Config>(content) {
                     Ok(config)
                 } else {
-                    serde_json::from_str(content)
-                        .map_err(|e| ConfigError::ParseError {
-                            message: format!("Auto-detection failed, JSON parse error: {}", e),
+                    serde_json::from_str(content).map_err(|e| {
+                        ConfigError::ParseError {
+                            message: format!("Auto-detection failed, JSON parse error: {e}"),
                             line: None,
                             column: None,
-                        }.into())
+                        }
+                        .into()
+                    })
                 }
             }
         }
@@ -472,13 +591,14 @@ impl ConfigLoader {
     /// Save configuration to file
     pub fn save_to_file<P: AsRef<Path>>(&self, config: &Config, path: P) -> Result<()> {
         let path = path.as_ref();
-        
+
         // Validate the path
         let path_utils = path::PathUtils::new();
-        path_utils.validate_path(path)
+        path_utils
+            .validate_path(path)
             .map_err(|e| ConfigError::LoadError {
                 path: "unknown".to_string(),
-                source: format!("Invalid path: {}", e),
+                source: format!("Invalid path: {e}"),
             })?;
 
         // Resolve relative paths
@@ -493,24 +613,23 @@ impl ConfigLoader {
 
         // Serialize configuration
         let content = match format {
-            ConfigFormat::Yaml => {
-                serde_yaml::to_string(config)
-                    .map_err(|e| ConfigError::SerializationError(format!("YAML serialization error: {}", e)))?
-            }
-            ConfigFormat::Json => {
-                serde_json::to_string_pretty(config)
-                    .map_err(|e| ConfigError::SerializationError(format!("JSON serialization error: {}", e)))?
-            }
+            ConfigFormat::Yaml => serde_yaml::to_string(config).map_err(|e| {
+                ConfigError::SerializationError(format!("YAML serialization error: {e}"))
+            })?,
+            ConfigFormat::Json => serde_json::to_string_pretty(config).map_err(|e| {
+                ConfigError::SerializationError(format!("JSON serialization error: {e}"))
+            })?,
             ConfigFormat::Auto => {
                 // Default to YAML for auto format
-                serde_yaml::to_string(config)
-                    .map_err(|e| ConfigError::SerializationError(format!("YAML serialization error: {}", e)))?
+                serde_yaml::to_string(config).map_err(|e| {
+                    ConfigError::SerializationError(format!("YAML serialization error: {e}"))
+                })?
             }
         };
 
         // Write to file
         file::write_string(&full_path, &content)
-            .map_err(|e| ConfigError::MergeError(format!("Failed to write file: {}", e)))?;
+            .map_err(|e| ConfigError::MergeError(format!("Failed to write file: {e}")))?;
 
         Ok(())
     }
@@ -518,7 +637,7 @@ impl ConfigLoader {
     /// List available survey configurations
     pub fn list_survey_configs(&self) -> Result<Vec<String>> {
         let surveys_dir = self.config_dir.join("surveys");
-        
+
         if !surveys_dir.exists() {
             return Ok(Vec::new());
         }
@@ -561,8 +680,8 @@ impl Default for ConfigLoader {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::TempDir;
     use std::fs;
+    use tempfile::TempDir;
 
     #[test]
     fn test_config_loader_new() {
@@ -573,11 +692,20 @@ mod tests {
     #[test]
     fn test_detect_format() {
         let loader = ConfigLoader::new();
-        
-        assert_eq!(loader.detect_format(Path::new("test.yml")).unwrap(), ConfigFormat::Yaml);
-        assert_eq!(loader.detect_format(Path::new("test.yaml")).unwrap(), ConfigFormat::Yaml);
-        assert_eq!(loader.detect_format(Path::new("test.json")).unwrap(), ConfigFormat::Json);
-        
+
+        assert_eq!(
+            loader.detect_format(Path::new("test.yml")).unwrap(),
+            ConfigFormat::Yaml
+        );
+        assert_eq!(
+            loader.detect_format(Path::new("test.yaml")).unwrap(),
+            ConfigFormat::Yaml
+        );
+        assert_eq!(
+            loader.detect_format(Path::new("test.json")).unwrap(),
+            ConfigFormat::Json
+        );
+
         assert!(loader.detect_format(Path::new("test.txt")).is_err());
         assert!(loader.detect_format(Path::new("test")).is_err());
     }
@@ -599,7 +727,9 @@ error_handling:
   on_error: "continue"
 "#;
 
-        let config = loader.parse_config(yaml_content, ConfigFormat::Yaml).unwrap();
+        let config = loader
+            .parse_config(yaml_content, ConfigFormat::Yaml)
+            .unwrap();
         assert_eq!(config.survey.code, "AP");
         assert_eq!(config.survey.name, "Average Price Data");
         assert_eq!(config.processing.max_threads, 4);
@@ -628,7 +758,9 @@ error_handling:
 }
 "#;
 
-        let config = loader.parse_config(json_content, ConfigFormat::Json).unwrap();
+        let config = loader
+            .parse_config(json_content, ConfigFormat::Json)
+            .unwrap();
         assert_eq!(config.survey.code, "BD");
         assert_eq!(config.survey.name, "Business Dynamics");
         assert_eq!(config.processing.max_threads, 8);
@@ -650,46 +782,58 @@ error_handling:
   on_error: "continue"
 "#;
 
-        let config = loader.load_from_string(yaml_content, ConfigFormat::Yaml).unwrap();
+        let config = loader
+            .load_from_string(yaml_content, ConfigFormat::Yaml)
+            .unwrap();
         assert_eq!(config.survey.code, "CE");
-        assert_eq!(config.processing.strategy, crate::config::model::ProcessingStrategy::Mmap);
+        assert_eq!(
+            config.processing.strategy,
+            crate::config::model::ProcessingStrategy::Mmap
+        );
     }
 
     #[test]
     fn test_load_from_environment() {
         let loader = ConfigLoader::new();
-        
+
         // Set environment variables
-        std::env::set_var("RUSTY_PROCESSING_STRATEGY", "chunked");
-        std::env::set_var("RUSTY_MAX_THREADS", "16");
-        std::env::set_var("RUSTY_OUTPUT_DIR", "custom/output");
-        
+        unsafe {
+            std::env::set_var("RUSTY_PROCESSING_STRATEGY", "chunked");
+            std::env::set_var("RUSTY_MAX_THREADS", "16");
+            std::env::set_var("RUSTY_OUTPUT_DIR", "custom/output");
+        }
+
         let config = loader.load_from_environment("TEST").unwrap();
         assert_eq!(config.survey.code, "TEST");
-        assert_eq!(config.processing.strategy, crate::config::model::ProcessingStrategy::Chunked);
+        assert_eq!(
+            config.processing.strategy,
+            crate::config::model::ProcessingStrategy::Chunked
+        );
         assert_eq!(config.processing.max_threads, 16);
         assert_eq!(config.output.output_dir, "custom/output");
-        
+
         // Clean up environment variables
-        std::env::remove_var("RUSTY_PROCESSING_STRATEGY");
-        std::env::remove_var("RUSTY_MAX_THREADS");
-        std::env::remove_var("RUSTY_OUTPUT_DIR");
+        unsafe {
+            std::env::remove_var("RUSTY_PROCESSING_STRATEGY");
+            std::env::remove_var("RUSTY_MAX_THREADS");
+            std::env::remove_var("RUSTY_OUTPUT_DIR");
+        }
     }
 
     #[test]
     fn test_save_and_load_file() {
         let temp_dir = TempDir::new().unwrap();
         let loader = ConfigLoader::with_config_dir(temp_dir.path());
-        
+
         // Create a test configuration
         let mut config = Config::new("TEST");
         config.processing.max_threads = 12;
         config.output.output_dir = "test/output".to_string();
-        
+
         // Save to file
         let config_path = temp_dir.path().join("test.yml");
         loader.save_to_file(&config, &config_path).unwrap();
-        
+
         // Load from file
         let loaded_config = loader.load_from_file(&config_path).unwrap();
         assert_eq!(loaded_config.survey.code, "TEST");
@@ -701,7 +845,7 @@ error_handling:
     fn test_load_for_survey_default() {
         let temp_dir = TempDir::new().unwrap();
         let loader = ConfigLoader::with_config_dir(temp_dir.path());
-        
+
         // Load for non-existent survey (should create default)
         let config = loader.load_for_survey("XX").unwrap();
         assert_eq!(config.survey.code, "XX");
@@ -713,14 +857,18 @@ error_handling:
         let temp_dir = TempDir::new().unwrap();
         let surveys_dir = temp_dir.path().join("surveys");
         fs::create_dir_all(&surveys_dir).unwrap();
-        
+
         // Create test config files
-        fs::write(surveys_dir.join("ap.yml"), "survey:\n  code: AP\nprocessing: {}\nfiles: {}\noutput: {}\nerror_handling: {}").unwrap();
+        fs::write(
+            surveys_dir.join("ap.yml"),
+            "survey:\n  code: AP\nprocessing: {}\nfiles: {}\noutput: {}\nerror_handling: {}",
+        )
+        .unwrap();
         fs::write(surveys_dir.join("bd.json"), r#"{"survey":{"code":"BD"},"processing":{},"files":{},"output":{},"error_handling":{}}"#).unwrap();
-        
+
         let loader = ConfigLoader::with_config_dir(temp_dir.path());
         let survey_codes = loader.list_survey_configs().unwrap();
-        
+
         assert_eq!(survey_codes.len(), 2);
         assert!(survey_codes.contains(&"AP".to_string()));
         assert!(survey_codes.contains(&"BD".to_string()));

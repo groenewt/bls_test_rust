@@ -4,26 +4,24 @@
 //! Parquet format output. It leverages Apache Arrow for columnar data processing
 //! and provides excellent compression and query performance.
 
+use async_trait::async_trait;
 use parquet::file::properties::EnabledStatistics;
 use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
-use async_trait::async_trait;
 
-use arrow::array::{
-    ArrayRef, Float64Builder, Int32Builder, StringBuilder,
-};
+use arrow::array::{ArrayRef, Float64Builder, Int32Builder, StringBuilder};
 use arrow::datatypes::{DataType, Field, Schema};
 use arrow::record_batch::RecordBatch;
 use parquet::arrow::ArrowWriter;
 use parquet::basic::{Compression, Encoding};
 use parquet::file::properties::WriterProperties;
 
-use crate::data::model::{Series, Observation, Lookup, Survey};
+use crate::data::model::{Lookup, Observation, Series, Survey};
 use crate::data::writer::traits::{
-    DataWriter, SeriesWriter, ObservationWriter, LookupWriter, SurveyWriter,
-    CompressedWriter, WriterConfig, WriteStats, CompressionInfo,
+    CompressedWriter, CompressionInfo, DataWriter, LookupWriter, ObservationWriter, SeriesWriter,
+    SurveyWriter, WriteStats, WriterConfig,
 };
 use crate::error::types::{DataError, Result};
 use crate::utils::validation::BLSValidationRules;
@@ -141,7 +139,7 @@ impl ParquetDataWriter {
             area_code_builder.append_option(Some(&series.area_code));
             item_code_builder.append_option(Some(&series.item_code));
             frequency_builder.append_option(Some(&format!("{:?}", series.frequency())));
-            units_builder.append_option(series.unit().map(|u| format!("{:?}", u)).as_deref());
+            units_builder.append_option(series.unit().map(|u| format!("{u:?}")).as_deref());
             seasonal_adjustment_builder.append_option(Some(&series.seasonal));
             begin_year_builder.append_option(None); // placeholder
             begin_period_builder.append_option(Some(&series.base_period));
@@ -221,15 +219,22 @@ impl ParquetDataWriter {
         match record_type {
             "series" | "observation" | "lookup" | "survey" => Ok(true),
             _ => Err(DataError::ValidationError {
-                message: format!("Unknown record type: {}", record_type),
+                message: format!("Unknown record type: {record_type}"),
                 path: None,
                 line: None,
-            }.into()),
+            }
+            .into()),
         }
     }
 
     /// Update statistics after writing records
-    fn update_stats(&mut self, records_written: u64, bytes_written: u64, errors: u64, start_time: Instant) {
+    fn update_stats(
+        &mut self,
+        records_written: u64,
+        bytes_written: u64,
+        errors: u64,
+        start_time: Instant,
+    ) {
         self.stats.records_written += records_written;
         self.stats.bytes_written += bytes_written;
         self.stats.errors_encountered += errors;
@@ -241,8 +246,9 @@ impl ParquetDataWriter {
         if let Ok(mut writer_guard) = self.writer.lock() {
             if let Some(ref mut writer) = *writer_guard {
                 for batch in &self.batch_data {
-                    writer.write(batch)
-                        .map_err(|e| DataError::io_error(format!("Failed to write batch: {}", e)))?;
+                    writer.write(batch).map_err(|e| {
+                        DataError::io_error(format!("Failed to write batch: {e}"))
+                    })?;
                 }
                 self.batch_data.clear();
             }
@@ -281,7 +287,7 @@ impl DataWriter for ParquetDataWriter {
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
-    
+
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
         self
     }
@@ -319,16 +325,20 @@ impl DataWriter for ParquetDataWriter {
 
     async fn open(&mut self, path: &Path) -> Result<()> {
         if !self.can_write(path)? {
-            return Err(DataError::unsupported_format(
-                format!("Cannot write Parquet to: {}", path.display())
-            ).into());
+            return Err(DataError::unsupported_format(format!(
+                "Cannot write Parquet to: {}",
+                path.display()
+            ))
+            .into());
         }
 
         // Check if file exists and we're not allowed to overwrite
         if path.exists() && !self.config.overwrite_existing {
-            return Err(DataError::io_error(
-                format!("File already exists and overwrite is disabled: {}", path.display())
-            ).into());
+            return Err(DataError::io_error(format!(
+                "File already exists and overwrite is disabled: {}",
+                path.display()
+            ))
+            .into());
         }
 
         self.current_file = Some(path.to_path_buf());
@@ -340,14 +350,15 @@ impl DataWriter for ParquetDataWriter {
 
     async fn close(&mut self) -> Result<()> {
         self.write_batches()?;
-        
+
         if let Ok(mut writer_guard) = self.writer.lock() {
             if let Some(writer) = writer_guard.take() {
-                writer.close()
-                    .map_err(|e| DataError::io_error(format!("Failed to close writer: {}", e)))?;
+                writer
+                    .close()
+                    .map_err(|e| DataError::io_error(format!("Failed to close writer: {e}")))?;
             }
         }
-        
+
         self.current_file = None;
         self.schema = None;
         Ok(())
@@ -355,11 +366,12 @@ impl DataWriter for ParquetDataWriter {
 
     async fn flush(&mut self) -> Result<()> {
         self.write_batches()?;
-        
+
         if let Ok(mut writer_guard) = self.writer.lock() {
             if let Some(ref mut writer) = *writer_guard {
-                writer.flush()
-                    .map_err(|e| DataError::io_error(format!("Failed to flush writer: {}", e)))?;
+                writer
+                    .flush()
+                    .map_err(|e| DataError::io_error(format!("Failed to flush writer: {e}")))?;
             }
         }
         Ok(())
@@ -386,7 +398,7 @@ impl SeriesWriter for ParquetDataWriter {
 
     async fn write_series_batch(&mut self, series: &[Series]) -> Result<()> {
         let start_time = Instant::now();
-        
+
         // Validate all records
         for s in series {
             self.validate_record(s, "series")?;
@@ -400,19 +412,21 @@ impl SeriesWriter for ParquetDataWriter {
         // Create writer if not already done
         if self.writer.lock().unwrap().is_none() && self.current_file.is_some() {
             let file = File::create(self.current_file.as_ref().unwrap())
-                .map_err(|e| DataError::io_error(format!("Failed to create file: {}", e)))?;
-            
+                .map_err(|e| DataError::io_error(format!("Failed to create file: {e}")))?;
+
             let properties = self.create_writer_properties();
             let writer = ArrowWriter::try_new(file, self.schema.clone().unwrap(), Some(properties))
-                .map_err(|e| DataError::io_error(format!("Failed to create Parquet writer: {}", e)))?;
-            
+                .map_err(|e| {
+                    DataError::io_error(format!("Failed to create Parquet writer: {e}"))
+                })?;
+
             *self.writer.lock().unwrap() = Some(writer);
         }
 
         // Convert to Arrow arrays
         let arrays = self.series_to_arrays(series)?;
         let batch = RecordBatch::try_new(self.schema.clone().unwrap(), arrays)
-            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {}", e)))?;
+            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {e}")))?;
 
         let batch_size = batch.get_array_memory_size() as u64;
         self.batch_data.push(batch);
@@ -439,7 +453,7 @@ impl ObservationWriter for ParquetDataWriter {
 
     async fn write_observations_batch(&mut self, observations: &[Observation]) -> Result<()> {
         let start_time = Instant::now();
-        
+
         // Validate all records
         for obs in observations {
             self.validate_record(obs, "observation")?;
@@ -453,19 +467,21 @@ impl ObservationWriter for ParquetDataWriter {
         // Create writer if not already done
         if self.writer.lock().unwrap().is_none() && self.current_file.is_some() {
             let file = File::create(self.current_file.as_ref().unwrap())
-                .map_err(|e| DataError::io_error(format!("Failed to create file: {}", e)))?;
-            
+                .map_err(|e| DataError::io_error(format!("Failed to create file: {e}")))?;
+
             let properties = self.create_writer_properties();
             let writer = ArrowWriter::try_new(file, self.schema.clone().unwrap(), Some(properties))
-                .map_err(|e| DataError::io_error(format!("Failed to create Parquet writer: {}", e)))?;
-            
+                .map_err(|e| {
+                    DataError::io_error(format!("Failed to create Parquet writer: {e}"))
+                })?;
+
             *self.writer.lock().unwrap() = Some(writer);
         }
 
         // Convert to Arrow arrays
         let arrays = self.observations_to_arrays(observations)?;
         let batch = RecordBatch::try_new(self.schema.clone().unwrap(), arrays)
-            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {}", e)))?;
+            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {e}")))?;
 
         let batch_size = batch.get_array_memory_size() as u64;
         self.batch_data.push(batch);
@@ -481,7 +497,11 @@ impl ObservationWriter for ParquetDataWriter {
 
     // Generic method write_all_observations moved to extension trait
 
-    async fn write_observations_for_series(&mut self, series_id: &str, observations: &[Observation]) -> Result<()> {
+    async fn write_observations_for_series(
+        &mut self,
+        series_id: &str,
+        observations: &[Observation],
+    ) -> Result<()> {
         let filtered_observations: Vec<Observation> = observations
             .iter()
             .filter(|obs| obs.series_id() == series_id)
@@ -502,7 +522,7 @@ impl LookupWriter for ParquetDataWriter {
 
     async fn write_lookups_batch(&mut self, lookups: &[Lookup]) -> Result<()> {
         let start_time = Instant::now();
-        
+
         // Validate all records
         for lookup in lookups {
             self.validate_record(lookup, "lookup")?;
@@ -516,19 +536,21 @@ impl LookupWriter for ParquetDataWriter {
         // Create writer if not already done
         if self.writer.lock().unwrap().is_none() && self.current_file.is_some() {
             let file = File::create(self.current_file.as_ref().unwrap())
-                .map_err(|e| DataError::io_error(format!("Failed to create file: {}", e)))?;
-            
+                .map_err(|e| DataError::io_error(format!("Failed to create file: {e}")))?;
+
             let properties = self.create_writer_properties();
             let writer = ArrowWriter::try_new(file, self.schema.clone().unwrap(), Some(properties))
-                .map_err(|e| DataError::io_error(format!("Failed to create Parquet writer: {}", e)))?;
-            
+                .map_err(|e| {
+                    DataError::io_error(format!("Failed to create Parquet writer: {e}"))
+                })?;
+
             *self.writer.lock().unwrap() = Some(writer);
         }
 
         // Convert to Arrow arrays
         let arrays = self.lookups_to_arrays(lookups)?;
         let batch = RecordBatch::try_new(self.schema.clone().unwrap(), arrays)
-            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {}", e)))?;
+            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {e}")))?;
 
         let batch_size = batch.get_array_memory_size() as u64;
         self.batch_data.push(batch);
@@ -551,7 +573,7 @@ impl LookupWriter for ParquetDataWriter {
 impl SurveyWriter for ParquetDataWriter {
     async fn write_survey(&mut self, survey: &Survey) -> Result<()> {
         let start_time = Instant::now();
-        
+
         self.validate_record(survey, "survey")?;
 
         // Set up schema if not already done
@@ -562,12 +584,14 @@ impl SurveyWriter for ParquetDataWriter {
         // Create writer if not already done
         if self.writer.lock().unwrap().is_none() && self.current_file.is_some() {
             let file = File::create(self.current_file.as_ref().unwrap())
-                .map_err(|e| DataError::io_error(format!("Failed to create file: {}", e)))?;
-            
+                .map_err(|e| DataError::io_error(format!("Failed to create file: {e}")))?;
+
             let properties = self.create_writer_properties();
             let writer = ArrowWriter::try_new(file, self.schema.clone().unwrap(), Some(properties))
-                .map_err(|e| DataError::io_error(format!("Failed to create Parquet writer: {}", e)))?;
-            
+                .map_err(|e| {
+                    DataError::io_error(format!("Failed to create Parquet writer: {e}"))
+                })?;
+
             *self.writer.lock().unwrap() = Some(writer);
         }
 
@@ -587,7 +611,7 @@ impl SurveyWriter for ParquetDataWriter {
         ];
 
         let batch = RecordBatch::try_new(self.schema.clone().unwrap(), arrays)
-            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {}", e)))?;
+            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {e}")))?;
 
         let batch_size = batch.get_array_memory_size() as u64;
         self.batch_data.push(batch);
@@ -607,8 +631,9 @@ impl CompressedWriter for ParquetDataWriter {
     fn set_compression_level(&mut self, level: u8) -> Result<()> {
         if level > 9 {
             return Err(DataError::invalid_configuration(
-                "Compression level must be between 0 and 9".to_string()
-            ).into());
+                "Compression level must be between 0 and 9".to_string(),
+            )
+            .into());
         }
         self.config.compression_level = level;
         Ok(())
@@ -644,10 +669,10 @@ mod tests {
     async fn test_can_write_parquet() {
         let config = WriterConfig::default();
         let writer = ParquetDataWriter::new(config);
-        
+
         let parquet_path = Path::new("test.parquet");
         assert!(writer.can_write(parquet_path).unwrap());
-        
+
         let invalid_path = Path::new("test.csv");
         assert!(!writer.can_write(invalid_path).unwrap());
     }
@@ -656,18 +681,15 @@ mod tests {
     async fn test_write_series() {
         let config = WriterConfig::default();
         let mut writer = ParquetDataWriter::new(config);
-        
+
         let temp_file = NamedTempFile::with_suffix(".parquet").unwrap();
         writer.open(temp_file.path()).await.unwrap();
-        
-        let series = Series::new(
-            &*"TEST001".to_string(),
-            &*"Test Series".to_string(),
-        );
-        
+
+        let series = Series::new(&*"TEST001".to_string(), &*"Test Series".to_string());
+
         writer.write_series(&series).await.unwrap();
         writer.close().await.unwrap();
-        
+
         // Verify the file was created
         assert!(temp_file.path().exists());
         assert!(temp_file.path().metadata().unwrap().len() > 0);
@@ -677,13 +699,13 @@ mod tests {
     async fn test_compression_levels() {
         let mut config = WriterConfig::default();
         config.compression_level = 6;
-        
+
         let mut writer = ParquetDataWriter::new(config);
         assert_eq!(writer.compression_level(), 6);
-        
+
         writer.set_compression_level(3).unwrap();
         assert_eq!(writer.compression_level(), 3);
-        
+
         // Test invalid compression level
         assert!(writer.set_compression_level(10).is_err());
     }
@@ -692,7 +714,7 @@ mod tests {
     async fn test_supported_extensions() {
         let config = WriterConfig::default();
         let writer = ParquetDataWriter::new(config);
-        
+
         let extensions = writer.supported_extensions();
         assert_eq!(extensions, vec!["parquet".to_string()]);
     }

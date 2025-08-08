@@ -3,14 +3,16 @@
 //! This module provides a minimal Parquet output format implementation.
 //! This is currently a stub implementation for future development.
 
+use async_trait::async_trait;
 use std::collections::HashMap;
 use std::path::Path;
-use async_trait::async_trait;
 
-use crate::data::model::{Series, Observation, Lookup, Survey};
-use crate::output::traits::{FormatWriter, OutputConfig, OutputResult, OutputGenerator, OutputStats};
-use crate::processing::traits::ProcessedData;
+use crate::data::model::{Lookup, Observation, Series, Survey};
 use crate::error::types::{ProcessingError, Result};
+use crate::output::traits::{
+    FormatWriter, OutputConfig, OutputGenerator, OutputResult, OutputStats,
+};
+use crate::processing::traits::ProcessedData;
 
 /// Parquet format writer implementation (stub)
 pub struct ParquetWriter {
@@ -42,33 +44,58 @@ impl FormatWriter for ParquetWriter {
         "parquet"
     }
 
-    async fn write_series(&mut self, _series: &[Series], _path: &Path, _config: &OutputConfig) -> Result<OutputResult> {
+    async fn write_series(
+        &mut self,
+        _series: &[Series],
+        _path: &Path,
+        _config: &OutputConfig,
+    ) -> Result<OutputResult> {
         Err(ProcessingError::invalid_configuration(
-            "Parquet format writer is not yet implemented".to_string()
+            "Parquet format writer is not yet implemented".to_string(),
         ))
     }
 
-    async fn write_observations(&mut self, _observations: &[Observation], _path: &Path, _config: &OutputConfig) -> Result<OutputResult> {
+    async fn write_observations(
+        &mut self,
+        _observations: &[Observation],
+        _path: &Path,
+        _config: &OutputConfig,
+    ) -> Result<OutputResult> {
         Err(ProcessingError::invalid_configuration(
-            "Parquet format writer is not yet implemented".to_string()
+            "Parquet format writer is not yet implemented".to_string(),
         ))
     }
 
-    async fn write_lookups(&mut self, _lookups: &[Lookup], _path: &Path, _config: &OutputConfig) -> Result<OutputResult> {
+    async fn write_lookups(
+        &mut self,
+        _lookups: &[Lookup],
+        _path: &Path,
+        _config: &OutputConfig,
+    ) -> Result<OutputResult> {
         Err(ProcessingError::invalid_configuration(
-            "Parquet format writer is not yet implemented".to_string()
+            "Parquet format writer is not yet implemented".to_string(),
         ))
     }
 
-    async fn write_survey(&mut self, _survey: &Survey, _path: &Path, _config: &OutputConfig) -> Result<OutputResult> {
+    async fn write_survey(
+        &mut self,
+        _survey: &Survey,
+        _path: &Path,
+        _config: &OutputConfig,
+    ) -> Result<OutputResult> {
         Err(ProcessingError::invalid_configuration(
-            "Parquet format writer is not yet implemented".to_string()
+            "Parquet format writer is not yet implemented".to_string(),
         ))
     }
 
-    async fn write_mixed(&mut self, _data: ProcessedData, _path: &Path, _config: &OutputConfig) -> Result<OutputResult> {
+    async fn write_mixed(
+        &mut self,
+        _data: ProcessedData,
+        _path: &Path,
+        _config: &OutputConfig,
+    ) -> Result<OutputResult> {
         Err(ProcessingError::invalid_configuration(
-            "Parquet format writer is not yet implemented".to_string()
+            "Parquet format writer is not yet implemented".to_string(),
         ))
     }
 
@@ -119,17 +146,22 @@ impl OutputGenerator for ParquetOutputGenerator {
         vec!["parquet".to_string()]
     }
 
-    async fn generate(&mut self, _data: ProcessedData, _config: OutputConfig) -> Result<OutputResult> {
+    async fn generate(
+        &mut self,
+        _data: ProcessedData,
+        _config: OutputConfig,
+    ) -> Result<OutputResult> {
         Err(ProcessingError::invalid_configuration(
-            "Parquet output generator is not yet implemented".to_string()
+            "Parquet output generator is not yet implemented".to_string(),
         ))
     }
 
     fn validate_config(&self, config: &OutputConfig) -> Result<()> {
         if config.format.to_lowercase() != "parquet" {
-            return Err(ProcessingError::invalid_configuration(
-                format!("Parquet generator does not support format: {}", config.format)
-            ));
+            return Err(ProcessingError::invalid_configuration(format!(
+                "Parquet generator does not support format: {}",
+                config.format
+            )));
         }
         Ok(())
     }
@@ -158,13 +190,17 @@ mod tests {
     fn test_parquet_generator_creation() {
         let generator = ParquetOutputGenerator::new();
         assert_eq!(generator.name(), "parquet_generator");
-        assert!(generator.supported_formats().contains(&"parquet".to_string()));
+        assert!(
+            generator
+                .supported_formats()
+                .contains(&"parquet".to_string())
+        );
     }
 
     #[test]
     fn test_parquet_generator_validation() {
         let generator = ParquetOutputGenerator::new();
-        
+
         let valid_config = OutputConfig {
             format: "parquet".to_string(),
             destination: "output.parquet".to_string(),
@@ -184,7 +220,7 @@ mod tests {
     fn test_default_format_options() {
         let writer = ParquetWriter::new();
         let options = writer.default_format_options();
-        
+
         assert_eq!(options.get("compression"), Some(&"snappy".to_string()));
         assert_eq!(options.get("enable_dictionary"), Some(&"true".to_string()));
     }

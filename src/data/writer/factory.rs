@@ -4,16 +4,16 @@
 //! based on output format, configuration, and performance requirements.
 //! The factory automatically selects the optimal writer strategy.
 
-use std::path::Path;
 use std::collections::HashMap;
+use std::path::Path;
 
-use crate::data::writer::traits::{
-    DataWriter, SeriesWriter, ObservationWriter, LookupWriter, SurveyWriter,
-    StreamingWriter, CompressedWriter, TransactionalWriter, WriterFactory, WriterConfig,
-};
 use crate::data::writer::csv_writer::CsvDataWriter;
-use crate::data::writer::parquet_writer::ParquetDataWriter;
 use crate::data::writer::json_writer::JsonDataWriter;
+use crate::data::writer::parquet_writer::ParquetDataWriter;
+use crate::data::writer::traits::{
+    CompressedWriter, DataWriter, LookupWriter, ObservationWriter, SeriesWriter, StreamingWriter,
+    SurveyWriter, TransactionalWriter, WriterConfig, WriterFactory,
+};
 use crate::error::types::{DataError, Result};
 
 /// Default writer factory implementation
@@ -63,6 +63,12 @@ impl Default for WriterFactoryConfig {
     }
 }
 
+impl Default for DefaultWriterFactory {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DefaultWriterFactory {
     /// Create a new writer factory with default configuration
     pub fn new() -> Self {
@@ -72,77 +78,92 @@ impl DefaultWriterFactory {
     /// Create a new writer factory with the given configuration
     pub fn with_config(config: WriterFactoryConfig) -> Self {
         let mut format_configs = HashMap::new();
-        
+
         // Set up default configurations for different formats
-        format_configs.insert("csv".to_string(), WriterConfig {
-            buffer_size: config.default_buffer_size,
-            batch_size: config.default_batch_size,
-            validate_on_write: config.enable_validation,
-            encoding: "UTF-8".to_string(),
-            field_separator: ',',
-            include_headers: config.include_headers,
-            compress_output: config.enable_compression,
-            compression_level: config.default_compression_level,
-            overwrite_existing: false,
-            max_file_size: 0, // No limit
-            float_precision: config.float_precision,
-        });
+        format_configs.insert(
+            "csv".to_string(),
+            WriterConfig {
+                buffer_size: config.default_buffer_size,
+                batch_size: config.default_batch_size,
+                validate_on_write: config.enable_validation,
+                encoding: "UTF-8".to_string(),
+                field_separator: ',',
+                include_headers: config.include_headers,
+                compress_output: config.enable_compression,
+                compression_level: config.default_compression_level,
+                overwrite_existing: false,
+                max_file_size: 0, // No limit
+                float_precision: config.float_precision,
+            },
+        );
 
-        format_configs.insert("tsv".to_string(), WriterConfig {
-            buffer_size: config.default_buffer_size,
-            batch_size: config.default_batch_size,
-            validate_on_write: config.enable_validation,
-            encoding: "UTF-8".to_string(),
-            field_separator: '\t',
-            include_headers: config.include_headers,
-            compress_output: config.enable_compression,
-            compression_level: config.default_compression_level,
-            overwrite_existing: false,
-            max_file_size: 0,
-            float_precision: config.float_precision,
-        });
+        format_configs.insert(
+            "tsv".to_string(),
+            WriterConfig {
+                buffer_size: config.default_buffer_size,
+                batch_size: config.default_batch_size,
+                validate_on_write: config.enable_validation,
+                encoding: "UTF-8".to_string(),
+                field_separator: '\t',
+                include_headers: config.include_headers,
+                compress_output: config.enable_compression,
+                compression_level: config.default_compression_level,
+                overwrite_existing: false,
+                max_file_size: 0,
+                float_precision: config.float_precision,
+            },
+        );
 
-        format_configs.insert("parquet".to_string(), WriterConfig {
-            buffer_size: config.default_buffer_size,
-            batch_size: config.default_batch_size * 10, // Larger batches for Parquet
-            validate_on_write: config.enable_validation,
-            encoding: "UTF-8".to_string(),
-            field_separator: ',', // Not used for Parquet
-            include_headers: false, // Parquet has schema
-            compress_output: true, // Parquet benefits from compression
-            compression_level: config.default_compression_level,
-            overwrite_existing: false,
-            max_file_size: 0,
-            float_precision: config.float_precision,
-        });
+        format_configs.insert(
+            "parquet".to_string(),
+            WriterConfig {
+                buffer_size: config.default_buffer_size,
+                batch_size: config.default_batch_size * 10, // Larger batches for Parquet
+                validate_on_write: config.enable_validation,
+                encoding: "UTF-8".to_string(),
+                field_separator: ',',   // Not used for Parquet
+                include_headers: false, // Parquet has schema
+                compress_output: true,  // Parquet benefits from compression
+                compression_level: config.default_compression_level,
+                overwrite_existing: false,
+                max_file_size: 0,
+                float_precision: config.float_precision,
+            },
+        );
 
-        format_configs.insert("json".to_string(), WriterConfig {
-            buffer_size: config.default_buffer_size,
-            batch_size: config.default_batch_size,
-            validate_on_write: config.enable_validation,
-            encoding: "UTF-8".to_string(),
-            field_separator: ',', // Not used for JSON
-            include_headers: true, // Pretty printing
-            compress_output: config.enable_compression,
-            compression_level: config.default_compression_level,
-            overwrite_existing: false,
-            max_file_size: 0,
-            float_precision: config.float_precision,
-        });
+        format_configs.insert(
+            "json".to_string(),
+            WriterConfig {
+                buffer_size: config.default_buffer_size,
+                batch_size: config.default_batch_size,
+                validate_on_write: config.enable_validation,
+                encoding: "UTF-8".to_string(),
+                field_separator: ',',  // Not used for JSON
+                include_headers: true, // Pretty printing
+                compress_output: config.enable_compression,
+                compression_level: config.default_compression_level,
+                overwrite_existing: false,
+                max_file_size: 0,
+                float_precision: config.float_precision,
+            },
+        );
 
-        format_configs.insert("jsonl".to_string(), WriterConfig {
-            buffer_size: config.default_buffer_size,
-            batch_size: config.default_batch_size,
-            validate_on_write: config.enable_validation,
-            encoding: "UTF-8".to_string(),
-            field_separator: ',', // Not used for JSONL
-            include_headers: false, // Compact format for JSONL
-            compress_output: config.enable_compression,
-            compression_level: config.default_compression_level,
-            overwrite_existing: false,
-            max_file_size: 0,
-            float_precision: config.float_precision,
-        });
+        format_configs.insert(
+            "jsonl".to_string(),
+            WriterConfig {
+                buffer_size: config.default_buffer_size,
+                batch_size: config.default_batch_size,
+                validate_on_write: config.enable_validation,
+                encoding: "UTF-8".to_string(),
+                field_separator: ',',   // Not used for JSONL
+                include_headers: false, // Compact format for JSONL
+                compress_output: config.enable_compression,
+                compression_level: config.default_compression_level,
+                overwrite_existing: false,
+                max_file_size: 0,
+                float_precision: config.float_precision,
+            },
+        );
 
         // Override with user-provided configurations
         for (format, user_config) in &config.format_configs {
@@ -194,51 +215,51 @@ impl DefaultWriterFactory {
                         Ok("csv".to_string())
                     }
                 }
-                _ => Err(DataError::unsupported_format(
-                    format!("Unsupported file extension: {}", extension)
-                ).into()),
+                _ => Err(DataError::unsupported_format(format!(
+                    "Unsupported file extension: {extension}"
+                ))
+                .into()),
             }
         } else {
-            Err(DataError::unsupported_format(
-                "Cannot determine format from file path".to_string()
-            ).into())
+            Err(
+                DataError::unsupported_format("Cannot determine format from file path".to_string())
+                    .into(),
+            )
         }
     }
 
     /// Get or create a writer configuration for the given format
     fn get_writer_config(&self, format: &str) -> WriterConfig {
-        self.format_configs.get(format)
-            .cloned()
-            .unwrap_or_else(|| {
-                // Fallback to generic configuration
-                WriterConfig {
-                    buffer_size: self.config.default_buffer_size,
-                    batch_size: self.config.default_batch_size,
-                    validate_on_write: self.config.enable_validation,
-                    encoding: "UTF-8".to_string(),
-                    field_separator: ',',
-                    include_headers: self.config.include_headers,
-                    compress_output: self.config.enable_compression,
-                    compression_level: self.config.default_compression_level,
-                    overwrite_existing: false,
-                    max_file_size: 0,
-                    float_precision: self.config.float_precision,
-                }
-            })
+        self.format_configs.get(format).cloned().unwrap_or_else(|| {
+            // Fallback to generic configuration
+            WriterConfig {
+                buffer_size: self.config.default_buffer_size,
+                batch_size: self.config.default_batch_size,
+                validate_on_write: self.config.enable_validation,
+                encoding: "UTF-8".to_string(),
+                field_separator: ',',
+                include_headers: self.config.include_headers,
+                compress_output: self.config.enable_compression,
+                compression_level: self.config.default_compression_level,
+                overwrite_existing: false,
+                max_file_size: 0,
+                float_precision: self.config.float_precision,
+            }
+        })
     }
 
     /// Create a writer optimized for the given file path
     pub fn create_optimized_writer(&self, path: &Path) -> Result<Box<dyn DataWriter>> {
         let format = self.determine_format(path)?;
         let mut config = self.get_writer_config(&format);
-        
+
         // Enable compression for compressed file extensions
         if let Some(extension) = path.extension().and_then(|e| e.to_str()) {
             if extension == "gz" {
                 config.compress_output = true;
             }
         }
-        
+
         self.create_writer(&format, config)
     }
 
@@ -260,9 +281,9 @@ impl DefaultWriterFactory {
     /// Check if compression is recommended for the given format
     pub fn is_compression_recommended(&self, format: &str) -> bool {
         match format {
-            "parquet" => true, // Parquet benefits greatly from compression
+            "parquet" => true,        // Parquet benefits greatly from compression
             "json" | "jsonl" => true, // JSON is verbose and compresses well
-            "csv" | "tsv" => false, // CSV/TSV are already compact
+            "csv" | "tsv" => false,   // CSV/TSV are already compact
             _ => false,
         }
     }
@@ -290,13 +311,18 @@ impl WriterFactory for DefaultWriterFactory {
                 }
                 Ok(Box::new(writer))
             }
-            _ => Err(DataError::unsupported_format(
-                format!("Unsupported writer format: {}", format)
-            ).into()),
+            _ => Err(DataError::unsupported_format(format!(
+                "Unsupported writer format: {format}"
+            ))
+            .into()),
         }
     }
 
-    fn create_series_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn SeriesWriter>> {
+    fn create_series_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn SeriesWriter>> {
         match format.to_lowercase().as_str() {
             "csv" | "tsv" => Ok(Box::new(CsvDataWriter::new(config))),
             "parquet" => Ok(Box::new(ParquetDataWriter::new(config))),
@@ -307,13 +333,18 @@ impl WriterFactory for DefaultWriterFactory {
                 }
                 Ok(Box::new(writer))
             }
-            _ => Err(DataError::unsupported_format(
-                format!("Unsupported series writer format: {}", format)
-            ).into()),
+            _ => Err(DataError::unsupported_format(format!(
+                "Unsupported series writer format: {format}"
+            ))
+            .into()),
         }
     }
 
-    fn create_observation_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn ObservationWriter>> {
+    fn create_observation_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn ObservationWriter>> {
         match format.to_lowercase().as_str() {
             "csv" | "tsv" => Ok(Box::new(CsvDataWriter::new(config))),
             "parquet" => Ok(Box::new(ParquetDataWriter::new(config))),
@@ -324,13 +355,18 @@ impl WriterFactory for DefaultWriterFactory {
                 }
                 Ok(Box::new(writer))
             }
-            _ => Err(DataError::unsupported_format(
-                format!("Unsupported observation writer format: {}", format)
-            ).into()),
+            _ => Err(DataError::unsupported_format(format!(
+                "Unsupported observation writer format: {format}"
+            ))
+            .into()),
         }
     }
 
-    fn create_lookup_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn LookupWriter>> {
+    fn create_lookup_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn LookupWriter>> {
         match format.to_lowercase().as_str() {
             "csv" | "tsv" => Ok(Box::new(CsvDataWriter::new(config))),
             "parquet" => Ok(Box::new(ParquetDataWriter::new(config))),
@@ -341,13 +377,18 @@ impl WriterFactory for DefaultWriterFactory {
                 }
                 Ok(Box::new(writer))
             }
-            _ => Err(DataError::unsupported_format(
-                format!("Unsupported lookup writer format: {}", format)
-            ).into()),
+            _ => Err(DataError::unsupported_format(format!(
+                "Unsupported lookup writer format: {format}"
+            ))
+            .into()),
         }
     }
 
-    fn create_survey_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn SurveyWriter>> {
+    fn create_survey_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn SurveyWriter>> {
         match format.to_lowercase().as_str() {
             "csv" | "tsv" => Ok(Box::new(CsvDataWriter::new(config))),
             "parquet" => Ok(Box::new(ParquetDataWriter::new(config))),
@@ -358,13 +399,18 @@ impl WriterFactory for DefaultWriterFactory {
                 }
                 Ok(Box::new(writer))
             }
-            _ => Err(DataError::unsupported_format(
-                format!("Unsupported survey writer format: {}", format)
-            ).into()),
+            _ => Err(DataError::unsupported_format(format!(
+                "Unsupported survey writer format: {format}"
+            ))
+            .into()),
         }
     }
 
-    fn create_streaming_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn StreamingWriter>> {
+    fn create_streaming_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn StreamingWriter>> {
         match format.to_lowercase().as_str() {
             "json" | "jsonl" => {
                 let mut writer = JsonDataWriter::new(config);
@@ -373,13 +419,18 @@ impl WriterFactory for DefaultWriterFactory {
                 }
                 Ok(Box::new(writer))
             }
-            _ => Err(DataError::unsupported_format(
-                format!("Streaming writer not supported for format: {}", format)
-            ).into()),
+            _ => Err(DataError::unsupported_format(format!(
+                "Streaming writer not supported for format: {format}"
+            ))
+            .into()),
         }
     }
 
-    fn create_compressed_writer(&self, format: &str, config: WriterConfig) -> Result<Box<dyn CompressedWriter>> {
+    fn create_compressed_writer(
+        &self,
+        format: &str,
+        config: WriterConfig,
+    ) -> Result<Box<dyn CompressedWriter>> {
         match format.to_lowercase().as_str() {
             "parquet" => Ok(Box::new(ParquetDataWriter::new(config))),
             "json" | "jsonl" => {
@@ -389,17 +440,23 @@ impl WriterFactory for DefaultWriterFactory {
                 }
                 Ok(Box::new(writer))
             }
-            _ => Err(DataError::unsupported_format(
-                format!("Compressed writer not supported for format: {}", format)
-            ).into()),
+            _ => Err(DataError::unsupported_format(format!(
+                "Compressed writer not supported for format: {format}"
+            ))
+            .into()),
         }
     }
 
-    fn create_transactional_writer(&self, _format: &str, _config: WriterConfig) -> Result<Box<dyn TransactionalWriter>> {
+    fn create_transactional_writer(
+        &self,
+        _format: &str,
+        _config: WriterConfig,
+    ) -> Result<Box<dyn TransactionalWriter>> {
         // Transactional writers are not yet implemented
-        Err(DataError::not_implemented(
-            "Transactional writers are not yet implemented".to_string()
-        ).into())
+        Err(
+            DataError::not_implemented("Transactional writers are not yet implemented".to_string())
+                .into(),
+        )
     }
 
     fn supported_formats(&self) -> Vec<String> {
@@ -516,19 +573,37 @@ mod tests {
     #[test]
     fn test_format_determination() {
         let factory = DefaultWriterFactory::new();
-        
-        assert_eq!(factory.determine_format(Path::new("test.csv")).unwrap(), "csv");
-        assert_eq!(factory.determine_format(Path::new("test.tsv")).unwrap(), "tsv");
-        assert_eq!(factory.determine_format(Path::new("test.parquet")).unwrap(), "parquet");
-        assert_eq!(factory.determine_format(Path::new("test.json")).unwrap(), "json");
-        assert_eq!(factory.determine_format(Path::new("test.jsonl")).unwrap(), "jsonl");
-        assert_eq!(factory.determine_format(Path::new("test.csv.gz")).unwrap(), "csv");
+
+        assert_eq!(
+            factory.determine_format(Path::new("test.csv")).unwrap(),
+            "csv"
+        );
+        assert_eq!(
+            factory.determine_format(Path::new("test.tsv")).unwrap(),
+            "tsv"
+        );
+        assert_eq!(
+            factory.determine_format(Path::new("test.parquet")).unwrap(),
+            "parquet"
+        );
+        assert_eq!(
+            factory.determine_format(Path::new("test.json")).unwrap(),
+            "json"
+        );
+        assert_eq!(
+            factory.determine_format(Path::new("test.jsonl")).unwrap(),
+            "jsonl"
+        );
+        assert_eq!(
+            factory.determine_format(Path::new("test.csv.gz")).unwrap(),
+            "csv"
+        );
     }
 
     #[test]
     fn test_compression_recommendations() {
         let factory = DefaultWriterFactory::new();
-        
+
         assert!(factory.is_compression_recommended("parquet"));
         assert!(factory.is_compression_recommended("json"));
         assert!(!factory.is_compression_recommended("csv"));
@@ -537,9 +612,12 @@ mod tests {
     #[test]
     fn test_optimal_batch_sizes() {
         let factory = DefaultWriterFactory::new();
-        
+
         let default_batch = factory.config.default_batch_size;
-        assert_eq!(factory.get_optimal_batch_size("parquet"), default_batch * 10);
+        assert_eq!(
+            factory.get_optimal_batch_size("parquet"),
+            default_batch * 10
+        );
         assert_eq!(factory.get_optimal_batch_size("csv"), default_batch);
         assert_eq!(factory.get_optimal_batch_size("json"), default_batch / 2);
     }
@@ -548,7 +626,7 @@ mod tests {
     fn test_writer_creation() {
         let factory = DefaultWriterFactory::new();
         let config = WriterConfig::default();
-        
+
         // Test creating different writer types
         assert!(factory.create_writer("csv", config.clone()).is_ok());
         assert!(factory.create_writer("parquet", config.clone()).is_ok());
@@ -568,7 +646,7 @@ mod tests {
             .include_headers(false)
             .float_precision(4)
             .build();
-        
+
         assert_eq!(config.default_buffer_size, 128 * 1024);
         assert_eq!(config.default_batch_size, 2000);
         assert!(!config.enable_validation);
@@ -582,12 +660,12 @@ mod tests {
     #[test]
     fn test_format_support() {
         let factory = DefaultWriterFactory::new();
-        
+
         assert!(factory.supports_compression("parquet"));
         assert!(factory.supports_compression("json"));
         assert!(factory.supports_compression("csv"));
         assert!(!factory.supports_compression("unsupported"));
-        
+
         // Transactions not yet implemented
         assert!(!factory.supports_transactions("csv"));
         assert!(!factory.supports_transactions("parquet"));

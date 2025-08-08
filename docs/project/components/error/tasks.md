@@ -1,6 +1,35 @@
 # Error Handling Module: Tasks and Roadmap
 
-This document outlines the tasks and roadmap for the Error Handling module of the Rusty BLS Data Processing system.
+![Error Handling Banner](../../../resources/subheader_02.png)
+
+This document outlines the tasks and roadmap for the Error Handling module of the Rusty BLS Data Processing system. The visuals below summarize how errors flow through the system.
+
+### At a Glance
+- Error types: Config, Data, Processing, Output, Plugin, System
+- Capabilities: Context, Chaining, Sanitization, Recovery, Telemetry
+- Resilience: Retries, Circuit Breakers, Health Monitoring
+
+### Error Flow
+```mermaid
+flowchart LR
+    E[Error Occurs] --> Ctx[Add Context]
+    Ctx --> Cat{Category}
+    Cat -->|Config| CfgErr[ConfigError]
+    Cat -->|Data| DataErr[DataError]
+    Cat -->|Processing| ProcErr[ProcessingError]
+    Cat -->|Output| OutErr[OutputError]
+    Cat -->|Plugin| PlugErr[PluginError]
+    Cat -->|System| SysErr[SystemError]
+    Ctx --> San[Sanitize Message]
+    San --> Rec{Recover?}
+    Rec -->|Retryable| Retry[Retry Policy]
+    Rec -->|Circuit Breaker| CB[Circuit Breaker]
+    Rec -->|Fallback| Fallback[Fallback Strategy]
+    Rec -->|Fail| Report[Report & Log]
+    Retry --> Report
+    CB --> Report
+    Fallback --> Report
+```
 
 ## Current Status
 
@@ -92,3 +121,12 @@ The Error Handling module currently provides:
 - Implement proper error isolation between components
 - Add support for security-related error auditing
 - Consider implementing error rate limiting to prevent DoS attacks
+
+
+---
+
+### Navigation
+- [Docs Home](../../README.md)
+- [Component Index](index.md)
+- [Component README](README.md)
+- [Test Specifications](test_specifications.md)

@@ -25,22 +25,21 @@
 //! let survey = Survey::new("AP", "Average Price Data");
 //! ```
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use validator::Validate;
-use chrono::{DateTime, Utc};
-use crate::utils::validation::BLSValidationRules;
 
 // Sub-module declarations
-pub mod series;
-pub mod observation;
 pub mod lookup;
+pub mod observation;
+pub mod series;
 pub mod survey;
 
 // Re-export all model types
-pub use series::{Series, SeriesMetadata};
-pub use observation::{Observation, ObservationValue};
 pub use lookup::{Lookup, LookupEntry};
+pub use observation::{Observation, ObservationValue};
+pub use series::{Series, SeriesMetadata};
 pub use survey::{Survey, SurveyMetadata};
 
 /// Common metadata fields for all BLS data structures
@@ -49,19 +48,19 @@ pub struct CommonMetadata {
     /// When this record was created
     #[serde(default = "current_timestamp")]
     pub created_at: DateTime<Utc>,
-    
+
     /// When this record was last updated
     #[serde(default = "current_timestamp")]
     pub updated_at: DateTime<Utc>,
-    
+
     /// Version of this record
     #[serde(default = "default_version")]
     pub version: u32,
-    
+
     /// Source of this data
     #[serde(default)]
     pub source: Option<String>,
-    
+
     /// Additional metadata as key-value pairs
     #[serde(default)]
     pub attributes: HashMap<String, String>,
@@ -186,7 +185,7 @@ impl std::fmt::Display for Frequency {
             Frequency::Monthly => write!(f, "monthly"),
             Frequency::Weekly => write!(f, "weekly"),
             Frequency::Daily => write!(f, "daily"),
-            Frequency::Other(freq) => write!(f, "{}", freq),
+            Frequency::Other(freq) => write!(f, "{freq}"),
         }
     }
 }
@@ -228,14 +227,14 @@ pub struct Area {
     /// Area code
     #[validate(length(min = 1, max = 10))]
     pub code: String,
-    
+
     /// Area name
     #[validate(length(min = 1, max = 200))]
     pub name: String,
-    
+
     /// Area type (e.g., "State", "MSA", "County")
     pub area_type: String,
-    
+
     /// Parent area code (for hierarchical areas)
     pub parent_code: Option<String>,
 }
@@ -264,14 +263,14 @@ pub struct Item {
     /// Item code
     #[validate(length(min = 1, max = 20))]
     pub code: String,
-    
+
     /// Item name/description
     #[validate(length(min = 1, max = 500))]
     pub name: String,
-    
+
     /// Item category
     pub category: Option<String>,
-    
+
     /// Parent item code (for hierarchical items)
     pub parent_code: Option<String>,
 }
@@ -325,7 +324,10 @@ mod tests {
         assert!(metadata.updated_at > metadata.created_at);
 
         metadata.add_attribute("test_key", "test_value");
-        assert_eq!(metadata.attributes.get("test_key"), Some(&"test_value".to_string()));
+        assert_eq!(
+            metadata.attributes.get("test_key"),
+            Some(&"test_value".to_string())
+        );
     }
 
     #[test]
@@ -344,7 +346,10 @@ mod tests {
     #[test]
     fn test_frequency_display() {
         assert_eq!(Frequency::Monthly.to_string(), "monthly");
-        assert_eq!(Frequency::Other("biweekly".to_string()).to_string(), "biweekly");
+        assert_eq!(
+            Frequency::Other("biweekly".to_string()).to_string(),
+            "biweekly"
+        );
     }
 
     #[test]
@@ -389,7 +394,7 @@ mod tests {
         let metadata = CommonMetadata::new().with_source("BLS");
         let serialized = serde_json::to_string(&metadata).unwrap();
         let deserialized: CommonMetadata = serde_json::from_str(&serialized).unwrap();
-        
+
         assert_eq!(metadata.version, deserialized.version);
         assert_eq!(metadata.source, deserialized.source);
     }

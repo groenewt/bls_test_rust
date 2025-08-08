@@ -6,12 +6,11 @@
 //! ## Usage
 //!
 
+pub use crate::data::model::{CommonMetadata, DataQuality};
+use crate::utils::validation::BLSValidationRules;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use validator::Validate;
-use chrono::{DateTime, Utc};
-pub use crate::data::model::{CommonMetadata, DataQuality};
-use crate::utils::validation::BLSValidationRules;
 
 /// BLS data observation
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
@@ -20,20 +19,20 @@ pub struct Observation {
     #[validate(length(min = 10, max = 25))]
     #[validate(custom = "validate_series_id")]
     pub series_id: String,
-    
+
     /// Year of the observation
     #[validate(range(min = 1900, max = 2100))]
     #[validate(custom = "validate_year")]
     pub year: u32,
-    
+
     /// Period within the year (e.g., "M01", "Q01", "A01")
     #[validate(length(min = 3, max = 3))]
     #[validate(custom = "validate_period")]
     pub period: String,
-    
+
     /// The observation value
     pub value: ObservationValue,
-    
+
     /// Common metadata (timestamps, version, etc.)
     #[validate]
     pub common: CommonMetadata,
@@ -144,10 +143,12 @@ impl Observation {
             self.year,
             &self.period,
             self.numeric_value(),
-        ).map_err(|e| e.to_string())?;
+        )
+        .map_err(|e| e.to_string())?;
 
         // Validate using validator crate
-        self.validate().map_err(|e| format!("Validation error: {:?}", e))?;
+        self.validate()
+            .map_err(|e| format!("Validation error: {e:?}"))?;
 
         Ok(())
     }
@@ -166,17 +167,17 @@ impl Observation {
 pub struct ObservationValue {
     /// The numeric value (None for missing values)
     pub value: Option<f64>,
-    
+
     /// Data quality indicator
     pub quality: DataQuality,
-    
+
     /// Footnotes or annotations
     #[serde(default)]
     pub footnotes: Vec<String>,
-    
+
     /// Value status (e.g., "preliminary", "revised")
     pub status: Option<String>,
-    
+
     /// Custom attributes for this value
     #[serde(default)]
     pub attributes: HashMap<String, String>,
@@ -260,7 +261,7 @@ impl ObservationValue {
         match self.value {
             Some(val) => {
                 let precision = precision.unwrap_or(3);
-                format!("{:.prec$}", val, prec = precision)
+                format!("{val:.precision$}")
             }
             None => "N/A".to_string(),
         }
@@ -368,7 +369,7 @@ impl ObservationBuilder {
         obs_value.status = self.status;
         obs_value.attributes = self.attributes;
 
-        let mut observation = Observation {
+        let observation = Observation {
             series_id,
             year,
             period,
@@ -391,33 +392,33 @@ impl Default for ObservationBuilder {
 
 // Custom validation functions
 fn validate_series_id(series_id: &str) -> Result<(), validator::ValidationError> {
-    crate::utils::validation::validate_series_id(series_id)
-        .map_err(|e| {
-            let mut err = validator::ValidationError::new("invalid_series_id");
-            let error_msg = e.to_string();
-            err.params.insert("error".into(), serde_json::Value::String(error_msg));
-            err
-        })
+    crate::utils::validation::validate_series_id(series_id).map_err(|e| {
+        let mut err = validator::ValidationError::new("invalid_series_id");
+        let error_msg = e.to_string();
+        err.params
+            .insert("error".into(), serde_json::Value::String(error_msg));
+        err
+    })
 }
 
 fn validate_year(year: u32) -> Result<(), validator::ValidationError> {
-    crate::utils::validation::validate_year(year)
-        .map_err(|e| {
-            let mut err = validator::ValidationError::new("invalid_year");
-            let error_msg = e.to_string();
-            err.params.insert("error".into(), serde_json::Value::String(error_msg));
-            err
-        })
+    crate::utils::validation::validate_year(year).map_err(|e| {
+        let mut err = validator::ValidationError::new("invalid_year");
+        let error_msg = e.to_string();
+        err.params
+            .insert("error".into(), serde_json::Value::String(error_msg));
+        err
+    })
 }
 
 fn validate_period(period: &str) -> Result<(), validator::ValidationError> {
-    crate::utils::validation::validate_period(period)
-        .map_err(|e| {
-            let mut err = validator::ValidationError::new("invalid_period");
-            let error_msg = e.to_string();
-            err.params.insert("error".into(), serde_json::Value::String(error_msg));
-            err
-        })
+    crate::utils::validation::validate_period(period).map_err(|e| {
+        let mut err = validator::ValidationError::new("invalid_period");
+        let error_msg = e.to_string();
+        err.params
+            .insert("error".into(), serde_json::Value::String(error_msg));
+        err
+    })
 }
 
 #[cfg(test)]
@@ -581,7 +582,7 @@ mod tests {
         let obs = Observation::new("APUS49074714", &2023, "M01", Some(3.45));
         let serialized = serde_json::to_string(&obs).unwrap();
         let deserialized: Observation = serde_json::from_str(&serialized).unwrap();
-        
+
         assert_eq!(obs.series_id, deserialized.series_id);
         assert_eq!(obs.year, deserialized.year);
         assert_eq!(obs.period, deserialized.period);

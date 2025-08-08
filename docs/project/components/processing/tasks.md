@@ -1,6 +1,47 @@
 # Processing Module: Tasks and Roadmap
 
-This document outlines the planned tasks and roadmap for the Processing module.
+![Processing Banner](../../../resources/subheader_02.png)
+
+This document outlines the planned tasks and roadmap for the Processing module. Use this page to understand the processing flows and what's next.
+
+### At a Glance
+- Strategies: In-memory, Chunked, Memory-mapped
+- Pipeline stages: Load → Transform → Validate → Write
+- Parallelism: Thread/chunk-based execution
+- Status: Core Implementation phase
+
+### Processing Flow
+```mermaid
+flowchart LR
+    A[Raw BLS Files] --> L[Load]
+    L --> T[Transform]
+    T --> V{Validate}
+    V -- Errors --> EH[Error Handling]
+    V -- OK --> S{Select Strategy}
+    S -->|Small| IM[In-Memory]
+    S -->|Medium| CH[Chunked]
+    S -->|Large| MM[Memory-Mapped]
+    IM --> W[Write Output]
+    CH --> W
+    MM --> W
+    W --> CSV[CSV]
+    W --> PARQ[Parquet]
+    W --> JSON[JSON]
+```
+
+### DAG Execution (Conceptual)
+```mermaid
+graph TD
+    subgraph DAG[Processing DAG]
+    A[Load] --> B[Transform]
+    B --> C[Validate]
+    C --> D[Write]
+    end
+
+    C -- fail --> R[Retry with Backoff]
+    R --> C
+    SLA[SLA Timer] --> D
+```
 
 ## Current Status
 
@@ -88,3 +129,12 @@ The Processing module is currently in the **Core Implementation** phase.
 - Implement comprehensive memory monitoring
 - Use streaming and chunked processing for large datasets
 - Provide simple configuration templates and presets
+
+
+---
+
+### Navigation
+- [Docs Home](../../README.md)
+- [Component Index](index.md)
+- [Component README](README.md)
+- [Test Specifications](test_specifications.md)

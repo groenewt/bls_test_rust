@@ -4,20 +4,19 @@
 //! CSV format output. It supports buffered writing, compression, and various
 //! CSV formatting options.
 
+use async_trait::async_trait;
+use csv::{Writer as CsvWriter, WriterBuilder};
+use flate2::Compression;
+use flate2::write::GzEncoder;
 use std::fs::File;
-use std::sync::Mutex;
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 use std::time::Instant;
-use async_trait::async_trait;
-use csv::{Writer as CsvWriter, WriterBuilder};
-use flate2::write::GzEncoder;
-use flate2::Compression;
 
-use crate::data::model::{Series, Observation, Lookup, Survey};
+use crate::data::model::{Lookup, Observation, Series, Survey};
 use crate::data::writer::traits::{
-    DataWriter, SeriesWriter, ObservationWriter, LookupWriter, SurveyWriter,
-    WriterConfig, WriteStats, OutputMetadata, SchemaInfo,
+    DataWriter, LookupWriter, ObservationWriter, SeriesWriter,
+    SurveyWriter, WriteStats, WriterConfig,
 };
 use crate::error::types::{DataError, Result};
 use crate::utils::validation::BLSValidationRules;
@@ -76,15 +75,22 @@ impl CsvDataWriter {
         match record_type {
             "series" | "observation" | "lookup" | "survey" => Ok(true),
             _ => Err(DataError::ValidationError {
-                message: format!("Unknown record type: {}", record_type),
+                message: format!("Unknown record type: {record_type}"),
                 path: None,
                 line: None,
-            }.into()),
+            }
+            .into()),
         }
     }
 
     /// Update statistics after writing records
-    fn update_stats(&mut self, records_written: u64, bytes_written: u64, errors: u64, start_time: Instant) {
+    fn update_stats(
+        &mut self,
+        records_written: u64,
+        bytes_written: u64,
+        errors: u64,
+        start_time: Instant,
+    ) {
         self.stats.records_written += records_written;
         self.stats.bytes_written += bytes_written;
         self.stats.errors_encountered += errors;
@@ -100,7 +106,7 @@ impl CsvDataWriter {
         if let Some(ref mut writer) = self.writer {
             let headers = vec![
                 "series_id",
-                "title", 
+                "title",
                 "area_code",
                 "item_code",
                 "frequency",
@@ -112,9 +118,10 @@ impl CsvDataWriter {
                 "end_period",
             ];
 
-            writer.write_record(&headers)
-                .map_err(|e| DataError::io_error(format!("Failed to write headers: {}", e)))?;
-            
+            writer
+                .write_record(&headers)
+                .map_err(|e| DataError::io_error(format!("Failed to write headers: {e}")))?;
+
             self.headers_written = true;
         }
 
@@ -128,17 +135,12 @@ impl CsvDataWriter {
         }
 
         if let Some(ref mut writer) = self.writer {
-            let headers = vec![
-                "series_id",
-                "year",
-                "period",
-                "value",
-                "footnote_codes",
-            ];
+            let headers = vec!["series_id", "year", "period", "value", "footnote_codes"];
 
-            writer.write_record(&headers)
-                .map_err(|e| DataError::io_error(format!("Failed to write headers: {}", e)))?;
-            
+            writer
+                .write_record(&headers)
+                .map_err(|e| DataError::io_error(format!("Failed to write headers: {e}")))?;
+
             self.headers_written = true;
         }
 
@@ -152,15 +154,12 @@ impl CsvDataWriter {
         }
 
         if let Some(ref mut writer) = self.writer {
-            let headers = vec![
-                "code",
-                "name",
-                "description",
-            ];
+            let headers = vec!["code", "name", "description"];
 
-            writer.write_record(&headers)
-                .map_err(|e| DataError::io_error(format!("Failed to write headers: {}", e)))?;
-            
+            writer
+                .write_record(&headers)
+                .map_err(|e| DataError::io_error(format!("Failed to write headers: {e}")))?;
+
             self.headers_written = true;
         }
 
@@ -169,7 +168,11 @@ impl CsvDataWriter {
 
     /// Format a floating point value according to configuration
     fn format_float(&self, value: f64) -> String {
-        format!("{:.precision$}", value, precision = self.config.float_precision)
+        format!(
+            "{:.precision$}",
+            value,
+            precision = self.config.float_precision
+        )
     }
 
     /// Convert a series to CSV record
@@ -180,7 +183,10 @@ impl CsvDataWriter {
             series.area_code.to_string(),
             series.item_code.to_string(),
             format!("{:?}", series.frequency()),
-            series.unit().map(|u| format!("{:?}", u)).unwrap_or_default(),
+            series
+                .unit()
+                .map(|u| format!("{u:?}"))
+                .unwrap_or_default(),
             series.seasonal.to_string(),
             series.base_period.to_string(),
             series.periodicity_code.to_string(),
@@ -195,7 +201,8 @@ impl CsvDataWriter {
             observation.series_id().to_string(),
             observation.year().to_string(),
             observation.period().to_string(),
-            observation.numeric_value()
+            observation
+                .numeric_value()
                 .map(|v| self.format_float(v))
                 .unwrap_or_else(|| "-".to_string()),
             "".to_string(), // placeholder for footnote_codes
@@ -204,10 +211,7 @@ impl CsvDataWriter {
 
     /// Convert a lookup to CSV record
     fn lookup_to_record(&self, lookup: &Lookup) -> Vec<String> {
-        vec![
-            lookup.table_id.to_string(),
-            lookup.table_name.to_string(),
-        ]
+        vec![lookup.table_id.to_string(), lookup.table_name.to_string()]
     }
 }
 
@@ -216,7 +220,7 @@ impl DataWriter for CsvDataWriter {
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
-    
+
     fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
         self
     }
@@ -265,20 +269,24 @@ impl DataWriter for CsvDataWriter {
 
     async fn open(&mut self, path: &Path) -> Result<()> {
         if !self.can_write(path)? {
-            return Err(DataError::unsupported_format(
-                format!("Cannot write CSV to: {}", path.display())
-            ).into());
+            return Err(DataError::unsupported_format(format!(
+                "Cannot write CSV to: {}",
+                path.display()
+            ))
+            .into());
         }
 
         // Check if file exists and we're not allowed to overwrite
         if path.exists() && !self.config.overwrite_existing {
-            return Err(DataError::io_error(
-                format!("File already exists and overwrite is disabled: {}", path.display())
-            ).into());
+            return Err(DataError::io_error(format!(
+                "File already exists and overwrite is disabled: {}",
+                path.display()
+            ))
+            .into());
         }
 
         let file = File::create(path)
-            .map_err(|e| DataError::io_error(format!("Failed to create file: {}", e)))?;
+            .map_err(|e| DataError::io_error(format!("Failed to create file: {e}")))?;
 
         let writer = self.create_writer(file)?;
         self.writer = Some(writer);
@@ -291,8 +299,9 @@ impl DataWriter for CsvDataWriter {
 
     async fn close(&mut self) -> Result<()> {
         if let Some(mut writer) = self.writer.take() {
-            writer.flush()
-                .map_err(|e| DataError::io_error(format!("Failed to flush writer: {}", e)))?;
+            writer
+                .flush()
+                .map_err(|e| DataError::io_error(format!("Failed to flush writer: {e}")))?;
         }
         self.current_file = None;
         self.headers_written = false;
@@ -301,8 +310,9 @@ impl DataWriter for CsvDataWriter {
 
     async fn flush(&mut self) -> Result<()> {
         if let Some(ref mut writer) = self.writer {
-            writer.flush()
-                .map_err(|e| DataError::io_error(format!("Failed to flush writer: {}", e)))?;
+            writer
+                .flush()
+                .map_err(|e| DataError::io_error(format!("Failed to flush writer: {e}")))?;
         }
         Ok(())
     }
@@ -324,7 +334,7 @@ impl DataWriter for CsvDataWriter {
 impl SeriesWriter for CsvDataWriter {
     async fn write_series(&mut self, series: &Series) -> Result<()> {
         let start_time = Instant::now();
-        
+
         self.validate_record(series, "series")?;
         self.write_series_headers()?;
 
@@ -332,8 +342,9 @@ impl SeriesWriter for CsvDataWriter {
         let record_size = record.iter().map(|s| s.len()).sum::<usize>() as u64;
 
         if let Some(ref mut writer) = self.writer {
-            writer.write_record(&record)
-                .map_err(|e| DataError::io_error(format!("Failed to write series record: {}", e)))?;
+            writer.write_record(&record).map_err(|e| {
+                DataError::io_error(format!("Failed to write series record: {e}"))
+            })?;
 
             self.update_stats(1, record_size, 0, start_time);
         } else {
@@ -370,14 +381,19 @@ impl SeriesWriter for CsvDataWriter {
             for record in processed_records {
                 if let Err(e) = writer.write_record(&record) {
                     errors += 1;
-                    eprintln!("Failed to write series record: {}", e);
+                    eprintln!("Failed to write series record: {e}");
                 }
             }
         } else {
             return Err(DataError::io_error("No writer available".to_string()).into());
         }
 
-        self.update_stats(series.len() as u64 - errors, total_bytes, errors, start_time);
+        self.update_stats(
+            series.len() as u64 - errors,
+            total_bytes,
+            errors,
+            start_time,
+        );
         Ok(())
     }
 
@@ -388,7 +404,7 @@ impl SeriesWriter for CsvDataWriter {
 impl ObservationWriter for CsvDataWriter {
     async fn write_observation(&mut self, observation: &Observation) -> Result<()> {
         let start_time = Instant::now();
-        
+
         self.validate_record(observation, "observation")?;
         self.write_observation_headers()?;
 
@@ -396,8 +412,9 @@ impl ObservationWriter for CsvDataWriter {
         let record_size = record.iter().map(|s| s.len()).sum::<usize>() as u64;
 
         if let Some(ref mut writer) = self.writer {
-            writer.write_record(&record)
-                .map_err(|e| DataError::io_error(format!("Failed to write observation record: {}", e)))?;
+            writer.write_record(&record).map_err(|e| {
+                DataError::io_error(format!("Failed to write observation record: {e}"))
+            })?;
 
             self.update_stats(1, record_size, 0, start_time);
         } else {
@@ -434,20 +451,29 @@ impl ObservationWriter for CsvDataWriter {
             for record in processed_records {
                 if let Err(e) = writer.write_record(&record) {
                     errors += 1;
-                    eprintln!("Failed to write observation record: {}", e);
+                    eprintln!("Failed to write observation record: {e}");
                 }
             }
         } else {
             return Err(DataError::io_error("No writer available".to_string()).into());
         }
 
-        self.update_stats(observations.len() as u64 - errors, total_bytes, errors, start_time);
+        self.update_stats(
+            observations.len() as u64 - errors,
+            total_bytes,
+            errors,
+            start_time,
+        );
         Ok(())
     }
 
     // Generic method write_all_observations moved to extension trait
 
-    async fn write_observations_for_series(&mut self, series_id: &str, observations: &[Observation]) -> Result<()> {
+    async fn write_observations_for_series(
+        &mut self,
+        series_id: &str,
+        observations: &[Observation],
+    ) -> Result<()> {
         // Filter observations for the specific series
         let filtered_observations: Vec<&Observation> = observations
             .iter()
@@ -455,10 +481,8 @@ impl ObservationWriter for CsvDataWriter {
             .collect();
 
         // Convert to owned observations for the batch write
-        let owned_observations: Vec<Observation> = filtered_observations
-            .into_iter()
-            .cloned()
-            .collect();
+        let owned_observations: Vec<Observation> =
+            filtered_observations.into_iter().cloned().collect();
 
         self.write_observations_batch(&owned_observations).await
     }
@@ -470,7 +494,7 @@ impl ObservationWriter for CsvDataWriter {
 impl LookupWriter for CsvDataWriter {
     async fn write_lookup(&mut self, lookup: &Lookup) -> Result<()> {
         let start_time = Instant::now();
-        
+
         self.validate_record(lookup, "lookup")?;
         self.write_lookup_headers()?;
 
@@ -478,8 +502,9 @@ impl LookupWriter for CsvDataWriter {
         let record_size = record.iter().map(|s| s.len()).sum::<usize>() as u64;
 
         if let Some(ref mut writer) = self.writer {
-            writer.write_record(&record)
-                .map_err(|e| DataError::io_error(format!("Failed to write lookup record: {}", e)))?;
+            writer.write_record(&record).map_err(|e| {
+                DataError::io_error(format!("Failed to write lookup record: {e}"))
+            })?;
 
             self.update_stats(1, record_size, 0, start_time);
         } else {
@@ -516,14 +541,19 @@ impl LookupWriter for CsvDataWriter {
             for record in processed_records {
                 if let Err(e) = writer.write_record(&record) {
                     errors += 1;
-                    eprintln!("Failed to write lookup record: {}", e);
+                    eprintln!("Failed to write lookup record: {e}");
                 }
             }
         } else {
             return Err(DataError::io_error("No writer available".to_string()).into());
         }
 
-        self.update_stats(lookups.len() as u64 - errors, total_bytes, errors, start_time);
+        self.update_stats(
+            lookups.len() as u64 - errors,
+            total_bytes,
+            errors,
+            start_time,
+        );
         Ok(())
     }
 
@@ -536,7 +566,7 @@ impl LookupWriter for CsvDataWriter {
 impl SurveyWriter for CsvDataWriter {
     async fn write_survey(&mut self, survey: &Survey) -> Result<()> {
         let start_time = Instant::now();
-        
+
         self.validate_record(survey, "survey")?;
 
         if let Some(ref mut writer) = self.writer {
@@ -552,8 +582,9 @@ impl SurveyWriter for CsvDataWriter {
                 let record_size = record.iter().map(|s| s.len()).sum::<usize>() as u64;
                 total_bytes += record_size;
 
-                writer.write_record(&record)
-                    .map_err(|e| DataError::io_error(format!("Failed to write survey record: {}", e)))?;
+                writer.write_record(&record).map_err(|e| {
+                    DataError::io_error(format!("Failed to write survey record: {e}"))
+                })?;
             }
 
             self.update_stats(1, total_bytes, 0, start_time);
@@ -570,8 +601,8 @@ impl SurveyWriter for CsvDataWriter {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::NamedTempFile;
     use std::io::Read;
+    use tempfile::NamedTempFile;
 
     #[tokio::test]
     async fn test_csv_writer_creation() {
@@ -585,13 +616,13 @@ mod tests {
     async fn test_can_write_csv() {
         let config = WriterConfig::default();
         let writer = CsvDataWriter::new(config);
-        
+
         let csv_path = Path::new("test.csv");
         assert!(writer.can_write(csv_path).unwrap());
-        
+
         let txt_path = Path::new("test.txt");
         assert!(writer.can_write(txt_path).unwrap());
-        
+
         let invalid_path = Path::new("test.json");
         assert!(!writer.can_write(invalid_path).unwrap());
     }
@@ -600,23 +631,20 @@ mod tests {
     async fn test_write_series() {
         let config = WriterConfig::default();
         let mut writer = CsvDataWriter::new(config);
-        
+
         let temp_file = NamedTempFile::with_suffix(".csv").unwrap();
         writer.open(temp_file.path()).await.unwrap();
 
-        let series = Series::new(
-            &*"TEST001".to_string(),
-            &*"Test Series".to_string(),
-        );
-        
+        let series = Series::new(&*"TEST001".to_string(), &*"Test Series".to_string());
+
         writer.write_series(&series).await.unwrap();
         writer.close().await.unwrap();
-        
+
         // Verify the file was written
         let mut file_content = String::new();
         let mut file = File::open(temp_file.path()).unwrap();
         file.read_to_string(&mut file_content).unwrap();
-        
+
         assert!(file_content.contains("TEST001"));
         assert!(file_content.contains("Test Series"));
     }
@@ -625,7 +653,7 @@ mod tests {
     async fn test_supported_extensions() {
         let config = WriterConfig::default();
         let writer = CsvDataWriter::new(config);
-        
+
         let extensions = writer.supported_extensions();
         assert!(extensions.contains(&"csv".to_string()));
         assert!(extensions.contains(&"tsv".to_string()));

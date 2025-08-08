@@ -67,27 +67,20 @@
 //! }
 //! ```
 
-pub mod traits;
 pub mod loader;
 pub mod registry;
+pub mod traits;
 
 // Re-export commonly used types and traits
-pub use traits::{
-    Plugin, PluginMetadata, PluginConfig, PluginStats, ResourceLimits,
-};
+pub use traits::{Plugin, PluginConfig, PluginMetadata, PluginStats, ResourceLimits};
 
-pub use loader::{
-    PluginLoader, DefaultPluginLoader, LoaderConfig, LoaderStats,
-};
+pub use loader::{DefaultPluginLoader, LoaderConfig, LoaderStats, PluginLoader};
 
-pub use registry::{
-    PluginRegistry, DefaultPluginRegistry, RegistryConfig, RegistryStats,
-};
+pub use registry::{DefaultPluginRegistry, PluginRegistry, RegistryConfig, RegistryStats};
 
-use crate::error::types::{Result, Error, PluginError};
+use crate::error::types::{Error, PluginError, Result};
+use serde::{Deserialize, Serialize};
 use std::path::Path;
-use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 
 /// Plugin system manager that coordinates all plugin operations.
 pub struct PluginManager {
@@ -116,9 +109,12 @@ impl PluginManager {
     pub fn new(config: ManagerConfig) -> Self {
         let registry_config = RegistryConfig::default();
         let loader_config = LoaderConfig::default();
-        
+
         Self {
-            registry: Box::new(DefaultPluginRegistry::new(registry_config, loader_config.clone())),
+            registry: Box::new(DefaultPluginRegistry::new(
+                registry_config,
+                loader_config.clone(),
+            )),
             loader: Box::new(DefaultPluginLoader::new(loader_config)),
             config,
         }
@@ -142,7 +138,7 @@ impl PluginManager {
         let plugin_directories = self.config.plugin_directories.clone();
         for plugin_dir in &plugin_directories {
             if let Err(e) = self.load_plugins_from_directory(plugin_dir).await {
-                eprintln!("Failed to load plugins from {:?}: {}", plugin_dir, e);
+                eprintln!("Failed to load plugins from {plugin_dir:?}: {e}");
             }
         }
         Ok(())
@@ -151,31 +147,33 @@ impl PluginManager {
     /// Loads plugins from a specific directory.
     pub async fn load_plugins_from_directory(&mut self, dir: &Path) -> Result<()> {
         if !dir.exists() || !dir.is_dir() {
-            return Err(Error::Plugin(PluginError::LoadError { 
-                plugin: dir.display().to_string(), 
-                source: "Plugin directory does not exist or is not a directory".to_string() 
+            return Err(Error::Plugin(PluginError::LoadError {
+                plugin: dir.display().to_string(),
+                source: "Plugin directory does not exist or is not a directory".to_string(),
             }));
         }
 
-        let entries = std::fs::read_dir(dir)
-            .map_err(|e| Error::Plugin(PluginError::LoadError { 
-                plugin: dir.display().to_string(), 
-                source: format!("Failed to read plugin directory: {}", e) 
-            }))?;
+        let entries = std::fs::read_dir(dir).map_err(|e| {
+            Error::Plugin(PluginError::LoadError {
+                plugin: dir.display().to_string(),
+                source: format!("Failed to read plugin directory: {e}"),
+            })
+        })?;
 
         for entry in entries {
-            let entry = entry
-                .map_err(|e| Error::Plugin(PluginError::LoadError { 
-                    plugin: "directory_entry".to_string(), 
-                    source: format!("Failed to read directory entry: {}", e) 
-                }))?;
-            
+            let entry = entry.map_err(|e| {
+                Error::Plugin(PluginError::LoadError {
+                    plugin: "directory_entry".to_string(),
+                    source: format!("Failed to read directory entry: {e}"),
+                })
+            })?;
+
             let path = entry.path();
-            
+
             // Check if this looks like a plugin file (e.g., .so, .dll, .dylib)
             if self.is_plugin_file(&path) {
                 if let Err(e) = self.load_plugin_file(&path).await {
-                    eprintln!("Failed to load plugin {:?}: {}", path, e);
+                    eprintln!("Failed to load plugin {path:?}: {e}");
                 }
             }
         }
@@ -319,7 +317,7 @@ impl PluginValidator {
         if let Some(extension) = path.extension() {
             let ext = extension.to_string_lossy().to_lowercase();
             if !self.config.allowed_extensions.contains(&ext) {
-                report.add_error(format!("Plugin file extension '{}' is not allowed", ext));
+                report.add_error(format!("Plugin file extension '{ext}' is not allowed"));
             }
         } else {
             report.add_error("Plugin file has no extension".to_string());
@@ -328,14 +326,14 @@ impl PluginValidator {
         // Verify signature if enabled
         if self.config.verify_signatures {
             if let Err(e) = self.verify_plugin_signature(path).await {
-                report.add_error(format!("Signature verification failed: {}", e));
+                report.add_error(format!("Signature verification failed: {e}"));
             }
         }
 
         // Perform static analysis if enabled
         if self.config.enable_static_analysis {
             if let Err(e) = self.perform_static_analysis(path).await {
-                report.add_warning(format!("Static analysis warning: {}", e));
+                report.add_warning(format!("Static analysis warning: {e}"));
             }
         }
 
@@ -413,11 +411,7 @@ impl Default for ValidatorConfig {
             trusted_cas: vec![],
             enable_static_analysis: false,
             max_plugin_size_bytes: 100 * 1024 * 1024, // 100MB
-            allowed_extensions: vec![
-                "so".to_string(),
-                "dll".to_string(),
-                "dylib".to_string(),
-            ],
+            allowed_extensions: vec!["so".to_string(), "dll".to_string(), "dylib".to_string()],
         }
     }
 }
@@ -472,7 +466,7 @@ mod tests {
     #[test]
     fn test_is_plugin_file() {
         let manager = PluginManager::with_defaults();
-        
+
         assert!(manager.is_plugin_file(&PathBuf::from("test.so")));
         assert!(manager.is_plugin_file(&PathBuf::from("test.dll")));
         assert!(manager.is_plugin_file(&PathBuf::from("test.dylib")));
@@ -483,9 +477,12 @@ mod tests {
     #[tokio::test]
     async fn test_plugin_validator() {
         let validator = PluginValidator::with_defaults();
-        
+
         // Test with non-existent file
-        let report = validator.validate_plugin(&PathBuf::from("nonexistent.so")).await.unwrap();
+        let report = validator
+            .validate_plugin(&PathBuf::from("nonexistent.so"))
+            .await
+            .unwrap();
         assert!(!report.is_valid);
         assert!(report.has_errors());
     }
