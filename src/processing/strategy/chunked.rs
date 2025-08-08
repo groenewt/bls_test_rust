@@ -366,8 +366,8 @@ impl ChunkedProcessor {
     /// Validate a lookup record
     fn is_valid_lookup(&self, lookup: &Lookup) -> bool {
         if let Ok(_) = self.validation_rules.validate_lookup_record(&[
-            lookup.code().to_string(),
-            lookup.name().to_string(),
+            lookup.table_id.clone(),
+            lookup.table_name.clone(),
         ]) {
             true
         } else {
@@ -509,7 +509,7 @@ impl DataProcessor for ChunkedProcessor {
         if config.buffer_size == 0 {
             return Err(ProcessingError::system_error((
                 "Buffer size must be greater than 0".to_string()
-            ).into()));
+            )).into());
         }
 
         Ok(())
@@ -600,7 +600,7 @@ mod tests {
     fn test_validation_methods() {
         let processor = ChunkedProcessor::new(ProcessingConfig::default());
         
-        let series = Series::new(&*"TEST001".to_string(), &*"Test".to_string(), "AREA001".to_string());
+        let series = Series::new(&*"TEST001".to_string(), &*"Test".to_string());
         // This would test validation if validation rules were properly implemented
         // For now, just ensure the method doesn't panic
         let _is_valid = processor.is_valid_series(&series);

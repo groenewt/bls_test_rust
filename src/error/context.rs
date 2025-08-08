@@ -54,7 +54,7 @@ use crate::error::{Error, Result};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Location {
     /// Source file name
-    pub file: &'static str,
+    pub file: String,
     /// Line number in the source file
     pub line: u32,
     /// Column number in the source file
@@ -64,7 +64,11 @@ pub struct Location {
 impl Location {
     /// Create a new Location
     pub fn new(file: &'static str, line: u32, column: u32) -> Self {
-        Self { file, line, column }
+        Self { 
+            file: file.to_string(), 
+            line, 
+            column 
+        }
     }
 }
 
@@ -213,7 +217,7 @@ pub mod utils {
     use super::*;
 
     /// Extract correlation ID from an error chain
-    pub fn extract_correlation_id(error: &Error) -> Option<Uuid> {
+    pub fn extract_correlation_id(_error: &Error) -> Option<Uuid> {
         // Implementation would traverse the error chain to find correlation ID
         None
     }

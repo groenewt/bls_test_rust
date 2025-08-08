@@ -23,11 +23,11 @@
 //!
 //! ```rust
 //! use rusty::processing::pipeline::loader::LoaderStageImpl;
-//! use rusty::processing::{ProcessingContext, ProcessingConfig};
+//! use rusty::processing::{ProcessingContext, ProcessingConfig, PipelineStage};
 //!
 //! let mut loader = LoaderStageImpl::new();
 //! let mut context = ProcessingContext::new(ProcessingConfig::default());
-//! 
+//!
 //! loader.execute(&mut context)?;
 //! ```
 
@@ -37,6 +37,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Instant;
 use rayon::prelude::*;
 use tokio::task;
+use async_trait::async_trait;
 
 use crate::processing::traits::{
     PipelineStage, LoaderStage, ProcessingContext, ProcessingConfig,
@@ -182,19 +183,20 @@ impl LoaderStageImpl {
             } else if path.exists() {
                 resolved_paths.push(path);
             } else {
-                return Err(ProcessingError::DataError(
-                    format!("Input path does not exist: {}", path_str)
-                ));
+                return Err(ProcessingError::PipelineError {
+                    stage: "loader".to_string(),
+                    message: format!("Input path does not exist: {}", path_str),
+                }.into());
             }
         }
 
         // Validate all paths are readable
         for path in &resolved_paths {
             if !self.is_file_readable(path)? {
-                return Err(ProcessingError::DataError(format!(
-                    "File is not readable: {}",
-                    path.display()
-                )));
+                return Err(ProcessingError::PipelineError {
+                    stage: "loader".to_string(),
+                    message: format!("File is not readable: {}", path.display()),
+                }.into());
             }
         }
 
@@ -250,7 +252,7 @@ impl LoaderStageImpl {
 
             // Load chunk in parallel
             let chunk_readers: Result<Vec<_>> = chunk
-                .par_iter()
+                .iter()
                 .map(|path| self.load_single_file(path, data_type, context))
                 .collect();
 
@@ -302,9 +304,10 @@ impl LoaderStageImpl {
             }
         }
 
-        Err(ProcessingError::DataError(
-            format!("Failed to load file after {} attempts: {}", max_attempts, path.display())
-        ))
+        Err(ProcessingError::PipelineError {
+            stage: "loader".to_string(),
+            message: format!("Failed to load file after {} attempts: {}", max_attempts, path.display()),
+        }.into())
     }
 
     /// Try to load a single file (single attempt)
@@ -326,7 +329,7 @@ impl LoaderStageImpl {
         }
 
         // Create optimized reader for the file
-        let reader = create_optimized_reader(path, Some(data_type.to_string()))?;
+        let reader = create_optimized_reader(path)?;
 
         // Perform basic validation if enabled
         if self.config.validate_during_load {
@@ -342,14 +345,12 @@ impl LoaderStageImpl {
         // you'd perform more comprehensive checks
         
         // Check if reader can provide basic information
-        if reader.record_count().unwrap_or(0) == 0 {
+        if reader.stats().records_read == 0 {
             log::warn!("Reader contains no records");
         }
 
-        // Update record count statistics
-        if let Ok(count) = reader.record_count() {
-            self.stats.records_loaded += count as u64;
-        }
+        // Update record count statistics  
+        self.stats.records_loaded += reader.stats().records_read;
 
         Ok(())
     }
@@ -360,10 +361,10 @@ impl LoaderStageImpl {
         let current_usage = self.get_current_memory_usage();
         
         if current_usage > self.config.max_memory_usage {
-            return Err(ProcessingError::ResourceExhausted(
+            return Err(ProcessingError::SystemError(
                 format!("Memory usage ({} bytes) exceeds limit ({} bytes)", 
                        current_usage, self.config.max_memory_usage)
-            ));
+            ).into());
         }
 
         Ok(())
@@ -380,7 +381,7 @@ impl LoaderStageImpl {
         match std::fs::File::open(path) {
             Ok(_) => Ok(true),
             Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => Ok(false),
-            Err(e) => Err(ProcessingError::DataError(format!(
+            Err(e) => Err(ProcessingError::data_error(format!(
                 "Error checking file readability for '{}': {}",
                 path.display(),
                 e
@@ -403,11 +404,11 @@ impl LoaderStageImpl {
     }
 }
 
-fn resolve_path(p0: &String) -> _ {
+fn resolve_path(_p0: &String) -> Result<PathBuf> {
     todo!()
 }
 
-fn expand_wildcards(p0: &_) -> _ {
+fn expand_wildcards(_p0: &Path) -> Result<Vec<PathBuf>> {
     todo!()
 }
 
@@ -417,6 +418,7 @@ impl Default for LoaderStageImpl {
     }
 }
 
+#[async_trait]
 impl PipelineStage for LoaderStageImpl {
     fn name(&self) -> &str {
         "loader"
@@ -431,11 +433,12 @@ impl PipelineStage for LoaderStageImpl {
         Ok(!context.input_paths.is_empty())
     }
 
-    fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
+    async fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
         log::info!("Starting loader stage execution");
         
         // Load data from input paths
-        let readers = self.load_data_from_paths(&context.input_paths, context)?;
+        let input_paths = context.input_paths.clone();
+        let readers = self.load_data_from_paths(&input_paths, context)?;
         
         // Store readers in context for next stages
         context.data_readers = readers;
@@ -454,14 +457,14 @@ impl PipelineStage for LoaderStageImpl {
     fn validate(&self, context: &ProcessingContext) -> Result<()> {
         // Validate that input paths are provided
         if context.input_paths.is_empty() {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::invalid_configuration(
                 "No input paths provided for loader stage".to_string()
             ));
         }
 
         // Validate configuration
         if self.config.max_concurrent_loads == 0 {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::invalid_configuration(
                 "max_concurrent_loads must be greater than 0".to_string()
             ));
         }
@@ -469,7 +472,7 @@ impl PipelineStage for LoaderStageImpl {
         Ok(())
     }
 
-    fn cleanup(&mut self, _context: &mut ProcessingContext) -> Result<()> {
+    async fn cleanup(&mut self, _context: &mut ProcessingContext) -> Result<()> {
         // Clear reader cache if enabled
         if self.config.enable_caching {
             if let Ok(mut cache) = self.reader_cache.lock() {
@@ -481,8 +484,9 @@ impl PipelineStage for LoaderStageImpl {
     }
 }
 
+#[async_trait]
 impl LoaderStage for LoaderStageImpl {
-    fn load_data(&mut self, context: &mut ProcessingContext) -> Result<Vec<Box<dyn DataReader>>> {
+    async fn load_data(&mut self, context: &mut ProcessingContext) -> Result<Vec<Box<dyn DataReader>>> {
         let input_paths = context.input_paths.clone();
         self.load_data_from_paths(&input_paths, context)
     }

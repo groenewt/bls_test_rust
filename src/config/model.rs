@@ -706,7 +706,7 @@ impl SurveyConfig {
         Ok(())
     }
 
-    fn merge_overview_config(&mut self, other: &OverviewConfig) -> Result<(), String> {
+    pub fn merge_overview_config(&mut self, other: &OverviewConfig) -> Result<(), String> {
         self.overview = other.clone();
         // Keep convenience fields in sync
         self.code = self.overview.survey.code.clone();
@@ -714,7 +714,7 @@ impl SurveyConfig {
         Ok(())
     }
 
-    fn merge_model_config(&mut self, other: &ModelConfig) -> Result<(), String> {
+    pub fn merge_model_config(&mut self, other: &ModelConfig) -> Result<(), String> {
         for (key, value) in &other.models {
             self.model.models.insert(key.clone(), value.clone());
         }
@@ -727,7 +727,7 @@ impl SurveyConfig {
         Ok(())
     }
 
-    fn merge_processing_config(&mut self, other: &ProcessingConfig) -> Result<(), String> {
+    pub fn merge_processing_config(&mut self, other: &ProcessingConfig) -> Result<(), String> {
         self.processing = other.clone();
         Ok(())
     }
@@ -816,7 +816,7 @@ pub enum ValidationRule {
 }
 
 /// Processing strategies
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum ProcessingStrategy {
     #[serde(rename = "in_memory")]
     InMemory,

@@ -26,7 +26,7 @@ tracing-subscriber = "0.3"
 
 # File processing and I/O
 csv = "1.2"
-memmap2 = "0.7"  # For memory-mapped file I/O
+memmap2 = "0.7"   # For memory-mapped file I/O
 arrow = "56.0"   # For Parquet support
 parquet = "56.0"
 flate2 = "1.0"   # For compression support
@@ -34,7 +34,7 @@ flate2 = "1.0"   # For compression support
 # Utilities
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1.9"
-uuid = { version = "1.0", features = ["v4"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
 rayon = "1.7"    # For parallel processing
 num_cpus = "1.0" # For CPU detection
 

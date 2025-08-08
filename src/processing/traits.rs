@@ -9,7 +9,7 @@ use std::path::Path;
 use std::collections::HashMap;
 use async_trait::async_trait;
 use serde::{Serialize, Deserialize};
-
+use crate::config::Config;
 use crate::data::model::{Series, Observation, Lookup, Survey};
 use crate::data::reader::traits::{DataReader, ReaderConfig};
 use crate::data::writer::traits::{DataWriter, WriterConfig};
@@ -40,6 +40,12 @@ pub struct ProcessingConfig {
     pub custom_params: HashMap<String, String>,
 }
 
+impl ProcessingConfig {
+    pub(crate) fn with_strategy(&mut self, p0: ProcessingStrategy) {
+        self.strategy= p0;
+    }
+}
+
 impl Default for ProcessingConfig {
     fn default() -> Self {
         Self {
@@ -55,6 +61,8 @@ impl Default for ProcessingConfig {
             custom_params: HashMap::new(),
         }
     }
+    
+    
 }
 
 /// Processing strategy enumeration
@@ -94,7 +102,7 @@ pub struct ProcessingStats {
 }
 
 /// Processing context for sharing state between pipeline stages
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ProcessingContext {
     /// Processing configuration
     pub config: ProcessingConfig,

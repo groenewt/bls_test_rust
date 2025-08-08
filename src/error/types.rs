@@ -42,7 +42,7 @@
 use std::fmt;
 use std::error::Error as StdError;
 use serde::{Deserialize, Serialize};
-use crate::Survey;
+use crate::data::model::Survey;
 
 /// Main error type for the Rusty BLS Data Processing system
 ///
@@ -227,6 +227,11 @@ pub enum DataError {
         expected_type: String,
         actual_type: String,
     },
+    /// Data validation error
+    IoError {
+        path: String,
+        source: String
+    },
 }
 
 impl DataError {
@@ -269,7 +274,7 @@ impl DataError {
     }
 
     pub(crate) fn io_error(message: String) -> DataError {
-        DataError::ReadError {
+        DataError::IoError {
             path: "unknown".to_string(),
             source: message,
         }
@@ -354,10 +359,28 @@ pub enum ProcessingError {
         operation: String,
         message: String,
     },
+    /// Invalid configuration error
+    InvalidConfiguration(String),
+    /// System error
+    SystemError(String),
 }
 
 impl ProcessingError {
-
+    /// Constructor for UnsupportedDataType variant
+    pub fn UnsupportedDataType(message: String) -> ProcessingError {
+        ProcessingError::UnsupportedOperation {
+            operation: "data type processing".to_string(),
+            message,
+        }
+    }
+    
+    /// Constructor for NotImplemented variant
+    pub fn NotImplemented(message: String) -> ProcessingError {
+        ProcessingError::UnsupportedOperation {
+            operation: "not implemented".to_string(),
+            message,
+        }
+    }
 }
 
 impl ProcessingError {
@@ -470,6 +493,10 @@ pub enum PluginError {
         plugin: String,
         message: String,
     },
+    NotFoundError {
+        plugin: String,
+        message: String,
+    },
 }
 
 /// System-level error types
@@ -501,6 +528,11 @@ pub enum SystemError {
     TimeError {
         operation: String,
         message: String,
+    },
+    ParseError {
+        format: String,
+        source: String,
+        context: Option<String>, // TODO: add context type
     },
 }
 
@@ -610,6 +642,9 @@ impl fmt::Display for DataError {
             DataError::SchemaError { message, field, expected_type, actual_type } => {
                 write!(f, "Schema error in field '{}': {}. Expected: {}, Actual: {}", field, message, expected_type, actual_type)
             },
+            DataError::IoError { path, source } => {
+                write!(f, "I/O error at path '{}': {}", path, source)
+            },
         }
     }
 }
@@ -631,6 +666,12 @@ impl fmt::Display for ProcessingError {
             },
             ProcessingError::UnsupportedOperation { operation, message } => {
                 write!(f, "Unsupported operation '{}': {}", operation, message)
+            },
+            ProcessingError::InvalidConfiguration(message) => {
+                write!(f, "Invalid configuration: {}", message)
+            },
+            ProcessingError::SystemError(message) => {
+                write!(f, "System error: {}", message)
             },
         }
     }
@@ -654,6 +695,7 @@ impl fmt::Display for PluginError {
             PluginError::ExecutionError { plugin, message } => write!(f, "Execution error in plugin '{}': {}", plugin, message),
             PluginError::CommunicationError { plugin, message } => write!(f, "Communication error with plugin '{}': {}", plugin, message),
             PluginError::ConfigurationError { plugin, message } => write!(f, "Configuration error in plugin '{}': {}", plugin, message),
+            PluginError::NotFoundError { plugin, message } => write!(f, "Plugin '{}' not found: {}", plugin, message),
         }
     }
 }
@@ -672,6 +714,13 @@ impl fmt::Display for SystemError {
             SystemError::NetworkError { operation, source } => write!(f, "Network error during '{}': {}", operation, source),
             SystemError::ResourceError { resource, message } => write!(f, "Resource error with '{}': {}", resource, message),
             SystemError::TimeError { operation, message } => write!(f, "Time error during '{}': {}", operation, message),
+            SystemError::ParseError { format, source, context } => {
+                if let Some(ctx) = context {
+                    write!(f, "Parse error in format '{}' with context '{}': {}", format, ctx, source)
+                } else {
+                    write!(f, "Parse error in format '{}': {}", format, source)
+                }
+            },
         }
     }
 }

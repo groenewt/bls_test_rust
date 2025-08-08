@@ -89,7 +89,7 @@ impl DagExecutor {
 
     /// Validate the DAG configuration and task dependencies
     pub fn validate(&self) -> Result<()> {
-        for dag in &self.config.dags {
+        for dag in self.config.dags.values() {
             self.validate_dag(dag)?;
         }
         Ok(())
@@ -99,7 +99,7 @@ impl DagExecutor {
     fn validate_dag(&self, dag: &DagDefinition) -> Result<()> {
         // Check for task name uniqueness
         let mut task_names = HashSet::new();
-        for task in &dag.tasks {
+        for task in dag.tasks.values() {
             if !task_names.insert(&task.name) {
                 return Err(ConfigError::DagValidationError {
                     dag_name: dag.name.clone(),
@@ -109,7 +109,7 @@ impl DagExecutor {
         }
 
         // Check that all dependencies exist
-        for task in &dag.tasks {
+        for task in dag.tasks.values() {
             for dep in &task.depends_on {
                 if !task_names.contains(dep) {
                     return Err(ConfigError::DagValidationError {
@@ -124,10 +124,8 @@ impl DagExecutor {
         self.detect_cycles(dag)?;
 
         // Validate retry and backoff configurations
-        for task in &dag.tasks {
-            if let Some(retry) = &task.retry {
-                self.validate_retry_config(retry, &dag.name, &task.name)?;
-            }
+        for task in dag.tasks.values() {
+            self.validate_retry_config(&task.retry, &dag.name, &task.name)?;
         }
 
         Ok(())
@@ -139,13 +137,13 @@ impl DagExecutor {
         let mut graph: HashMap<String, Vec<String>> = HashMap::new();
 
         // Initialize in-degree and graph
-        for task in &dag.tasks {
+        for task in dag.tasks.values() {
             in_degree.insert(task.name.clone(), 0);
             graph.insert(task.name.clone(), Vec::new());
         }
 
         // Build the graph and calculate in-degrees
-        for task in &dag.tasks {
+        for task in dag.tasks.values() {
             for dep in &task.depends_on {
                 graph.get_mut(dep).unwrap().push(task.name.clone());
                 *in_degree.get_mut(&task.name).unwrap() += 1;
@@ -179,7 +177,7 @@ impl DagExecutor {
         }
 
         // If we didn't process all nodes, there's a cycle
-        if processed != dag.tasks.len() {
+        if processed != dag.tasks.values().len() {
             return Err(ConfigError::DagValidationError {
                 dag_name: dag.name.clone(),
                 message: "Cycle detected in task dependencies".to_string(),
@@ -198,11 +196,13 @@ impl DagExecutor {
             }.into());
         }
 
-        if retry.initial_delay.as_secs() == 0 && retry.initial_delay.subsec_millis() == 0 {
-            return Err(ConfigError::DagValidationError {
-                dag_name: dag_name.to_string(),
-                message: format!("Task '{}' has invalid retry initial_delay: 0", task_name),
-            }.into());
+        if let Some(delay) = retry.initial_delay {
+            if delay.as_secs() == 0 && delay.subsec_millis() == 0 {
+                return Err(ConfigError::DagValidationError {
+                    dag_name: dag_name.to_string(),
+                    message: format!("Task '{}' has invalid retry initial_delay: 0", task_name),
+                }.into());
+            }
         }
 
         Ok(())
@@ -211,7 +211,8 @@ impl DagExecutor {
     /// Execute a DAG by name
     pub async fn execute_dag(&mut self, dag_name: &str, mut context: ProcessingContext) -> Result<DagExecutionContext> {
         let dag = self.config.dags.iter()
-            .find(|d| d.name == dag_name)
+            .find(|(_, d)| d.name == dag_name)
+            .map(|(_, dag)| dag)
             .ok_or_else(|| ProcessingError::PipelineError {
                 stage: dag_name.to_string(),
                 message: "DAG not found".to_string(),
@@ -227,17 +228,19 @@ impl DagExecutor {
             execution_start,
         };
 
+        // Execute tasks in dependency order
+        let dag_copy = dag.clone();
+        
         // Initialize task states
-        for task in &dag.tasks {
+        for task in dag_copy.tasks.values() {
             dag_context.task_states.insert(task.name.clone(), TaskState::Pending);
         }
-
-        // Execute tasks in dependency order
-        self.execute_tasks(dag, &mut dag_context).await?;
+        
+        self.execute_tasks(&dag_copy, &mut dag_context).await?;
 
         // Update statistics
         self.stats.total_execution_time = execution_start.elapsed();
-        self.stats.total_tasks = dag.tasks.len();
+        self.stats.total_tasks = dag_copy.tasks.values().len();
         self.stats.completed_tasks = dag_context.task_states.values()
             .filter(|&state| *state == TaskState::Completed)
             .count();
@@ -252,7 +255,7 @@ impl DagExecutor {
 
     /// Execute tasks in the DAG
     async fn execute_tasks(&mut self, dag: &DagDefinition, context: &mut DagExecutionContext) -> Result<()> {
-        let mut remaining_tasks: HashSet<String> = dag.tasks.iter().map(|t| t.name.clone()).collect();
+        let mut remaining_tasks: HashSet<String> = dag.tasks.values().map(|t| t.name.clone()).collect();
 
         while !remaining_tasks.is_empty() {
             let ready_tasks = self.find_ready_tasks(dag, context, &remaining_tasks);
@@ -279,7 +282,7 @@ impl DagExecutor {
 
             // Execute ready tasks (could be parallelized in the future)
             for task_name in ready_tasks {
-                let task_def = dag.tasks.iter().find(|t| t.name == task_name).unwrap();
+                let task_def = dag.tasks.iter().find(|(_, t)| t.name == task_name).map(|(_, t)| t).unwrap();
                 self.execute_task(task_def, context).await?;
                 remaining_tasks.remove(&task_name);
             }
@@ -292,7 +295,7 @@ impl DagExecutor {
     fn find_ready_tasks(&self, dag: &DagDefinition, context: &DagExecutionContext, remaining: &HashSet<String>) -> Vec<String> {
         let mut ready = Vec::new();
 
-        for task in &dag.tasks {
+        for task in dag.tasks.values() {
             if !remaining.contains(&task.name) {
                 continue;
             }
@@ -322,17 +325,23 @@ impl DagExecutor {
         context.task_states.insert(task_name.clone(), TaskState::Running);
         let task_start = Instant::now();
 
-        let stage = self.tasks.get_mut(task_name)
-            .ok_or_else(|| ProcessingError::PipelineError {
-                stage: task_name.clone(),
-                message: "Task implementation not found".to_string(),
-            })?;
-
         let mut retry_count = 0;
-        let max_attempts = task.retry.as_ref().map(|r| r.max_attempts).unwrap_or(1);
+        let max_attempts = task.retry.max_attempts.max(1);
+        let retry_config = task.retry.clone();
 
         loop {
-            match stage.execute(&mut context.processing_context).await {
+            // Execute the stage
+            let execution_result = {
+                let stage = self.tasks.get_mut(task_name)
+                    .ok_or_else(|| ProcessingError::PipelineError {
+                        stage: task_name.clone(),
+                        message: "Task implementation not found".to_string(),
+                    })?;
+
+                stage.execute(&mut context.processing_context).await
+            };
+
+            match execution_result {
                 Ok(_) => {
                     let execution_time = task_start.elapsed();
                     info!("Task completed: {} ({}ms)", task_name, execution_time.as_millis());
@@ -370,14 +379,16 @@ impl DagExecutor {
                         return Err(e);
                     }
 
+                    // Calculate delay before any mutable borrows
+                    let delay = self.calculate_backoff_delay(&retry_config, retry_count);
+                    
+                    // Update retry stats
+                    self.stats.retried_tasks += 1;
+                    
                     // Apply backoff strategy
-                    if let Some(retry_config) = &task.retry {
-                        context.task_states.insert(task_name.clone(), TaskState::Retrying);
-                        let delay = self.calculate_backoff_delay(retry_config, retry_count);
-                        debug!("Retrying task {} in {}ms", task_name, delay.as_millis());
-                        sleep(delay).await;
-                        self.stats.retried_tasks += 1;
-                    }
+                    context.task_states.insert(task_name.clone(), TaskState::Retrying);
+                    debug!("Retrying task {} in {}ms", task_name, delay.as_millis());
+                    sleep(delay).await;
                 }
             }
         }
@@ -387,14 +398,16 @@ impl DagExecutor {
 
     /// Calculate backoff delay based on strategy and attempt number
     fn calculate_backoff_delay(&self, retry_config: &RetryConfig, attempt: u32) -> Duration {
-        match retry_config.backoff_strategy {
-            BackoffStrategy::Fixed => retry_config.initial_delay,
+        match retry_config.backoff {
+            BackoffStrategy::Fixed => retry_config.initial_delay.unwrap_or(Duration::from_millis(retry_config.delay)),
             BackoffStrategy::Exponential => {
                 let multiplier = 2_u64.pow(attempt - 1);
-                Duration::from_millis(retry_config.initial_delay.as_millis() as u64 * multiplier)
+                let base_delay = retry_config.initial_delay.unwrap_or(Duration::from_millis(retry_config.delay));
+                Duration::from_millis(base_delay.as_millis() as u64 * multiplier)
             }
             BackoffStrategy::Linear => {
-                Duration::from_millis(retry_config.initial_delay.as_millis() as u64 * attempt as u64)
+                let base_delay = retry_config.initial_delay.unwrap_or(Duration::from_millis(retry_config.delay));
+                Duration::from_millis(base_delay.as_millis() as u64 * attempt as u64)
             }
         }
     }
@@ -429,11 +442,14 @@ mod tests {
                     config: HashMap::new(),
                     retry: Some(RetryConfig {
                         max_attempts: 3,
-                        initial_delay: Duration::from_millis(100),
-                        backoff_strategy: BackoffStrategy::Exponential,
+                        initial_delay: Some(Duration::from_millis(100)),
+                        backoff: BackoffStrategy::Exponential,
+                        delay: 100,
                     }),
                     sla: None,
                     timeout: Some(Duration::from_secs(30)),
+                    task_type: "".to_string(),
+                    parameters: Default::default(),
                 },
                 TaskDefinition {
                     name: "task2".to_string(),
@@ -444,14 +460,18 @@ mod tests {
                     retry: None,
                     sla: None,
                     timeout: None,
+                    task_type: "".to_string(),
+                    parameters: Default::default(),
                 },
             ],
             defaults: TaskDefaults {
                 retry: Some(RetryConfig {
                     max_attempts: 1,
-                    initial_delay: Duration::from_millis(50),
-                    backoff_strategy: BackoffStrategy::Fixed,
+                    initial_delay: Some(Duration::from_millis(50)),
+                    backoff: BackoffStrategy::Fixed,
+                    delay: 50,
                 }),
+                sla: None,
                 timeout: Some(Duration::from_secs(60)),
             },
             schedule: None,
@@ -461,8 +481,11 @@ mod tests {
 
     #[test]
     fn test_dag_validation_success() {
+        let mut dags = HashMap::new();
+        dags.insert("test_dag".to_string(), create_test_dag());
         let config = DagsConfig {
-            dags: vec![create_test_dag()],
+            config_version: 1,
+            dags,
         };
         let executor = DagExecutor::new(config);
         assert!(executor.validate().is_ok());
@@ -474,8 +497,11 @@ mod tests {
         // Create a cycle: task1 -> task2 -> task1
         dag.tasks[0].depends_on = vec!["task2".to_string()];
         
+        let mut dags = HashMap::new();
+        dags.insert("test_dag".to_string(), dag);
         let config = DagsConfig {
-            dags: vec![dag],
+            config_version: 1,
+            dags,
         };
         let executor = DagExecutor::new(config);
         assert!(executor.validate().is_err());
@@ -486,8 +512,11 @@ mod tests {
         let mut dag = create_test_dag();
         dag.tasks[1].depends_on = vec!["nonexistent_task".to_string()];
         
+        let mut dags = HashMap::new();
+        dags.insert("test_dag".to_string(), dag);
         let config = DagsConfig {
-            dags: vec![dag],
+            config_version: 1,
+            dags,
         };
         let executor = DagExecutor::new(config);
         assert!(executor.validate().is_err());
@@ -495,11 +524,12 @@ mod tests {
 
     #[test]
     fn test_backoff_calculation() {
-        let executor = DagExecutor::new(DagsConfig { dags: vec![] });
+        let executor = DagExecutor::new(DagsConfig { config_version: 1, dags: HashMap::new() });
         let retry_config = RetryConfig {
             max_attempts: 3,
-            initial_delay: Duration::from_millis(100),
-            backoff_strategy: BackoffStrategy::Exponential,
+            initial_delay: Some(Duration::from_millis(100)),
+            backoff: BackoffStrategy::Exponential,
+            delay: 100,
         };
 
         assert_eq!(executor.calculate_backoff_delay(&retry_config, 1), Duration::from_millis(100));
@@ -510,7 +540,7 @@ mod tests {
     #[test]
     fn test_find_ready_tasks() {
         let dag = create_test_dag();
-        let executor = DagExecutor::new(DagsConfig { dags: vec![] });
+        let executor = DagExecutor::new(DagsConfig { config_version: 1, dags: HashMap::new() });
         
         let mut context = DagExecutionContext {
             processing_context: ProcessingContext::new(Default::default()),

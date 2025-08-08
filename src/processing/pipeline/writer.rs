@@ -5,6 +5,7 @@
 
 use std::collections::HashMap;
 use std::time::Instant;
+use async_trait::async_trait;
 
 use crate::processing::traits::{
     PipelineStage, WriterStage, ProcessingContext, ProcessingConfig,
@@ -74,6 +75,7 @@ impl Default for WriterStageImpl {
     }
 }
 
+#[async_trait]
 impl PipelineStage for WriterStageImpl {
     fn name(&self) -> &str {
         "writer"
@@ -87,7 +89,7 @@ impl PipelineStage for WriterStageImpl {
         Ok(!context.data_readers.is_empty())
     }
 
-    fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
+    async fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
         log::info!("Starting writer stage execution");
         
         // Basic writing implementation
@@ -108,26 +110,27 @@ impl PipelineStage for WriterStageImpl {
         if context.data_readers.is_empty() {
             return Err(ProcessingError::InvalidConfiguration(
                 "No data available for writing".to_string()
-            ));
+            ).into());
         }
         Ok(())
     }
 
-    fn cleanup(&mut self, _context: &mut ProcessingContext) -> Result<()> {
+    async fn cleanup(&mut self, _context: &mut ProcessingContext) -> Result<()> {
         Ok(())
     }
 }
 
+#[async_trait]
 impl WriterStage for WriterStageImpl {
-    fn write_data(&mut self, _data: ProcessedData, _context: &mut ProcessingContext) -> Result<Vec<String>> {
+    async fn write_data(&mut self, _data: ProcessedData, _context: &mut ProcessingContext) -> Result<Vec<String>> {
         Ok(vec!["output.csv".to_string()])
     }
 
-    fn get_writers(&mut self, _context: &ProcessingContext) -> Result<Vec<Box<dyn DataWriter>>> {
+    async fn get_writers(&mut self, _context: &ProcessingContext) -> Result<Vec<Box<dyn DataWriter>>> {
         Ok(Vec::new())
     }
 
-    fn finalize_output(&mut self, _context: &mut ProcessingContext) -> Result<()> {
+    async fn finalize_output(&mut self, _context: &mut ProcessingContext) -> Result<()> {
         Ok(())
     }
 }

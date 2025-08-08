@@ -4,6 +4,7 @@
 //! The traits are designed to be flexible, performant, and support different reading
 //! strategies based on file size and processing requirements.
 
+use std::any::Any;
 use std::io::{BufRead, Read, Seek};
 use std::path::Path;
 use async_trait::async_trait;
@@ -63,7 +64,7 @@ pub struct ReadStats {
 
 /// Core trait for reading BLS data files
 #[async_trait]
-pub trait DataReader: Send + Sync {
+pub trait DataReader: Send + Sync + std::fmt::Debug {
     /// Read configuration
     fn config(&self) -> &ReaderConfig;
     
@@ -87,6 +88,12 @@ pub trait DataReader: Send + Sync {
     
     /// Get the path of the currently open file
     fn current_file(&self) -> Option<&Path>;
+    
+    /// Enable downcasting to concrete types
+    fn as_any(&self) -> &dyn Any;
+    
+    /// Enable mutable downcasting to concrete types
+    fn as_any_mut(&mut self) -> &mut dyn Any;
 }
 
 /// Trait for reading series data files

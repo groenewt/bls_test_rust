@@ -21,7 +21,7 @@ pub trait PluginRegistry: Send + Sync {
     async fn unregister_plugin(&mut self, plugin_id: &str) -> Result<()>;
 
     /// Gets a plugin by its ID.
-    fn get_plugin(&self, plugin_id: &str) -> Result<Arc<RwLock<Box<dyn Plugin>>>>;
+    fn get_plugin(&self, plugin_id: &str) -> Result<Arc<tokio::sync::RwLock<Box<dyn Plugin>>>>;
 
     /// Lists all registered plugins.
     fn list_plugins(&self) -> Vec<String>;
@@ -52,7 +52,7 @@ pub struct DefaultPluginRegistry {
 
 /// Information about a registered plugin.
 struct RegisteredPlugin {
-    plugin: Arc<RwLock<Box<dyn Plugin>>>,
+    plugin: Arc<tokio::sync::RwLock<Box<dyn Plugin>>>,
     metadata: PluginMetadata,
     registered_at: SystemTime,
     last_accessed: Option<SystemTime>,
@@ -111,12 +111,12 @@ impl DefaultPluginRegistry {
 
     /// Checks if the maximum number of plugins is reached.
     fn check_plugin_limit(&self) -> Result<()> {
-        let plugin_count = self.plugins.read()
+        let plugins = self.plugins.read()
             .map_err(|_| Error::Plugin(PluginError::CommunicationError {
                 plugin: "registry".to_string(),
                 message: "Failed to acquire read lock".to_string(),
-            }))?
-            .len();
+            }))?;
+        let plugin_count = plugins.len();
 
         if plugin_count >= self.config.max_plugins {
             return Err(Error::Plugin(PluginError::ConfigurationError {
@@ -205,7 +205,7 @@ impl PluginRegistry for DefaultPluginRegistry {
 
         // Create registered plugin entry
         let registered_plugin = RegisteredPlugin {
-            plugin: Arc::new(RwLock::new(plugin)),
+            plugin: Arc::new(tokio::sync::RwLock::new(plugin)),
             metadata,
             registered_at: SystemTime::now(),
             last_accessed: None,
@@ -215,7 +215,10 @@ impl PluginRegistry for DefaultPluginRegistry {
         // Add to registry
         {
             let mut plugins = self.plugins.write()
-                .map_err(|_| Error::Plugin("Failed to acquire write lock".to_string()))?;
+                .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+                    plugin: "registry".to_string(),
+                    message: "Failed to acquire write lock for registration".to_string(),
+                }))?;
             plugins.insert(plugin_id, registered_plugin);
         }
 
@@ -229,18 +232,22 @@ impl PluginRegistry for DefaultPluginRegistry {
     async fn unregister_plugin(&mut self, plugin_id: &str) -> Result<()> {
         let registered_plugin = {
             let mut plugins = self.plugins.write()
-                .map_err(|_| Error::Plugin("Failed to acquire write lock".to_string()))?;
+                .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+                    plugin: "registry".to_string(),
+                    message: "Failed to acquire write lock".to_string(),
+                }))?;
             
             plugins.remove(plugin_id)
-                .ok_or_else(|| Error::Plugin(format!("Plugin {} not found", plugin_id)))?
+                .ok_or_else(|| Error::Plugin(PluginError::NotFoundError {
+                    plugin: plugin_id.to_string(),
+                    message: format!("Plugin {} not found", plugin_id),
+                }))?
         };
 
-        // Shutdown the plugin
-        {
-            let mut plugin = registered_plugin.plugin.write()
-                .map_err(|_| Error::Plugin("Failed to acquire plugin write lock".to_string()))?;
-            plugin.shutdown().await?;
-        }
+        // Shutdown the plugin - simplified approach
+        let plugin_arc = registered_plugin.plugin.clone();
+        let mut plugin = plugin_arc.write().await;
+        plugin.shutdown().await?;
 
         // Update statistics
         self.stats.registered_plugins = self.stats.registered_plugins.saturating_sub(1);
@@ -249,12 +256,18 @@ impl PluginRegistry for DefaultPluginRegistry {
         Ok(())
     }
 
-    fn get_plugin(&self, plugin_id: &str) -> Result<Arc<RwLock<Box<dyn Plugin>>>> {
+    fn get_plugin(&self, plugin_id: &str) -> Result<Arc<tokio::sync::RwLock<Box<dyn Plugin>>>> {
         let plugins = self.plugins.read()
-            .map_err(|_| Error::Plugin("Failed to acquire read lock".to_string()))?;
+            .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+                plugin: "registry".to_string(),
+                message: "Failed to acquire read lock".to_string(),
+            }))?;
         
         let registered_plugin = plugins.get(plugin_id)
-            .ok_or_else(|| Error::Plugin(format!("Plugin {} not found", plugin_id)))?;
+            .ok_or_else(|| Error::Plugin(PluginError::NotFoundError {
+                plugin: plugin_id.to_string(),
+                message: format!("Plugin {} not found", plugin_id),
+            }))?;
 
         Ok(registered_plugin.plugin.clone())
     }
@@ -283,10 +296,16 @@ impl PluginRegistry for DefaultPluginRegistry {
 
     fn get_plugin_metadata(&self, plugin_id: &str) -> Result<PluginMetadata> {
         let plugins = self.plugins.read()
-            .map_err(|_| Error::Plugin("Failed to acquire read lock".to_string()))?;
+            .map_err(|_| Error::Plugin(PluginError::CommunicationError {
+                plugin: "registry".to_string(),
+                message: "Failed to acquire read lock".to_string(),
+            }))?;
         
         let registered_plugin = plugins.get(plugin_id)
-            .ok_or_else(|| Error::Plugin(format!("Plugin {} not found", plugin_id)))?;
+            .ok_or_else(|| Error::Plugin(PluginError::NotFoundError {
+                plugin: plugin_id.to_string(),
+                message: format!("Plugin {} not found", plugin_id),
+            }))?;
 
         Ok(registered_plugin.metadata.clone())
     }
@@ -367,7 +386,8 @@ mod tests {
     use std::time::SystemTime;
 
     // Mock plugin for testing
-    struct MockPlugin {
+    #[derive(Debug)]
+struct MockPlugin {
         metadata: PluginMetadata,
         stats: PluginStats,
     }

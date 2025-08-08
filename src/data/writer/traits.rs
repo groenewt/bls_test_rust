@@ -4,6 +4,7 @@
 //! The traits are designed to be flexible, performant, and support different writing
 //! strategies based on output format and performance requirements.
 
+use std::any::Any;
 use std::path::Path;
 use async_trait::async_trait;
 use serde::Serialize;
@@ -106,6 +107,12 @@ pub trait DataWriter: Send + Sync {
     
     /// Get the supported file extensions
     fn supported_extensions(&self) -> Vec<String>;
+    
+    /// Enable downcasting to concrete types
+    fn as_any(&self) -> &dyn Any;
+    
+    /// Enable mutable downcasting to concrete types
+    fn as_any_mut(&mut self) -> &mut dyn Any;
 }
 
 /// Trait for writing series data files
@@ -116,17 +123,6 @@ pub trait SeriesWriter: DataWriter {
     
     /// Write multiple series records
     async fn write_series_batch(&mut self, series: &[Series]) -> Result<()>;
-    
-    /// Write all series from an iterator
-    async fn write_all_series<I>(&mut self, series: I) -> Result<()>
-    where
-        I: Iterator<Item = Series> + Send,
-        I::Item: Send;
-    
-    /// Write series with a custom serializer
-    async fn write_series_with_serializer<F>(&mut self, series: &Series, serializer: F) -> Result<()>
-    where
-        F: Fn(&Series) -> Result<String> + Send + Sync;
 }
 
 /// Trait for writing observation data files
@@ -138,19 +134,8 @@ pub trait ObservationWriter: DataWriter {
     /// Write multiple observation records
     async fn write_observations_batch(&mut self, observations: &[Observation]) -> Result<()>;
     
-    /// Write all observations from an iterator
-    async fn write_all_observations<I>(&mut self, observations: I) -> Result<()>
-    where
-        I: Iterator<Item = Observation> + Send,
-        I::Item: Send;
-    
     /// Write observations for a specific series
     async fn write_observations_for_series(&mut self, series_id: &str, observations: &[Observation]) -> Result<()>;
-    
-    /// Write observations with a custom serializer
-    async fn write_observations_with_serializer<F>(&mut self, observations: &[Observation], serializer: F) -> Result<()>
-    where
-        F: Fn(&Observation) -> Result<String> + Send + Sync;
 }
 
 /// Trait for writing lookup table files
@@ -161,17 +146,6 @@ pub trait LookupWriter: DataWriter {
     
     /// Write multiple lookup records
     async fn write_lookups_batch(&mut self, lookups: &[Lookup]) -> Result<()>;
-    
-    /// Write all lookups from an iterator
-    async fn write_all_lookups<I>(&mut self, lookups: I) -> Result<()>
-    where
-        I: Iterator<Item = Lookup> + Send,
-        I::Item: Send;
-    
-    /// Write lookups with a custom serializer
-    async fn write_lookups_with_serializer<F>(&mut self, lookups: &[Lookup], serializer: F) -> Result<()>
-    where
-        F: Fn(&Lookup) -> Result<String> + Send + Sync;
 }
 
 /// Trait for writing survey metadata files
@@ -179,11 +153,6 @@ pub trait LookupWriter: DataWriter {
 pub trait SurveyWriter: DataWriter {
     /// Write survey metadata
     async fn write_survey(&mut self, survey: &Survey) -> Result<()>;
-    
-    /// Write survey with custom formatting
-    async fn write_survey_with_format<F>(&mut self, survey: &Survey, formatter: F) -> Result<()>
-    where
-        F: Fn(&Survey) -> Result<String> + Send + Sync;
 }
 
 /// Trait for streaming large datasets efficiently
@@ -194,12 +163,6 @@ pub trait StreamingWriter: DataWriter {
     
     /// Write a chunk of data to the stream
     async fn write_chunk(&mut self, data: &[u8]) -> Result<()>;
-    
-    /// Write a record to the stream with custom serialization
-    async fn write_record<T, F>(&mut self, record: &T, serializer: F) -> Result<()>
-    where
-        T: Send + Sync,
-        F: Fn(&T) -> Result<Vec<u8>> + Send + Sync;
     
     /// End the streaming write session
     async fn end_stream(&mut self) -> Result<()>;
@@ -315,185 +278,112 @@ pub struct SchemaInfo {
     pub field_descriptions: Option<Vec<String>>,
 }
 
-// Enum wrappers for dyn compatibility
-// These enums allow us to use concrete types instead of trait objects
-// while still providing dynamic dispatch capabilities
+// Extension traits for generic methods that are not object-safe
+// These can be used on concrete implementations but not with trait objects
 
-use crate::data::writer::csv_writer::CsvDataWriter;
-use crate::data::writer::parquet_writer::ParquetDataWriter;
-use crate::data::writer::json_writer::JsonDataWriter;
-
-/// Enum wrapper for SeriesWriter implementations
-#[derive(Debug)]
-pub enum SeriesWriterEnum {
-    Csv(CsvDataWriter),
-    Parquet(ParquetDataWriter),
-    Json(JsonDataWriter),
-}
-
-/// Enum wrapper for ObservationWriter implementations
-#[derive(Debug)]
-pub enum ObservationWriterEnum {
-    Csv(CsvDataWriter),
-    Parquet(ParquetDataWriter),
-    Json(JsonDataWriter),
-}
-
-/// Enum wrapper for LookupWriter implementations
-#[derive(Debug)]
-pub enum LookupWriterEnum {
-    Csv(CsvDataWriter),
-    Parquet(ParquetDataWriter),
-    Json(JsonDataWriter),
-}
-
-/// Enum wrapper for SurveyWriter implementations
-#[derive(Debug)]
-pub enum SurveyWriterEnum {
-    Csv(CsvDataWriter),
-    Parquet(ParquetDataWriter),
-    Json(JsonDataWriter),
-}
-
-/// Enum wrapper for StreamingWriter implementations
-#[derive(Debug)]
-pub enum StreamingWriterEnum {
-    Json(JsonDataWriter),
-}
-
-/// Enum wrapper for CompressedWriter implementations
-#[derive(Debug)]
-pub enum CompressedWriterEnum {
-    Parquet(ParquetDataWriter),
-    Json(JsonDataWriter),
-}
-
-// Implement DataWriter for all enum wrappers
-#[async_trait]
-impl DataWriter for SeriesWriterEnum {
-    fn config(&self) -> &WriterConfig {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.config(),
-            SeriesWriterEnum::Parquet(w) => w.config(),
-            SeriesWriterEnum::Json(w) => w.config(),
-        }
-    }
-
-    fn stats(&self) -> &WriteStats {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.stats(),
-            SeriesWriterEnum::Parquet(w) => w.stats(),
-            SeriesWriterEnum::Json(w) => w.stats(),
-        }
-    }
-
-    fn reset_stats(&mut self) {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.reset_stats(),
-            SeriesWriterEnum::Parquet(w) => w.reset_stats(),
-            SeriesWriterEnum::Json(w) => w.reset_stats(),
-        }
-    }
-
-    fn can_write(&self, path: &Path) -> Result<bool> {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.can_write(path),
-            SeriesWriterEnum::Parquet(w) => w.can_write(path),
-            SeriesWriterEnum::Json(w) => w.can_write(path),
-        }
-    }
-
-    async fn open(&mut self, path: &Path) -> Result<()> {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.open(path).await,
-            SeriesWriterEnum::Parquet(w) => w.open(path).await,
-            SeriesWriterEnum::Json(w) => w.open(path).await,
-        }
-    }
-
-    async fn close(&mut self) -> Result<()> {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.close().await,
-            SeriesWriterEnum::Parquet(w) => w.close().await,
-            SeriesWriterEnum::Json(w) => w.close().await,
-        }
-    }
-
-    async fn flush(&mut self) -> Result<()> {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.flush().await,
-            SeriesWriterEnum::Parquet(w) => w.flush().await,
-            SeriesWriterEnum::Json(w) => w.flush().await,
-        }
-    }
-
-    fn is_open(&self) -> bool {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.is_open(),
-            SeriesWriterEnum::Parquet(w) => w.is_open(),
-            SeriesWriterEnum::Json(w) => w.is_open(),
-        }
-    }
-
-    fn current_file(&self) -> Option<&Path> {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.current_file(),
-            SeriesWriterEnum::Parquet(w) => w.current_file(),
-            SeriesWriterEnum::Json(w) => w.current_file(),
-        }
-    }
-
-    fn supported_extensions(&self) -> Vec<String> {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.supported_extensions(),
-            SeriesWriterEnum::Parquet(w) => w.supported_extensions(),
-            SeriesWriterEnum::Json(w) => w.supported_extensions(),
-        }
-    }
-}
-
-// Implement SeriesWriter for SeriesWriterEnum
-#[async_trait]
-impl SeriesWriter for SeriesWriterEnum {
-    async fn write_series(&mut self, series: &Series) -> Result<()> {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.write_series(series).await,
-            SeriesWriterEnum::Parquet(w) => w.write_series(series).await,
-            SeriesWriterEnum::Json(w) => w.write_series(series).await,
-        }
-    }
-
-    async fn write_series_batch(&mut self, series: &[Series]) -> Result<()> {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.write_series_batch(series).await,
-            SeriesWriterEnum::Parquet(w) => w.write_series_batch(series).await,
-            SeriesWriterEnum::Json(w) => w.write_series_batch(series).await,
-        }
-    }
-
+/// Extension trait for SeriesWriter with generic methods
+pub trait SeriesWriterExt: SeriesWriter {
+    /// Write all series from an iterator
     async fn write_all_series<I>(&mut self, series: I) -> Result<()>
     where
         I: Iterator<Item = Series> + Send,
         I::Item: Send,
     {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.write_all_series(series).await,
-            SeriesWriterEnum::Parquet(w) => w.write_all_series(series).await,
-            SeriesWriterEnum::Json(w) => w.write_all_series(series).await,
+        for s in series {
+            self.write_series(&s).await?;
         }
+        Ok(())
     }
-
-    async fn write_series_with_serializer<F>(&mut self, series: &Series, serializer: F) -> Result<()>
+    
+    /// Write series with a custom serializer
+    async fn write_series_with_serializer<F>(&mut self, series: &Series, _serializer: F) -> Result<()>
     where
         F: Fn(&Series) -> Result<String> + Send + Sync,
     {
-        match self {
-            SeriesWriterEnum::Csv(w) => w.write_series_with_serializer(series, serializer).await,
-            SeriesWriterEnum::Parquet(w) => w.write_series_with_serializer(series, serializer).await,
-            SeriesWriterEnum::Json(w) => w.write_series_with_serializer(series, serializer).await,
-        }
+        // Default implementation delegates to regular write_series
+        self.write_series(series).await
     }
 }
+
+/// Extension trait for ObservationWriter with generic methods
+pub trait ObservationWriterExt: ObservationWriter {
+    /// Write all observations from an iterator
+    async fn write_all_observations<I>(&mut self, observations: I) -> Result<()>
+    where
+        I: Iterator<Item = Observation> + Send,
+        I::Item: Send,
+    {
+        for obs in observations {
+            self.write_observation(&obs).await?;
+        }
+        Ok(())
+    }
+    
+    /// Write observations with a custom serializer
+    async fn write_observations_with_serializer<F>(&mut self, observations: &[Observation], _serializer: F) -> Result<()>
+    where
+        F: Fn(&Observation) -> Result<String> + Send + Sync,
+    {
+        // Default implementation delegates to batch write
+        self.write_observations_batch(observations).await
+    }
+}
+
+/// Extension trait for LookupWriter with generic methods
+pub trait LookupWriterExt: LookupWriter {
+    /// Write all lookups from an iterator
+    async fn write_all_lookups<I>(&mut self, lookups: I) -> Result<()>
+    where
+        I: Iterator<Item = Lookup> + Send,
+        I::Item: Send,
+    {
+        for lookup in lookups {
+            self.write_lookup(&lookup).await?;
+        }
+        Ok(())
+    }
+    
+    /// Write lookups with a custom serializer
+    async fn write_lookups_with_serializer<F>(&mut self, lookups: &[Lookup], _serializer: F) -> Result<()>
+    where
+        F: Fn(&Lookup) -> Result<String> + Send + Sync,
+    {
+        // Default implementation delegates to batch write
+        self.write_lookups_batch(lookups).await
+    }
+}
+
+/// Extension trait for SurveyWriter with generic methods
+pub trait SurveyWriterExt: SurveyWriter {
+    /// Write survey with custom formatting
+    async fn write_survey_with_format<F>(&mut self, survey: &Survey, _formatter: F) -> Result<()>
+    where
+        F: Fn(&Survey) -> Result<String> + Send + Sync,
+    {
+        // Default implementation delegates to regular write_survey
+        self.write_survey(survey).await
+    }
+}
+
+/// Extension trait for StreamingWriter with generic methods
+pub trait StreamingWriterExt: StreamingWriter {
+    /// Write a record to the stream with custom serialization
+    async fn write_record<T, F>(&mut self, record: &T, serializer: F) -> Result<()>
+    where
+        T: Send + Sync,
+        F: Fn(&T) -> Result<Vec<u8>> + Send + Sync,
+    {
+        let data = serializer(record)?;
+        self.write_chunk(&data).await
+    }
+}
+
+// Blanket implementations of extension traits
+impl<T: SeriesWriter> SeriesWriterExt for T {}
+impl<T: ObservationWriter> ObservationWriterExt for T {}
+impl<T: LookupWriter> LookupWriterExt for T {}
+impl<T: SurveyWriter> SurveyWriterExt for T {}
+impl<T: StreamingWriter> StreamingWriterExt for T {}
 
 #[cfg(test)]
 mod tests {

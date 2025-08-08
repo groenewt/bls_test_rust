@@ -12,7 +12,7 @@ use crate::error::types::Result;
 
 /// Core plugin trait that all plugins must implement.
 #[async_trait]
-pub trait Plugin: Send + Sync {
+pub trait Plugin: Send + Sync + std::fmt::Debug {
     /// Returns the plugin's metadata information.
     fn metadata(&self) -> &PluginMetadata;
 

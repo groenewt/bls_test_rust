@@ -5,12 +5,13 @@
 
 use std::collections::HashMap;
 use std::time::Instant;
+use async_trait::async_trait;
 
 use crate::processing::traits::{
     ProcessingPipeline, PipelineStage, ProcessingContext, ProcessingConfig,
     ValidationResult,
 };
-use crate::error::types::{ProcessingError, Result};
+use crate::error::types::{ProcessingError, Result, Error};
 
 /// Default implementation of the processing pipeline
 pub struct DefaultPipeline {
@@ -62,10 +63,10 @@ impl DefaultPipeline {
         for stage in &self.stages {
             for dependency in stage.dependencies() {
                 if !stage_names.contains(&dependency) {
-                    return Err(ProcessingError::InvalidConfiguration(
+                    return Err(Error::Processing(ProcessingError::InvalidConfiguration(
                         format!("Stage '{}' depends on '{}' which is not present in the pipeline", 
                                stage.name(), dependency)
-                    ));
+                    )));
                 }
             }
         }
@@ -100,9 +101,9 @@ impl DefaultPipeline {
             }
             
             if !found_stage {
-                return Err(ProcessingError::InvalidConfiguration(
+                return Err(Error::Processing(ProcessingError::InvalidConfiguration(
                     "Circular dependency detected in pipeline stages".to_string()
-                ));
+                )));
             }
         }
         
@@ -111,13 +112,14 @@ impl DefaultPipeline {
     }
 }
 
+#[async_trait]
 impl ProcessingPipeline for DefaultPipeline {
     fn add_stage(&mut self, stage: Box<dyn PipelineStage>) -> Result<()> {
         // Check for duplicate stage names
         if self.stages.iter().any(|s| s.name() == stage.name()) {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(Error::Processing(ProcessingError::InvalidConfiguration(
                 format!("Stage '{}' already exists in the pipeline", stage.name())
-            ));
+            )));
         }
         
         self.stages.push(stage);
@@ -133,9 +135,9 @@ impl ProcessingPipeline for DefaultPipeline {
         self.stages.retain(|stage| stage.name() != stage_name);
         
         if self.stages.len() == initial_len {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(Error::Processing(ProcessingError::InvalidConfiguration(
                 format!("Stage '{}' not found in the pipeline", stage_name)
-            ));
+            )));
         }
         
         Ok(())
@@ -145,7 +147,7 @@ impl ProcessingPipeline for DefaultPipeline {
         self.stages.iter().map(|s| s.as_ref()).collect()
     }
 
-    fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
+    async fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
         let start_time = Instant::now();
         
         log::info!("Starting pipeline execution with {} stages", self.stages.len());
@@ -174,7 +176,7 @@ impl ProcessingPipeline for DefaultPipeline {
             }
             
             // Execute the stage
-            match stage.execute(context) {
+            match stage.execute(context).await {
                 Ok(()) => {
                     let stage_elapsed = stage_start_time.elapsed();
                     self.stats.stage_times.insert(
@@ -191,7 +193,7 @@ impl ProcessingPipeline for DefaultPipeline {
                     log::error!("Stage '{}' failed: {}", stage.name(), e);
                     
                     // Attempt cleanup for the failed stage
-                    if let Err(cleanup_err) = stage.cleanup(context) {
+                    if let Err(cleanup_err) = stage.cleanup(context).await {
                         log::error!("Cleanup failed for stage '{}': {}", stage.name(), cleanup_err);
                     }
                     
@@ -202,7 +204,7 @@ impl ProcessingPipeline for DefaultPipeline {
         
         // Cleanup all stages
         for stage in &mut self.stages {
-            if let Err(e) = stage.cleanup(context) {
+            if let Err(e) = stage.cleanup(context).await {
                 log::warn!("Cleanup warning for stage '{}': {}", stage.name(), e);
             }
         }
@@ -218,9 +220,9 @@ impl ProcessingPipeline for DefaultPipeline {
     fn validate(&self, context: &ProcessingContext) -> Result<()> {
         // Check that we have at least one stage
         if self.stages.is_empty() {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(Error::Processing(ProcessingError::InvalidConfiguration(
                 "Pipeline has no stages".to_string()
-            ));
+            )));
         }
         
         // Check dependencies

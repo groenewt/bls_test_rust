@@ -8,7 +8,7 @@ use async_trait::async_trait;
 use serde::{Serialize, Deserialize};
 
 use crate::plugin::traits::{Plugin, PluginMetadata, PluginConfig};
-use crate::error::types::{Result, Error};
+use crate::error::types::{Result, Error, PluginError};
 
 /// Plugin loader trait for dynamic plugin loading.
 #[async_trait]
@@ -40,12 +40,23 @@ pub struct DefaultPluginLoader {
 }
 
 /// Information about a loaded plugin.
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 struct LoadedPlugin {
-    plugin: Arc<RwLock<Box<dyn Plugin>>>,
+    plugin: Arc<tokio::sync::RwLock<Box<dyn Plugin>>>,
     metadata: PluginMetadata,
     loaded_at: SystemTime,
     path: PathBuf,
+}
+
+impl std::fmt::Debug for LoadedPlugin {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("LoadedPlugin")
+            .field("metadata", &self.metadata)
+            .field("loaded_at", &self.loaded_at)
+            .field("path", &self.path)
+            .field("plugin", &"<Plugin instance>")
+            .finish()
+    }
 }
 
 /// Plugin loader configuration.
@@ -100,7 +111,10 @@ impl DefaultPluginLoader {
         }
 
         let canonical_path = path.canonicalize()
-            .map_err(|e| Error::Plugin(format!("Failed to canonicalize plugin path: {}", e)))?;
+            .map_err(|e| Error::Plugin(crate::error::types::PluginError::LoadError {
+                plugin: path.to_string_lossy().to_string(),
+                source: format!("Failed to canonicalize plugin path: {}", e),
+            }))?;
 
         for allowed_dir in &self.config.allowed_directories {
             if canonical_path.starts_with(allowed_dir) {
@@ -108,23 +122,26 @@ impl DefaultPluginLoader {
             }
         }
 
-        Err(Error::Plugin(format!(
-            "Plugin path {:?} is not in allowed directories",
-            path
-        )))
+        Err(Error::Plugin(crate::error::types::PluginError::ConfigurationError {
+            plugin: path.to_string_lossy().to_string(),
+            message: format!("Plugin path {:?} is not in allowed directories", path),
+        }))
     }
 
     /// Checks if the maximum number of plugins is reached.
     fn check_plugin_limit(&self) -> Result<()> {
-        let loaded_count = self.loaded_plugins.read()
-            .map_err(|_| Error::Plugin("Failed to acquire read lock".to_string()))?
-            .len();
+        let loaded_plugins = self.loaded_plugins.read()
+            .map_err(|_| Error::Plugin(crate::error::types::PluginError::ExecutionError {
+                plugin: "plugin_loader".to_string(),
+                message: "Failed to acquire read lock".to_string(),
+            }))?;
+        let loaded_count = loaded_plugins.len();
 
         if loaded_count >= self.config.max_plugins {
-            return Err(Error::Plugin(format!(
-                "Maximum number of plugins ({}) reached",
-                self.config.max_plugins
-            )));
+            return Err(Error::Plugin(crate::error::types::PluginError::ConfigurationError {
+                plugin: "plugin_loader".to_string(),
+                message: format!("Maximum number of plugins ({}) reached", self.config.max_plugins),
+            }));
         }
 
         Ok(())
@@ -160,7 +177,10 @@ impl DefaultPluginLoader {
     async fn create_plugin_instance(&self, _path: &Path, _metadata: &PluginMetadata) -> Result<Box<dyn Plugin>> {
         // TODO: Implement actual plugin instantiation from dynamic library
         // For now, return an error as this requires unsafe code and dynamic loading
-        Err(Error::Plugin("Plugin instantiation not yet implemented".to_string()))
+        Err(Error::Plugin(crate::error::types::PluginError::ExecutionError {
+            plugin: "unknown".to_string(),
+            message: "Plugin instantiation not yet implemented".to_string(),
+        }))
     }
 }
 
@@ -184,10 +204,16 @@ impl PluginLoader for DefaultPluginLoader {
         // Check if plugin is already loaded
         {
             let loaded_plugins = self.loaded_plugins.read()
-                .map_err(|_| Error::Plugin("Failed to acquire read lock".to_string()))?;
+                .map_err(|_| Error::Plugin(crate::error::types::PluginError::ExecutionError {
+                    plugin: "plugin_loader".to_string(),
+                    message: "Failed to acquire read lock".to_string(),
+                }))?;
             
             if loaded_plugins.contains_key(&metadata.id) {
-                return Err(Error::Plugin(format!("Plugin {} is already loaded", metadata.id)));
+                return Err(Error::Plugin(crate::error::types::PluginError::LoadError {
+                    plugin: metadata.id.clone(),
+                    source: "Plugin is already loaded".to_string(),
+                }));
             }
         }
 
@@ -199,7 +225,7 @@ impl PluginLoader for DefaultPluginLoader {
 
         // Store loaded plugin information
         let loaded_plugin = LoadedPlugin {
-            plugin: Arc::new(RwLock::new(plugin)),
+            plugin: Arc::new(tokio::sync::RwLock::new(plugin)),
             metadata: metadata.clone(),
             loaded_at: SystemTime::now(),
             path: path.to_path_buf(),
@@ -207,7 +233,10 @@ impl PluginLoader for DefaultPluginLoader {
 
         {
             let mut loaded_plugins = self.loaded_plugins.write()
-                .map_err(|_| Error::Plugin("Failed to acquire write lock".to_string()))?;
+                .map_err(|_| Error::Plugin(crate::error::types::PluginError::ExecutionError {
+                    plugin: "plugin_loader".to_string(),
+                    message: "Failed to acquire write lock".to_string(),
+                }))?;
             loaded_plugins.insert(metadata.id.clone(), loaded_plugin);
         }
 
@@ -223,22 +252,31 @@ impl PluginLoader for DefaultPluginLoader {
         }
 
         // Return a clone of the plugin (this is a placeholder - actual implementation would differ)
-        Err(Error::Plugin("Plugin loading not fully implemented".to_string()))
+        Err(Error::Plugin(crate::error::types::PluginError::ExecutionError {
+            plugin: "plugin_loader".to_string(),
+            message: "Plugin loading not fully implemented".to_string(),
+        }))
     }
 
     async fn unload_plugin(&mut self, plugin_id: &str) -> Result<()> {
         let loaded_plugin = {
             let mut loaded_plugins = self.loaded_plugins.write()
-                .map_err(|_| Error::Plugin("Failed to acquire write lock".to_string()))?;
+                .map_err(|_| Error::Plugin(crate::error::types::PluginError::ExecutionError {
+                    plugin: "plugin_loader".to_string(),
+                    message: "Failed to acquire write lock".to_string(),
+                }))?;
             
             loaded_plugins.remove(plugin_id)
-                .ok_or_else(|| Error::Plugin(format!("Plugin {} not found", plugin_id)))?
+                .ok_or_else(|| Error::Plugin(crate::error::types::PluginError::NotFoundError {
+                    plugin: plugin_id.to_string(),
+                    message: format!("Plugin '{}' not found", plugin_id),
+                }))?
         };
 
         // Shutdown the plugin
+        let plugin_arc = loaded_plugin.plugin.clone();
         {
-            let mut plugin = loaded_plugin.plugin.write()
-                .map_err(|_| Error::Plugin("Failed to acquire plugin write lock".to_string()))?;
+            let mut plugin = plugin_arc.write().await;
             plugin.shutdown().await?;
         }
 

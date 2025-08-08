@@ -178,7 +178,7 @@ impl ValidationUtils {
     pub fn validate_environment_name(&self, env: &str) -> Result<()> {
         let valid_environments = ["dev", "stage", "prod", "test"];
         if !valid_environments.contains(&env) {
-            return Err(crate::error::Error::Config(ConfigError::LoadError(
+            return Err((ConfigError::MergeError(
                 format!("Invalid environment '{}'. Valid environments are: {:?}", env, valid_environments)
             )));
         }
@@ -189,7 +189,7 @@ impl ValidationUtils {
     pub fn validate_file_or_directory_exists<P: AsRef<Path>>(&self, path: P) -> Result<()> {
         let path_ref = path.as_ref();
         if !path_ref.exists() {
-            return Err(crate::error::Error::Config(ConfigError::LoadError(
+            return Err((ConfigError::MergeError(
                 format!("File or directory does not exist: {}", path_ref.display())
             )));
         }
@@ -200,28 +200,42 @@ impl ValidationUtils {
     pub fn validate_glob_pattern(&self, pattern: &str) -> Result<()> {
         // Basic glob pattern validation - check for invalid characters and patterns
         if pattern.is_empty() {
-            return Err(crate::error::Error::Config(ConfigError::LoadError(
+            return Err((ConfigError::MergeError(
                 "Glob pattern cannot be empty".to_string()
             )));
         }
 
         // Check for path traversal attempts
         if pattern.contains("..") {
-            return Err(crate::error::Error::Config(ConfigError::ValidationError(
+            return Err(ConfigError::MergeError(
                 "Glob pattern cannot contain path traversal sequences (..)".to_string()
-            )));
+            ));
         }
 
         // Check for absolute paths (should be relative)
         if pattern.starts_with('/') || (cfg!(windows) && pattern.len() > 1 && pattern.chars().nth(1) == Some(':')) {
-            return Err(crate::error::Error::Config(ConfigError::ValidationError(
+            return Err(ConfigError::MergeError(
                 "Glob pattern should be relative, not absolute".to_string()
-            )));
+            ));
         }
 
         // Basic pattern validation (simplified since we don't have glob crate dependency)
         // In a real implementation, you would use glob::Pattern::new(pattern)
         Ok(())
+    }
+
+    /// Validate configuration using a custom validator function
+    pub fn validate_config<T, F>(&self, config: &T, validator: F) -> Result<()>
+    where
+        F: Fn(&T) -> std::result::Result<(), ValidationError>,
+    {
+        match validator(config) {
+            Ok(()) => Ok(()),
+            Err(e) => Err(ConfigError::ValidationError {
+                field: Some("configuration".to_string()),
+                message: e.message.map(|m| m.into_owned()).unwrap_or_else(|| "Validation failed".to_string()),
+            }.into()),
+        }
     }
 }
 
@@ -271,11 +285,12 @@ pub fn validate_period(period: &str) -> Result<()> {
 }
 
 /// Custom validation rules for BLS data
+#[derive(Debug, Default)]
 pub struct BLSValidationRules;
 
 impl BLSValidationRules {
     pub(crate) fn default() -> BLSValidationRules {
-        todo!()
+        Default::default()
     }
 }
 

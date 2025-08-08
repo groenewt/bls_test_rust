@@ -39,7 +39,7 @@ impl DefaultOutputRegistry {
     /// Get generator count
     pub fn generator_count(&self) -> Result<usize> {
         let generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         Ok(generators.len())
     }
 }
@@ -53,12 +53,12 @@ impl Default for DefaultOutputRegistry {
 impl OutputRegistry for DefaultOutputRegistry {
     fn register_generator(&mut self, name: String, generator: Box<dyn OutputGenerator>) -> Result<()> {
         let mut generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         
         if generators.contains_key(&name) {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::invalid_configuration((
                 format!("Generator '{}' is already registered", name)
-            ));
+            )));
         }
         
         generators.insert(name, generator);
@@ -67,10 +67,10 @@ impl OutputRegistry for DefaultOutputRegistry {
 
     fn unregister_generator(&mut self, name: &str) -> Result<()> {
         let mut generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         
         if generators.remove(name).is_none() {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::invalid_configuration(
                 format!("Generator '{}' is not registered", name)
             ));
         }
@@ -81,15 +81,15 @@ impl OutputRegistry for DefaultOutputRegistry {
     fn get_generator(&self, name: &str) -> Result<&dyn OutputGenerator> {
         // Note: This implementation has lifetime issues with the mutex guard
         // In a real implementation, you'd need to use Arc<dyn OutputGenerator> or similar
-        Err(ProcessingError::UnsupportedOperation(
+        Err(ProcessingError::resource_exhausted((
             "Direct generator access not supported in this implementation".to_string()
-        ))
+        )))
     }
 
     fn get_generator_mut(&mut self, name: &str) -> Result<&mut dyn OutputGenerator> {
         // Note: This implementation has lifetime issues with the mutex guard
         // In a real implementation, you'd need to use Arc<Mutex<dyn OutputGenerator>> or similar
-        Err(ProcessingError::UnsupportedOperation(
+        Err(ProcessingError::resource_exhausted(
             "Direct mutable generator access not supported in this implementation".to_string()
         ))
     }
@@ -113,7 +113,7 @@ impl OutputRegistry for DefaultOutputRegistry {
     fn get_generator_for_format(&self, format: &str) -> Result<&dyn OutputGenerator> {
         // This would need to iterate through generators and find one that supports the format
         // For now, return an error indicating this is not implemented
-        Err(ProcessingError::UnsupportedOperation(
+        Err(ProcessingError::resource_exhausted(
             format!("Finding generator for format '{}' not implemented", format)
         ))
     }
@@ -191,7 +191,7 @@ impl OutputRegistryImpl {
     /// Get generator information
     pub fn get_generator_info(&self, name: &str) -> Result<Option<GeneratorInfo>> {
         let generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         
         Ok(generators.get(name).cloned())
     }
@@ -199,7 +199,7 @@ impl OutputRegistryImpl {
     /// List all generator information
     pub fn list_generator_info(&self) -> Result<Vec<GeneratorInfo>> {
         let generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         
         Ok(generators.values().cloned().collect())
     }
@@ -211,7 +211,7 @@ impl OutputRegistryImpl {
         }
 
         let mut generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         
         if let Some(info) = generators.get_mut(name) {
             info.usage_count += 1;
@@ -223,7 +223,7 @@ impl OutputRegistryImpl {
     /// Get generators by format
     pub fn get_generators_by_format(&self, format: &str) -> Result<Vec<String>> {
         let generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         
         let matching_generators = generators
             .values()
@@ -237,18 +237,18 @@ impl OutputRegistryImpl {
     /// Register generator information
     pub fn register_generator_info(&self, info: GeneratorInfo) -> Result<()> {
         let mut generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         
         if generators.len() >= self.config.max_generators {
-            return Err(ProcessingError::ResourceExhausted(
+            return Err(ProcessingError::resource_exhausted(
                 format!("Registry is full (max: {})", self.config.max_generators)
             ));
         }
         
         if generators.contains_key(&info.name) {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::invalid_configuration((
                 format!("Generator '{}' is already registered", info.name)
-            ));
+            )));
         }
         
         generators.insert(info.name.clone(), info);
@@ -258,12 +258,12 @@ impl OutputRegistryImpl {
     /// Unregister generator information
     pub fn unregister_generator_info(&self, name: &str) -> Result<()> {
         let mut generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         
         if generators.remove(name).is_none() {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::invalid_configuration((
                 format!("Generator '{}' is not registered", name)
-            ));
+            )));
         }
         
         Ok(())
@@ -272,7 +272,7 @@ impl OutputRegistryImpl {
     /// Clear all generator information
     pub fn clear_all(&self) -> Result<()> {
         let mut generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         
         generators.clear();
         Ok(())
@@ -281,7 +281,7 @@ impl OutputRegistryImpl {
     /// Get registry statistics
     pub fn get_statistics(&self) -> Result<RegistryStatistics> {
         let generators = self.generators.lock()
-            .map_err(|e| ProcessingError::SystemError(format!("Failed to lock generators: {}", e)))?;
+            .map_err(|e| ProcessingError::system_error(format!("Failed to lock generators: {}", e)))?;
         
         let total_generators = generators.len();
         let total_usage = generators.values().map(|info| info.usage_count).sum();

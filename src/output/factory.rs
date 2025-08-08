@@ -127,14 +127,14 @@ impl DefaultOutputFactory {
     fn validate_format_and_config(&self, format: &str, config: &OutputConfig) -> Result<()> {
         // Check if format is supported
         if !self.supports_format(format) {
-            return Err(ProcessingError::UnsupportedOperation(
+            return Err(ProcessingError::resource_exhausted(
                 format!("Unsupported format: {}", format)
             ));
         }
 
         // Check if config format matches requested format
         if config.format.to_lowercase() != format.to_lowercase() {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::resource_exhausted(
                 format!("Configuration format '{}' does not match requested format '{}'", 
                        config.format, format)
             ));
@@ -142,7 +142,7 @@ impl DefaultOutputFactory {
 
         // Validate destination path
         if config.destination.is_empty() {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::resource_exhausted(
                 "Output destination cannot be empty".to_string()
             ));
         }
@@ -174,7 +174,7 @@ impl OutputFactory for DefaultOutputFactory {
     fn create_writer(&self, format: &str) -> Result<Box<dyn FormatWriter>> {
         // Check if format is supported
         if !self.supports_format(format) {
-            return Err(ProcessingError::UnsupportedOperation(
+            return Err(ProcessingError::resource_exhausted(
                 format!("Unsupported format: {}", format)
             ));
         }
@@ -197,7 +197,7 @@ impl OutputFactory for DefaultOutputFactory {
         if let Some(config) = self.default_configs.get(&format_lower) {
             Ok(config.clone())
         } else {
-            Err(ProcessingError::UnsupportedOperation(
+            Err(ProcessingError::resource_exhausted(
                 format!("No default configuration available for format: {}", format)
             ))
         }
@@ -316,7 +316,7 @@ impl OutputFactory for OutputFactoryImpl {
            self.custom_writers.contains_key(&format_lower) {
             return Ok(OutputConfig {
                 format: format_lower,
-                destination: format!("data/processed/output.{}", format_lower),
+                destination: format!("data/processed/output.{}", format),
                 ..Default::default()
             });
         }

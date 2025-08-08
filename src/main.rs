@@ -19,13 +19,13 @@
 //! ```
 
 use std::env;
-use std::error::Error;
 use std::path::PathBuf;
 use std::process;
+use std::error::Error as StdError;
 
 use rusty::{
     config::{Config, ConfigLoader},
-    processing::ProcessingEngine,
+    processing::{ProcessingEngine, ProcessingInput, ProcessingOutput},
     error::{Error, Result},
     init_with_tracing,
 };
@@ -215,11 +215,16 @@ async fn process_survey(args: Args) -> Result<()> {
         Config::load_for_survey(&survey_code)?
     };
 
-    // Create processing engine
-    let mut engine = ProcessingEngine::new(config);
+    // Create processing engine with processing config
+    let processing_config = rusty::processing::ProcessingConfig::default();
+    let mut engine = ProcessingEngine::new(processing_config);
 
+    // Create input and output for processing
+    let input = ProcessingInput::new(vec!["data/raw/bls/example.csv".to_string()]);
+    let output = ProcessingOutput::new(vec!["data/processed/output.csv".to_string()], "csv".to_string());
+    
     // Process the survey
-    engine.process().await?;
+    let _context = engine.process(input, output).await?;
 
     tracing::info!("Successfully processed survey: {}", survey_code);
     println!("Processing completed successfully for survey: {}", survey_code);
@@ -285,7 +290,7 @@ async fn validate_survey_config(args: Args) -> Result<()> {
         }
         Err(e) => {
             println!("✗ Survey configuration validation failed: {}", e);
-            return Err(e);
+            return Err(Error::Config(e));
         }
     }
 
@@ -309,9 +314,14 @@ async fn print_survey_config(args: Args) -> Result<()> {
     
     // Print configuration in YAML format
     let yaml_output = serde_yaml::to_string(&config)
-        .map_err(|e| Error::Config(rusty::error::ConfigError::SerializationError(
-            format!("Failed to serialize configuration: {}", e)
-        )))?;
+        .map_err(|e| {
+            let config_error = rusty::error::ConfigError::ParseError {
+                message: format!("Failed to serialize configuration: {}", e),
+                line: None,
+                column: None,
+            };
+            Error::Config(config_error)
+        })?;
     
     println!("Configuration for survey {} (env: {}):", 
              survey_code, environment.unwrap_or("dev"));

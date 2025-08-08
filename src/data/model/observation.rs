@@ -400,8 +400,8 @@ fn validate_series_id(series_id: &str) -> Result<(), validator::ValidationError>
         })
 }
 
-fn validate_year(year: &u32) -> Result<(), validator::ValidationError> {
-    crate::utils::validation::validate_year(*year)
+fn validate_year(year: u32) -> Result<(), validator::ValidationError> {
+    crate::utils::validation::validate_year(year)
         .map_err(|e| {
             let mut err = validator::ValidationError::new("invalid_year");
             let error_msg = e.to_string();

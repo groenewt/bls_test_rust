@@ -120,8 +120,9 @@ impl PipelineStage for ValidatorStageImpl {
     }
 }
 
+#[async_trait]
 impl ValidatorStage for ValidatorStageImpl {
-    fn validate_series(&mut self, _series: &[Series], _context: &mut ProcessingContext) -> Result<ValidationResult> {
+    async fn validate_series(&mut self, _series: &[Series], _context: &mut ProcessingContext) -> Result<ValidationResult> {
         Ok(ValidationResult {
             passed: false,
             is_valid: true,
@@ -132,7 +133,7 @@ impl ValidatorStage for ValidatorStageImpl {
         })
     }
 
-    fn validate_observations(&mut self, _observations: &[Observation], _context: &mut ProcessingContext) -> Result<ValidationResult> {
+    async fn validate_observations(&mut self, _observations: &[Observation], _context: &mut ProcessingContext) -> Result<ValidationResult> {
         Ok(ValidationResult {
             passed: false,
             is_valid: true,
@@ -143,7 +144,7 @@ impl ValidatorStage for ValidatorStageImpl {
         })
     }
 
-    fn validate_lookups(&mut self, _lookups: &[Lookup], _context: &mut ProcessingContext) -> Result<ValidationResult> {
+    async fn validate_lookups(&mut self, _lookups: &[Lookup], _context: &mut ProcessingContext) -> Result<ValidationResult> {
         Ok(ValidationResult {
             passed: false,
             is_valid: true,
@@ -154,7 +155,7 @@ impl ValidatorStage for ValidatorStageImpl {
         })
     }
 
-    fn validate_survey(&mut self, _survey: &Survey, _context: &mut ProcessingContext) -> Result<ValidationResult> {
+    async fn validate_survey(&mut self, _survey: &Survey, _context: &mut ProcessingContext) -> Result<ValidationResult> {
         Ok(ValidationResult {
             passed: false,
             is_valid: true,

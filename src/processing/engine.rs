@@ -71,7 +71,7 @@ impl EngineStats {
 
 impl ProcessingEngine {
     /// Create a new processing engine with the given configuration
-    pub fn new(config: Config) -> Self {
+    pub fn new(config: ProcessingConfig) -> Self {
         let factory = Arc::new(DefaultProcessorFactory::new());
         let registry = Arc::new(ProcessorRegistryImpl::default());
         let pipeline = Box::new(DefaultPipeline::new(config.clone()));
@@ -131,12 +131,12 @@ impl ProcessingEngine {
         context.output_paths = output.paths.clone();
         
         // Add input parameters to context
-        for (key, value) in input.parameters {
+        for (key, value) in input.custom_params {
             context.add_metric(key, value.parse().unwrap_or(0.0));
         }
         
         // Execute the pipeline
-        let result = self.pipeline.execute(&mut context);
+        let result = self.pipeline.execute(&mut context).await;
         
         let elapsed = start_time.elapsed();
         let processing_time_ms = elapsed.as_millis() as u64;
@@ -180,7 +180,7 @@ impl ProcessingEngine {
         if self.config.max_threads == 0 {
             return Err(ProcessingError::InvalidConfiguration(
                 "max_threads must be greater than 0".to_string()
-            ));
+            ).into());
         }
         
         // Validate pipeline

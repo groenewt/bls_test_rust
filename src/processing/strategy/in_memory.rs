@@ -56,32 +56,38 @@ impl InMemoryProcessor {
             
             match data_type.as_str() {
                 "series" => {
-                    if let Ok(series_reader) = reader.as_any().downcast_ref::<dyn SeriesReader>() {
-                        let series_data = self.load_series_data(series_reader).await?;
+                    // Try to downcast to concrete types that implement SeriesReader
+                    if let Some(file_reader) = reader.as_any().downcast_ref::<crate::data::reader::file_reader::FileReader>() {
+                        let series_data = self.load_series_data(file_reader).await?;
+                        total_records += series_data.len() as u64;
+                        dataset.series.extend(series_data);
+                    } else if let Some(mmap_reader) = reader.as_any().downcast_ref::<crate::data::reader::mmap_reader::MmapReader>() {
+                        let series_data = self.load_series_data(mmap_reader).await?;
                         total_records += series_data.len() as u64;
                         dataset.series.extend(series_data);
                     }
                 }
                 "observations" => {
-                    if let Ok(obs_reader) = reader.as_any().downcast_ref::<dyn ObservationReader>() {
-                        let obs_data = self.load_observation_data(obs_reader).await?;
+                    // Try to downcast to concrete types that implement ObservationReader
+                    if let Some(file_reader) = reader.as_any().downcast_ref::<crate::data::reader::file_reader::FileReader>() {
+                        let obs_data = self.load_observation_data(file_reader).await?;
                         total_records += obs_data.len() as u64;
                         dataset.observations.extend(obs_data);
                     }
                 }
                 "lookups" => {
-                    if let Ok(lookup_reader) = reader.as_any().downcast_ref::<dyn LookupReader>() {
-                        let lookup_data = self.load_lookup_data(lookup_reader).await?;
+                    // Try to downcast to concrete types that implement LookupReader
+                    if let Some(file_reader) = reader.as_any().downcast_ref::<crate::data::reader::file_reader::FileReader>() {
+                        let lookup_data = self.load_lookup_data(file_reader).await?;
                         total_records += lookup_data.len() as u64;
                         dataset.lookups.extend(lookup_data);
                     }
                 }
                 "survey" => {
-                    if let Ok(survey_reader) = reader.as_any().downcast_ref::<dyn SurveyReader>() {
-                        let survey_data = self.load_survey_data(survey_reader).await?;
-                        total_records += 1;
-                        dataset.surveys.push(survey_data);
-                    }
+                    // Survey loading not yet implemented
+                    return Err(ProcessingError::NotImplemented(
+                        "Survey data loading not yet implemented".to_string()
+                    ).into());
                 }
                 _ => {
                     return Err(ProcessingError::UnsupportedDataType(
@@ -198,8 +204,8 @@ impl InMemoryProcessor {
         // Apply validation
         if self.config.validate_data {
             if let Err(_) = self.validation_rules.validate_series_record(&[
-                series.series_id().to_string(),
-                series.title().unwrap_or("").to_string(),
+                series.id().to_string(),
+                series.title().to_string(),
             ]) {
                 // Handle validation error
                 return;
@@ -232,8 +238,8 @@ impl InMemoryProcessor {
         // Apply validation
         if self.config.validate_data {
             if let Err(_) = self.validation_rules.validate_lookup_record(&[
-                lookup.code().to_string(),
-                lookup.name().to_string(),
+                lookup.table_id.clone(),
+                lookup.table_name.clone(),
             ]) {
                 // Handle validation error
                 return;
@@ -261,27 +267,47 @@ impl InMemoryProcessor {
 
             // Write data based on what's available in the dataset
             if !dataset.series.is_empty() {
-                if let Ok(series_writer) = writer.as_any().downcast_ref::<dyn SeriesWriter>() {
-                    self.write_series_data(series_writer, &dataset.series).await?;
+                // Try to downcast to concrete types that implement SeriesWriter
+                if let Some(csv_writer) = writer.as_any().downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>() {
+                    self.write_series_data(csv_writer, &dataset.series).await?;
+                } else if let Some(json_writer) = writer.as_any().downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>() {
+                    self.write_series_data(json_writer, &dataset.series).await?;
+                } else if let Some(parquet_writer) = writer.as_any().downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>() {
+                    self.write_series_data(parquet_writer, &dataset.series).await?;
                 }
             }
 
             if !dataset.observations.is_empty() {
-                if let Ok(obs_writer) = writer.as_any().downcast_ref::<dyn ObservationWriter>() {
-                    self.write_observation_data(obs_writer, &dataset.observations).await?;
+                // Try to downcast to concrete types that implement ObservationWriter
+                if let Some(csv_writer) = writer.as_any().downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>() {
+                    self.write_observation_data(csv_writer, &dataset.observations).await?;
+                } else if let Some(json_writer) = writer.as_any().downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>() {
+                    self.write_observation_data(json_writer, &dataset.observations).await?;
+                } else if let Some(parquet_writer) = writer.as_any().downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>() {
+                    self.write_observation_data(parquet_writer, &dataset.observations).await?;
                 }
             }
 
             if !dataset.lookups.is_empty() {
-                if let Ok(lookup_writer) = writer.as_any().downcast_ref::<dyn LookupWriter>() {
-                    self.write_lookup_data(lookup_writer, &dataset.lookups).await?;
+                // Try to downcast to concrete types that implement LookupWriter
+                if let Some(csv_writer) = writer.as_any().downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>() {
+                    self.write_lookup_data(csv_writer, &dataset.lookups).await?;
+                } else if let Some(json_writer) = writer.as_any().downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>() {
+                    self.write_lookup_data(json_writer, &dataset.lookups).await?;
+                } else if let Some(parquet_writer) = writer.as_any().downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>() {
+                    self.write_lookup_data(parquet_writer, &dataset.lookups).await?;
                 }
             }
 
             if !dataset.surveys.is_empty() {
-                if let Ok(survey_writer) = writer.as_any().downcast_ref::<dyn SurveyWriter>() {
-                    for survey in &dataset.surveys {
-                        self.write_survey_data(survey_writer, survey).await?;
+                // Try to downcast to concrete types that implement SurveyWriter
+                for survey in &dataset.surveys {
+                    if let Some(csv_writer) = writer.as_any().downcast_ref::<crate::data::writer::csv_writer::CsvDataWriter>() {
+                        self.write_survey_data(csv_writer, survey).await?;
+                    } else if let Some(json_writer) = writer.as_any().downcast_ref::<crate::data::writer::json_writer::JsonDataWriter>() {
+                        self.write_survey_data(json_writer, survey).await?;
+                    } else if let Some(parquet_writer) = writer.as_any().downcast_ref::<crate::data::writer::parquet_writer::ParquetDataWriter>() {
+                        self.write_survey_data(parquet_writer, survey).await?;
                     }
                 }
             }
@@ -338,16 +364,16 @@ impl InMemoryProcessor {
     /// Check if the dataset can fit in available memory
     fn check_memory_constraints(&self, estimated_usage: u64) -> Result<()> {
         if self.config.memory_limit > 0 && estimated_usage > self.config.memory_limit {
-            return Err(ProcessingError::InsufficientMemory(
-                format!("Estimated usage {} exceeds limit {}", estimated_usage, self.config.memory_limit)
+            return Err(ProcessingError::SystemError(
+                format!("Insufficient memory: estimated usage {} exceeds limit {}", estimated_usage, self.config.memory_limit)
             ).into());
         }
 
         // Check available system memory (simplified)
         let available_memory = self.get_available_memory();
         if estimated_usage > available_memory * 80 / 100 { // Use max 80% of available memory
-            return Err(ProcessingError::InsufficientMemory(
-                format!("Estimated usage {} exceeds 80% of available memory {}", estimated_usage, available_memory)
+            return Err(ProcessingError::SystemError(
+                format!("Insufficient memory: estimated usage {} exceeds 80% of available memory {}", estimated_usage, available_memory)
             ).into());
         }
 

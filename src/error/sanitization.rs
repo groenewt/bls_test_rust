@@ -418,6 +418,10 @@ impl ErrorSanitizer {
                 expected_type: expected_type.clone(),
                 actual_type: actual_type.clone(),
             },
+            DataError::IoError { path, source } => DataError::IoError {
+                path: self.sanitize_message(path, context),
+                source: self.sanitize_message(source, context),
+            },
         }
     }
 

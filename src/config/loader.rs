@@ -13,18 +13,6 @@
 //! 5. Local overrides (`<survey>/overrides/local.yml`)
 //!
 //! ## Usage
-//!
-//! ```rust
-//! use crate::config::{ConfigLoader, SurveyConfig};
-//!
-//! let loader = ConfigLoader::new();
-//!
-//! // Load modular configuration for a survey
-//! let config = loader.load_survey_config("AP", "dev")?;
-//!
-//! // Load with backward compatibility
-//! let config = loader.load_survey_config_with_fallback("AP", "dev")?;
-//! ```
 
 use std::path::{Path, PathBuf};
 use std::collections::HashMap;
@@ -181,7 +169,7 @@ impl ConfigLoader {
                 _ => return Err(ConfigError::ValidationError { 
                     message: format!("Invalid processing strategy: {}", strategy),
                     field: Some("strategy".to_string()),
-                }),
+                }.into()),
             };
         }
 
@@ -195,7 +183,7 @@ impl ConfigLoader {
 
         if let Ok(chunk_size) = std::env::var("RUSTY_CHUNK_SIZE") {
             config.processing.chunk_size = chunk_size.parse()
-                .map_err(|e| ConfigError::ValidationError(format!("Invalid chunk_size: {}", e)))?;
+                .map_err(|e| ConfigError::MergeError(format!("Invalid chunk_size: {}", e)))?;
         }
 
         if let Ok(output_dir) = std::env::var("RUSTY_OUTPUT_DIR") {
@@ -264,7 +252,7 @@ impl ConfigLoader {
         // Load base processing config if it exists
         let base_processing_path = shared_dir.join("base_processing.yml");
         if base_processing_path.exists() {
-            if let Ok(base_processing) = file::read_yaml::<ProcessingConfig>(&base_processing_path) {
+            if let Ok(base_processing) = file::read_yaml(&base_processing_path) {
                 config.merge_processing_config(&base_processing)
                     .map_err(|e| ConfigError::MergeError(format!("Failed to merge base processing config: {}", e)))?;
                 debug!("Merged shared base processing config");
@@ -284,7 +272,7 @@ impl ConfigLoader {
         // Load overview.yml (required)
         let overview_path = survey_dir.join("overview.yml");
         if overview_path.exists() {
-            let overview_config = file::read_yaml::<OverviewConfig>(&overview_path)
+            let overview_config = file::read_yaml::<OverviewConfig, _>(&overview_path)
                 .map_err(|e| ConfigError::LoadError { 
                     path: overview_path.display().to_string(), 
                     source: format!("Failed to load overview.yml: {}", e) 
@@ -299,8 +287,11 @@ impl ConfigLoader {
         // Load model.yml (required)
         let model_path = survey_dir.join("model.yml");
         if model_path.exists() {
-            let model_config = file::read_yaml::<ModelConfig>(&model_path)
-                .map_err(|e| ConfigError::LoadError(format!("Failed to load model.yml: {}", e)))?;
+            let model_config = file::read_yaml::<ModelConfig, _>(&model_path)
+                .map_err(|e| ConfigError::LoadError {
+                    path: model_path.display().to_string(),
+                    source: format!("Failed to load model.yml: {}", e),
+                })?;
             config.merge_model_config(&model_config)
                 .map_err(|e| ConfigError::MergeError(format!("Failed to merge model config: {}", e)))?;
             debug!("Loaded model.yml for {}", survey_code);
@@ -309,17 +300,20 @@ impl ConfigLoader {
         }
         
         // Load other required configs
-        self.load_optional_survey_config(config, &survey_dir, "io.yml", |c, cfg: IoConfig| c.merge_io_config(&cfg))?;
-        self.load_optional_survey_config(config, &survey_dir, "processing.yml", |c, cfg: ProcessingConfig| c.merge_processing_config(&cfg))?;
-        self.load_optional_survey_config(config, &survey_dir, "output.yml", |c, cfg: OutputConfig| c.merge_output_config(&cfg))?;
-        self.load_optional_survey_config(config, &survey_dir, "quality.yml", |c, cfg: QualityConfig| c.merge_quality_config(&cfg))?;
-        self.load_optional_survey_config(config, &survey_dir, "runtime.yml", |c, cfg: RuntimeConfig| c.merge_runtime_config(&cfg))?;
+        self.load_optional_survey_config(config, &survey_dir, "io.yml", |c, cfg: IoConfig| c.merge_io_config(&cfg).map_err(|e| ConfigError::MergeError(e).into()))?;
+        self.load_optional_survey_config(config, &survey_dir, "processing.yml", |c, cfg: ProcessingConfig| c.merge_processing_config(&cfg).map_err(|e| ConfigError::MergeError(e).into()))?;
+        self.load_optional_survey_config(config, &survey_dir, "output.yml", |c, cfg: OutputConfig| c.merge_output_config(&cfg).map_err(|e| ConfigError::MergeError(e).into()))?;
+        self.load_optional_survey_config(config, &survey_dir, "quality.yml", |c, cfg: QualityConfig| c.merge_quality_config(&cfg).map_err(|e| ConfigError::MergeError(e).into()))?;
+        self.load_optional_survey_config(config, &survey_dir, "runtime.yml", |c, cfg: RuntimeConfig| c.merge_runtime_config(&cfg).map_err(|e| ConfigError::MergeError(e).into()))?;
         
         // Load optional DAGs config
         let dags_path = survey_dir.join("dags.yml");
         if dags_path.exists() {
-            let dags_config = file::read_yaml::<DagsConfig>(&dags_path)
-                .map_err(|e| ConfigError::LoadError(format!("Failed to load dags.yml: {}", e)))?;
+            let dags_config = file::read_yaml::<DagsConfig, _>(&dags_path)
+                .map_err(|e| ConfigError::LoadError {
+                    path: dags_path.display().to_string(),
+                    source: format!("Failed to load dags.yml: {}", e),
+                })?;
             config.dags = Some(dags_config);
             debug!("Loaded dags.yml for {}", survey_code);
         }
@@ -335,8 +329,11 @@ impl ConfigLoader {
     {
         let config_path = survey_dir.join(filename);
         if config_path.exists() {
-            let cfg = file::read_yaml::<T>(&config_path)
-                .map_err(|e| ConfigError::LoadError(format!("Failed to load {}: {}", filename, e)))?;
+            let cfg = file::read_yaml::<T, _>(&config_path)
+                .map_err(|e| ConfigError::LoadError {
+                    path: config_path.display().to_string(),
+                    source: format!("Failed to load {}: {}", filename, e),
+                })?;
             merge_fn(config, cfg)
                 .map_err(|e| ConfigError::MergeError(format!("Failed to merge {}: {}", filename, e)))?;
             debug!("Loaded {} for survey", filename);
@@ -352,8 +349,11 @@ impl ConfigLoader {
         // Load defaults.yml
         let defaults_path = overrides_dir.join("defaults.yml");
         if defaults_path.exists() {
-            let override_config = file::read_yaml::<OverrideConfig>(&defaults_path)
-                .map_err(|e| ConfigError::LoadError(format!("Failed to load defaults.yml: {}", e)))?;
+            let override_config = file::read_yaml::<OverrideConfig, _>(&defaults_path)
+                .map_err(|e| ConfigError::LoadError {
+                    path: defaults_path.display().to_string(),
+                    source: format!("Failed to load defaults.yml: {}", e),
+                })?;
             config.merge_override(&override_config, "defaults")
                 .map_err(|e| ConfigError::MergeError(format!("Failed to merge defaults: {}", e)))?;
             debug!("Loaded defaults.yml for {}", survey_code);
@@ -362,8 +362,11 @@ impl ConfigLoader {
         // Load environment-specific overrides
         let env_path = overrides_dir.join("env").join(format!("{}.yml", environment));
         if env_path.exists() {
-            let override_config = file::read_yaml::<OverrideConfig>(&env_path)
-                .map_err(|e| ConfigError::LoadError(format!("Failed to load {}.yml: {}", environment, e)))?;
+            let override_config = file::read_yaml::<OverrideConfig, _>(&env_path)
+                .map_err(|e| ConfigError::LoadError {
+                    path: env_path.display().to_string(),
+                    source: format!("Failed to load {}.yml: {}", environment, e),
+                })?;
             config.merge_override(&override_config, &format!("env/{}", environment))
                 .map_err(|e| ConfigError::MergeError(format!("Failed to merge env overrides: {}", e)))?;
             debug!("Loaded {}.yml for {}", environment, survey_code);
@@ -372,8 +375,11 @@ impl ConfigLoader {
         // Load local.yml (highest precedence)
         let local_path = overrides_dir.join("local.yml");
         if local_path.exists() {
-            let override_config = file::read_yaml::<OverrideConfig>(&local_path)
-                .map_err(|e| ConfigError::LoadError(format!("Failed to load local.yml: {}", e)))?;
+            let override_config = file::read_yaml::<OverrideConfig, _>(&local_path)
+                .map_err(|e| ConfigError::LoadError {
+                    path: local_path.display().to_string(),
+                    source: format!("Failed to load local.yml: {}", e),
+                })?;
             config.merge_override(&override_config, "local")
                 .map_err(|e| ConfigError::MergeError(format!("Failed to merge local overrides: {}", e)))?;
             debug!("Loaded local.yml for {}", survey_code);
@@ -408,7 +414,10 @@ impl ConfigLoader {
             }
         }
 
-        config.ok_or_else(|| ConfigError::LoadError("No valid configuration source found".to_string()))
+        config.ok_or_else(|| crate::error::types::Error::Config(ConfigError::LoadError {
+            path: "multiple sources".to_string(),
+            source: "No valid configuration source found".to_string(),
+        }))
     }
 
     /// Detect configuration format from file extension
@@ -430,11 +439,19 @@ impl ConfigLoader {
         match format {
             ConfigFormat::Yaml => {
                 serde_yaml::from_str(content)
-                    .map_err(|e| ConfigError::ParseError(format!("YAML parse error: {}", e)))
+                    .map_err(|e| ConfigError::ParseError {
+                        message: format!("YAML parse error: {}", e),
+                        line: None,
+                        column: None,
+                    }.into())
             }
             ConfigFormat::Json => {
                 serde_json::from_str(content)
-                    .map_err(|e| ConfigError::ParseError(format!("JSON parse error: {}", e)))
+                    .map_err(|e| ConfigError::ParseError {
+                        message: format!("JSON parse error: {}", e),
+                        line: None,
+                        column: None,
+                    }.into())
             }
             ConfigFormat::Auto => {
                 // Try YAML first, then JSON
@@ -442,7 +459,11 @@ impl ConfigLoader {
                     Ok(config)
                 } else {
                     serde_json::from_str(content)
-                        .map_err(|e| ConfigError::ParseError(format!("Auto-detection failed, JSON parse error: {}", e)))
+                        .map_err(|e| ConfigError::ParseError {
+                            message: format!("Auto-detection failed, JSON parse error: {}", e),
+                            line: None,
+                            column: None,
+                        }.into())
                 }
             }
         }
@@ -455,7 +476,10 @@ impl ConfigLoader {
         // Validate the path
         let path_utils = path::PathUtils::new();
         path_utils.validate_path(path)
-            .map_err(|e| ConfigError::LoadError(format!("Invalid path: {}", e)))?;
+            .map_err(|e| ConfigError::LoadError {
+                path: "unknown".to_string(),
+                source: format!("Invalid path: {}", e),
+            })?;
 
         // Resolve relative paths
         let full_path = if path.is_absolute() {
@@ -486,7 +510,7 @@ impl ConfigLoader {
 
         // Write to file
         file::write_string(&full_path, &content)
-            .map_err(|e| ConfigError::LoadError(format!("Failed to write file: {}", e)))?;
+            .map_err(|e| ConfigError::MergeError(format!("Failed to write file: {}", e)))?;
 
         Ok(())
     }

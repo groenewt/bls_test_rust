@@ -665,13 +665,13 @@ impl DataProcessor for MmapProcessor {
 
     fn validate_config(&self, config: &ProcessingConfig) -> Result<()> {
         if config.batch_size == 0 {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::system_error(
                 "Batch size must be greater than 0".to_string()
             ).into());
         }
 
         if config.max_threads == 0 {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::system_error(
                 "Max threads must be greater than 0".to_string()
             ).into());
         }

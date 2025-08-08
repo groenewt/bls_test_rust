@@ -53,13 +53,13 @@ impl CsvWriter {
         format!(
             "{},{},{},{},{},{},{},{}\n",
             series.series_id,
-            series.title.as_ref().unwrap_or(""),
-            series.area_code.as_ref().unwrap_or(""),
-            series.item_code.as_ref().unwrap_or(""),
-            series.seasonal.as_ref().unwrap_or(""),
-            series.periodicity_code.as_ref().unwrap_or(""),
-            series.base_code.as_ref().unwrap_or(""),
-            series.base_period.as_ref().unwrap_or("")
+            series.title,
+            series.area_code,
+            series.item_code,
+            series.seasonal,
+            series.periodicity_code,
+            series.base_code,
+            series.base_period
         )
     }
 
@@ -70,26 +70,26 @@ impl CsvWriter {
             observation.series_id,
             observation.year,
             observation.period,
-            observation.value,
-            observation.footnote_codes.as_deref().unwrap_or("")
+            observation.value.format_value(None),
+            observation.value.footnotes.join(";")
         )
     }
 
     /// Format lookup data as CSV row
     fn format_lookup_row(lookup: &Lookup) -> String {
-        format!("{},{}\n", lookup.code, lookup.text)
+        format!("{},{}\n", lookup.table_id, lookup.table_name)
     }
 
     /// Format survey data as CSV row
     fn format_survey_row(survey: &Survey) -> String {
         format!(
             "{},{},{},{},{},{}\n",
-            survey.survey_abbreviation,
-            survey.survey_name,
-            survey.begin_year.unwrap_or(0),
-            survey.begin_period.as_deref().unwrap_or(""),
-            survey.end_year.unwrap_or(0),
-            survey.end_period.as_deref().unwrap_or("")
+            survey.survey_code,
+            survey.name,
+            survey.metadata.start_date.map(|d| d.format("%Y").to_string()).unwrap_or("".to_string()),
+            "",
+            survey.metadata.end_date.map(|d| d.format("%Y").to_string()).unwrap_or("".to_string()),
+            ""
         )
     }
 }
@@ -114,24 +114,24 @@ impl FormatWriter for CsvWriter {
         let start_time = Instant::now();
         
         let file = File::create(path).await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to create file: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {}", e)))?;
         let mut writer = BufWriter::new(file);
 
         // Write header
         writer.write_all(Self::series_header().as_bytes()).await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to write header: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {}", e)))?;
 
         // Write data rows
         let mut bytes_written = Self::series_header().len() as u64;
         for s in series {
             let row = Self::format_series_row(s);
             writer.write_all(row.as_bytes()).await
-                .map_err(|e| ProcessingError::IoError(format!("Failed to write row: {}", e)))?;
+                .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {}", e)))?;
             bytes_written += row.len() as u64;
         }
 
         writer.flush().await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to flush writer: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {}", e)))?;
 
         let elapsed = start_time.elapsed();
         let result = OutputResult {
@@ -150,24 +150,24 @@ impl FormatWriter for CsvWriter {
         let start_time = Instant::now();
         
         let file = File::create(path).await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to create file: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {}", e)))?;
         let mut writer = BufWriter::new(file);
 
         // Write header
         writer.write_all(Self::observation_header().as_bytes()).await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to write header: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {}", e)))?;
 
         // Write data rows
         let mut bytes_written = Self::observation_header().len() as u64;
         for obs in observations {
             let row = Self::format_observation_row(obs);
             writer.write_all(row.as_bytes()).await
-                .map_err(|e| ProcessingError::IoError(format!("Failed to write row: {}", e)))?;
+                .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {}", e)))?;
             bytes_written += row.len() as u64;
         }
 
         writer.flush().await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to flush writer: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {}", e)))?;
 
         let elapsed = start_time.elapsed();
         let result = OutputResult {
@@ -186,24 +186,24 @@ impl FormatWriter for CsvWriter {
         let start_time = Instant::now();
         
         let file = File::create(path).await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to create file: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {}", e)))?;
         let mut writer = BufWriter::new(file);
 
         // Write header
         writer.write_all(Self::lookup_header().as_bytes()).await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to write header: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {}", e)))?;
 
         // Write data rows
         let mut bytes_written = Self::lookup_header().len() as u64;
         for lookup in lookups {
             let row = Self::format_lookup_row(lookup);
             writer.write_all(row.as_bytes()).await
-                .map_err(|e| ProcessingError::IoError(format!("Failed to write row: {}", e)))?;
+                .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {}", e)))?;
             bytes_written += row.len() as u64;
         }
 
         writer.flush().await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to flush writer: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {}", e)))?;
 
         let elapsed = start_time.elapsed();
         let result = OutputResult {
@@ -222,20 +222,20 @@ impl FormatWriter for CsvWriter {
         let start_time = Instant::now();
         
         let file = File::create(path).await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to create file: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to create file: {}", e)))?;
         let mut writer = BufWriter::new(file);
 
         // Write header
         writer.write_all(Self::survey_header().as_bytes()).await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to write header: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to write header: {}", e)))?;
 
         // Write data row
         let row = Self::format_survey_row(survey);
         writer.write_all(row.as_bytes()).await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to write row: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to write row: {}", e)))?;
 
         writer.flush().await
-            .map_err(|e| ProcessingError::IoError(format!("Failed to flush writer: {}", e)))?;
+            .map_err(|e| ProcessingError::io_error(format!("Failed to flush writer: {}", e)))?;
 
         let bytes_written = (Self::survey_header().len() + row.len()) as u64;
         let elapsed = start_time.elapsed();
@@ -369,7 +369,7 @@ impl OutputGenerator for CsvOutputGenerator {
 
     fn validate_config(&self, config: &OutputConfig) -> Result<()> {
         if config.format.to_lowercase() != "csv" {
-            return Err(ProcessingError::InvalidConfiguration(
+            return Err(ProcessingError::invalid_configuration(
                 format!("CSV generator does not support format: {}", config.format)
             ));
         }
@@ -415,7 +415,7 @@ mod tests {
             seasonal: Some("S".to_string()),
             periodicity_code: Some("M".to_string()),
             base_code: Some("BASE".to_string()),
-            base_period: Some("2020".to_string()),
+            base_period: "2020".to_string(),
         };
 
         let row = CsvWriter::format_series_row(&series);

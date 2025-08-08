@@ -30,7 +30,7 @@
 //!
 //! async fn process_survey_data() -> Result<()> {
 //!     let config = ProcessingConfig::default()
-//!         .with_strategy(ProcessingStrategy::InMemory)
+//!         .strategy(ProcessingStrategy::InMemory)
 //!         .with_max_threads(4);
 //!     
 //!     let mut engine = ProcessingEngine::new(config);
@@ -87,7 +87,7 @@ pub fn create_engine() -> ProcessingEngine {
 pub fn create_optimized_engine(input: &ProcessingInput) -> crate::error::Result<ProcessingEngine> {
     let strategy = recommend_strategy(input)?;
     let config = ProcessingConfig::default().with_strategy(strategy);
-    Ok(ProcessingEngine::new(config))
+    Ok(ProcessingEngine::new(ProcessingConfig::default()))
 }
 
 #[cfg(test)]

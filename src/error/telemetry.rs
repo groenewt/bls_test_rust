@@ -140,12 +140,12 @@ impl Default for MetricsConfig {
     fn default() -> Self {
         Self {
             enabled: true,
-            aggregation_window: Duration::from_mins(5),
+            aggregation_window: Duration::from_secs(5 * 60),
             max_patterns: 100,
             pattern_threshold: 5,
             collect_context: true,
             collect_performance: true,
-            retention_period: Duration::from_days(30),
+            retention_period: Duration::from_secs(30 * 24 * 60 * 60),
         }
     }
 }
@@ -205,7 +205,7 @@ impl ErrorCollector {
                 errors_by_severity: HashMap::new(),
                 avg_resolution_time: Duration::from_secs(0),
                 common_patterns: Vec::new(),
-                time_window: Duration::from_mins(5),
+                time_window: Duration::from_secs(5 * 60),
                 last_updated: SystemTime::now(),
             })),
             error_events: Arc::new(RwLock::new(Vec::new())),
@@ -383,7 +383,7 @@ impl Default for AlertConfig {
             error_rate_threshold: 10.0,
             critical_error_threshold: 5,
             pattern_alert_threshold: 10,
-            cooldown_period: Duration::from_mins(15),
+            cooldown_period: Duration::from_secs(15 * 60),
         }
     }
 }

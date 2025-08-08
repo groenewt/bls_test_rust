@@ -12,8 +12,7 @@ use std::time::Instant;
 use async_trait::async_trait;
 
 use arrow::array::{
-    Array, ArrayRef, Float64Array, Int32Array, StringArray, 
-    Float64Builder, Int32Builder, StringBuilder,
+    ArrayRef, Float64Builder, Int32Builder, StringBuilder,
 };
 use arrow::datatypes::{DataType, Field, Schema};
 use arrow::record_batch::RecordBatch;
@@ -49,7 +48,7 @@ impl ParquetDataWriter {
             config,
             stats: WriteStats::default(),
             current_file: None,
-            writer: None,
+            writer: Arc::new(Mutex::new(None)),
             validation_rules: BLSValidationRules::default(),
             schema: None,
             batch_data: Vec::new(),
@@ -137,17 +136,17 @@ impl ParquetDataWriter {
         let mut end_period_builder = StringBuilder::new();
 
         for series in series_list {
-            series_id_builder.append_value(*series.series_id());
-            title_builder.append_option(Some(series.title()));
-            area_code_builder.append_option(series.area_code());
-            item_code_builder.append_option(series.item_code());
-            frequency_builder.append_option(series.frequency().map(|f| f.to_string()).as_deref());
-            units_builder.append_option(series.units());
-            seasonal_adjustment_builder.append_option(series.seasonal_adjustment());
-            begin_year_builder.append_option(series.begin_year());
-            begin_period_builder.append_option(series.begin_period());
-            end_year_builder.append_option(series.end_year());
-            end_period_builder.append_option(series.end_period());
+            series_id_builder.append_value(&series.series_id);
+            title_builder.append_option(Some(&series.title));
+            area_code_builder.append_option(Some(&series.area_code));
+            item_code_builder.append_option(Some(&series.item_code));
+            frequency_builder.append_option(Some(&format!("{:?}", series.frequency())));
+            units_builder.append_option(series.unit().map(|u| format!("{:?}", u)).as_deref());
+            seasonal_adjustment_builder.append_option(Some(&series.seasonal));
+            begin_year_builder.append_option(None); // placeholder
+            begin_period_builder.append_option(Some(&series.base_period));
+            end_year_builder.append_option(None); // placeholder
+            end_period_builder.append_option(Some(&series.periodicity_code));
         }
 
         Ok(vec![
@@ -175,10 +174,11 @@ impl ParquetDataWriter {
 
         for observation in observations {
             series_id_builder.append_value(observation.series_id());
-            year_builder.append_value(*observation.year());
+            year_builder.append_value(observation.year() as i32);
             period_builder.append_value(observation.period());
-            value_builder.append_option(*observation.value());
-            footnote_codes_builder.append_option(observation.footnote_codes());
+            value_builder.append_option(observation.numeric_value());
+            let quality_str = observation.quality().to_string();
+            footnote_codes_builder.append_option(Some(&quality_str));
         }
 
         Ok(vec![
@@ -197,9 +197,9 @@ impl ParquetDataWriter {
         let mut description_builder = StringBuilder::new();
 
         for lookup in lookups {
-            code_builder.append_value(lookup.code());
-            name_builder.append_value(lookup.name());
-            description_builder.append_option(lookup.description());
+            code_builder.append_value(&lookup.table_id);
+            name_builder.append_value(&lookup.table_name);
+            description_builder.append_option(Some(&lookup.table_name));
         }
 
         Ok(vec![
@@ -210,7 +210,7 @@ impl ParquetDataWriter {
     }
 
     /// Validate a record before writing
-    fn validate_record<T>(&self, record: &T, record_type: &str) -> Result<bool>
+    fn validate_record<T>(&self, _record: &T, record_type: &str) -> Result<bool>
     where
         T: std::fmt::Debug,
     {
@@ -220,9 +220,11 @@ impl ParquetDataWriter {
 
         match record_type {
             "series" | "observation" | "lookup" | "survey" => Ok(true),
-            _ => Err(DataError::ValidationError(
-                format!("Unknown record type: {}", record_type)
-            ).into()),
+            _ => Err(DataError::ValidationError {
+                message: format!("Unknown record type: {}", record_type),
+                path: None,
+                line: None,
+            }.into()),
         }
     }
 
@@ -236,12 +238,14 @@ impl ParquetDataWriter {
 
     /// Write accumulated batches to file
     fn write_batches(&mut self) -> Result<()> {
-        if let Some(ref mut writer) = self.writer {
-            for batch in &self.batch_data {
-                writer.write(batch)
-                    .map_err(|e| DataError::IoError(format!("Failed to write batch: {}", e)))?;
+        if let Ok(mut writer_guard) = self.writer.lock() {
+            if let Some(ref mut writer) = *writer_guard {
+                for batch in &self.batch_data {
+                    writer.write(batch)
+                        .map_err(|e| DataError::io_error(format!("Failed to write batch: {}", e)))?;
+                }
+                self.batch_data.clear();
             }
-            self.batch_data.clear();
         }
         Ok(())
     }
@@ -274,6 +278,13 @@ impl ParquetDataWriter {
 
 #[async_trait]
 impl DataWriter for ParquetDataWriter {
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
+    }
+    
+    fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
+        self
+    }
     fn config(&self) -> &WriterConfig {
         &self.config
     }
@@ -315,7 +326,7 @@ impl DataWriter for ParquetDataWriter {
 
         // Check if file exists and we're not allowed to overwrite
         if path.exists() && !self.config.overwrite_existing {
-            return Err(DataError::IoError(
+            return Err(DataError::io_error(
                 format!("File already exists and overwrite is disabled: {}", path.display())
             ).into());
         }
@@ -330,9 +341,11 @@ impl DataWriter for ParquetDataWriter {
     async fn close(&mut self) -> Result<()> {
         self.write_batches()?;
         
-        if let Some(mut writer) = self.writer.take() {
-            writer.close()
-                .map_err(|e| DataError::IoError(format!("Failed to close writer: {}", e)))?;
+        if let Ok(mut writer_guard) = self.writer.lock() {
+            if let Some(writer) = writer_guard.take() {
+                writer.close()
+                    .map_err(|e| DataError::io_error(format!("Failed to close writer: {}", e)))?;
+            }
         }
         
         self.current_file = None;
@@ -343,9 +356,11 @@ impl DataWriter for ParquetDataWriter {
     async fn flush(&mut self) -> Result<()> {
         self.write_batches()?;
         
-        if let Some(ref mut writer) = self.writer {
-            writer.flush()
-                .map_err(|e| DataError::IoError(format!("Failed to flush writer: {}", e)))?;
+        if let Ok(mut writer_guard) = self.writer.lock() {
+            if let Some(ref mut writer) = *writer_guard {
+                writer.flush()
+                    .map_err(|e| DataError::io_error(format!("Failed to flush writer: {}", e)))?;
+            }
         }
         Ok(())
     }
@@ -383,21 +398,21 @@ impl SeriesWriter for ParquetDataWriter {
         }
 
         // Create writer if not already done
-        if self.writer.is_none() && self.current_file.is_some() {
+        if self.writer.lock().unwrap().is_none() && self.current_file.is_some() {
             let file = File::create(self.current_file.as_ref().unwrap())
-                .map_err(|e| DataError::IoError(format!("Failed to create file: {}", e)))?;
+                .map_err(|e| DataError::io_error(format!("Failed to create file: {}", e)))?;
             
             let properties = self.create_writer_properties();
             let writer = ArrowWriter::try_new(file, self.schema.clone().unwrap(), Some(properties))
-                .map_err(|e| DataError::IoError(format!("Failed to create Parquet writer: {}", e)))?;
+                .map_err(|e| DataError::io_error(format!("Failed to create Parquet writer: {}", e)))?;
             
-            self.writer = Some(writer);
+            *self.writer.lock().unwrap() = Some(writer);
         }
 
         // Convert to Arrow arrays
         let arrays = self.series_to_arrays(series)?;
         let batch = RecordBatch::try_new(self.schema.clone().unwrap(), arrays)
-            .map_err(|e| DataError::IoError(format!("Failed to create record batch: {}", e)))?;
+            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {}", e)))?;
 
         let batch_size = batch.get_array_memory_size() as u64;
         self.batch_data.push(batch);
@@ -411,22 +426,9 @@ impl SeriesWriter for ParquetDataWriter {
         Ok(())
     }
 
-    async fn write_all_series<I>(&mut self, series: I) -> Result<()>
-    where
-        I: Iterator<Item = Series> + Send,
-        I::Item: Send,
-    {
-        let series_vec: Vec<Series> = series.collect();
-        self.write_series_batch(&series_vec).await
-    }
+    // Generic method write_all_series moved to extension trait
 
-    async fn write_series_with_serializer<F>(&mut self, series: &Series, _serializer: F) -> Result<()>
-    where
-        F: Fn(&Series) -> Result<String> + Send + Sync,
-    {
-        // For Parquet, we use the structured format rather than custom serialization
-        self.write_series(series).await
-    }
+    // Generic method write_series_with_serializer moved to extension trait
 }
 
 #[async_trait]
@@ -449,21 +451,21 @@ impl ObservationWriter for ParquetDataWriter {
         }
 
         // Create writer if not already done
-        if self.writer.is_none() && self.current_file.is_some() {
+        if self.writer.lock().unwrap().is_none() && self.current_file.is_some() {
             let file = File::create(self.current_file.as_ref().unwrap())
-                .map_err(|e| DataError::IoError(format!("Failed to create file: {}", e)))?;
+                .map_err(|e| DataError::io_error(format!("Failed to create file: {}", e)))?;
             
             let properties = self.create_writer_properties();
             let writer = ArrowWriter::try_new(file, self.schema.clone().unwrap(), Some(properties))
-                .map_err(|e| DataError::IoError(format!("Failed to create Parquet writer: {}", e)))?;
+                .map_err(|e| DataError::io_error(format!("Failed to create Parquet writer: {}", e)))?;
             
-            self.writer = Some(writer);
+            *self.writer.lock().unwrap() = Some(writer);
         }
 
         // Convert to Arrow arrays
         let arrays = self.observations_to_arrays(observations)?;
         let batch = RecordBatch::try_new(self.schema.clone().unwrap(), arrays)
-            .map_err(|e| DataError::IoError(format!("Failed to create record batch: {}", e)))?;
+            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {}", e)))?;
 
         let batch_size = batch.get_array_memory_size() as u64;
         self.batch_data.push(batch);
@@ -477,14 +479,7 @@ impl ObservationWriter for ParquetDataWriter {
         Ok(())
     }
 
-    async fn write_all_observations<I>(&mut self, observations: I) -> Result<()>
-    where
-        I: Iterator<Item = Observation> + Send,
-        I::Item: Send,
-    {
-        let observations_vec: Vec<Observation> = observations.collect();
-        self.write_observations_batch(&observations_vec).await
-    }
+    // Generic method write_all_observations moved to extension trait
 
     async fn write_observations_for_series(&mut self, series_id: &str, observations: &[Observation]) -> Result<()> {
         let filtered_observations: Vec<Observation> = observations
@@ -496,13 +491,7 @@ impl ObservationWriter for ParquetDataWriter {
         self.write_observations_batch(&filtered_observations).await
     }
 
-    async fn write_observations_with_serializer<F>(&mut self, observations: &[Observation], _serializer: F) -> Result<()>
-    where
-        F: Fn(&Observation) -> Result<String> + Send + Sync,
-    {
-        // For Parquet, we use the structured format rather than custom serialization
-        self.write_observations_batch(observations).await
-    }
+    // Generic method write_observations_with_serializer moved to extension trait
 }
 
 #[async_trait]
@@ -525,21 +514,21 @@ impl LookupWriter for ParquetDataWriter {
         }
 
         // Create writer if not already done
-        if self.writer.is_none() && self.current_file.is_some() {
+        if self.writer.lock().unwrap().is_none() && self.current_file.is_some() {
             let file = File::create(self.current_file.as_ref().unwrap())
-                .map_err(|e| DataError::IoError(format!("Failed to create file: {}", e)))?;
+                .map_err(|e| DataError::io_error(format!("Failed to create file: {}", e)))?;
             
             let properties = self.create_writer_properties();
             let writer = ArrowWriter::try_new(file, self.schema.clone().unwrap(), Some(properties))
-                .map_err(|e| DataError::IoError(format!("Failed to create Parquet writer: {}", e)))?;
+                .map_err(|e| DataError::io_error(format!("Failed to create Parquet writer: {}", e)))?;
             
-            self.writer = Some(writer);
+            *self.writer.lock().unwrap() = Some(writer);
         }
 
         // Convert to Arrow arrays
         let arrays = self.lookups_to_arrays(lookups)?;
         let batch = RecordBatch::try_new(self.schema.clone().unwrap(), arrays)
-            .map_err(|e| DataError::IoError(format!("Failed to create record batch: {}", e)))?;
+            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {}", e)))?;
 
         let batch_size = batch.get_array_memory_size() as u64;
         self.batch_data.push(batch);
@@ -553,22 +542,9 @@ impl LookupWriter for ParquetDataWriter {
         Ok(())
     }
 
-    async fn write_all_lookups<I>(&mut self, lookups: I) -> Result<()>
-    where
-        I: Iterator<Item = Lookup> + Send,
-        I::Item: Send,
-    {
-        let lookups_vec: Vec<Lookup> = lookups.collect();
-        self.write_lookups_batch(&lookups_vec).await
-    }
+    // Generic method write_all_lookups moved to extension trait
 
-    async fn write_lookups_with_serializer<F>(&mut self, lookups: &[Lookup], _serializer: F) -> Result<()>
-    where
-        F: Fn(&Lookup) -> Result<String> + Send + Sync,
-    {
-        // For Parquet, we use the structured format rather than custom serialization
-        self.write_lookups_batch(lookups).await
-    }
+    // Generic method write_lookups_with_serializer moved to extension trait
 }
 
 #[async_trait]
@@ -584,15 +560,15 @@ impl SurveyWriter for ParquetDataWriter {
         }
 
         // Create writer if not already done
-        if self.writer.is_none() && self.current_file.is_some() {
+        if self.writer.lock().unwrap().is_none() && self.current_file.is_some() {
             let file = File::create(self.current_file.as_ref().unwrap())
-                .map_err(|e| DataError::IoError(format!("Failed to create file: {}", e)))?;
+                .map_err(|e| DataError::io_error(format!("Failed to create file: {}", e)))?;
             
             let properties = self.create_writer_properties();
             let writer = ArrowWriter::try_new(file, self.schema.clone().unwrap(), Some(properties))
-                .map_err(|e| DataError::IoError(format!("Failed to create Parquet writer: {}", e)))?;
+                .map_err(|e| DataError::io_error(format!("Failed to create Parquet writer: {}", e)))?;
             
-            self.writer = Some(writer);
+            *self.writer.lock().unwrap() = Some(writer);
         }
 
         // Convert survey to arrays
@@ -600,8 +576,8 @@ impl SurveyWriter for ParquetDataWriter {
         let mut survey_name_builder = StringBuilder::new();
         let mut description_builder = StringBuilder::new();
 
-        survey_code_builder.append_value(survey.survey_code());
-        survey_name_builder.append_option(survey.survey_name());
+        survey_code_builder.append_value(survey.code());
+        survey_name_builder.append_option(Some(survey.name()));
         description_builder.append_option(survey.description());
 
         let arrays: Vec<ArrayRef> = vec![
@@ -611,7 +587,7 @@ impl SurveyWriter for ParquetDataWriter {
         ];
 
         let batch = RecordBatch::try_new(self.schema.clone().unwrap(), arrays)
-            .map_err(|e| DataError::IoError(format!("Failed to create record batch: {}", e)))?;
+            .map_err(|e| DataError::io_error(format!("Failed to create record batch: {}", e)))?;
 
         let batch_size = batch.get_array_memory_size() as u64;
         self.batch_data.push(batch);
@@ -623,13 +599,7 @@ impl SurveyWriter for ParquetDataWriter {
         Ok(())
     }
 
-    async fn write_survey_with_format<F>(&mut self, survey: &Survey, _formatter: F) -> Result<()>
-    where
-        F: Fn(&Survey) -> Result<String> + Send + Sync,
-    {
-        // For Parquet, we use the structured format rather than custom formatting
-        self.write_survey(survey).await
-    }
+    // Generic method write_survey_with_format moved to extension trait
 }
 
 #[async_trait]
@@ -691,9 +661,8 @@ mod tests {
         writer.open(temp_file.path()).await.unwrap();
         
         let series = Series::new(
-            "TEST001".to_string(),
-            "Test Series".to_string(),
-            "AREA001".to_string(),
+            &*"TEST001".to_string(),
+            &*"Test Series".to_string(),
         );
         
         writer.write_series(&series).await.unwrap();

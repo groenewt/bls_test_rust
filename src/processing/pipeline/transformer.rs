@@ -28,7 +28,7 @@
 //! use rusty::processing::{ProcessingContext, ProcessingConfig};
 //!
 //! let mut transformer = TransformerStageImpl::new();
-//! let mut context = ProcessingContext::new(ProcessingConfig::default());
+//! let mut context = ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
 //! 
 //! transformer.execute(&mut context)?;
 //! ```
@@ -235,7 +235,7 @@ impl TransformerStageImpl {
         let mut original_data = HashMap::new();
         original_data.insert("series_id".to_string(), series.series_id.clone());
         original_data.insert("title".to_string(), series.title.clone());
-        original_data.insert("area_code".to_string(), series.base_code.clone().unwrap_or_default());
+        original_data.insert("area_code".to_string(), series.base_code.clone());
         original_data.insert("item_code".to_string(), series.item_code.clone());
 
         let mut transform_context = TransformationContext::new(original_data);
@@ -247,13 +247,13 @@ impl TransformerStageImpl {
 
         // Update series with transformed data
         if let Some(title) = transform_context.get_transformed("title") {
-            series.title = Some(title.clone());
+            series.title = title.clone();
         }
         if let Some(area_code) = transform_context.get_transformed("area_code") {
-            series.base_code = Some(area_code.clone());
+            series.base_code = area_code.clone();
         }
         if let Some(item_code) = transform_context.get_transformed("item_code") {
-            series.item_code = Some(item_code.clone());
+            series.item_code = item_code.clone();
         }
 
         // Apply enrichment if enabled
@@ -300,7 +300,7 @@ impl TransformerStageImpl {
         original_data.insert("series_id".to_string(), observation.series_id.clone());
         original_data.insert("year".to_string(), observation.year.to_string());
         original_data.insert("period".to_string(), observation.period.clone());
-        original_data.insert("value".to_string(), observation.value);
+        original_data.insert("value".to_string(), observation.value.format_value(None));
 
         let mut transform_context = TransformationContext::new(original_data);
 
@@ -311,7 +311,9 @@ impl TransformerStageImpl {
 
         // Update observation with transformed data
         if let Some(value) = transform_context.get_transformed("value") {
-            observation.value = value.clone();
+            if let Ok(numeric_value) = value.parse::<f64>() {
+                observation.set_value(Some(numeric_value));
+            }
         }
         if let Some(period) = transform_context.get_transformed("period") {
             observation.period = period.clone();
@@ -358,8 +360,8 @@ impl TransformerStageImpl {
     fn transform_single_lookup(&self, mut lookup: Lookup, rules: &[TransformationRule]) -> Result<Lookup> {
         // Create transformation context
         let mut original_data = HashMap::new();
-        original_data.insert("code".to_string(), lookup.code.clone());
-        original_data.insert("text".to_string(), lookup.text.clone());
+        original_data.insert("code".to_string(), lookup.table_id.clone());
+        original_data.insert("text".to_string(), lookup.table_name.clone());
 
         let mut transform_context = TransformationContext::new(original_data);
 
@@ -370,7 +372,7 @@ impl TransformerStageImpl {
 
         // Update lookup with transformed data
         if let Some(text) = transform_context.get_transformed("text") {
-            lookup.text = text.clone();
+            lookup.table_name = text.clone();
         }
 
         // Apply enrichment if enabled
@@ -537,11 +539,10 @@ impl TransformerStageImpl {
                 // Default series transformation rules
                 rules.push(TransformationRule {
                     name: "normalize_title".to_string(),
-                    description: Some("Normalize series title".to_string()),
+                    description: "Normalize series title".to_string(),
                     rule_type: TransformationRuleType::ValueTransformation,
                     source_field: Some("title".to_string()),
                     target_field: Some("title".to_string()),
-                    condition: None,
                     parameters: {
                         let mut params = HashMap::new();
                         params.insert("operation".to_string(), "normalize".to_string());
@@ -555,11 +556,10 @@ impl TransformerStageImpl {
                 // Default observation transformation rules
                 rules.push(TransformationRule {
                     name: "convert_value_to_numeric".to_string(),
-                    description: Some("Convert observation value to numeric".to_string()),
+                    description: "Convert observation value to numeric".to_string(),
                     rule_type: TransformationRuleType::TypeConversion,
                     source_field: Some("value".to_string()),
                     target_field: Some("value".to_string()),
-                    condition: None,
                     parameters: {
                         let mut params = HashMap::new();
                         params.insert("target_type".to_string(), "numeric".to_string());
@@ -573,11 +573,10 @@ impl TransformerStageImpl {
                 // Default lookup transformation rules
                 rules.push(TransformationRule {
                     name: "normalize_lookup_text".to_string(),
-                    description: Some("Normalize lookup text".to_string()),
+                    description: "Normalize lookup text".to_string(),
                     rule_type: TransformationRuleType::ValueTransformation,
                     source_field: Some("text".to_string()),
                     target_field: Some("text".to_string()),
-                    condition: None,
                     parameters: {
                         let mut params = HashMap::new();
                         params.insert("operation".to_string(), "normalize".to_string());
@@ -596,26 +595,23 @@ impl TransformerStageImpl {
     }
 
     /// Enrich series data with additional computed fields
-    fn enrich_series(&mut self, series: &mut Series, _context: &TransformationContext) -> Result<()> {
+    fn enrich_series(&self, _series: &mut Series, _context: &TransformationContext) -> Result<()> {
         // Add computed fields or derived values
         // This is a placeholder for future enhancement
-        self.stats.enriched_records += 1;
         Ok(())
     }
 
     /// Enrich observation data with additional computed fields
-    fn enrich_observation(&mut self, observation: &mut Observation, _context: &TransformationContext) -> Result<()> {
+    fn enrich_observation(&self, _observation: &mut Observation, _context: &TransformationContext) -> Result<()> {
         // Add computed fields or derived values
         // This is a placeholder for future enhancement
-        self.stats.enriched_records += 1;
         Ok(())
     }
 
     /// Enrich lookup data with additional computed fields
-    fn enrich_lookup(&mut self, lookup: &mut Lookup, _context: &TransformationContext) -> Result<()> {
+    fn enrich_lookup(&self, _lookup: &mut Lookup, _context: &TransformationContext) -> Result<()> {
         // Add computed fields or derived values
         // This is a placeholder for future enhancement
-        self.stats.enriched_records += 1;
         Ok(())
     }
 }
@@ -641,7 +637,7 @@ impl PipelineStage for TransformerStageImpl {
         Ok(!context.data_readers.is_empty())
     }
 
-    async fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
+    async fn execute(&mut self, _context: &mut ProcessingContext) -> Result<()> {
         log::info!("Starting transformer stage execution");
         
         // Process different types of data
@@ -664,14 +660,14 @@ impl PipelineStage for TransformerStageImpl {
         if context.data_readers.is_empty() {
             return Err(ProcessingError::InvalidConfiguration(
                 "No data readers available for transformer stage".to_string()
-            ));
+            ).into());
         }
 
         // Validate configuration
         if self.config.batch_size == 0 {
             return Err(ProcessingError::InvalidConfiguration(
                 "batch_size must be greater than 0".to_string()
-            ));
+            ).into());
         }
 
         Ok(())
@@ -791,7 +787,7 @@ mod tests {
     #[test]
     fn test_transformer_stage_validation() {
         let transformer = TransformerStageImpl::new();
-        let mut context = ProcessingContext::new(ProcessingConfig::default());
+        let mut context = ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
         
         // Should fail with empty data readers
         assert!(transformer.validate(&context).is_err());
@@ -804,7 +800,7 @@ mod tests {
     #[test]
     fn test_can_process() {
         let transformer = TransformerStageImpl::new();
-        let mut context = ProcessingContext::new(ProcessingConfig::default());
+        let mut context = ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
         
         // Should return false with no data readers
         assert!(!transformer.can_process(&context).unwrap());
@@ -834,7 +830,7 @@ mod tests {
     #[test]
     fn test_cleanup() {
         let mut transformer = TransformerStageImpl::new();
-        let mut context = ProcessingContext::new(ProcessingConfig::default());
+        let mut context = ProcessingContext::new(crate::processing::traits::ProcessingConfig::default());
         
         // Should not fail
         assert!(transformer.cleanup(&mut context).is_ok());
