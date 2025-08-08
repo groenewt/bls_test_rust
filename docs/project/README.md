@@ -1,6 +1,41 @@
 # Rusty BLS Data Processing System Documentation
 
+![Rusty BLS Processing Banner](../resources/subheader_02.png)
+
 Welcome to the comprehensive documentation for the Rusty BLS Data Processing system. This documentation provides detailed information about the system architecture, components, and workflows.
+
+### Visual Documentation Map
+
+```mermaid
+graph LR
+    A[Docs Home] --> C[Configuration]
+    A --> D[Data]
+    A --> P[Processing]
+    A --> O[Output]
+    A --> E[Error]
+    A --> U[Utils]
+    A --> PL[Plugin]
+
+    C --- CTasks[Config Tasks]
+    D --- DTasks[Data Tasks]
+    P --- PTasks[Processing Tasks]
+    O --- OTasks[Output Tasks]
+    E --- ETasks[Error Tasks]
+
+    click C "components/config/index.md" "Open Configuration Docs"
+    click D "components/data/index.md" "Open Data Docs"
+    click P "components/processing/index.md" "Open Processing Docs"
+    click O "components/output/index.md" "Open Output Docs"
+    click E "components/error/index.md" "Open Error Docs"
+    click U "components/utils/index.md" "Open Utils Docs"
+    click PL "components/plugin/index.md" "Open Plugin Docs"
+
+    click CTasks "components/config/tasks.md" "Open Config Tasks"
+    click DTasks "components/data/tasks.md" "Open Data Tasks"
+    click PTasks "components/processing/tasks.md" "Open Processing Tasks"
+    click OTasks "components/output/tasks.md" "Open Output Tasks"
+    click ETasks "components/error/tasks.md" "Open Error Tasks"
+```
 
 ## System Overview
 
