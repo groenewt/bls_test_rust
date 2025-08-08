@@ -1,0 +1,24 @@
+config_version: 1
+# Development environment overrides for GP survey
+
+processing:
+  strategy:
+    max_concurrency: 1
+  resources:
+    max_threads: 2
+    memory_limit_gb: 2
+
+features:
+  enable_profiling: true
+
+logging:
+  level: "debug"
+
+error_handling:
+  max_errors: 100
+  on_error: "continue"
+
+quality:
+  policy:
+    mode: "warn_only"
+    sample_on_fail_rows: 10

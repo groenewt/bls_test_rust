@@ -1,0 +1,165 @@
+# Parquet Macros
+# Reusable Parquet format configurations
+config_version: 1
+
+# Standard Parquet configurations
+parquet_configs:
+  # Performance-optimized configurations
+  fast_read: &fast_read_parquet
+    compression: "lz4"
+    compression_level: 1
+    row_group_size: 200000
+    enable_dictionary: true
+    bloom_filters: false
+    page_size: 1048576
+    enable_statistics: true
+    
+  fast_write: &fast_write_parquet
+    compression: "snappy"
+    compression_level: 1
+    row_group_size: 500000
+    enable_dictionary: false
+    bloom_filters: false
+    page_size: 1048576
+    enable_statistics: false
+    
+  # Compression-optimized configurations
+  high_compression: &high_compression_parquet
+    compression: "zstd"
+    compression_level: 9
+    row_group_size: 50000
+    enable_dictionary: true
+    bloom_filters: true
+    page_size: 65536
+    enable_statistics: true
+    
+  balanced_compression: &balanced_compression_parquet
+    compression: "zstd"
+    compression_level: 3
+    row_group_size: 100000
+    enable_dictionary: true
+    bloom_filters: true
+    page_size: 262144
+    enable_statistics: true
+    
+  # Query-optimized configurations
+  analytics_optimized: &analytics_parquet
+    compression: "snappy"
+    compression_level: 3
+    row_group_size: 100000
+    enable_dictionary: true
+    bloom_filters: true
+    page_size: 262144
+    enable_statistics: true
+    enable_page_index: true
+    
+  olap_optimized: &olap_parquet
+    compression: "zstd"
+    compression_level: 3
+    row_group_size: 1000000
+    enable_dictionary: true
+    bloom_filters: true
+    page_size: 1048576
+    enable_statistics: true
+    enable_page_index: true
+    
+  # Size-specific configurations
+  small_files: &small_files_parquet
+    compression: "snappy"
+    compression_level: 1
+    row_group_size: 10000
+    enable_dictionary: true
+    bloom_filters: false
+    page_size: 65536
+    enable_statistics: true
+    
+  large_files: &large_files_parquet
+    compression: "zstd"
+    compression_level: 3
+    row_group_size: 1000000
+    enable_dictionary: true
+    bloom_filters: true
+    page_size: 1048576
+    enable_statistics: true
+    
+  # Compatibility configurations
+  legacy_compatible: &legacy_parquet
+    compression: "snappy"
+    compression_level: 1
+    row_group_size: 100000
+    enable_dictionary: true
+    bloom_filters: false
+    page_size: 262144
+    enable_statistics: true
+    parquet_version: "1.0"
+    
+  modern_features: &modern_parquet
+    compression: "zstd"
+    compression_level: 3
+    row_group_size: 100000
+    enable_dictionary: true
+    bloom_filters: true
+    page_size: 262144
+    enable_statistics: true
+    enable_page_index: true
+    parquet_version: "2.6"
+
+# Evolution mode configurations
+evolution_modes:
+  strict: &strict_evolution
+    mode: "strict"
+    allow_nullability_change: false
+    allow_type_widening: false
+    allow_column_addition: false
+    allow_column_removal: false
+    
+  compatible: &compatible_evolution
+    mode: "compatible"
+    allow_nullability_change: false
+    allow_type_widening: true
+    allow_column_addition: true
+    allow_column_removal: false
+    
+  additive: &additive_evolution
+    mode: "additive"
+    allow_nullability_change: true
+    allow_type_widening: true
+    allow_column_addition: true
+    allow_column_removal: false
+    
+  flexible: &flexible_evolution
+    mode: "flexible"
+    allow_nullability_change: true
+    allow_type_widening: true
+    allow_column_addition: true
+    allow_column_removal: true
+
+# Complete format profiles combining parquet and evolution settings
+format_profiles:
+  production_standard:
+    format: "parquet"
+    parquet:
+      <<: *balanced_compression_parquet
+    evolution:
+      <<: *compatible_evolution
+      
+  development_fast:
+    format: "parquet"
+    parquet:
+      <<: *fast_write_parquet
+    evolution:
+      <<: *flexible_evolution
+      
+  archive_compressed:
+    format: "parquet"
+    parquet:
+      <<: *high_compression_parquet
+    evolution:
+      <<: *strict_evolution
+      
+  analytics_ready:
+    format: "parquet"
+    parquet:
+      <<: *analytics_parquet
+    evolution:
+      <<: *compatible_evolution

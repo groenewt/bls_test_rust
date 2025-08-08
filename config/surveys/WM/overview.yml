@@ -1,0 +1,84 @@
+# WM Survey Overview Configuration
+# Survey metadata and context information
+config_version: 1
+
+survey:
+  code: "WM"
+  name: "Modeled Wage Estimates"
+  description: "The Occupational Employment and Wage Statistics (OEWS) and National Compensation Survey (NCS) programs have produced estimates by borrowing from the strength and breadth of each survey to provide more details on occupational wages than either program provides individually."
+  size_class: "medium"
+  characteristics:
+    frequency: "annual"
+    coverage: "National, state, metropolitan, and nonmetropolitan area levels"
+    time_series_count: "Modeled Wage Estimates series"
+    classification_system: "Standard Occupational Classification (SOC) system"
+    update_schedule: "Annual release"
+    begin_year: 2017
+    survey_methodology: "Combines data from the Occupational Employment and Wage Statistics (OEWS) and National Compensation Survey (NCS) programs"
+    calculation_basis: "Modeled estimates using survey responses from larger areas to fill in information for smaller areas"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/wm.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/wm
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - All hourly wages are published to the nearest cent
+
+tags: ["wage", "occupational", "modeled", "annual", "soc", "oews", "ncs"]
+
+definition: |
+  The following is a definition of: Modeled Wage Estimates (WM)
+
+  Survey Description: The Occupational Employment and Wage Statistics (OEWS) 
+  and National Compensation Survey (NCS) programs have produced estimates by 
+  borrowing from the strength and breadth of each survey to provide more 
+  details on occupational wages than either program provides individually.
+  Modeled Wage Estimates provide annual estimates of average hourly 
+  wages for occupations by selected job characteristics and within 
+  geographical location. The job characteristics include bargaining status 
+  (union and nonunion), part- and full-time work status, incentive- and 
+  time-based pay, and work levels (1-15 and unable to be leveled and grouped 
+  work levels of entry, intermediate and experienced) by occupation. Grouped 
+  work level estimates were created from meaningful group level distinctions 
+  within an occupation, consisting of either two groups for entry and 
+  experienced levels or three groups for entry, intermediate and experienced 
+  levels.
+
+  Direct estimates are based on survey responses only from the particular 
+  geographic area to which the estimate refers. In contrast, Modeled Wage 
+  Estimates use survey responses from larger areas to fill in information 
+  for smaller areas where the sample size is not sufficient to produce 
+  direct estimates. Modeled Wage Estimates require the assumption that the 
+  patterns to responses in the larger area hold in the smaller area.
+
+  The sample size for the NCS is not large enough to produce direct estimates 
+  by area, occupation, and job characteristic for all of the areas for which 
+  the OEWS publishes estimates by area and occupation. The NCS sample consists 
+  of 6 private industry panels with approximately 3,300 establishments sampled 
+  per panel and 1 state and local government panel with approximately 1,600 
+  sampled state and local government units. The OEWS full six-panel sample 
+  consists of 1.1 million establishments. 
+
+  The sample establishments are classified in industry categories based on the 
+  North American Industry Classification System (NAICS). Within an 
+  establishment, specific job categories are selected to represent broader 
+  occupational definitions. Jobs are classified according to the Standard 
+  Occupational Classification (SOC) system; in a few cases, classification 
+  reflects aggregation to an OEWS-specific occupational grouping.
+
+  Summary Data Available: Average hourly wage estimates for civilian workers 
+  in occupations by job characteristic and work levels. These data are available 
+  at the national, state, metropolitan, and nonmetropolitan area levels.
+
+  Frequency of Observations: Data are available on an annual basis, 
+  and released shortly after the OEWS annual release for the same reference 
+  year. 
+
+  Data Characteristics: All hourly wages are published to the nearest cent.

@@ -1,0 +1,80 @@
+# WS Survey Overview Configuration
+# Survey metadata and context information
+config_version: 1
+
+survey:
+  code: "WS"
+  name: "Work Stoppage Data"
+  description: "The series covers all work stoppages--strikes and lockouts--involving 1,000 workers or more and lasting one full shift or longer."
+  size_class: "small"
+  characteristics:
+    frequency: "monthly"
+    coverage: "National data on work stoppages"
+    time_series_count: "Work Stoppage Data series"
+    classification_system: "Work stoppages by measure"
+    update_schedule: "Monthly, about 3 weeks after the end of each month"
+    begin_year: 1947
+    survey_methodology: "The series covers all work stoppages--strikes and lockouts--involving 1,000 workers or more and lasting one full shift or longer."
+    calculation_basis: "Direct measurement of work stoppages"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/ws.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/ws
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/ws.txt
+
+tags: ["work_stoppage", "strikes", "lockouts", "monthly", "labor"]
+
+definition: |
+  The following is a definition of: WORK STOPPAGE DATA (WS)
+
+  Survey Description: The series covers all work stoppages--strikes and 
+  lockouts--involving 1,000 workers or more and lasting one full shift or 
+  longer. The Bureau does not attempt to differentiate between strikes and 
+  lockouts. The series does not measure the indirect or secondary effect of 
+  stoppages on other establishments whose employees are idled by material 
+  shortages or lack of services. For the series, a stoppage is considered 
+  to be ended when the number of workers involved dips below 1,000.
+
+  The series presents annual data from 1947 through 1981 and annual and 
+  monthly data thereafter; it is not comparable with the one terminated in 
+  1981 that covered stoppages involving six workers or more.
+
+  Summary Data Available: The number of stoppages beginning in the period.
+
+  The number of stoppages in effect in the period, comprising those that 
+  began in the period and those that began earlier and continued into the 
+  period.
+
+  The number of workers directly involved in stoppages beginning in the 
+  period.
+
+  The number of workers directly involved in stoppages in effect in the 
+  period.
+
+  The total number of workdays lost by workers directly involved in the 
+  stoppages in effect in the period.
+
+  Total workdays lost in the stoppages in effect, as a percent of the number 
+  of workdays in the period multiplied by total national employment in the 
+  period. (Private household, forestry, and fishery employees are excluded 
+  from total national employment.)
+
+  Frequency of Observations: Monthly in all cases.
+
+  Annual Averages: Annual data are available.
+
+  Data Characteristics: All percent changes are stored with one decimal 
+  place.
+
+  Updating Schedule: Updates become available about 3 weeks after the end of
+  each month. All monthly figures are preliminary until final monthly and 
+  annual figures are issued in February.

@@ -1,0 +1,28 @@
+# AP Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default processing overrides for AP survey
+processing:
+  strategy:
+    mode: "in_memory"  # Appropriate for small survey
+  resources:
+    memory_limit_gb: 2  # Conservative default
+
+# Default output overrides
+output:
+  format: "csv"  # Standard format for AP survey
+  destination:
+    base_path: "data/processed/bls/AP"
+
+# Default quality settings
+quality:
+  policy:
+    mode: "fail_on_error"  # Strict validation by default
+
+# Default runtime settings
+runtime:
+  logging:
+    level: "info"
+  feature_flags:
+    enable_data_validation: true

@@ -1,0 +1,67 @@
+config_version: 1
+graph:
+  tasks:
+    - id: "discover"
+      type: "scan"
+      inputs: []
+      retries: { max: 2, backoff_sec: 10 }
+      sla_minutes: 5
+      description: "Discover and scan input files"
+    
+    - id: "validate"
+      type: "validate_model"
+      inputs: ["discover"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 10
+      description: "Validate data model and schemas"
+    
+    - id: "plan"
+      type: "partition_plan"
+      inputs: ["validate"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 5
+      description: "Create partition and processing plan"
+    
+    - id: "process"
+      type: "execute"
+      inputs: ["plan"]
+      parallelism: 2
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 60
+      description: "Process data with transformations"
+    
+    - id: "write"
+      type: "output"
+      inputs: ["process"]
+      retries: { max: 2, backoff_sec: 15 }
+      sla_minutes: 30
+      description: "Write processed data to output formats"
+    
+    - id: "qc"
+      type: "quality_checks"
+      inputs: ["write"]
+      retries: { max: 1, backoff_sec: 10 }
+      sla_minutes: 15
+      description: "Run quality checks and validations"
+
+  edges:
+    - from: "discover"
+      to: "validate"
+    - from: "validate"
+      to: "plan"
+    - from: "plan"
+      to: "process"
+    - from: "process"
+      to: "write"
+    - from: "write"
+      to: "qc"
+
+  # Global DAG settings
+  settings:
+    max_active_runs: 1
+    catchup: false
+    depends_on_past: false
+    email_on_failure: true
+    email_on_retry: false
+    retries: 1
+    retry_delay_minutes: 5

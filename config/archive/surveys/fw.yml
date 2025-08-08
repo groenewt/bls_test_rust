@@ -1,0 +1,672 @@
+# config/surveys/fw.yml
+# name: Census of Fatal Occupational Injuries Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: data/raw/bls/fw
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+#         - full doc: docs/bls/survey/fw.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: fw #survey code (ex.ap,sm,fw)- see docs (docs/surveys/* for all surveys)
+  name: Census of Fatal Occupational Injuries #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The Bureau of Labor Statistics (BLS) Census of Fatal Occupational Injuries (CFOI) produces comprehensive, accurate, and timely counts of fatal work injuries."
+  definition: "
+The following is a definition of: CENSUS OF FATAL OCCUPATIONAL INJURIES (FW)
+
+Survey Description:   
+
+The Bureau of Labor Statistics (BLS) Census of Fatal Occupational Injuries (CFOI) produces 
+comprehensive, accurate, and timely counts of fatal work injuries.  CFOI is a Federal-State 
+cooperative program that has been active in all 50 States and the District of Columbia since 1992. 
+To compile counts that are as complete as possible, CFOI uses multiple sources to identify, 
+verify, and profile fatal worker injuries.  Information about each workplace fatal injury is 
+obtained by cross referencing the source records, such as death certificates, workers' 
+compensation reports, and Federal and State agency administrative reports.  To ensure that fatal 
+injuries are work-related, cases are substantiated with two or more independent source documents, 
+or a source document and a follow-up questionnaire.
+
+CFOI publishes detailed data on case characteristics such as the event or exposure leading to the 
+fatal injury, the source of the fatal injury, and worker activity at the time of the incident.  
+Event or exposure, source, and other case characteristic codes are currently based on the BLS 
+Occupational Injury and Illness Classification System (OIICS) 2.01, which can be viewed at our Web 
+site at http://www.bls.gov/iif/oshoiics.htm.
+
+BLS also tabulates the number of fatal occupational injuries by demographic attributes such as 
+age, gender, race, ethnic origin, and occupation.  Occupation classifications are currently based 
+on the 2010 Standard Occupational Classification [SOC] system.  These tabulations are also 
+available by major industry sectors or by detailed industry. Industry classifications are currently 
+based on the 2007 North American Industrial Classification System [NAICS].
+
+Frequency of observations:  All data are annual.
+
+Data characteristics:  All figures are actual numbers of fatal injuries.
+
+Updating schedule:  Updates to the data become available approximately 8 months following the close 
+of the reference year.
+                "
+  characteristics:
+    frequency: annual
+    coverage: "All 50 States and the District of Columbia"
+    time_series_count: "Fatal occupational injuries data" 
+    classification_system: "Occupational Injury and Illness Classification System (OIICS) 2.01, 2010 Standard Occupational Classification (SOC), 2007 North American Industrial Classification System (NAICS)"
+    update_schedule: "Updates available approximately 8 months following the close of the reference year"
+    begin_year: 1992
+    survey_methodology: "Federal-State cooperative program that uses multiple sources to identify, verify, and profile fatal worker injuries"
+    calculation_basis: "Actual numbers of fatal injuries"
+
+#Survey Series Information
+series:
+  path: "fw.series" #path to series file
+  use_mmap: true
+  series_size_class: Medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17 #USE DEFINED FIELD LENGTH From (docs/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "FWU00X00000080N00"
+      map_file: "" #leave blank for none
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "U"
+      needs_mapping: true
+      map_file: "seasonal" #leave blank for none
+    category_code:
+      length: 3
+      type: Text
+      example_value: "00X"
+      needs_mapping: true
+      map_file: "category2" #leave blank for none
+    industry_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "industry" #leave blank for none
+    event_code:
+      length: 6
+      type: Text
+      example_value: "0000XX"
+      needs_mapping: true
+      map_file: "event" #leave blank for none
+    source_code:
+      length: 6
+      type: Text
+      example_value: "0000XX"
+      needs_mapping: true
+      map_file: "source" #leave blank for none
+    occupation_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "occupation" #leave blank for none
+    datatype_code:
+      length: 1
+      type: Text
+      example_value: "8"
+      needs_mapping: true
+      map_file: "datatype" #leave blank for none
+    case_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "case" #leave blank for none
+    area_code:
+      length: 3
+      type: Text
+      example_value: "N00"
+      needs_mapping: true
+      map_file: "area" #leave blank for none
+    series_title:
+      length: 200
+      type: Text
+      example_value: "Fatal occupational injuries"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: ""
+      needs_mapping: true
+      map_file: "footnote" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "2011"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2011"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "FWU00X00000080N00"
+      year:
+        length: 4
+        type: values
+        example_value: "2011"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "4609"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ area, case, category2, datatype ]  # Small, frequently used
+    lazy: [ footnote, event, industry, occupation, source ]  # Load on demand
+    mmap: [ category ]  # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    area:
+        file_path: "fw.area"
+        name: Area
+        description: "Maps area codes to area names"
+        index_col: "area_code"
+        schema:
+          area_code:
+            length: 3
+            type: str
+            example_value: "N00"
+          area_text:
+            length: 100
+            type: str
+            example_value: "United States"
+          display_level:
+            length: 2
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "00001"
+
+    case:
+        file_path: "fw.case"
+        name: Case
+        description: "Maps case codes to case descriptions"
+        index_col: "case_code"
+        schema:
+          case_code:
+            length: 1
+            type: str
+            example_value: "9"
+          case_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    category:
+        file_path: "fw.category"
+        name: Category
+        description: "Maps category codes to category descriptions"
+        index_col: "category_code"
+        schema:
+          case_code:
+            length: 1
+            type: str
+            example_value: "9"
+          category_code:
+            length: 3
+            type: str
+            example_value: "00X"
+          category_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    category2:
+        file_path: "fw.category2"
+        name: Category2
+        description: "Maps category codes to category descriptions"
+        index_col: "category_code"
+        schema:
+          category_code:
+            length: 3
+            type: str
+            example_value: "00X"
+          category_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    datatype:
+        file_path: "fw.datatype"
+        name: Data Type
+        description: "Maps data type codes to data type descriptions"
+        index_col: "datatype_code"
+        schema:
+          datatype_code:
+            length: 1
+            type: str
+            example_value: "8"
+          datatype_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    event:
+        file_path: "fw.event"
+        name: Event
+        description: "Maps event codes to event descriptions"
+        index_col: "event_code"
+        schema:
+          event_code:
+            length: 6
+            type: str
+            example_value: "0000XX"
+          event_text:
+            length: 100
+            type: str
+            example_value: "Text"
+          display_level:
+            length: 2
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "00001"
+
+    footnote:
+        file_path: "fw.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "P"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    industry:
+        file_path: "fw.industry"
+        name: Industry
+        description: "Maps industry codes to industry descriptions"
+        index_col: "industry_code"
+        schema:
+          industry_code:
+            length: 6
+            type: str
+            example_value: "000000"
+          industry_text:
+            length: 100
+            type: str
+            example_value: "Text"
+          display_level:
+            length: 2
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "00001"
+
+    occupation:
+        file_path: "fw.occupation"
+        name: Occupation
+        description: "Maps occupation codes to occupation descriptions"
+        index_col: "occupation_code"
+        schema:
+          occupation_code:
+            length: 6
+            type: str
+            example_value: "000000"
+          occupation_text:
+            length: 100
+            type: str
+            example_value: "Text"
+          display_level:
+            length: 2
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "00001"
+
+    seasonal:
+        file_path: "fw.seasonal"
+        name: Seasonal Adjustment
+        description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+        index_col: "seasonal_code"
+        schema:
+          seasonal_code:
+            length: 1
+            type: str
+            example_value: "U"
+          seasonal_text:
+            length: 100
+            type: str
+            example_value: "Not seasonally adjusted"
+
+    source:
+        file_path: "fw.source"
+        name: Source
+        description: "Maps source codes to source descriptions"
+        index_col: "source_code"
+        schema:
+          source_code:
+            length: 6
+            type: str
+            example_value: "0000XX"
+          source_text:
+            length: 100
+            type: str
+            example_value: "Text"
+          display_level:
+            length: 2
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "00001"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks due to size
+  max_threads: 4     # Increased parallelization for medium-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ fw.data.0.Current, fw.data.1.AllData ]
+      partition_strategy:
+        partion_by: "category_code"
+        file_format: "fw.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1992
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^FW[U]\\d{15}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "A01" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Medium
+      output_file: "fw_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Seasonal code mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal_code"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_text"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Category code mapping
+        category_code:
+          lookup_table: "category2"
+          lookup_key: "category_code"
+          lookup_value: "category_text"
+          create_field: "category_text"
+          on_missing: "UNKNOWN_CATEGORY"
+          cache: true
+        
+        # Area code mapping
+        area_code:
+          lookup_table: "area"
+          lookup_key: "area_code"
+          lookup_value: "area_text"
+          create_field: "area_text"
+          on_missing: "UNKNOWN_AREA"
+          cache: true
+        
+        # Case code mapping
+        case_code:
+          lookup_table: "case"
+          lookup_key: "case_code"
+          lookup_value: "case_text"
+          create_field: "case_text"
+          on_missing: "UNKNOWN_CASE"
+          cache: true
+        
+        # Datatype code mapping
+        datatype_code:
+          lookup_table: "datatype"
+          lookup_key: "datatype_code"
+          lookup_value: "datatype_text"
+          create_field: "datatype_text"
+          on_missing: "UNKNOWN_DATATYPE"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^FW[U]\\d{15}$"
+            action: flag
+            message: "Invalid series ID format: should be FW[U] followed by 15 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1992
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1992 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1992
+            max: 2067
+            action: reject
+            message: "End year must be between 1992 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, seasonal, category_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, category_code, begin_year, end_year ]
+        output_file: "fw_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 2000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "fw_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/fw"

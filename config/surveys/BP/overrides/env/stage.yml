@@ -1,0 +1,12 @@
+config_version: 1
+# Staging environment overrides for BP survey
+
+logging:
+  level: "info"
+
+policy:
+  mode: "fail_on_error"
+  max_errors: 1000
+
+resources:
+  memory_limit_gb: 6

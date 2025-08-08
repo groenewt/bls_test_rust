@@ -1,0 +1,68 @@
+config_version: 1
+format: "csv"
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 100
+  enabled: false
+
+naming:
+  dataset: "bls_eb"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/EB"
+
+outputs:
+  data_series:
+    format: "csv"
+    filename_pattern: "eb_data_{year}.csv"
+    partitioning:
+      enabled: false
+    transformations:
+      sort_by: ["series_id", "year", "period"]
+      deduplicate: true
+      deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+    
+  data_dict:
+    format: "csv"
+    filename_pattern: "eb_series_dict.csv"
+    partitioning:
+      enabled: false
+    transformations:
+      sort_by: ["series_id"]
+      deduplicate: false
+    mapping:
+      title_code:
+        lookup_table: "title"
+        lookup_key: "title_code"
+        lookup_value: "title_name"
+        create_field: "title_name"
+        on_missing: "UNKNOWN_TITLE"
+        cache: true
+      type_code:
+        lookup_table: "type"
+        lookup_key: "type_code"
+        lookup_value: "type_name"
+        create_field: "type_name"
+        on_missing: "UNKNOWN_TYPE"
+        cache: true
+      footnote_codes:
+        lookup_table: "footnote"
+        lookup_key: "footnote_code"
+        lookup_value: "footnote_text"
+        create_field: "footnote_texts"
+        multiple: true
+        separator: " "
+        on_missing: "skip"
+        cache: true

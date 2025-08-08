@@ -1,0 +1,52 @@
+# CH Survey Overview Configuration
+config_version: 1
+
+survey:
+  code: "CH"
+  name: "Occupational Injuries and Illnesses - Characteristics Data"
+  description: "Detailed breakouts of injury and illness data by various characteristics."
+  size_class: "large"  # Large (1-5 GB)
+  
+  characteristics:
+    frequency: "annual"
+    coverage: "Detailed breakouts of injury and illness data by a variety of characteristics, including age, category, event, gender, industry, length of service, nature, occupation, part of body, race, and source."
+    classification_system: "Occupational injuries and illnesses categories"
+    begin_year: 2002
+    update_schedule: "Published annually"
+    survey_methodology: "Survey respondents provide additional information for a subset of the most serious nonfatal cases logged, namely, those that involved at least 1 day away from work, beyond the day of injury or onset of illness."
+    calculation_basis: "Data are reported to one decimal place"
+    time_series_count: "Large number of series"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/ch.txt"
+  data_dictionary: ""
+
+tags: ["occupational", "injuries", "illnesses", "characteristics", "safety"]
+
+definition: |
+  The following is a definition of: Occupational Injuries and Illnesses - 
+  characteristics data (ch)
+
+  Survey Description: Besides injury and illness counts, survey respondents 
+  also are asked to provide additional information for a subset of the most 
+  serious nonfatal cases logged, namely, those that involved at least 1 day 
+  away from work, beyond the day of injury or onset of illness. Employers 
+  answer several questions about these cases, including the demographics of 
+  the worker disabled, the nature of the disabling condition, and the event 
+  and source producing that condition. 
+
+  Summary Data Available: Detailed breakouts of injury and illness data by
+  a variety of characteristics, including age, category, event, gender,
+  industry, length of service, nature, occupation, part of body, race, and
+  source are available.
+
+  Frequency of Observations: Annual data are available.
+
+  Data Characteristics: Data are reported to one decimal place.
+
+  Updating Schedule: OSHS Characteristics data are published annually.

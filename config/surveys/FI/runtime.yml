@@ -1,0 +1,28 @@
+config_version: 1
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true
+  enable_statistics: true
+  enable_profiling: false
+  cache_lookups: true
+
+environment_overrides:
+  - key: "BLS_FI_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
+  - key: "BLS_MAX_THREADS"
+    maps_to: "resources.max_threads"
+  - key: "BLS_CHUNK_SIZE_MB"
+    maps_to: "io.chunk_size_mb"
+
+logging:
+  level: "info"  # trace|debug|info|warn|error
+  structured: true
+
+error_handling:
+  on_error: "continue"  # Continue processing other records
+  max_errors: 1000
+  log_errors: true

@@ -1,0 +1,28 @@
+# IN Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
+config_version: 1
+
+discovery:
+  root: "data/raw/bls/in"
+  include: ["in.series", "in.data.*", "in.country", "in.economicseries", "in.economicgroup", "in.footnote", "in.industry", "in.period", "in.periodicity", "in.seasonal"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["economicseries_code"]
+
+mmap:
+  enable_for_mb_greater_than: 100
+
+lookup_config:
+  preload: ["country", "seasonal", "economicseries"]  # Small, frequently used
+  lazy: ["footnote", "industry", "period", "periodicity", "economicgroup"]  # Load on demand
+  mmap: []  # Use for large files
+  cache_all: true  # Small enough to keep in memory

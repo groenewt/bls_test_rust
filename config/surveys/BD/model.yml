@@ -1,0 +1,328 @@
+# BD Survey Data Model Configuration
+# Data model: files, schemas, relationships
+config_version: 1
+
+series:
+  path: "bd.series"
+  index: "series_id"
+  estimated_size_gb: 0.5
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "BDS0000006000200090110001LQ5"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    msa_code:
+      type: "string"
+      length: 5
+      nullable: false
+      example_value: "00000"
+    state_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    county_code:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "000"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    unitanalysis_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    dataelement_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    sizeclass_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0001"
+    dataclass_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "L"
+    ratelevel_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "Q"
+    periodicity_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "5"
+    ownership_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "5"
+    series_title:
+      type: "string"
+      length: 200
+      nullable: true
+      example_value: "Quarterly gross job gains for the total private sector in the U.S. (rounded to the nearest thousands)"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: "1"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1992"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "Q03"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2024"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "Q04"
+
+data_files:
+  - id: "main"
+    pattern: "bd.data.*"
+    index: "series_id"
+    estimated_size_gb: 1.0
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "BDS0000006000200090110004LQ5"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2025
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(Q\\d{2})$"
+        nullable: false
+        example_value: "Q02"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 821741
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "county"
+    path: "bd.county"
+    index: "county_code"
+    description: "Maps county codes to county names"
+    schema:
+      county_code:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "000"
+      county_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "National"
+
+  - id: "dataclass"
+    path: "bd.dataclass"
+    index: "dataclass_code"
+    description: "Maps data class codes to data class names"
+    schema:
+      dataclass_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      dataclass_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Gross Job Gains"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "footnote"
+    path: "bd.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "C"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: true
+        example_value: ""
+
+  - id: "industry"
+    path: "bd.industry"
+    index: "industry_code"
+    description: "Maps industry codes to industry names"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      industry_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Total private"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "msa"
+    path: "bd.msa"
+    index: "msa_code"
+    description: "Maps MSA codes to MSA names"
+    schema:
+      msa_code:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "00000"
+      msa_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "National"
+
+  - id: "sizeclass"
+    path: "bd.sizeclass"
+    index: "sizeclass_code"
+    description: "Maps size class codes to size class names"
+    schema:
+      sizeclass_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      sizeclass_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "1-4 employees"
+
+  - id: "state"
+    path: "bd.state"
+    index: "state_code"
+    description: "Maps state codes to state names"
+    schema:
+      state_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "00"
+      state_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "U.S. TOTAL"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "state_code" }
+    to: { file: "state", column: "state_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "county_code" }
+    to: { file: "county", column: "county_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "msa_code" }
+    to: { file: "msa", column: "msa_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "sizeclass_code" }
+    to: { file: "sizeclass", column: "sizeclass_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "dataclass_code" }
+    to: { file: "dataclass", column: "dataclass_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "county", columns: ["county_code"] }
+    - { file: "dataclass", columns: ["dataclass_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+    - { file: "industry", columns: ["industry_code"] }
+    - { file: "msa", columns: ["msa_code"] }
+    - { file: "sizeclass", columns: ["sizeclass_code"] }
+    - { file: "state", columns: ["state_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "seasonal", "state_code", "county_code", "industry_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  BDSeriesId: { base: "string", length: 30, pattern: "^BD[SU]\\d{28}$" }
+  BDStateCode: { base: "string", length: 2, pattern: "^[0-9]{2}$" }
+  BDCountyCode: { base: "string", length: 3, pattern: "^[0-9]{3}$" }
+  BDIndustryCode: { base: "string", length: 6, pattern: "^[0-9]{6}$" }
+  BDPeriod: { base: "string", length: 3, pattern: "^(Q\\d{2})$" }
+  BDValue: { base: "decimal", precision: 18, scale: 4 }

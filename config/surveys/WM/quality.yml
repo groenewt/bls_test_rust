@@ -1,0 +1,56 @@
+# WM Survey Quality Configuration
+# Validations, expectations, thresholds
+config_version: 1
+
+expectations:
+  non_null:
+    - { file: "series", columns: ["series_id", "seasonal", "area_code", "ownership_code", "estimate_code", "industry_code", "occupation_code", "subcell_code", "datatype_code", "level_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "aspect", columns: ["series_id", "year", "period", "aspect_type"] }
+  ranges:
+    - { file: "main", column: "year", min: 2017, max: 2055 }
+    - { file: "aspect", column: "year", min: 2017, max: 2055 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+  enums:
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+    - { file: "main", column: "period", values: ["A01"] }
+    - { file: "aspect", column: "period", values: ["A01"] }
+    - { file: "series", column: "begin_period", values: ["A01"] }
+    - { file: "series", column: "end_period", values: ["A01"] }
+  regex:
+    - { file: "series", column: "series_id", pattern: "^WM[SU]\\d{27}$" }
+    - { file: "main", column: "series_id", pattern: "^WM[SU]\\d{27}$" }
+    - { file: "aspect", column: "series_id", pattern: "^WM[SU]\\d{27}$" }
+    - { file: "series", column: "area_code", pattern: "^[0-9]{7}$" }
+    - { file: "series", column: "occupation_code", pattern: "^[0-9]{6}$" }
+  length:
+    - { file: "series", column: "series_id", exact: 29 }
+    - { file: "main", column: "series_id", exact: 29 }
+    - { file: "aspect", column: "series_id", exact: 29 }
+    - { file: "series", column: "area_code", exact: 7 }
+    - { file: "series", column: "occupation_code", exact: 6 }
+    - { file: "series", column: "industry_code", exact: 6 }
+  lookup_exists:
+    - { file: "series", column: "area_code", lookup_table: "area" }
+    - { file: "series", column: "occupation_code", lookup_table: "occupation" }
+    - { file: "series", column: "industry_code", lookup_table: "industry" }
+    - { file: "series", column: "ownership_code", lookup_table: "ownership" }
+    - { file: "series", column: "estimate_code", lookup_table: "estimate" }
+    - { file: "series", column: "subcell_code", lookup_table: "subcell" }
+    - { file: "series", column: "datatype_code", lookup_table: "datatype" }
+    - { file: "series", column: "level_code", lookup_table: "level" }
+    - { file: "series", column: "seasonal", lookup_table: "seasonal" }
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(area_code)", "distinct(occupation_code)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50

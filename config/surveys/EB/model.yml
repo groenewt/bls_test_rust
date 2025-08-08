@@ -1,0 +1,100 @@
+config_version: 1
+series:
+  path: "eb.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id: { type: "string", length: 17, nullable: false }
+    title_code: { type: "string", length: 11, nullable: false }
+    type_code: { type: "string", length: 2, nullable: false }
+    begin_year: { type: "string", length: 4, nullable: false }
+    begin_period: { type: "string", length: 3, nullable: false }
+    end_year: { type: "string", length: 4, nullable: false }
+    end_period: { type: "string", length: 3, nullable: false }
+
+data_files:
+  - id: "main"
+    pattern: "eb.data.*"
+    index: "series_id"
+    schema:
+      series_id: { type: "string", length: 17, nullable: false }
+      year: { type: "string", length: 4, nullable: false }
+      period: { type: "string", length: 3, nullable: false }
+      value: { type: "string", length: 12, nullable: true }
+      footnote_codes: { type: "string", length: 10, nullable: true }
+
+lookups:
+  - id: "period"
+    path: "eb.period"
+    index: "period"
+    schema:
+      period: { type: "string", length: 3, nullable: false }
+      period_abbr: { type: "string", length: 5, nullable: false }
+      period_name: { type: "string", length: 20, nullable: false }
+  
+  - id: "title"
+    path: "eb.title"
+    index: "title_code"
+    schema:
+      title_code: { type: "string", length: 11, nullable: false }
+      title_name: { type: "string", length: 100, nullable: false }
+  
+  - id: "type"
+    path: "eb.type"
+    index: "type_code"
+    schema:
+      type_code: { type: "string", length: 2, nullable: false }
+      type_name: { type: "string", length: 50, nullable: false }
+  
+  - id: "seasonal"
+    path: "eb.seasonal"
+    index: "seasonal_code"
+    schema:
+      seasonal_code: { type: "string", length: 1, nullable: false }
+      seasonal_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "footnote"
+    path: "eb.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code: { type: "string", length: 1, nullable: false }
+      footnote_text: { type: "string", length: 100, nullable: false }
+
+relationships:
+  - from: { file: "series", column: "title_code" }
+    to: { file: "title", column: "title_code" }
+    type: "many-to-one"
+  
+  - from: { file: "series", column: "type_code" }
+    to: { file: "type", column: "type_code" }
+    type: "many-to-one"
+  
+  - from: { file: "series", column: "begin_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  
+  - from: { file: "series", column: "end_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "title_code", "type_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  aliases:
+    Year: { base: "string", length: 4, pattern: "^[0-9]{4}$" }
+    SeriesId: { base: "string", length: 17, pattern: "^EB[U]\\w{15}$" }
+    Period: { base: "string", length: 3, enum: ["A01"] }

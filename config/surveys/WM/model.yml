@@ -1,0 +1,585 @@
+# WM Survey Data Model Configuration
+# Data model: files, schemas, relationships
+config_version: 1
+
+series:
+  path: "wm.series"
+  index: "series_id"
+  estimated_size_gb: 1.0
+  schema:
+    series_id:
+      type: "string"
+      length: 29
+      nullable: false
+      example_value: "WMU00107401020000001300002700"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    area_code:
+      type: "string"
+      length: 7
+      nullable: false
+      example_value: "0010740"
+    ownership_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    estimate_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "02"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    occupation_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "130000"
+    subcell_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "27"
+    datatype_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "30"
+    level_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    series_title:
+      type: "string"
+      length: 256
+      nullable: true
+      example_value: "Average hourly wage for incentive-based business and financial operations occupations, in Albuquerque, NM"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: "1"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2019"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2023"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "wm.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 29
+        nullable: false
+        example_value: "WMU00107401020000001300002700"
+      year:
+        type: "int32"
+        min: 2017
+        max: 2055
+        nullable: false
+        example_value: 2023
+      period:
+        type: "string"
+        length: 3
+        pattern: "^A01$"
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 29.76
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "aspect"
+    pattern: "wm.aspect"
+    index: "series_id"
+    estimated_size_gb: 0.1
+    schema:
+      series_id:
+        type: "string"
+        length: 29
+        nullable: false
+        example_value: "WMU00107401020000001300002700"
+      year:
+        type: "int32"
+        min: 2017
+        max: 2055
+        nullable: false
+        example_value: 2023
+      period:
+        type: "string"
+        length: 3
+        pattern: "^A01$"
+        nullable: false
+        example_value: "A01"
+      aspect_type:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "R0"
+      value:
+        type: "string"
+        length: 12
+        nullable: true
+        example_value: "-"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: "2"
+
+lookups:
+  - id: "area"
+    path: "wm.area"
+    index: "area_code"
+    description: "Maps area codes to area names"
+    schema:
+      area_code:
+        type: "string"
+        length: 7
+        nullable: false
+        example_value: "0010740"
+      area_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Albuquerque, NM"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "576"
+
+  - id: "datatype"
+    path: "wm.datatype"
+    index: "datatype_code"
+    description: "Maps datatype codes to datatype names"
+    schema:
+      datatype_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "30"
+      datatype_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Mean"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "estimate"
+    path: "wm.estimate"
+    index: "estimate_code"
+    description: "Maps estimate codes to estimate names"
+    schema:
+      estimate_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "02"
+      estimate_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Average hourly wage"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "footnote"
+    path: "wm.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 10
+        nullable: false
+        example_value: "2"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: false
+        example_value: "BLS is currently developing an approach to calculate the relative standard errors due to implementation of modeled-based estimates (MB3) used by the Occupational Employment and Wage Statistics (OEWS)."
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "industry"
+    path: "wm.industry"
+    index: "industry_code"
+    description: "Maps industry codes to industry names"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      industry_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All industries"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "level"
+    path: "wm.level"
+    index: "level_code"
+    description: "Maps level codes to level names"
+    schema:
+      level_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "00"
+      level_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All levels"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "occupation"
+    path: "wm.occupation"
+    index: "occupation_code"
+    description: "Maps occupation codes to occupation names"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "130000"
+      occupation_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Business and financial operations occupations"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "ownership"
+    path: "wm.ownership"
+    index: "ownership_code"
+    description: "Maps ownership codes to ownership names"
+    schema:
+      ownership_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      ownership_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Civilian workers"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "period"
+    path: "wm.period"
+    index: "period"
+    description: "Maps period codes to period names"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "A01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "ANN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Annual"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "seasonal"
+    path: "wm.seasonal"
+    index: "seasonal"
+    description: "Maps seasonal codes to seasonal names"
+    schema:
+      seasonal:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "U"
+      seasonal_text:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "Not seasonally adjusted"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "subcell"
+    path: "wm.subcell"
+    index: "subcell_code"
+    description: "Maps subcell codes to subcell names"
+    schema:
+      subcell_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "27"
+      subcell_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Time-based pay"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "aspect", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "ownership_code" }
+    to: { file: "ownership", column: "ownership_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "estimate_code" }
+    to: { file: "estimate", column: "estimate_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "occupation_code" }
+    to: { file: "occupation", column: "occupation_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "subcell_code" }
+    to: { file: "subcell", column: "subcell_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "datatype_code" }
+    to: { file: "datatype", column: "datatype_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "level_code" }
+    to: { file: "level", column: "level_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal" }
+    type: "many-to-one"
+  - from: { file: "series", column: "begin_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "series", column: "end_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "aspect", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "aspect", columns: ["series_id", "year", "period", "aspect_type"] }
+    - { file: "area", columns: ["area_code"] }
+    - { file: "datatype", columns: ["datatype_code"] }
+    - { file: "estimate", columns: ["estimate_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+    - { file: "industry", columns: ["industry_code"] }
+    - { file: "level", columns: ["level_code"] }
+    - { file: "occupation", columns: ["occupation_code"] }
+    - { file: "ownership", columns: ["ownership_code"] }
+    - { file: "period", columns: ["period"] }
+    - { file: "seasonal", columns: ["seasonal"] }
+    - { file: "subcell", columns: ["subcell_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "seasonal", "area_code", "ownership_code", "estimate_code", "industry_code", "occupation_code", "subcell_code", "datatype_code", "level_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "aspect", columns: ["series_id", "year", "period", "aspect_type"] }
+
+types:
+  WMSeriesId: { base: "string", length: 29, pattern: "^WM[SU]\\d{27}$" }
+  WMAreaCode: { base: "string", length: 7, pattern: "^[0-9]{7}$" }
+  WMOccupationCode: { base: "string", length: 6, pattern: "^[0-9]{6}$" }
+  WMIndustryCode: { base: "string", length: 6, pattern: "^[0-9]{6}$" }
+  WMPeriod: { base: "string", length: 3, pattern: "^A01$" }
+  WMValue: { base: "decimal", precision: 18, scale: 4 }

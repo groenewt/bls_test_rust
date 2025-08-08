@@ -1,0 +1,29 @@
+config_version: 1
+# Development environment overrides for SM survey
+
+# Reduced resources for development
+resources:
+  max_threads: 4
+  memory_limit_gb: 8
+
+# Smaller chunks for faster iteration
+io:
+  chunk_size_mb: 32
+  buffer_pool_size: 4
+
+# Enable profiling in development
+features:
+  enable_profiling: true
+
+# More lenient error handling for development
+error_handling:
+  on_error: "continue"
+  max_errors: 1000
+
+# Debug logging
+logging:
+  level: "debug"
+
+# Smaller partitions for development
+partitioning:
+  max_file_size_mb: 128

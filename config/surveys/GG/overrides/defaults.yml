@@ -1,0 +1,23 @@
+config_version: 1
+# Organization/team defaults for GG survey
+# These settings override the base survey configuration
+
+# Default processing adjustments
+processing:
+  strategy:
+    max_concurrency: 2  # Conservative default for shared environments
+
+# Default output settings
+output:
+  format: "csv"  # Standard format for most use cases
+
+# Default quality settings
+quality:
+  policy:
+    mode: "warn_only"  # Less strict for development environments
+    max_errors: 1000
+
+# Default logging
+logging:
+  level: "info"
+  structured: true

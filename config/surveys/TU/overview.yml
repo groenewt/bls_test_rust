@@ -1,0 +1,23 @@
+config_version: 1
+survey:
+  code: "TU"
+  name: "American Time Use Survey"
+  description: "The American Time Use Survey (ATUS) is the Nation's first federally administered, continuous survey on time use in the United States. The goal of the survey is to measure how people divide their time among life's activities."
+  size_class: "medium"
+  characteristics:
+    frequency: "annual"
+    coverage: "Time Use data are available for the civilian, noninstitutional population age 15 and older and various subpopulations"
+    classification_system: "Activity codes, demographic characteristics, and time use categories"
+    begin_year: 2003
+    update_schedule: "Annual release"
+    survey_methodology: "Individuals are randomly selected from a subset of households that have completed their eighth and final month of interviews for the Current Population Survey (CPS)."
+    calculation_basis: "Time use estimates are constructed for different activities, including average hours per day, participation rates, and number of persons."
+    time_series_count: "ATUS time series data"
+  contacts:
+    - role: "owner"
+      name: "groenewt"
+      email: ""
+  documentation:
+    primary: "docs/bls/survey/tu.txt"
+    data_dictionary: ""
+  tags: ["time-use", "activities", "household", "demographics", "labor-statistics"]

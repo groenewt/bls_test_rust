@@ -1,0 +1,101 @@
+config_version: 1
+format: "csv"
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_fi"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/FI"
+
+data_series:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: true
+      partition_by: ["year"]
+    transformations:
+      sort_by: ["series_id", "year", "period"]
+      deduplicate: true
+      deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+    statistics:
+      enabled: true
+      columns: ["year", "period", "value"]
+
+data_dict:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: false  # Single file output for series metadata
+    output_file: "fi_series_dict.csv"
+    mapping:
+      category_code:
+        lookup_table: "category"
+        lookup_key: "category_code"
+        lookup_value: "category_text"
+        create_field: "category_name"
+        on_missing: "UNKNOWN_CATEGORY"
+        cache: true
+      datatype_code:
+        lookup_table: "datatype"
+        lookup_key: "datatype_code"
+        lookup_value: "datatype_text"
+        create_field: "datatype_name"
+        on_missing: "UNKNOWN_DATATYPE"
+        cache: true
+      case_code:
+        lookup_table: "case"
+        lookup_key: "case_code"
+        lookup_value: "case_text"
+        create_field: "case_name"
+        on_missing: "UNKNOWN_CASE"
+        cache: true
+      industry_code:
+        lookup_table: "industry"
+        lookup_key: "industry_code"
+        lookup_value: "industry_text"
+        create_field: "industry_name"
+        on_missing: "UNKNOWN_INDUSTRY"
+        cache: true
+      event_code:
+        lookup_table: "event"
+        lookup_key: "event_code"
+        lookup_value: "event_text"
+        create_field: "event_name"
+        on_missing: "UNKNOWN_EVENT"
+        cache: true
+      source_code:
+        lookup_table: "source"
+        lookup_key: "source_code"
+        lookup_value: "source_text"
+        create_field: "source_name"
+        on_missing: "UNKNOWN_SOURCE"
+        cache: true
+      occupation_code:
+        lookup_table: "occupation"
+        lookup_key: "occupation_code"
+        lookup_value: "occupation_text"
+        create_field: "occupation_name"
+        on_missing: "UNKNOWN_OCCUPATION"
+        cache: true
+      area_code:
+        lookup_table: "area"
+        lookup_key: "area_code"
+        lookup_value: "area_text"
+        create_field: "area_name"
+        on_missing: "UNKNOWN_AREA"
+        cache: true

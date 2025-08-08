@@ -1,0 +1,39 @@
+# stage.yml
+# Consumer Expenditure Survey - Staging environment overrides
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+# Staging-specific processing settings
+processing:
+  resources:
+    max_threads: 6        # More threads for staging
+    memory_limit_gb: 12   # Higher memory limit for staging
+
+# Staging output settings
+output:
+  destination:
+    base_path: "data/processed/stage/bls/CX"
+
+# Staging quality settings - production-like but with some tolerance
+quality:
+  policy:
+    mode: "fail_on_error"
+    max_error_rate: 0.03  # Slightly more tolerant than prod
+    sample_on_fail_rows: 25
+
+# Staging runtime settings
+runtime:
+  feature_flags:
+    enable_profiling: false   # Disable profiling in staging
+    enable_hot_reloads: false # No hot reloads in staging
+  
+  logging:
+    level: "info"             # Standard logging in staging
+  
+  error_handling:
+    max_errors: 1500          # Moderate error threshold
+  
+  monitoring:
+    enable_metrics: true      # Enable metrics collection
+    metrics_interval_seconds: 60  # Less frequent than prod

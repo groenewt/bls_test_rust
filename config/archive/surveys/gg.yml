@@ -1,0 +1,668 @@
+# .config/surveys/gg.yml
+# name: Green Goods and Services Survey Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/gg
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/gg.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: gg #survey code (ex.ap,sm,tu)- see docs (.docs/surveys/* for all surveys)
+  name: Green Goods and Services Survey #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The Green Goods and Services (GGS) program provides national and State estimates of GGS employment levels and rates by North American Industrial Classification System (NAICS) industry code and ownership."
+  definition: "
+The following is a definition of:  Green Goods and Services Survey (GGS)
+	
+Survey Description:  The Green Goods and Services (GGS) program provides
+national and State estimates of GGS employment levels and rates by North
+American Industrial Classification System (NAICS) industry code and ownership.
+GGS employment is employment associated with producing green goods or 
+providing green services. GGS employment level and rate estimates are also
+published at the State level for private, local government, State government,
+and federal government ownerships at the NAICS industry sector level.
+
+At the national level, GGS employment level and rate estimates are published 
+by select NAICS industries based on the 2007 NAICS codes. These select
+industries are within a subset of 333 industries identified as being potential
+producers of green goods and services. For a list of these 333 industries,
+please visit our Web site at http://www.bls.gov/ggs.
+
+At the State level, GGS employment level and rate estimates are published by
+select sectors based on the 2007 NAICS codes. These select sectors include: 
+mining and logging; construction; manufacturing; trade; transportation;
+utilities; information; finance and insurance; professional and business
+services; educational services; arts, entertainment, and recreation; other 
+services; federal government; State government, and local government.
+
+The sample for the Green Goods and Services Survey includes approximately 
+120,000 randomly selected  establishments per year in the 50 states and the
+District of Columbia from the Quarterly Census of Employment and Wages (QCEW)
+sample frame. Most of these establishments, which include factories, offices,
+government agencies, and stores, are selected from the second quarter QCEW
+sample frame, while a small sample of new business establishments is selected
+from the third and fourth quarters. The sample is designed to estimate GGS 
+employment at both national industry and state industry sector levels of
+detail.
+
+All data series are published on a quarterly rolling-year basis, beginning
+with the fourth quarter of 2010.
+
+Data Characteristics: All published levels are rounded to the nearest unit. 
+All rates are published in percent to one decimal place.
+
+Special characteristics of the data are footnoted where necessary.
+
+Updating Schedule: The updating schedule for GGS data is yet to be determined.
+                "
+  characteristics:
+    frequency: quarterly
+    coverage: "National and State estimates of GGS employment levels and rates by NAICS industry code and ownership"
+    time_series_count: "Green Goods and Services Survey series"
+    classification_system: "2007 NAICS codes"
+    update_schedule: "To be determined"
+    begin_year: 2010
+    survey_methodology: "Sample of approximately 120,000 randomly selected establishments per year from the Quarterly Census of Employment and Wages (QCEW) sample frame"
+    calculation_basis: "Employment levels and rates associated with producing green goods or providing green services"
+
+#Survey Series Information
+series:
+  path: "gg.series" #path to series file
+  use_mmap: true
+  series_size_class: Medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 23
+      type: Text
+      example_value: "GGUQ000002211190150010R"
+      map_file: ""
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "U"
+      needs_mapping: true
+      map_file: "seasonal"
+    periodicity_code:
+      length: 1
+      type: Text
+      example_value: "Q"
+      needs_mapping: true
+      map_file: "periodicity"
+    area_code:
+      length: 5
+      type: Text
+      example_value: "00000"
+      needs_mapping: true
+      map_file: "area"
+    industry_code:
+      length: 6
+      type: Text
+      example_value: "221119"
+      needs_mapping: true
+      map_file: "industry"
+    altenergy_code:
+      length: 2
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "altenergy"
+    own_code:
+      length: 1
+      type: Text
+      example_value: "5"
+      needs_mapping: true
+      map_file: "own"
+    sizeclass_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "size"
+    dataelement_code:
+      length: 2
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "dataelement"
+    futureuse_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: false
+      map_file: ""
+    ratelevel_code:
+      length: 1
+      type: Text
+      example_value: "R"
+      needs_mapping: true
+      map_file: "ratelevel"
+    footnote_codes:
+      length: 2
+      type: Text
+      example_value: ""
+      needs_mapping: true
+      map_file: "footnote"
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "2010"
+      needs_mapping: false
+      map_file: ""
+    begin_period:
+      length: 2
+      type: Text
+      example_value: "Q4"
+      needs_mapping: false
+      map_file: ""
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2011"
+      needs_mapping: false
+      map_file: ""
+    end_period:
+      length: 2
+      type: Text
+      example_value: "Q1"
+      needs_mapping: false
+      map_file: ""
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 23
+        type: Text
+        example_value: "GGUQ000002211190150010R"
+      year:
+        length: 4
+        type: values
+        example_value: "2010"
+      period:
+        length: 3
+        type: Text
+        example_value: "Q03"
+      value:
+        length: 12
+        type: values
+        example_value: "955712"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ area, industry, own ]  # Small, frequently used
+    lazy: [ footnote, altenergy, dataelement, periodicity, ratelevel, seasonal, size ]  # Load on demand
+    mmap: [ ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    altenergy:
+        file_path: "gg.altenergy"
+        name: Alternative Energy
+        description: "Maps alternative energy codes to descriptions"
+        index_col: "altenergy_code"
+        schema:
+          altenergy_code:
+            length: 2
+            type: str
+            example_value: "01"
+          altenergy_text:
+            length: 100
+            type: str
+            example_value: "Alternative Energy"
+
+    area:
+        file_path: "gg.area"
+        name: Area
+        description: "Maps area codes to area names"
+        index_col: "area_code"
+        schema:
+          area_code:
+            length: 5
+            type: str
+            example_value: "34000"
+          area_text:
+            length: 100
+            type: str
+            example_value: "New Jersey"
+
+    dataelement:
+        file_path: "gg.dataelement"
+        name: Data Element
+        description: "Maps data element codes to data element descriptions"
+        index_col: "dataelement_code"
+        schema:
+          dataelement_code:
+            length: 2
+            type: str
+            example_value: "01"
+          dataelement_text:
+            length: 100
+            type: str
+            example_value: "GGS employment"
+
+    footnote:
+        file_path: "gg.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "5"
+          footnote_text:
+            length: 250
+            type: str
+            example_value: "Data not available."
+
+    greenquartile:
+        file_path: "gg.greenquartile"
+        name: Green Quartile
+        description: "Maps green quartile codes to descriptions"
+        index_col: "greenquartile_code"
+        schema:
+          greenquartile_code:
+            length: 1
+            type: str
+            example_value: "1"
+          greenquartile_text:
+            length: 100
+            type: str
+            example_value: "First quartile"
+
+    industry:
+        file_path: "gg.industry"
+        name: Industry
+        description: "Maps industry codes to industry names"
+        index_col: "industry_code"
+        schema:
+          industry_code:
+            length: 6
+            type: str
+            example_value: "334300"
+          industry_text:
+            length: 100
+            type: str
+            example_value: "Audio and video equipment mfg."
+
+    own:
+        file_path: "gg.own"
+        name: Ownership
+        description: "Maps ownership codes to ownership descriptions"
+        index_col: "own_code"
+        schema:
+          own_code:
+            length: 1
+            type: str
+            example_value: "2"
+          own_text:
+            length: 100
+            type: str
+            example_value: "State government"
+
+    periodicity:
+        file_path: "gg.periodicity"
+        name: Periodicity
+        description: "Maps periodicity codes to periodicity descriptions"
+        index_col: "periodicity_code"
+        schema:
+          periodicity_code:
+            length: 1
+            type: str
+            example_value: "Q"
+          periodicity_text:
+            length: 9
+            type: str
+            example_value: "Quarterly rolling year"
+
+    ratelevel:
+        file_path: "gg.ratelevel"
+        name: Rate/Level
+        description: "Maps rate/level codes to rate/level descriptions"
+        index_col: "ratelevel_code"
+        schema:
+          ratelevel_code:
+            length: 1
+            type: str
+            example_value: "R"
+          ratelevel_text:
+            length: 5
+            type: str
+            example_value: "Rate"
+
+    seasonal:
+        file_path: "gg.seasonal"
+        name: Seasonal Adjustment
+        description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+        index_col: "seasonal_code"
+        schema:
+          seasonal_code:
+            length: 1
+            type: str
+            example_value: "U"
+          seasonal_text:
+            length: 100
+            type: str
+            example_value: "Not seasonally adjusted"
+
+    size:
+        file_path: "gg.size"
+        name: Size Class
+        description: "Maps size class codes to size class descriptions"
+        index_col: "size_code"
+        schema:
+          size_code:
+            length: 1
+            type: str
+            example_value: "0"
+          size_text:
+            length: 100
+            type: str
+            example_value: "All size classes"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks due to size
+  max_threads: 4     # Increased parallelization for medium-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ gg.data.1.AllData ]
+      partition_strategy:
+        partion_by: "industry_code"
+        file_format: "gg.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: 0  # Employment counts can't be negative
+                max: 10000000  # Reasonable upper limit for employment counts
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 2010  # First year of data collection
+                max: 2055  # Future-proofing
+                action: reject
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^GG[US]Q\\d{19}$"
+                action: flag
+              
+              - field: period
+                rule: values
+                allowed: [ "Q01", "Q02", "Q03", "Q04" ]  # Quarterly data
+                action: flag
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Medium
+      output_file: "gg_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Seasonal code mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal_code"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_text"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Periodicity code mapping
+        periodicity_code:
+          lookup_table: "periodicity"
+          lookup_key: "periodicity_code"
+          lookup_value: "periodicity_text"
+          create_field: "periodicity_text"
+          on_missing: "UNKNOWN_PERIODICITY"
+          cache: true
+        
+        # Area code mapping
+        area_code:
+          lookup_table: "area"
+          lookup_key: "area_code"
+          lookup_value: "area_text"
+          create_field: "area_text"
+          on_missing: "UNKNOWN_AREA"
+          cache: true
+        
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_text"
+          create_field: "industry_text"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+        
+        # Alternative energy code mapping
+        altenergy_code:
+          lookup_table: "altenergy"
+          lookup_key: "altenergy_code"
+          lookup_value: "altenergy_text"
+          create_field: "altenergy_text"
+          on_missing: "UNKNOWN_ALTENERGY"
+          cache: true
+        
+        # Ownership code mapping
+        own_code:
+          lookup_table: "own"
+          lookup_key: "own_code"
+          lookup_value: "own_text"
+          create_field: "own_text"
+          on_missing: "UNKNOWN_OWNERSHIP"
+          cache: true
+        
+        # Size class code mapping
+        sizeclass_code:
+          lookup_table: "size"
+          lookup_key: "size_code"
+          lookup_value: "size_text"
+          create_field: "sizeclass_text"
+          on_missing: "UNKNOWN_SIZE"
+          cache: true
+        
+        # Data element code mapping
+        dataelement_code:
+          lookup_table: "dataelement"
+          lookup_key: "dataelement_code"
+          lookup_value: "dataelement_text"
+          create_field: "dataelement_text"
+          on_missing: "UNKNOWN_DATAELEMENT"
+          cache: true
+        
+        # Rate/level code mapping
+        ratelevel_code:
+          lookup_table: "ratelevel"
+          lookup_key: "ratelevel_code"
+          lookup_value: "ratelevel_text"
+          create_field: "ratelevel_text"
+          on_missing: "UNKNOWN_RATELEVEL"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^GG[US]Q\\d{19}$"
+            action: flag
+            message: "Invalid series ID format: should be GG[U/S]Q followed by 19 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 23
+            action: reject
+            message: "Series ID must be exactly 23 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Area code validation
+          - field: area_code
+            rule: length
+            exact: 5
+            action: reject
+            message: "Area code must be exactly 5 characters"
+          
+          # Industry code validation
+          - field: industry_code
+            rule: length
+            exact: 6
+            action: reject
+            message: "Industry code must be exactly 6 characters"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 2010
+            max: 2055
+            action: reject
+            message: "Begin year must be between 2010 and 2055"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 2010
+            max: 2055
+            action: reject
+            message: "End year must be between 2010 and 2055"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "Q1", "Q2", "Q3", "Q4" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "Q1", "Q2", "Q3", "Q4" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year == begin_year AND end_period >= begin_period) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, seasonal, periodicity_code, area_code, industry_code, altenergy_code, own_code, sizeclass_code, dataelement_code, ratelevel_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes, futureuse_code ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, industry_code, area_code, begin_year, end_year ]
+        output_file: "gg_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 2000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "gg_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/gg"

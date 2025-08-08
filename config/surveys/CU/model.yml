@@ -1,0 +1,127 @@
+config_version: 1
+series:
+  path: "cu.series"
+  index: "series_id"
+  estimated_size_gb: 2.0
+  schema:
+    series_id: { type: "string", length: 17, nullable: false }
+    area_code: { type: "string", length: 4, nullable: false }
+    item_code: { type: "string", length: 8, nullable: false }
+    seasonal: { type: "string", length: 1, enum: ["S", "U"], nullable: false }
+    periodicity_code: { type: "string", length: 1, enum: ["R", "S"], nullable: false }
+    base_code: { type: "string", length: 1, enum: ["S", "A"], nullable: false }
+    base_period: { type: "string", length: 20, nullable: true }
+    footnote_codes: { type: "string", length: 10, nullable: true }
+    begin_year: { type: "string", length: 4, nullable: false }
+    begin_period: { type: "string", length: 3, nullable: false }
+    end_year: { type: "string", length: 4, nullable: false }
+    end_period: { type: "string", length: 3, nullable: false }
+
+data_files:
+  - id: "main"
+    pattern: "cu.data.*"
+    index: "series_id"
+    schema:
+      series_id: { type: "string", length: 17, nullable: false }
+      year: { type: "string", length: 4, nullable: false }
+      period: { type: "string", length: 3, nullable: false }
+      value: { type: "decimal", length: 12, precision: 18, scale: 4, nullable: true }
+      footnote_codes: { type: "string", length: 10, nullable: true }
+
+lookups:
+  - id: "area"
+    path: "cu.area"
+    index: "area_code"
+    schema:
+      area_code: { type: "string", length: 4, nullable: false }
+      area_name: { type: "string", length: 80, nullable: false }
+  
+  - id: "aspect"
+    path: "cu.aspect"
+    index: "aspect_code"
+    schema:
+      aspect_code: { type: "string", length: 4, nullable: false }
+      aspect_name: { type: "string", length: 100, nullable: false }
+  
+  - id: "base"
+    path: "cu.base"
+    index: "base_code"
+    schema:
+      base_code: { type: "string", length: 1, nullable: false }
+      base_text: { type: "string", length: 30, nullable: false }
+  
+  - id: "footnote"
+    path: "cu.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code: { type: "string", length: 1, nullable: false }
+      footnote_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "item"
+    path: "cu.item"
+    index: "item_code"
+    schema:
+      item_code: { type: "string", length: 8, nullable: false }
+      item_name: { type: "string", length: 100, nullable: false }
+  
+  - id: "period"
+    path: "cu.period"
+    index: "period"
+    schema:
+      period: { type: "string", length: 3, nullable: false }
+      period_abbr: { type: "string", length: 5, nullable: false }
+      period_name: { type: "string", length: 20, nullable: false }
+  
+  - id: "periodicity"
+    path: "cu.periodicity"
+    index: "periodicity_code"
+    schema:
+      periodicity_code: { type: "string", length: 1, nullable: false }
+      periodicity_text: { type: "string", length: 30, nullable: false }
+  
+  - id: "seasonal"
+    path: "cu.seasonal"
+    index: "seasonal"
+    schema:
+      seasonal: { type: "string", length: 1, nullable: false }
+      seasonal_text: { type: "string", length: 30, nullable: false }
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "item_code" }
+    to: { file: "item", column: "item_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal" }
+    type: "many-to-one"
+  - from: { file: "series", column: "periodicity_code" }
+    to: { file: "periodicity", column: "periodicity_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "base_code" }
+    to: { file: "base", column: "base_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "area", columns: ["area_code"] }
+    - { file: "item", columns: ["item_code"] }
+    - { file: "period", columns: ["period"] }
+    - { file: "periodicity", columns: ["periodicity_code"] }
+    - { file: "seasonal", columns: ["seasonal"] }
+    - { file: "base", columns: ["base_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "area_code", "item_code", "seasonal", "periodicity_code", "base_code", "begin_year", "begin_period", "end_year", "end_period"] }
+
+types:
+  aliases:
+    Year: { base: "string", pattern: "^[0-9]{4}$", range: [1913, 2067] }
+    Period: { base: "string", pattern: "^(M(0[1-9]|1[0-3])|S0[1-3])$" }
+    SeriesId: { base: "string", pattern: "^CU[SU][RS]\\d{4}[A-Z0-9]{3,8}$", length: 17 }

@@ -1,0 +1,153 @@
+config_version: 1
+series:
+  path: "fi.series"
+  index: "series_id"
+  estimated_size_gb: 1.0
+  schema:
+    series_id: { type: "string", length: 17, nullable: false }
+    category_code: { type: "string", length: 3, nullable: false }
+    datatype_code: { type: "string", length: 1, nullable: false }
+    case_code: { type: "string", length: 1, nullable: false }
+    industry_code: { type: "string", length: 6, nullable: false }
+    event_code: { type: "string", length: 6, nullable: false }
+    source_code: { type: "string", length: 6, nullable: false }
+    occupation_code: { type: "string", length: 6, nullable: false }
+    area_code: { type: "string", length: 3, nullable: false }
+    footnote_codes: { type: "string", length: 10, nullable: true }
+    begin_year: { type: "string", length: 4, nullable: false }
+    begin_period: { type: "string", length: 3, nullable: false }
+    end_year: { type: "string", length: 4, nullable: false }
+    end_period: { type: "string", length: 3, nullable: false }
+
+data_files:
+  - id: "main"
+    pattern: "fi.data.*"
+    index: "series_id"
+    schema:
+      series_id: { type: "string", length: 17, nullable: false }
+      year: { type: "int32", min: 1992, max: 2055 }
+      period: { type: "string", length: 3, pattern: "^A01$" }
+      value: { type: "decimal", precision: 12, scale: 0, nullable: true }
+      footnote_codes: { type: "string", length: 10, nullable: true }
+
+lookups:
+  - id: "area"
+    path: "fi.area"
+    index: "area_code"
+    schema:
+      area_code: { type: "string", length: 3, nullable: false }
+      area_text: { type: "string", length: 100, nullable: false }
+      display_level: { type: "string", length: 2, nullable: false }
+      selectable: { type: "string", length: 1, nullable: false }
+      sort_sequence: { type: "string", length: 5, nullable: false }
+  
+  - id: "case"
+    path: "fi.case"
+    index: "case_code"
+    schema:
+      case_code: { type: "string", length: 1, nullable: false }
+      case_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "category"
+    path: "fi.category"
+    index: "category_code"
+    schema:
+      case_code: { type: "string", length: 1, nullable: false }
+      category_code: { type: "string", length: 3, nullable: false }
+      category_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "datatype"
+    path: "fi.datatype"
+    index: "datatype_code"
+    schema:
+      datatype_code: { type: "string", length: 1, nullable: false }
+      datatype_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "event"
+    path: "fi.event"
+    index: "event_code"
+    schema:
+      event_code: { type: "string", length: 6, nullable: false }
+      event_text: { type: "string", length: 100, nullable: false }
+      display_level: { type: "string", length: 2, nullable: false }
+      selectable: { type: "string", length: 1, nullable: false }
+      sort_sequence: { type: "string", length: 5, nullable: false }
+  
+  - id: "footnote"
+    path: "fi.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code: { type: "string", length: 1, nullable: false }
+      footnote_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "industry"
+    path: "fi.industry"
+    index: "industry_code"
+    schema:
+      industry_code: { type: "string", length: 6, nullable: false }
+      industry_text: { type: "string", length: 100, nullable: false }
+      display_level: { type: "string", length: 2, nullable: false }
+      selectable: { type: "string", length: 1, nullable: false }
+      sort_sequence: { type: "string", length: 5, nullable: false }
+  
+  - id: "occupation"
+    path: "fi.occupation"
+    index: "occupation_code"
+    schema:
+      occupation_code: { type: "string", length: 6, nullable: false }
+      occupation_text: { type: "string", length: 100, nullable: false }
+      display_level: { type: "string", length: 2, nullable: false }
+      selectable: { type: "string", length: 1, nullable: false }
+      sort_sequence: { type: "string", length: 5, nullable: false }
+  
+  - id: "source"
+    path: "fi.source"
+    index: "source_code"
+    schema:
+      source_code: { type: "string", length: 6, nullable: false }
+      source_text: { type: "string", length: 100, nullable: false }
+      display_level: { type: "string", length: 2, nullable: false }
+      selectable: { type: "string", length: 1, nullable: false }
+      sort_sequence: { type: "string", length: 5, nullable: false }
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "case_code" }
+    to: { file: "case", column: "case_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "category_code" }
+    to: { file: "category", column: "category_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "datatype_code" }
+    to: { file: "datatype", column: "datatype_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "event_code" }
+    to: { file: "event", column: "event_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "occupation_code" }
+    to: { file: "occupation", column: "occupation_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "source_code" }
+    to: { file: "source", column: "source_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "category_code", "datatype_code", "case_code", "industry_code", "event_code", "source_code", "occupation_code", "area_code"] }
+
+types:
+  aliases:
+    Year: { base: "int32", range: [1992, 2055] }
+    FatalityCount: { base: "decimal", precision: 12, scale: 0, min: 0 }

@@ -1,0 +1,148 @@
+config_version: 1
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1980, max: 2000 }
+    - { file: "main", column: "value", min: -100.0, max: 100.0 }
+    - { file: "series", column: "begin_year", min: 1980, max: 2000 }
+    - { file: "series", column: "end_year", min: 1980, max: 2000 }
+  
+  enums:
+    - { file: "main", column: "period", values: ["Q01", "Q02", "Q03", "Q04", "Q05", "Q13"] }
+    - { file: "series", column: "begin_period", values: ["Q01", "Q02", "Q03", "Q04", "Q05", "Q13"] }
+    - { file: "series", column: "end_period", values: ["Q01", "Q02", "Q03", "Q04", "Q05", "Q13"] }
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+  
+  regex:
+    - { file: "main", column: "series_id", pattern: "^BG[US].{11}$" }
+    - { file: "series", column: "series_id", pattern: "^BG[US].{11}$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 13 }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+
+row_count:
+  min: 1
+  warn_below: 10
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "min(year)", "max(year)", "min(value)", "max(value)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+
+validation_rules:
+  data_series:
+    - field: "value"
+      rule: "range"
+      min: -100.0
+      max: 100.0
+      action: "flag"
+      message: "Value outside expected range"
+    
+    - field: "year"
+      rule: "range"
+      min: 1980
+      max: 2000
+      action: "reject"
+      message: "Year must be between 1980 and 2000"
+    
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^BG[US].{11}$"
+      action: "flag"
+      message: "Invalid series ID format"
+    
+    - field: "period"
+      rule: "values"
+      allowed: ["Q01", "Q02", "Q03", "Q04", "Q05", "Q13"]
+      action: "flag"
+      message: "Invalid period value"
+
+  series_dict:
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^BG[US].{11}$"
+      action: "flag"
+      message: "Invalid series ID format: should be BG[S/U] followed by 11 characters"
+    
+    - field: "series_id"
+      rule: "length"
+      exact: 13
+      action: "reject"
+      message: "Series ID must be exactly 13 characters"
+    
+    - field: "series_id"
+      rule: "required"
+      action: "reject"
+      message: "Series ID cannot be null"
+    
+    - field: "begin_year"
+      rule: "range"
+      min: 1980
+      max: 2000
+      action: "reject"
+      message: "Begin year must be between 1980 and 2000"
+    
+    - field: "begin_year"
+      rule: "numeric"
+      action: "reject"
+      message: "Begin year must be numeric"
+    
+    - field: "end_year"
+      rule: "range"
+      min: 1980
+      max: 2000
+      action: "reject"
+      message: "End year must be between 1980 and 2000"
+    
+    - field: "end_year"
+      rule: "numeric"
+      action: "reject"
+      message: "End year must be numeric"
+    
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      action: "reject"
+      message: "End year must be >= begin year"
+    
+    - field: "begin_period"
+      rule: "values"
+      allowed: ["Q01", "Q02", "Q03", "Q04", "Q05", "Q13"]
+      action: "flag"
+      message: "Invalid begin period value"
+    
+    - field: "end_period"
+      rule: "values"
+      allowed: ["Q01", "Q02", "Q03", "Q04", "Q05", "Q13"]
+      action: "flag"
+      message: "Invalid end period value"
+    
+    - field: "end_year"
+      rule: "date_logic_check"
+      check_fields: ["begin_year"]
+      validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+      action: "flag"
+      message: "End date must be after or equal to begin date"
+
+completeness:
+  required_fields:
+    main: ["series_id", "year", "period"]
+    series: ["series_id", "seasonal", "begin_year", "begin_period", "end_year", "end_period"]
+  
+  nullable_fields:
+    main: ["value", "cont_break", "status", "footnote_exists"]
+    series: ["contract_duration", "contract_selection"]
+
+uniqueness:
+  constraints:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }

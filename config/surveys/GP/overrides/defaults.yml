@@ -1,0 +1,15 @@
+config_version: 1
+# Default overrides for GP survey
+# These settings apply across all environments unless overridden
+
+processing:
+  strategy:
+    max_concurrency: 2
+  resources:
+    memory_limit_gb: 4
+
+logging:
+  level: "info"
+
+error_handling:
+  max_errors: 1000

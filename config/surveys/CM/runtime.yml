@@ -1,0 +1,114 @@
+config_version: 1
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true
+  enable_checkpoints: true
+  enable_error_recovery: true
+
+environment_overrides:
+  - key: "BLS_CM_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
+  - key: "BLS_CM_MAX_THREADS"
+    maps_to: "resources.max_threads"
+  - key: "BLS_CM_CHUNK_SIZE_MB"
+    maps_to: "io.chunk_size_mb"
+
+logging:
+  level: "info"
+  structured: true
+
+error_handling:
+  on_error: "continue"
+  max_errors: 2000
+  log_errors: true
+  error_file: "cm_errors.log"
+  
+  checkpoint:
+    enabled: true
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/cm"
+
+lookup_config:
+  preload: ["area", "industry", "occupation", "owner"]
+  lazy: ["footnote", "datatype", "estimate", "subcell", "seasonal"]
+  mmap: []
+  cache_all: true
+
+mapping_config:
+  seasonal:
+    lookup_table: "seasonal"
+    lookup_key: "seasonal"
+    lookup_value: "seasonal_text"
+    create_field: "seasonal_text"
+    on_missing: "UNKNOWN_SEASONAL"
+    cache: true
+  
+  owner_code:
+    lookup_table: "owner"
+    lookup_key: "owner_code"
+    lookup_value: "owner_text"
+    create_field: "owner_text"
+    on_missing: "UNKNOWN_OWNER"
+    cache: true
+  
+  industry_code:
+    lookup_table: "industry"
+    lookup_key: "industry_code"
+    lookup_value: "industry_text"
+    create_field: "industry_text"
+    on_missing: "UNKNOWN_INDUSTRY"
+    cache: true
+  
+  occupation_code:
+    lookup_table: "occupation"
+    lookup_key: "occupation_code"
+    lookup_value: "occupation_text"
+    create_field: "occupation_text"
+    on_missing: "UNKNOWN_OCCUPATION"
+    cache: true
+  
+  subcell_code:
+    lookup_table: "subcell"
+    lookup_key: "subcell_code"
+    lookup_value: "subcell_text"
+    create_field: "subcell_text"
+    on_missing: "UNKNOWN_SUBCELL"
+    cache: true
+  
+  area_code:
+    lookup_table: "area"
+    lookup_key: "area_code"
+    lookup_value: "area_text"
+    create_field: "area_text"
+    on_missing: "UNKNOWN_AREA"
+    cache: true
+  
+  datatype_code:
+    lookup_table: "datatype"
+    lookup_key: "datatype_code"
+    lookup_value: "datatype_text"
+    create_field: "datatype_text"
+    on_missing: "UNKNOWN_DATATYPE"
+    cache: true
+  
+  estimate_code:
+    lookup_table: "estimate"
+    lookup_key: "estimate_code"
+    lookup_value: "estimate_text"
+    create_field: "estimate_text"
+    on_missing: "UNKNOWN_ESTIMATE"
+    cache: true
+  
+  footnote_codes:
+    lookup_table: "footnote"
+    lookup_key: "footnote_code"
+    lookup_value: "footnote_text"
+    create_field: "footnote_texts"
+    multiple: true
+    separator: " "
+    on_missing: "skip"
+    cache: true

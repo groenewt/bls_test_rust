@@ -1,0 +1,43 @@
+config_version: 1
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "aspect", columns: ["series_id", "year", "period", "aspect_type"] }
+    - { file: "series", columns: ["series_id", "seasonal", "owner_code", "industry_code", "occupation_code", "subcell_code", "area_code", "periodicity_code", "estimate_code", "begin_year", "begin_period", "end_year", "end_period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1990, max: 2050 }
+    - { file: "aspect", column: "year", min: 1990, max: 2050 }
+    - { file: "main", column: "value", min: -1000.0, max: 1000.0 }
+    - { file: "aspect", column: "value", min: -1000.0, max: 1000.0 }
+    - { file: "series", column: "begin_year", min: 1990, max: 2050 }
+    - { file: "series", column: "end_year", min: 1990, max: 2050 }
+  
+  enums:
+    - { file: "main", column: "period", values: ["Q01", "Q02", "Q03", "Q04"] }
+    - { file: "aspect", column: "period", values: ["Q01", "Q02", "Q03", "Q04"] }
+    - { file: "aspect", column: "aspect_type", values: ["E"] }
+    - { file: "series", column: "begin_period", values: ["Q01", "Q02", "Q03", "Q04"] }
+    - { file: "series", column: "end_period", values: ["Q01", "Q02", "Q03", "Q04"] }
+  
+  regex:
+    - { file: "main", column: "series_id", pattern: "^CI[SU][1-9]\\d{13}[IPA]$" }
+    - { file: "aspect", column: "series_id", pattern: "^CI[SU][1-9]\\d{13}[IPA]$" }
+    - { file: "series", column: "series_id", pattern: "^CI[SU][1-9]\\d{13}[IPA]$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 17 }
+    - { file: "main", column: "series_id", exact: 17 }
+    - { file: "aspect", column: "series_id", exact: 17 }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "min(year)", "max(year)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50

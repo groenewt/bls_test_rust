@@ -1,0 +1,28 @@
+# II Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
+config_version: 1
+
+discovery:
+  root: "data/raw/bls/ii"
+  include: ["ii.series", "ii.data.*", "ii.area", "ii.case_type", "ii.data_type", "ii.footnote", "ii.industry", "ii.supersector", "ii.seasonal"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["year", "data_type_code"]
+
+mmap:
+  enable_for_mb_greater_than: 100
+
+lookup_config:
+  preload: ["area", "case_type", "data_type"]  # Small, frequently used
+  lazy: ["footnote", "industry", "supersector", "seasonal"]  # Load on demand
+  mmap: []  # Use for large files
+  cache_all: true  # Small enough to keep in memory

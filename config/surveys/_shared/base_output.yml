@@ -1,0 +1,98 @@
+# Base Output Configuration
+# Shared output formats, partitioning, and compression settings
+config_version: 1
+
+# Output format profiles
+format_profiles:
+  parquet_standard:
+    format: "parquet"
+    parquet:
+      compression: "snappy"
+      compression_level: 3
+      row_group_size: 100000
+      enable_dictionary: true
+      bloom_filters: false
+    evolution:
+      mode: "compatible"
+      allow_nullability_change: false
+
+  parquet_compressed:
+    format: "parquet"
+    parquet:
+      compression: "zstd"
+      compression_level: 3
+      row_group_size: 50000
+      enable_dictionary: true
+      bloom_filters: true
+    evolution:
+      mode: "compatible"
+      allow_nullability_change: false
+
+  parquet_fast:
+    format: "parquet"
+    parquet:
+      compression: "lz4"
+      compression_level: 1
+      row_group_size: 200000
+      enable_dictionary: true
+      bloom_filters: false
+    evolution:
+      mode: "additive"
+      allow_nullability_change: true
+
+  csv_standard:
+    format: "csv"
+    csv:
+      delimiter: ","
+      quote_char: "\""
+      escape_char: "\\"
+      header: true
+      null_value: ""
+
+  json_standard:
+    format: "json"
+    json:
+      pretty_print: false
+      null_value: null
+
+# Partitioning strategies
+partitioning_strategies:
+  temporal:
+    partition_by: ["year"]
+    max_file_size_mb: 512
+    
+  temporal_detailed:
+    partition_by: ["year", "period"]
+    max_file_size_mb: 256
+    
+  geographic:
+    partition_by: ["area_code"]
+    max_file_size_mb: 512
+    
+  temporal_geographic:
+    partition_by: ["year", "area_code"]
+    max_file_size_mb: 256
+    
+  size_based:
+    partition_by: []
+    max_file_size_mb: 1024
+
+# Naming conventions
+naming_conventions:
+  standard:
+    dataset: "bls_{survey_code}"
+    version: "v1"
+    
+  versioned:
+    dataset: "bls_{survey_code}"
+    version: "v{major}.{minor}"
+    
+  timestamped:
+    dataset: "bls_{survey_code}_{timestamp}"
+    version: "v1"
+
+# Common destination patterns
+destination_patterns:
+  standard: "data/processed/bls/{survey_code}"
+  versioned: "data/processed/bls/{survey_code}/v{version}"
+  dated: "data/processed/bls/{survey_code}/{year}/{month}"

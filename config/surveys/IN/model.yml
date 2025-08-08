@@ -1,0 +1,303 @@
+# IN Survey Data Model Configuration
+# Data model: files, schemas, relationships
+config_version: 1
+
+series:
+  path: "in.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "INS00220000AU0M"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    economicseries_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0022"
+    industry_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0000"
+    country_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "AU"
+    economicgroup_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    periodicity_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "M"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2007"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2013"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M06"
+
+data_files:
+  - id: "main"
+    pattern: "in.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "INS00220000AU0M"
+      year:
+        type: "int32"
+        min: 1950
+        max: 2055
+        nullable: false
+        example_value: 2007
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|Q\\d{2}|A01)$"
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 4.5
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "country"
+    path: "in.country"
+    index: "country_code"
+    description: "Maps country codes to country names"
+    schema:
+      country_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "AU"
+      country_text:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "AUSTRALIA"
+
+  - id: "economicseries"
+    path: "in.economicseries"
+    index: "economicseries_code"
+    description: "Maps economic series codes to economic series names"
+    schema:
+      economicseries_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "0022"
+      economicseries_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "UNEMPLOYMENT RATES"
+
+  - id: "economicgroup"
+    path: "in.economicgroup"
+    index: "economicgroup_code"
+    description: "Maps economic group codes to economic group names"
+    schema:
+      economicgroup_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      economicgroup_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All groups"
+
+  - id: "footnote"
+    path: "in.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "P"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: true
+        example_value: "Preliminary"
+
+  - id: "industry"
+    path: "in.industry"
+    index: "industry_code"
+    description: "Maps industry codes to industry names"
+    schema:
+      industry_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "0000"
+      industry_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Whole economy"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "period"
+    path: "in.period"
+    index: "period"
+    description: "Maps period codes to period names"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+
+  - id: "periodicity"
+    path: "in.periodicity"
+    index: "periodicity_code"
+    description: "Maps periodicity codes to periodicity names"
+    schema:
+      periodicity_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "M"
+      periodicity_text:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Monthly"
+
+  - id: "seasonal"
+    path: "in.seasonal"
+    index: "seasonal_code"
+    description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+    schema:
+      seasonal_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "S"
+      seasonal_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Seasonally adjusted"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "country_code" }
+    to: { file: "country", column: "country_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "economicseries_code" }
+    to: { file: "economicseries", column: "economicseries_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "economicgroup_code" }
+    to: { file: "economicgroup", column: "economicgroup_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "periodicity_code" }
+    to: { file: "periodicity", column: "periodicity_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal_code" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "country", columns: ["country_code"] }
+    - { file: "economicseries", columns: ["economicseries_code"] }
+    - { file: "economicgroup", columns: ["economicgroup_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+    - { file: "industry", columns: ["industry_code"] }
+    - { file: "period", columns: ["period"] }
+    - { file: "periodicity", columns: ["periodicity_code"] }
+    - { file: "seasonal", columns: ["seasonal_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "seasonal", "economicseries_code", "industry_code", "country_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  INSeriesId: { base: "string", length: 17, pattern: "^IN[SU]\\d{14}[MQ]$" }
+  INCountryCode: { base: "string", length: 2, pattern: "^[A-Z]{2}$" }
+  INEconomicSeriesCode: { base: "string", length: 4, pattern: "^\\d{4}$" }
+  INIndustryCode: { base: "string", length: 4, pattern: "^\\d{4}$" }
+  INPeriod: { base: "string", length: 3, pattern: "^(M\\d{2}|Q\\d{2}|A01)$" }
+  INValue: { base: "decimal", precision: 18, scale: 4 }

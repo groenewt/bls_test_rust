@@ -1,0 +1,22 @@
+config_version: 1
+survey:
+  code: "CS"
+  name: "Occupational Injuries and Illnesses - Characteristics Data"
+  description: "Besides injury and illness counts, survey respondents also are asked to provide additional information for a subset of the most serious nonfatal cases logged, namely, those that involved at least 1 day away from work, beyond the day of injury or onset of illness. Employers answer several questions about these cases, including the demographics of the worker disabled, the nature of the disabling condition, and the event and source producing that condition."
+  size_class: "large"
+  characteristics:
+    frequency: "annual"
+    coverage: "Detailed breakouts of injury and illness data by a variety of characteristics"
+    classification_system: "Age, category, event, gender, industry, length of service, nature, occupation, part of body, race, and source"
+    begin_year: 2011
+    update_schedule: "Annual release"
+    survey_methodology: "Survey respondents provide additional information for a subset of the most serious nonfatal cases logged."
+    calculation_basis: "Data are reported to one decimal place."
+  contacts:
+    - role: "owner"
+      name: "BLS OSHS Team"
+      email: "bls-oshs@bls.gov"
+  documentation:
+    primary: "docs/bls/survey/cs.txt"
+    data_dictionary: "docs/bls/dictionaries/cs.md"
+  tags: ["occupational", "injuries", "illnesses", "characteristics", "safety", "health"]

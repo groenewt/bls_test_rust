@@ -1,0 +1,56 @@
+config_version: 1
+survey:
+  code: "SM"
+  name: "State and Metro Area Employment, Hours, & Earnings"
+  description: "State and Metro Area Employment, Hours, & Earnings data from the Current Employment Statistics (CES) survey."
+  size_class: "large"
+  characteristics:
+    frequency: "monthly"
+    coverage: "National, state, and metropolitan area data on employment, hours, and earnings"
+    classification_system: "NAICS (North American Industry Classification System)"
+    begin_year: 1991
+    update_schedule: "Monthly release, typically on the first Friday of the month following the reference month"
+    survey_methodology: "The CES survey is a monthly survey of business establishments that provides estimates of employment, hours, and earnings data by industry for the nation as a whole, all States, and most major metropolitan areas."
+    calculation_basis: "Survey of over 390,000 establishments employing over 47 million nonfarm wage and salary workers"
+    time_series_count: "State and Metro Area Employment, Hours, & Earnings series"
+  contacts:
+    - role: "owner"
+      name: "groenewt"
+      email: ""
+  documentation:
+    primary: "docs/bls/survey/sm.txt"
+    data_dictionary: ""
+  tags: ["employment", "earnings", "hours", "state", "metro", "ces"]
+  definition: |
+    The following is a definition of: STATE AND METRO AREA EMPLOYMENT, HOURS, & EARNINGS (SM)
+
+    Survey Description: The Current Employment Statistics (CES) survey is a monthly survey 
+    of business establishments that provides estimates of employment, hours, and earnings 
+    data by industry for the nation as a whole, all States, and most major metropolitan areas.
+
+    The CES survey is a Federal-State cooperative endeavor in which State employment 
+    security agencies prepare and process the data. BLS provides the procedures and 
+    technical support, draws the sample, and makes the estimates. The CES survey 
+    is the most comprehensive source of information on the current employment situation 
+    in the United States.
+
+    The CES survey includes a sample of over 390,000 establishments employing over 47 million 
+    nonfarm wage and salary workers, full or part time, who receive pay during the payroll 
+    period which includes the 12th of the month. Included are employees on paid sick leave, 
+    paid holiday, paid vacation, and so on. Persons who work during the pay period but 
+    receive no pay are not counted. Persons who are on layoff, on leave without pay, 
+    or on strike for the entire pay period, or who have not yet started working during 
+    the pay period are not counted as employed. The CES survey counts persons at their 
+    place of work rather than at their place of residence.
+
+    Summary Data Available: The CES survey provides data on employment, hours, and earnings 
+    for the nation, States, and major metropolitan areas. Data are available for major 
+    industry divisions and for detailed industry levels.
+
+    Frequency of Observations: All data are monthly.
+
+    Data Characteristics: Employment data are in thousands. Average weekly hours and 
+    average hourly earnings are actual numbers.
+
+    Updating Schedule: Updates to the data become available with the monthly release of 
+    new data, typically on the first Friday of the month following the reference month.

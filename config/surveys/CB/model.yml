@@ -1,0 +1,510 @@
+# CB Survey Model Configuration
+# Data model: files, schemas, relationships
+config_version: 1
+
+series:
+  path: "cb.series"
+  index: "series_id"
+  estimated_size_gb: 1.0
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "CBU00X11XXXX3E100"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    category_code:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "00X"
+    datatype_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "3"
+    case_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "E"
+    age_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "00XXXX"
+    los_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0XXXXX"
+    medical_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "CNYXXX"
+    race_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0XXXXX"
+    gender_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0XXXXX"
+    pob_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0XXXXX"
+    event_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0000XX"
+    source_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0000XX"
+    occupation_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    nature_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0000XX"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    time_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    hour_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    weekday_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    special_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    ownership_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    state_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2022"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2022"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "cb.data.*"
+    index: "series_id"
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "CBU00X00XXXX3E100"
+      year:
+        type: "int32"
+        min: 2022
+        max: 2100
+        nullable: false
+        example_value: "2022"
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: "10.2"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "age"
+    path: "cb.age"
+    index: "age_code"
+    description: "Maps age codes to age names"
+    schema:
+      age_code:
+        type: "string"
+        length: 6
+        nullable: false
+      age_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "case"
+    path: "cb.case"
+    index: "case_code"
+    description: "Maps case codes to case names"
+    schema:
+      case_code:
+        type: "string"
+        length: 1
+        nullable: false
+      case_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "category"
+    path: "cb.category"
+    index: "category_code"
+    description: "Maps category codes to category names"
+    schema:
+      case_code:
+        type: "string"
+        length: 1
+        nullable: false
+      category_code:
+        type: "string"
+        length: 3
+        nullable: false
+      category_text:
+        type: "string"
+        length: 100
+        nullable: false
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+  - id: "datatype"
+    path: "cb.datatype"
+    index: "datatype_code"
+    description: "Maps datatype codes to datatype names"
+    schema:
+      datatype_code:
+        type: "string"
+        length: 1
+        nullable: false
+      datatype_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "event"
+    path: "cb.event"
+    index: "event_code"
+    description: "Maps event codes to event names"
+    schema:
+      event_code:
+        type: "string"
+        length: 6
+        nullable: false
+      event_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "footnote"
+    path: "cb.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "gender"
+    path: "cb.gender"
+    index: "gender_code"
+    description: "Maps gender codes to gender names"
+    schema:
+      gender_code:
+        type: "string"
+        length: 6
+        nullable: false
+      gender_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "hour"
+    path: "cb.hour"
+    index: "hour_code"
+    description: "Maps hour codes to hour descriptions"
+    schema:
+      hour_code:
+        type: "string"
+        length: 6
+        nullable: false
+      hour_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "industry"
+    path: "cb.industry"
+    index: "industry_code"
+    description: "Maps industry codes to industry names"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+      industry_text:
+        type: "string"
+        length: 100
+        nullable: false
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+  - id: "los"
+    path: "cb.los"
+    index: "los_code"
+    description: "Maps length of service codes to length of service descriptions"
+    schema:
+      los_code:
+        type: "string"
+        length: 6
+        nullable: false
+      los_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "medical"
+    path: "cb.medical"
+    index: "medical_code"
+    description: "Maps medical treatment codes to medical treatment descriptions"
+    schema:
+      medical_code:
+        type: "string"
+        length: 6
+        nullable: false
+      medical_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "nature"
+    path: "cb.nature"
+    index: "nature_code"
+    description: "Maps nature codes to nature descriptions"
+    schema:
+      nature_code:
+        type: "string"
+        length: 6
+        nullable: false
+      nature_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "occupation"
+    path: "cb.occupation"
+    index: "occupation_code"
+    description: "Maps occupation codes to occupation names"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 6
+        nullable: false
+      occupation_text:
+        type: "string"
+        length: 100
+        nullable: false
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+  - id: "ownership"
+    path: "cb.ownership"
+    index: "ownership_code"
+    description: "Maps ownership codes to ownership descriptions"
+    schema:
+      ownership_code:
+        type: "string"
+        length: 1
+        nullable: false
+      ownership_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "pob"
+    path: "cb.pob"
+    index: "pob_code"
+    description: "Maps part of body codes to part of body descriptions"
+    schema:
+      pob_code:
+        type: "string"
+        length: 6
+        nullable: false
+      pob_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "race"
+    path: "cb.race"
+    index: "race_code"
+    description: "Maps race codes to race descriptions"
+    schema:
+      race_code:
+        type: "string"
+        length: 6
+        nullable: false
+      race_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "source"
+    path: "cb.source"
+    index: "source_code"
+    description: "Maps source codes to source descriptions"
+    schema:
+      source_code:
+        type: "string"
+        length: 6
+        nullable: false
+      source_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "special"
+    path: "cb.special"
+    index: "special_code"
+    description: "Maps special codes to special descriptions"
+    schema:
+      special_code:
+        type: "string"
+        length: 6
+        nullable: false
+      special_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "state"
+    path: "cb.state"
+    index: "state_code"
+    description: "Maps state codes to state names"
+    schema:
+      state_code:
+        type: "string"
+        length: 2
+        nullable: false
+      state_name:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "time"
+    path: "cb.time"
+    index: "time_code"
+    description: "Maps time codes to time descriptions"
+    schema:
+      time_code:
+        type: "string"
+        length: 6
+        nullable: false
+      time_text:
+        type: "string"
+        length: 100
+        nullable: false
+  - id: "weekday"
+    path: "cb.weekday"
+    index: "weekday_code"
+    description: "Maps weekday codes to weekday names"
+    schema:
+      weekday_code:
+        type: "string"
+        length: 6
+        nullable: false
+      weekday_text:
+        type: "string"
+        length: 100
+        nullable: false
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "category_code", "datatype_code", "case_code"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  Year: { base: "int32", range: [2022, 2100] }
+  SeriesId: { base: "string", length: 17, pattern: "^CB[SU]\\d{15}$" }
+  Period: { base: "string", length: 3, enum: ["A01"] }

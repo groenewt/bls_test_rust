@@ -1,0 +1,12 @@
+config_version: 1
+# Development environment overrides for BP survey
+
+logging:
+  level: "debug"
+
+feature_flags:
+  enable_profiling: true
+
+policy:
+  mode: "warn_only"
+  max_errors: 10000

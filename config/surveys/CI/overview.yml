@@ -1,0 +1,23 @@
+config_version: 1
+survey:
+  code: "CI"
+  name: "Employment Cost Index"
+  description: "The Employment Cost Index (ECI) measures the change in the cost of labor, free from the influence of employment shifts among occupations and industries."
+  size_class: "medium"
+  characteristics:
+    frequency: "quarterly"
+    coverage: "The survey covers all occupations in the civilian economy, which includes the total private economy (excluding farms and households), and the public sector (excluding the federal government)."
+    classification_system: "North American Industrial Classification System (NAICS) and Standard Occupational Classification (SOC) system"
+    begin_year: 2008
+    update_schedule: "Updates are available about four weeks following the end of the reference month (March, June, September, and December)"
+    survey_methodology: "The sample establishments are classified in industry categories based on the North American Industrial Classification System (NAICS). Within an establishment, specific job categories are selected to represent broader occupational definitions."
+    calculation_basis: "All current indexes have a base period of December 2005 = 100"
+    time_series_count: "Approximately 20,000 series"
+  contacts:
+    - role: "owner"
+      name: "groenewt"
+      email: ""
+  documentation:
+    primary: "docs/bls/survey/ci.txt"
+    data_dictionary: ""
+  tags: ["employment", "cost", "index", "labor", "compensation"]

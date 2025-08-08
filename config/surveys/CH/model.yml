@@ -1,0 +1,224 @@
+# CH Survey Data Model Configuration
+config_version: 1
+
+series:
+  path: "ch.series"
+  index: "series_id"
+  estimated_size_gb: 1.0  # Large size class
+  schema:
+    series_id: { type: "string", length: 17, nullable: false }
+    category_code: { type: "string", length: 3, nullable: false }
+    datatype_code: { type: "string", length: 1, nullable: false }
+    case_code: { type: "string", length: 1, nullable: false }
+    age_code: { type: "string", length: 6, nullable: false }
+    los_code: { type: "string", length: 6, nullable: false }
+    race_code: { type: "string", length: 6, nullable: false }
+    gender_code: { type: "string", length: 6, nullable: false }
+    pob_code: { type: "string", length: 6, nullable: false }
+    event_code: { type: "string", length: 6, nullable: false }
+    source_code: { type: "string", length: 6, nullable: false }
+    occupation_code: { type: "string", length: 6, nullable: false }
+    nature_code: { type: "string", length: 6, nullable: false }
+    industry_code: { type: "string", length: 6, nullable: false }
+    time_code: { type: "string", length: 6, nullable: false }
+    hour_code: { type: "string", length: 6, nullable: false }
+    weekday_code: { type: "string", length: 6, nullable: false }
+    special_code: { type: "string", length: 6, nullable: false }
+    ownership_code: { type: "string", length: 1, nullable: false }
+    state_code: { type: "string", length: 2, nullable: false }
+    footnote_codes: { type: "string", length: 10, nullable: true }
+    begin_year: { type: "string", length: 4, nullable: false }
+    begin_period: { type: "string", length: 3, nullable: false }
+    end_year: { type: "string", length: 4, nullable: false }
+    end_period: { type: "string", length: 3, nullable: false }
+
+data_files:
+  - id: "main"
+    pattern: "ch.data.*"
+    index: "series_id"
+    schema:
+      series_id: { type: "string", length: 17, nullable: false }
+      year: { type: "int32", min: 1900, max: 2100 }
+      period: { type: "string", length: 3, pattern: "^A01$" }
+      value: { type: "decimal", precision: 18, scale: 10 }
+      footnote_codes: { type: "string", length: 10, nullable: true }
+
+lookups:
+  - id: "age"
+    path: "ch.age"
+    index: "age_code"
+    description: "Age of subjects for which data are observed"
+    schema:
+      age_code: { type: "string", length: 6 }
+      age_text: { type: "string", length: 100 }
+
+  - id: "case"
+    path: "ch.case"
+    index: "case_code"
+    description: "Type of case for which data are available"
+    schema:
+      case_code: { type: "string", length: 1 }
+      case_text: { type: "string", length: 100 }
+
+  - id: "category"
+    path: "ch.category"
+    index: "category_code"
+    description: "Industry, event, or characteristic for which data are available"
+    schema:
+      case_code: { type: "string", length: 1 }
+      category_code: { type: "string", length: 3 }
+      category_text: { type: "string", length: 100 }
+
+  - id: "datatype"
+    path: "ch.datatype"
+    index: "datatype_code"
+    description: "Datatype of the observation"
+    schema:
+      datatype_code: { type: "string", length: 1 }
+      datatype_text: { type: "string", length: 100 }
+
+  - id: "event"
+    path: "ch.event"
+    index: "event_code"
+    description: "Event which resulted in the reported injury or illness"
+    schema:
+      event_code: { type: "string", length: 6 }
+      event_text: { type: "string", length: 100 }
+
+  - id: "gender"
+    path: "ch.gender"
+    index: "gender_code"
+    description: "Gender for which data are observed"
+    schema:
+      gender_code: { type: "string", length: 6 }
+      gender_text: { type: "string", length: 100 }
+
+  - id: "hour"
+    path: "ch.hour"
+    index: "hour_code"
+    description: "Hour of day when injury or illness occurred"
+    schema:
+      hour_code: { type: "string", length: 6 }
+      hour_text: { type: "string", length: 100 }
+
+  - id: "industry"
+    path: "ch.industry"
+    index: "industry_code"
+    description: "Industry for which data are observed"
+    schema:
+      industry_code: { type: "string", length: 6 }
+      industry_text: { type: "string", length: 100 }
+
+  - id: "los"
+    path: "ch.los"
+    index: "los_code"
+    description: "Length of service for which data are observed"
+    schema:
+      los_code: { type: "string", length: 6 }
+      los_text: { type: "string", length: 100 }
+
+  - id: "nature"
+    path: "ch.nature"
+    index: "nature_code"
+    description: "Nature of injury or illness for which data are observed"
+    schema:
+      nature_code: { type: "string", length: 6 }
+      nature_text: { type: "string", length: 100 }
+
+  - id: "occupation"
+    path: "ch.occupation"
+    index: "occupation_code"
+    description: "Occupation for which data are observed"
+    schema:
+      occupation_code: { type: "string", length: 6 }
+      occupation_text: { type: "string", length: 100 }
+
+  - id: "ownership"
+    path: "ch.ownership"
+    index: "ownership_code"
+    description: "Ownership for which data are observed"
+    schema:
+      ownership_code: { type: "string", length: 1 }
+      ownership_text: { type: "string", length: 100 }
+
+  - id: "pob"
+    path: "ch.pob"
+    index: "pob_code"
+    description: "Part of body affected by the injury or illness"
+    schema:
+      pob_code: { type: "string", length: 6 }
+      pob_text: { type: "string", length: 100 }
+
+  - id: "race"
+    path: "ch.race"
+    index: "race_code"
+    description: "Race for which data are observed"
+    schema:
+      race_code: { type: "string", length: 6 }
+      race_text: { type: "string", length: 100 }
+
+  - id: "source"
+    path: "ch.source"
+    index: "source_code"
+    description: "Source of injury or illness for which data are observed"
+    schema:
+      source_code: { type: "string", length: 6 }
+      source_text: { type: "string", length: 100 }
+
+  - id: "special"
+    path: "ch.special"
+    index: "special_code"
+    description: "Special case for which data are observed"
+    schema:
+      special_code: { type: "string", length: 6 }
+      special_text: { type: "string", length: 100 }
+
+  - id: "state"
+    path: "ch.state"
+    index: "state_code"
+    description: "State for which data are observed"
+    schema:
+      state_code: { type: "string", length: 2 }
+      state_text: { type: "string", length: 100 }
+
+  - id: "time"
+    path: "ch.time"
+    index: "time_code"
+    description: "Time of day when injury or illness occurred"
+    schema:
+      time_code: { type: "string", length: 6 }
+      time_text: { type: "string", length: 100 }
+
+  - id: "weekday"
+    path: "ch.weekday"
+    index: "weekday_code"
+    description: "Day of week when injury or illness occurred"
+    schema:
+      weekday_code: { type: "string", length: 6 }
+      weekday_text: { type: "string", length: 100 }
+
+  - id: "footnote"
+    path: "ch.footnote"
+    index: "footnote_code"
+    description: "Footnote codes for data observations"
+    schema:
+      footnote_code: { type: "string", length: 10 }
+      footnote_text: { type: "string", length: 100 }
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id"] }
+
+types:
+  aliases:
+    Year: { base: "int32", range: [1900, 2100] }
+    Value: { base: "decimal", precision: 18, scale: 10 }

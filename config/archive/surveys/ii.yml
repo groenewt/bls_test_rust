@@ -1,0 +1,597 @@
+# config/surveys/ii.yml
+# name: Occupational Injuries and Illnesses Industry Data Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: data/raw/bls/ii
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+#         - full doc: docs/bls/survey/ii.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: ii #survey code (ex.ap,sm,ii)- see docs (docs/surveys/* for all surveys)
+  name: Occupational Injuries and Illnesses Industry Data #friendly survey name
+  size_class: large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "Occupational injury and illness counts and incidence rates are annual measures of the level and frequency of work-related injuries and illnesses. The rate equals the form of the number of injuries and illnesses per 100 full-time employees."
+  definition: "
+The following is a definition of:  OCCUPATIONAL INJURIES AND ILLNESSES 
+                   INDUSTRY DATA (II)
+
+Survey Description:  Occupational injury and illness counts and incidence rates 
+are annual measures of the level and frequency of work-related injuries and 
+illnesses.  The rate equals the form of the number of injuries and illnesses 
+per 100 full-time employees. 
+
+Data collected through the annual survey are based on records which employers 
+maintain under the Occupational Safety and Health Act.  Data include all cases 
+resulting from accidents or exposure in the work environment that result in a 
+nonfatal illness or injury.  Some of these cases involve lost work time-- the 
+incident may result in a work absence, restriction of work or motion, or 
+transfer to another job.  Other recordable cases do not involve any lost days. 
+Recordkeeping guidelines are maintained by the Occupational Safety and Health 
+Administration.
+
+Virtually the entire private sector is covered by the survey, except 
+self-employed individuals, farms with fewer than 11 employees, and employers 
+regulated by other Federal safety and health laws.  National estimates 
+exclude Federal, State, and local government agencies, but data for selected 
+States include State and local government.  Data conforming to definitions of 
+recordable occupational injuries and illnesses for coal, metal and nonmetal 
+mining, and railroad transportation are provided by the Mine Safety and Health 
+Administration, U.S. Department of Labor, and the Federal Railroad Administration, 
+U.S. Department of Transportation.
+
+The incidence rates are produced for industries which are based on the 2002 
+North American Industry Classification System (NAICS).  The survey sample design 
+uses stratified random sample with a Neyman allocation.  The characteristics used
+to stratify the units are the States, NAICS code, and employment. The data for all 
+reporting units in each industry are expanded by the inverse of the sampling
+ratio, and benchmarked to the appropriate employment level in each industry.  
+Reports are collected from about 180,000 sample units.
+
+Summary Data Available:  Incidence rates and counts are calculated for three 
+categories for total recordable cases:  (1)  injury and illness combined, 
+(2)  injury only; and (3)  illness only.
+
+Additionally, estimates of incidence rates and case counts are also available 
+for various severity classifications.  For each injuries and illnesses in each 
+industry, the incidence rates and numbers of cases are available for total nonfatal 
+recordable cases; cases with days away from work, job transfer or restriction; 
+cases with days away from work; cases with job transfer or restriction only; and 
+other recordable cases. 
+
+Data also include rates and numbers of cases, by various illness categories:  
+skin diseases or disorders, respiratory conditions, poisonings, and all other 
+illnesses. 
+
+Data for an unpublished industry were included in the total for the broader 
+industry level of which it is a part.
+
+Calculation of Incidence Rates:
+
+   	The incidence rates represent the number of injuries and/or 
+	illnesses per 100 full-time workers and were calculated as:  
+
+	(N/EH) x 200,000 (20,000,000 for illness rates).
+
+	where:
+
+	N = number of injuries and/or illnesses.
+
+	EH = total hours worked by all employees during the calendar year.
+
+	     200,000 = base for 100 full-time equivalent workers 
+	     (working 40 hours/week, 50 weeks/year). 
+	
+	     20,000,000 =base for 10,000 full-time equivalent workers
+	     (working 40 hours/week, 50 weeks/year).
+
+
+Frequency of Observations:  All data are annual.
+
+Data Characteristics:  Rates are stored to one decimal place.  Number of cases are
+		       in thousands.
+                "
+  characteristics:
+    frequency: annual
+    coverage: "Virtually the entire private sector is covered by the survey, except self-employed individuals, farms with fewer than 11 employees, and employers regulated by other Federal safety and health laws."
+    time_series_count: "Occupational injury and illness counts and incidence rates" 
+    classification_system: "2002 North American Industry Classification System (NAICS)"
+    update_schedule: "Annual release"
+    begin_year: 2000
+    survey_methodology: "The survey sample design uses stratified random sample with a Neyman allocation. The characteristics used to stratify the units are the States, NAICS code, and employment."
+    calculation_basis: "The incidence rates represent the number of injuries and/or illnesses per 100 full-time workers and were calculated as: (N/EH) x 200,000 (20,000,000 for illness rates)."
+
+#Survey Series Information
+series:
+  path: "ii.series" #path to series file
+  use_mmap: true
+  series_size_class: Large #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17 #USE DEFINED FIELD LENGTH From (docs/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "IIU00000000001100"
+      map_file: "" #leave blank for none
+    supersector_code:
+      length: 3
+      type: Text
+      example_value: "000"
+      needs_mapping: true
+      map_file: "supersector" #leave blank for none
+    industry_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "industry" #leave blank for none
+    data_type_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "data_type" #leave blank for none
+    case_type_code:
+      length: 1
+      type: Text
+      example_value: "1"
+      needs_mapping: true
+      map_file: "case_type" #leave blank for none
+    area_code:
+      length: 3
+      type: Text
+      example_value: "100"
+      needs_mapping: true
+      map_file: "area" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "2000"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2003"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "IIU00000000001100"
+      year:
+        length: 4
+        type: values
+        example_value: "2003"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "0.4"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ area, case_type, data_type ]  # Small, frequently used
+    lazy: [ footnote, industry, supersector ]  # Load on demand
+    mmap: [ ]  # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    area:
+        file_path: "ii.area"
+        name: Area
+        description: "Maps area codes to area names"
+        index_col: "area_code"
+        schema:
+          area_code:
+            length: 3
+            type: str
+            example_value: "100"
+          area_name:
+            length: 100
+            type: Text
+            example_value: "Private Industry, National"
+          display_level:
+            length: 2
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "00000"
+
+    case_type:
+        file_path: "ii.case_type"
+        name: Case Type
+        description: "Maps case type codes to case type descriptions"
+        index_col: "case_type_code"
+        schema:
+          case_type_code:
+            length: 1
+            type: str
+            example_value: "1"
+          case_type_text:
+            length: 100
+            type: str
+            example_value: "Injury, illness"
+
+    data_type:
+        file_path: "ii.data_type"
+        name: Data Type
+        description: "Maps data type codes to data type descriptions"
+        index_col: "data_type_code"
+        schema:
+          data_type_code:
+            length: 1
+            type: str
+            example_value: "3"
+          data_type_text:
+            length: 100
+            type: str
+            example_value: "Lost workdays"
+
+    footnote:
+        file_path: "ii.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "C"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: ""
+
+    industry:
+        file_path: "ii.industry"
+        name: Industry
+        description: "Maps industry codes to industry names"
+        index_col: "industry_code"
+        schema:
+          supersector_code:
+            length: 3
+            type: str
+            example_value: "000"
+          industry_code:
+            length: 6
+            type: str
+            example_value: "000000"
+          industry_name:
+            length: 100
+            type: str
+            example_value: "All Workers"
+          display_level:
+            length: 2
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "00001"
+
+    supersector:
+        file_path: "ii.supersector"
+        name: Supersector
+        description: "Maps supersector codes to supersector names"
+        index_col: "supersector_code"
+        schema:
+          supersector_code:
+            length: 3
+            type: str
+            example_value: "000"
+          supersector_name:
+            length: 100
+            type: str
+            example_value: "Total private"
+          display_level:
+            length: 2
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "00001"
+
+    seasonal:
+        file_path: "ii.seasonal"
+        name: Seasonal Adjustment
+        description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+        index_col: "seasonal_code"
+        schema:
+          seasonal_code:
+            length: 1
+            type: str
+            example_value: "U"
+          seasonal_text:
+            length: 100
+            type: str
+            example_value: "Not seasonally adjusted"
+
+processing:
+  # Strategy for large survey
+  strategy: mmap  # Use memory mapping for large files
+  max_threads: 8  # Increased parallelization for large-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 100
+  buffer_pool_size: 16
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Large
+      list_data_files: [ ii.data.1.AllData ]
+      partition_strategy:
+        partion_by: "data_type_code"
+        file_format: "ii.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 2000
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^II[U]\\d{15}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "A01" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Large
+      output_file: "ii_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Supersector code mapping
+        supersector_code:
+          lookup_table: "supersector"
+          lookup_key: "supersector_code"
+          lookup_value: "supersector_name"
+          create_field: "supersector_name"
+          on_missing: "UNKNOWN_SUPERSECTOR"
+          cache: true
+        
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_name"
+          create_field: "industry_name"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+        
+        # Data type code mapping
+        data_type_code:
+          lookup_table: "data_type"
+          lookup_key: "data_type_code"
+          lookup_value: "data_type_text"
+          create_field: "data_type_text"
+          on_missing: "UNKNOWN_DATA_TYPE"
+          cache: true
+        
+        # Case type code mapping
+        case_type_code:
+          lookup_table: "case_type"
+          lookup_key: "case_type_code"
+          lookup_value: "case_type_text"
+          create_field: "case_type_text"
+          on_missing: "UNKNOWN_CASE_TYPE"
+          cache: true
+        
+        # Area code mapping
+        area_code:
+          lookup_table: "area"
+          lookup_key: "area_code"
+          lookup_value: "area_name"
+          create_field: "area_name"
+          on_missing: "UNKNOWN_AREA"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^II[U]\\d{15}$"
+            action: flag
+            message: "Invalid series ID format: should be II[U] followed by 15 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 2000
+            max: 2067
+            action: reject
+            message: "Begin year must be between 2000 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 2000
+            max: 2067
+            action: reject
+            message: "End year must be between 2000 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, supersector_code, industry_code, data_type_code, case_type_code, area_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, supersector_code, industry_code, data_type_code, case_type_code, area_code, begin_year, end_year ]
+        output_file: "ii_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 5000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "ii_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for large-sized data
+    interval_records: 100000
+    checkpoint_dir: "checkpoints/ii"

@@ -1,0 +1,133 @@
+config_version: 1
+expectations:
+  non_null:
+    - { file: "series", columns: ["series_id", "title_code", "type_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1979, max: 2055 }
+    - { file: "series", column: "begin_year", min: 1979, max: 2055 }
+    - { file: "series", column: "end_year", min: 1979, max: 2055 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+  
+  enums:
+    - { file: "main", column: "period", values: ["A01"] }
+    - { file: "series", column: "begin_period", values: ["A01"] }
+    - { file: "series", column: "end_period", values: ["A01"] }
+  
+  regex:
+    - { file: "series", column: "series_id", pattern: "^EB[U]\\w{15}$" }
+    - { file: "main", column: "series_id", pattern: "^EB[U]\\w{15}$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 17 }
+    - { file: "main", column: "series_id", exact: 17 }
+    - { file: "series", column: "title_code", exact: 11 }
+    - { file: "series", column: "type_code", exact: 2 }
+    - { file: "series", column: "begin_year", exact: 4 }
+    - { file: "series", column: "end_year", exact: 4 }
+    - { file: "main", column: "year", exact: 4 }
+    - { file: "main", column: "period", exact: 3 }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "min(year)", "max(year)", "distinct(period)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+
+validation_rules:
+  data_series:
+    - field: "value"
+      rule: "range"
+      min: -10000000000000000.0
+      max: 10000000000000000.0
+      action: "flag"
+      message: "Value out of expected range"
+    
+    - field: "year"
+      rule: "range"
+      min: 1979
+      max: 2055
+      action: "reject"
+      message: "Year must be between 1979 and 2055"
+    
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^EB[U]\\w{15}$"
+      action: "flag"
+      message: "Invalid series ID format"
+    
+    - field: "period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid period value"
+  
+  series_dict:
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^EB[U]\\w{15}$"
+      action: "flag"
+      message: "Invalid series ID format: should be EB[U] followed by 15 characters"
+    
+    - field: "series_id"
+      rule: "length"
+      exact: 17
+      action: "reject"
+      message: "Series ID must be exactly 17 characters"
+    
+    - field: "series_id"
+      rule: "required"
+      action: "reject"
+      message: "Series ID cannot be null"
+    
+    - field: "begin_year"
+      rule: "range"
+      min: 1979
+      max: 2055
+      action: "reject"
+      message: "Begin year must be between 1979 and 2055"
+    
+    - field: "begin_year"
+      rule: "numeric"
+      action: "reject"
+      message: "Begin year must be numeric"
+    
+    - field: "end_year"
+      rule: "range"
+      min: 1979
+      max: 2055
+      action: "reject"
+      message: "End year must be between 1979 and 2055"
+    
+    - field: "end_year"
+      rule: "numeric"
+      action: "reject"
+      message: "End year must be numeric"
+    
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      action: "reject"
+      message: "End year must be >= begin year"
+    
+    - field: "begin_period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid begin period value"
+    
+    - field: "end_period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid end period value"

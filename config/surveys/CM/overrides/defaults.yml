@@ -1,0 +1,24 @@
+config_version: 1
+# Organizational defaults for CM survey
+
+# Default processing overrides
+processing:
+  strategy:
+    max_concurrency: 2  # Conservative default for shared resources
+
+# Default output overrides
+output:
+  format: "csv"  # Standard format for most environments
+
+# Default quality overrides
+quality:
+  policy:
+    mode: "warn_only"  # Less strict for development
+
+# Default runtime overrides
+runtime:
+  logging:
+    level: "info"  # Standard logging level
+  
+  error_handling:
+    max_errors: 1000  # Conservative error threshold

@@ -1,0 +1,29 @@
+config_version: 1
+# Staging environment overrides for SM survey
+
+# Production-like resources but slightly reduced
+resources:
+  max_threads: 6
+  memory_limit_gb: 12
+
+# Medium chunk sizes for staging
+io:
+  chunk_size_mb: 64
+  buffer_pool_size: 8
+
+# Disable profiling in staging
+features:
+  enable_profiling: false
+
+# Moderate error handling for staging
+error_handling:
+  on_error: "continue"
+  max_errors: 2500
+
+# Info logging for staging
+logging:
+  level: "info"
+
+# Medium partitions for staging
+partitioning:
+  max_file_size_mb: 256

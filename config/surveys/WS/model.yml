@@ -1,0 +1,176 @@
+# WS Survey Data Model Configuration
+# Data model: files, schemas, relationships
+config_version: 1
+
+series:
+  path: "ws.series"
+  index: "series_id"
+  estimated_size_gb: 0.001
+  schema:
+    series_id:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "WSU001"
+    measure_code:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "001"
+    seasonal:
+      type: "string"
+      length: 1
+      enum: ["S", "U"]
+      nullable: false
+      example_value: "U"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1947"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M13"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2002"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+
+data_files:
+  - id: "main"
+    pattern: "ws.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.001
+    schema:
+      series_id:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "WSU001"
+      year:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "1947"
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M13"
+      value:
+        type: "string"
+        length: 12
+        nullable: true
+        example_value: "25,720"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "footnote"
+    path: "ws.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+  - id: "measure"
+    path: "ws.measure"
+    index: "measure_code"
+    schema:
+      measure_code:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "001"
+      measure_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Number of work stoppages beginning in the period"
+
+  - id: "period"
+    path: "ws.period"
+    index: "period"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+
+  - id: "seasonal"
+    path: "ws.seasonal"
+    index: "seasonal_code"
+    schema:
+      seasonal_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "S"
+      seasonal_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Seasonally Adjusted"
+
+relationships:
+  - from: { file: "series", column: "measure_code" }
+    to: { file: "measure", column: "measure_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "begin_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "series", column: "end_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "measure_code", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  SeriesID: { base: "string", pattern: "^WS[SU]\\d{3}$", length: 6 }
+  Year: { base: "string", range: [1947, 2067], length: 4 }
+  Period: { base: "string", enum: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"], length: 3 }

@@ -1,0 +1,57 @@
+config_version: 1
+survey:
+  code: "BG"
+  name: "Collective Bargaining Series - State and Local Government"
+  description: "This series summarizes wage-rate changes in major collective bargaining units in State and local governments."
+  size_class: "small"
+  characteristics:
+    frequency: "semiannual"
+    coverage: "State and local government collective bargaining units with 1,000 workers or more"
+    classification_system: "Collective bargaining agreements"
+    begin_year: 1983
+    update_schedule: "Updates are available in February and August"
+    survey_methodology: "Data collected from collective bargaining agreements in state and local governments"
+    calculation_basis: "Percent changes with one decimal place"
+    time_series_count: "25 series"
+  contacts:
+    - role: "owner"
+      name: "BLS Team"
+      email: "bls@example.org"
+  documentation:
+    primary: "docs/bls/survey/bg.txt"
+    data_dictionary: "docs/bls/dictionaries/bg.md"
+  tags: ["collective bargaining", "state government", "local government", "wage rates", "compensation"]
+  definition: |
+    The following is a definition of:  COLLECTIVE BARGAINING SERIES - 
+    				   STATE AND LOCAL GOVERNMENT (BG)
+
+    Survey Description:  This series summarizes wage-rate changes in major
+    collective bargaining units (those with 1,000 workers or more) in State and
+    local governments where:  (1)  A labor organization is recognized as the
+    bargaining agent for a group of workers; (2)  the settlements are embodied
+    in signed, mutually binding contracts; and (3)  wages are determined by
+    collective bargaining.  Wage-rate change data are measured for units of
+    1,000 workers or more; compensation measures are compiled for settlements
+    of 5,000 workers or more.
+
+    Summary Data Available:
+
+    Wage Rate Changes:  Two types of information are presented.  "Settlement"
+    data measure the net impact of increases, decreases, and no change in wage
+    rates as a result of new settlements reached during the reference period.  
+    Changes scheduled during the first 12 months after the contract effective 
+    date (first-year) and all changes over the contract term expressed as an 
+    annual rate (over the life) are presented.  Data on "wage rate changes under
+    all major agreements" include increases, decreases, and no change in the 
+    reference period stemming from settlements in that period, from earlier 
+    settlements with changes deferred to the period, and from COLA adjustments.
+
+    Compensation Changes:  These data measure changes (increases, decreases, and
+    no change) in employee compensation (wages and benefits) resulting from 
+    settlements negotiated in the reference period covering 5,000 workers or 
+    more.  Both changes occurring within 12 months of the contract effective 
+    date (first year) and all changes that will occur over the contract term 
+    expressed as an annual rate (over the life) are presented.  "Compensation 
+    changes" measure changes in the costs for employee compensation including 
+    specified lump-sum payments and reflects both the size and timing of 
+    compensation rate changes.

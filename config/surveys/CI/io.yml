@@ -1,0 +1,19 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/ci"
+  include: ["ci.series", "ci.data.*", "ci.aspect", "ci.area", "ci.estimate", "ci.footnote", "ci.industry", "ci.occupation", "ci.owner", "ci.periodicity", "ci.seasonal", "ci.subcell"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "temporal"
+  max_partition_size_mb: 500
+  partition_by: ["year"]
+
+mmap:
+  enable_for_mb_greater_than: 100

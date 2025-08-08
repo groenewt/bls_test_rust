@@ -1,0 +1,23 @@
+config_version: 1
+survey:
+  code: "FW"
+  name: "Census of Fatal Occupational Injuries"
+  description: "The Bureau of Labor Statistics (BLS) Census of Fatal Occupational Injuries (CFOI) produces comprehensive, accurate, and timely counts of fatal work injuries."
+  size_class: "medium"
+  characteristics:
+    frequency: "annual"
+    coverage: "All 50 States and the District of Columbia"
+    classification_system: "Occupational Injury and Illness Classification System (OIICS) 2.01, 2010 Standard Occupational Classification (SOC), 2007 North American Industrial Classification System (NAICS)"
+    begin_year: 1992
+    update_schedule: "Updates available approximately 8 months following the close of the reference year"
+    survey_methodology: "Federal-State cooperative program that uses multiple sources to identify, verify, and profile fatal worker injuries"
+    calculation_basis: "Actual numbers of fatal injuries"
+    time_series_count: "Fatal occupational injuries data"
+  contacts:
+    - role: "owner"
+      name: "groenewt"
+      email: ""
+  documentation:
+    primary: "docs/bls/survey/fw.txt"
+    data_dictionary: ""
+  tags: ["fatal", "occupational", "injuries", "workplace", "safety"]

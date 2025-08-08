@@ -1,0 +1,55 @@
+# overview.yml
+# Consumer Expenditure Survey - Survey metadata and context
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+survey:
+  code: "CX"
+  name: "Consumer Expenditure Survey"
+  description: "The Consumer Expenditure Survey (CE) provides data on expenditures, income, and demographic characteristics of consumers in the United States."
+  size_class: "medium"  # Medium (100-1 GB)
+  
+  characteristics:
+    frequency: "annual"
+    coverage: "Consumer expenditure data are available for the civilian, noninstitutional population of the United States and various subpopulations"
+    classification_system: "Demographics codes, characteristics codes, and expenditure categories"
+    begin_year: 2003
+    update_schedule: "Annual release"
+    survey_methodology: "The CE consists of two surveys, the Interview Survey and the Diary Survey, that provide information on the buying habits of American consumers."
+    calculation_basis: "Expenditure estimates are constructed for different demographic groups and expenditure categories."
+    time_series_count: "Consumer expenditure data series"
+
+  contacts:
+    - role: "owner"
+      name: "BLS Consumer Expenditure Team"
+      email: "cex-info@bls.gov"
+
+  documentation:
+    primary: "docs/bls/survey/CX.txt"
+    data_dictionary: "docs/bls/dictionaries/CX.md"
+    definition: |
+      The Consumer Expenditure Survey (CE) provides data on expenditures, 
+      income, and demographic characteristics of consumers in the United States. The CE 
+      consists of two surveys, the Interview Survey and the Diary Survey, that provide 
+      information on the buying habits of American consumers, including data on their 
+      expenditures, income, and consumer unit (families and single consumers) characteristics.
+
+      The survey data are collected for the Bureau of Labor Statistics by the U.S. Census Bureau. 
+      The CE is important because it is the only Federal survey to provide information on the 
+      complete range of consumers' expenditures and incomes, as well as the characteristics of 
+      those consumers.
+
+      The CE collects information from the nation's households and families on their buying habits 
+      (expenditures), income, and household characteristics. The strength of the CE is that it 
+      allows data users to relate the expenditures and income of consumers to the characteristics 
+      of those consumers. The survey consists of two components, a quarterly Interview Survey and 
+      a weekly Diary Survey, each with its own questionnaire and sample.
+
+      Summary Data Available: Consumer expenditure data are available for the civilian, 
+      noninstitutional population of the United States and various subpopulations, with estimates 
+      available by income quintiles, income classes, age of reference person, size of consumer 
+      unit, composition of consumer unit, number of earners, housing tenure, region of residence, 
+      occupation, education, and other characteristics.
+
+  tags: ["expenditure", "household", "consumer", "demographics", "income"]

@@ -1,0 +1,116 @@
+# Base Quality Configuration
+# Shared data quality expectations and validation rules
+config_version: 1
+
+# Common expectation patterns
+expectation_patterns:
+  series_basic:
+    non_null:
+      - { file: "series", columns: ["series_id"] }
+    unique:
+      - { file: "series", columns: ["series_id"] }
+    
+  data_basic:
+    non_null:
+      - { file: "main", columns: ["series_id", "year", "period"] }
+    ranges:
+      - { file: "main", column: "year", min: 1900, max: 2100 }
+    regex:
+      - { file: "main", column: "period", pattern: "^(M\\d{2}|Q\\d{2}|A01)$" }
+    
+  lookup_basic:
+    non_null:
+      - { file: "lookup", columns: ["code", "name"] }
+    unique:
+      - { file: "lookup", columns: ["code"] }
+
+# Quality check profiles by survey size
+quality_profiles:
+  micro:
+    row_count:
+      min: 1
+      warn_below: 10
+    metrics:
+      collect: ["row_count", "null_count"]
+      persist: false
+    policy:
+      mode: "warn_only"
+      sample_on_fail_rows: 10
+      
+  small:
+    row_count:
+      min: 1
+      warn_below: 100
+    metrics:
+      collect: ["row_count", "null_count", "distinct_count"]
+      persist: true
+    policy:
+      mode: "warn_only"
+      sample_on_fail_rows: 20
+      
+  medium:
+    row_count:
+      min: 1
+      warn_below: 1000
+    metrics:
+      collect: ["row_count", "null_count", "distinct_count", "min", "max"]
+      persist: true
+    policy:
+      mode: "fail_on_error"
+      sample_on_fail_rows: 50
+      
+  large:
+    row_count:
+      min: 1
+      warn_below: 10000
+    metrics:
+      collect: ["row_count", "null_count", "distinct_count", "min", "max", "mean", "stddev"]
+      persist: true
+    policy:
+      mode: "fail_on_error"
+      sample_on_fail_rows: 100
+      
+  massive:
+    row_count:
+      min: 1
+      warn_below: 100000
+    metrics:
+      collect: ["row_count", "null_count", "distinct_count", "min", "max", "mean", "stddev", "percentiles"]
+      persist: true
+    policy:
+      mode: "fail_on_error"
+      sample_on_fail_rows: 200
+
+# Common validation rules
+common_validations:
+  series_id_format:
+    regex:
+      - { file: "series", column: "series_id", pattern: "^[A-Z]{2}[A-Z0-9]+$" }
+      
+  temporal_consistency:
+    ranges:
+      - { file: "main", column: "year", min: 1900, max: 2100 }
+    enums:
+      - { file: "main", column: "period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "Q01", "Q02", "Q03", "Q04", "A01"] }
+      
+  value_consistency:
+    ranges:
+      - { file: "main", column: "value", min: -999999999.9999, max: 999999999.9999 }
+      
+  referential_integrity:
+    foreign_keys:
+      - { from_file: "main", from_column: "series_id", to_file: "series", to_column: "series_id" }
+
+# Anomaly detection patterns
+anomaly_patterns:
+  outlier_detection:
+    z_score_threshold: 3.0
+    iqr_multiplier: 1.5
+    
+  trend_analysis:
+    seasonal_decomposition: true
+    change_point_detection: true
+    
+  data_drift:
+    statistical_tests: ["ks_test", "chi_square"]
+    significance_level: 0.05

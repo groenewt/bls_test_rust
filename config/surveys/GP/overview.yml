@@ -1,0 +1,23 @@
+config_version: 1
+survey:
+  code: "GP"
+  name: "Geographic Profile"
+  description: "Geographic Profile series are taken from the Current Population Survey (CPS), conducted by the Bureau of the Census, which produces information about employment and unemployment in States, classified by a variety of demographic and economic characteristics."
+  size_class: "medium"
+  characteristics:
+    frequency: "annual"
+    coverage: "State labor force data classified by demographic and economic characteristics"
+    classification_system: "State, race, age, sex, and occupational classification"
+    begin_year: 1981
+    update_schedule: "Annual release in late March or early April"
+    survey_methodology: "Data from the Current Population Survey (CPS) conducted by the Bureau of the Census"
+    calculation_basis: "Rates are expressed as percents with one decimal place. Levels are measured in thousands of persons with no decimal places."
+    time_series_count: "Approximately 8,500 State labor force series"
+  contacts:
+    - role: "owner"
+      name: "groenewt"
+      email: ""
+  documentation:
+    primary: "docs/bls/survey/gp.txt"
+    data_dictionary: ""
+  tags: ["geographic", "profile", "employment", "unemployment", "state", "labor", "demographics"]

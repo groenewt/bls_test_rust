@@ -1,0 +1,280 @@
+config_version: 1
+series:
+  path: "hc.series"
+  index: "series_id"
+  estimated_size_gb: 0.5
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+    category_code:
+      type: "string"
+      length: 2
+      nullable: false
+    datatype_code:
+      type: "string"
+      length: 1
+      nullable: false
+    casetype_code:
+      type: "string"
+      length: 1
+      nullable: false
+    age_code:
+      type: "string"
+      length: 4
+      nullable: false
+    los_code:
+      type: "string"
+      length: 4
+      nullable: false
+    race_code:
+      type: "string"
+      length: 4
+      nullable: false
+    gender_code:
+      type: "string"
+      length: 4
+      nullable: false
+    pob_code:
+      type: "string"
+      length: 4
+      nullable: false
+    event_code:
+      type: "string"
+      length: 4
+      nullable: false
+    source_code:
+      type: "string"
+      length: 4
+      nullable: false
+    occupation_code:
+      type: "string"
+      length: 4
+      nullable: false
+    nature_code:
+      type: "string"
+      length: 4
+      nullable: false
+    industry_code:
+      type: "string"
+      length: 4
+      nullable: false
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+
+data_files:
+  - id: "main"
+    pattern: "hc.data.*"
+    index: "series_id"
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+      year:
+        type: "int32"
+        min: 1992
+        max: 2055
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(A01|M\\d{2}|Q\\d{2})$"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+
+lookups:
+  - id: "age"
+    path: "hc.age"
+    index: "age_code"
+    schema:
+      age_code:
+        type: "string"
+        length: 4
+      age_text:
+        type: "string"
+        length: 100
+  - id: "case"
+    path: "hc.case"
+    index: "case_code"
+    schema:
+      case_code:
+        type: "string"
+        length: 1
+      case_text:
+        type: "string"
+        length: 100
+  - id: "category"
+    path: "hc.category"
+    index: "category_code"
+    schema:
+      case_code:
+        type: "string"
+        length: 1
+      category_code:
+        type: "string"
+        length: 2
+      category_text:
+        type: "string"
+        length: 100
+  - id: "category2"
+    path: "hc.category2"
+    index: "category_code"
+    schema:
+      category_code:
+        type: "string"
+        length: 2
+      category_text:
+        type: "string"
+        length: 100
+  - id: "datatype"
+    path: "hc.datatype"
+    index: "datatype_code"
+    schema:
+      datatype_code:
+        type: "string"
+        length: 1
+      datatype_text:
+        type: "string"
+        length: 100
+  - id: "event"
+    path: "hc.event"
+    index: "event_code"
+    schema:
+      event_code:
+        type: "string"
+        length: 4
+      event_text:
+        type: "string"
+        length: 100
+  - id: "footnote"
+    path: "hc.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+      footnote_text:
+        type: "string"
+        length: 100
+  - id: "gender"
+    path: "hc.gender"
+    index: "gender_code"
+    schema:
+      gender_code:
+        type: "string"
+        length: 4
+      gender_text:
+        type: "string"
+        length: 100
+  - id: "industry"
+    path: "hc.industry"
+    index: "industry_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 4
+      industry_text:
+        type: "string"
+        length: 100
+  - id: "los"
+    path: "hc.los"
+    index: "los_code"
+    schema:
+      los_code:
+        type: "string"
+        length: 4
+      los_text:
+        type: "string"
+        length: 100
+  - id: "nature"
+    path: "hc.nature"
+    index: "nature_code"
+    schema:
+      nature_code:
+        type: "string"
+        length: 4
+      nature_text:
+        type: "string"
+        length: 100
+  - id: "occupation"
+    path: "hc.occupation"
+    index: "occupation_code"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 4
+      occupation_text:
+        type: "string"
+        length: 100
+  - id: "pob"
+    path: "hc.pob"
+    index: "pob_code"
+    schema:
+      pob_code:
+        type: "string"
+        length: 4
+      pob_text:
+        type: "string"
+        length: 100
+  - id: "race"
+    path: "hc.race"
+    index: "race_code"
+    schema:
+      race_code:
+        type: "string"
+        length: 4
+      race_text:
+        type: "string"
+        length: 100
+  - id: "source"
+    path: "hc.source"
+    index: "source_code"
+    schema:
+      source_code:
+        type: "string"
+        length: 4
+      source_text:
+        type: "string"
+        length: 100
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "category_code", "datatype_code", "casetype_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  Year: { base: "int32", range: [1992, 2055] }
+  Period: { base: "string", pattern: "^(A01|M\\d{2}|Q\\d{2})$" }
+  SeriesId: { base: "string", length: 17, pattern: "^HC[U]\\w{15}$" }

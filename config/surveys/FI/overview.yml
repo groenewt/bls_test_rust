@@ -1,0 +1,23 @@
+config_version: 1
+survey:
+  code: "FI"
+  name: "Census of Fatal Occupational Injuries"
+  description: "The Census of Fatal Occupational Injuries (CFOI) program collects data on fatal occupational injuries that is comprehensive, timely, and verifiable."
+  size_class: "medium"
+  characteristics:
+    frequency: "annual"
+    coverage: "National, state, and metropolitan area data on fatal occupational injuries"
+    classification_system: "BLS Occupational Injury and Illness Classification, 2000 Standard Occupational Classification System, 2002 NAICS"
+    begin_year: 1992
+    update_schedule: "Annual release, approximately 8 months after reference year"
+    survey_methodology: "Cooperative venture between BLS and State agencies, collecting data from workers' compensation reports, death certificates, accident reports, news media, and Federal agency sources"
+    calculation_basis: "Actual counts of fatal occupational injuries"
+    time_series_count: "Census of Fatal Occupational Injuries series"
+  contacts:
+    - role: "owner"
+      name: "groenewt"
+      email: ""
+  documentation:
+    primary: "docs/bls/survey/fi.txt"
+    data_dictionary: ""
+  tags: ["fatal", "occupational", "injuries", "census", "safety", "workplace"]

@@ -1,0 +1,19 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/bp"
+  include: ["bp.series", "bp.data.*", "bp.alteration", "bp.duration", "bp.industry", "bp.measure", "bp.period", "bp.periodicity", "bp.selection", "bp.unit"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: false
+  strategy: "none"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "size_based"
+  max_partition_size_mb: 100
+  partition_by: ["industry_code"]
+
+mmap:
+  enable_for_mb_greater_than: 50

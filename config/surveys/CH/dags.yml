@@ -1,0 +1,93 @@
+# CH Survey DAG Configuration
+config_version: 1
+
+graph:
+  tasks:
+    - id: "discover"
+      type: "scan"
+      description: "Discover CH survey data files"
+      inputs: []
+      retries: { max: 2, backoff_sec: 10 }
+      sla_minutes: 5
+
+    - id: "validate_model"
+      type: "validate_model"
+      description: "Validate data model and schema"
+      inputs: ["discover"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 10
+
+    - id: "load_lookups"
+      type: "load_lookups"
+      description: "Load lookup tables for code mappings"
+      inputs: ["validate_model"]
+      retries: { max: 2, backoff_sec: 15 }
+      sla_minutes: 15
+
+    - id: "plan_partitions"
+      type: "partition_plan"
+      description: "Plan data partitioning strategy"
+      inputs: ["load_lookups"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 5
+
+    - id: "process_series"
+      type: "process_series"
+      description: "Process series metadata"
+      inputs: ["plan_partitions"]
+      parallelism: 1
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 30
+
+    - id: "process_data"
+      type: "process_data"
+      description: "Process main data files"
+      inputs: ["process_series"]
+      parallelism: 2
+      retries: { max: 2, backoff_sec: 60 }
+      sla_minutes: 60
+
+    - id: "apply_mappings"
+      type: "apply_mappings"
+      description: "Apply lookup mappings to data"
+      inputs: ["process_data"]
+      parallelism: 1
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 45
+
+    - id: "write_output"
+      type: "output"
+      description: "Write processed data to output format"
+      inputs: ["apply_mappings"]
+      retries: { max: 3, backoff_sec: 30 }
+      sla_minutes: 30
+
+    - id: "quality_checks"
+      type: "quality_checks"
+      description: "Run data quality validation"
+      inputs: ["write_output"]
+      retries: { max: 1, backoff_sec: 10 }
+      sla_minutes: 20
+
+  edges:
+    - from: "discover"
+      to: "validate_model"
+    - from: "validate_model"
+      to: "load_lookups"
+    - from: "load_lookups"
+      to: "plan_partitions"
+    - from: "plan_partitions"
+      to: "process_series"
+    - from: "process_series"
+      to: "process_data"
+    - from: "process_data"
+      to: "apply_mappings"
+    - from: "apply_mappings"
+      to: "write_output"
+    - from: "write_output"
+      to: "quality_checks"
+
+  execution:
+    max_parallel_tasks: 4
+    timeout_minutes: 180  # 3 hours total timeout
+    on_failure: "stop"  # Stop pipeline on task failure

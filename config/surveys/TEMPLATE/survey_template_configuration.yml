@@ -1,0 +1,11 @@
+# model.yml
+config_version: 1
+series:
+  path: ""
+  index: "series_id"
+  schema: {}
+data_files: []
+lookups: []
+relationships: []
+constraints: {}
+types: {}

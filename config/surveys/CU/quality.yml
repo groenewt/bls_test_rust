@@ -1,0 +1,195 @@
+config_version: 1
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "area_code", "item_code", "seasonal", "periodicity_code", "base_code", "begin_year", "begin_period", "end_year", "end_period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1913, max: 2055 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "series", column: "begin_year", min: 1913, max: 2067 }
+    - { file: "series", column: "end_year", min: 1913, max: 2067 }
+  
+  enums:
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+    - { file: "series", column: "periodicity_code", values: ["R", "S"] }
+    - { file: "series", column: "base_code", values: ["S", "A"] }
+  
+  regex:
+    - { file: "main", column: "period", pattern: "^(M(0[1-9]|1[0-3])|S0[1-3])$" }
+    - { file: "series", column: "series_id", pattern: "^CU[SU][RS]\\d{4}[A-Z0-9]{3,8}$" }
+    - { file: "series", column: "area_code", pattern: "^[0-9A-Z]{4}$" }
+  
+  lengths:
+    - { file: "series", column: "series_id", exact: 17 }
+    - { file: "series", column: "area_code", exact: 4 }
+    - { file: "series", column: "item_code", max: 8 }
+  
+  lookup_exists:
+    - { file: "series", column: "area_code", lookup_table: "area" }
+    - { file: "series", column: "item_code", lookup_table: "item" }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+  
+  allowed_values:
+    - { file: "main", column: "period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"] }
+    - { file: "series", column: "begin_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"] }
+    - { file: "series", column: "end_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"] }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(area_code)", "distinct(item_code)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+
+validation_rules:
+  data_series:
+    - field: "value"
+      rule: "range"
+      min: -10000000000000000.0
+      max: 10000000000000000.0
+      action: "flag"
+      message: "Value outside expected range"
+    
+    - field: "year"
+      rule: "range"
+      min: 1913
+      max: 2055
+      action: "reject"
+      message: "Year must be between 1913 and 2055"
+    
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CU[SU][RS]\\d{4}[A-Z0-9]{3,8}$"
+      action: "flag"
+      message: "Invalid series ID format"
+    
+    - field: "period"
+      rule: "values"
+      allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"]
+      action: "flag"
+      message: "Invalid period value"
+
+  series_dict:
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CU[SU][RS]\\d{4}[A-Z0-9]{3,8}$"
+      action: "flag"
+      message: "Invalid series ID format: should be CU[S/U][R/S] followed by 4 digits and 3-8 alphanumeric characters"
+    
+    - field: "series_id"
+      rule: "length"
+      exact: 17
+      action: "reject"
+      message: "Series ID must be exactly 17 characters"
+    
+    - field: "area_code"
+      rule: "length"
+      exact: 4
+      action: "reject"
+      message: "Area code must be exactly 4 characters"
+    
+    - field: "area_code"
+      rule: "pattern"
+      pattern: "^[0-9A-Z]{4}$"
+      action: "flag"
+      message: "Area code should be 4 alphanumeric characters"
+    
+    - field: "area_code"
+      rule: "lookup_exists"
+      lookup_table: "area"
+      action: "flag"
+      message: "Area code not found in area lookup table"
+    
+    - field: "item_code"
+      rule: "length"
+      max: 8
+      action: "reject"
+      message: "Item code must be at most 8 characters"
+    
+    - field: "item_code"
+      rule: "lookup_exists"
+      lookup_table: "item"
+      action: "flag"
+      message: "Item code not found in item lookup table"
+    
+    - field: "seasonal"
+      rule: "values"
+      allowed: ["S", "U"]
+      action: "flag"
+      message: "Seasonal must be 'S' (Seasonally Adjusted) or 'U' (Unadjusted)"
+    
+    - field: "periodicity_code"
+      rule: "values"
+      allowed: ["R", "S"]
+      action: "flag"
+      message: "Periodicity must be 'R' (Regular) or 'S' (Semi-Annual)"
+    
+    - field: "base_code"
+      rule: "values"
+      allowed: ["S", "A"]
+      action: "flag"
+      message: "Base code must be 'S' (Standard reference base) or 'A' (Alternate reference base)"
+    
+    - field: "begin_year"
+      rule: "range"
+      min: 1913
+      max: 2067
+      action: "reject"
+      message: "Begin year must be between 1913 and 2067"
+    
+    - field: "begin_year"
+      rule: "numeric"
+      action: "reject"
+      message: "Begin year must be numeric"
+    
+    - field: "end_year"
+      rule: "range"
+      min: 1913
+      max: 2067
+      action: "reject"
+      message: "End year must be between 1913 and 2067"
+    
+    - field: "end_year"
+      rule: "numeric"
+      action: "reject"
+      message: "End year must be numeric"
+    
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      action: "reject"
+      message: "End year must be >= begin year"
+    
+    - field: "begin_period"
+      rule: "values"
+      allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"]
+      action: "flag"
+      message: "Invalid begin period value"
+    
+    - field: "end_period"
+      rule: "values"
+      allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"]
+      action: "flag"
+      message: "Invalid end period value"
+
+completeness:
+  required_fields:
+    main: ["series_id", "year", "period"]
+    series: ["series_id", "area_code", "item_code", "seasonal", "periodicity_code", "base_code", "begin_year", "begin_period", "end_year", "end_period"]
+  
+  nullable_fields:
+    main: ["value", "footnote_codes"]
+    series: ["base_period", "footnote_codes"]
+
+uniqueness:
+  constraints:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period", "footnote_codes"] }

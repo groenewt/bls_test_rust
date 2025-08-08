@@ -1,0 +1,30 @@
+config_version: 1
+# Staging environment overrides for GG survey
+
+# Staging processing settings - production-like but with some constraints
+processing:
+  resources:
+    max_threads: 3  # Moderate resources in staging
+    memory_limit_gb: 6
+
+# Staging output settings
+output:
+  destination:
+    base_path: "data/processed/stage/bls/GG"
+
+# Staging quality settings - stricter than dev, but not as strict as prod
+quality:
+  policy:
+    mode: "fail_on_error"
+    max_errors: 1000
+    sample_on_fail_rows: 25
+
+# Staging logging
+logging:
+  level: "info"
+  structured: true
+
+# Staging feature flags
+feature_flags:
+  enable_profiling: false
+  enable_statistics_collection: true

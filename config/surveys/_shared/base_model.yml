@@ -1,0 +1,49 @@
+# Base Model Configuration
+# Shared defaults for data models across all surveys
+config_version: 1
+
+# Common field types that can be referenced by surveys
+types:
+  SeriesId: { base: "string", length: 30, nullable: false }
+  Year: { base: "int32", range: [1900, 2100] }
+  Period: { base: "string", pattern: "^(M\\d{2}|Q\\d{2}|A01)$" }
+  Money: { base: "decimal", precision: 18, scale: 2 }
+  Value: { base: "decimal", precision: 18, scale: 4 }
+  Code: { base: "string", length: 10 }
+  Name: { base: "string", length: 100 }
+  Description: { base: "string", length: 500 }
+
+# Common schema patterns
+common_schemas:
+  series_base:
+    series_id: { type: "SeriesId" }
+    series_title: { type: "Description", nullable: true }
+    
+  data_base:
+    series_id: { type: "SeriesId" }
+    year: { type: "Year" }
+    period: { type: "Period" }
+    value: { type: "Value", nullable: true }
+    footnote_codes: { type: "string", nullable: true }
+
+  lookup_base:
+    code: { type: "Code" }
+    name: { type: "Name" }
+    description: { type: "Description", nullable: true }
+
+# Common constraints
+common_constraints:
+  unique:
+    series_primary_key: { file: "series", columns: ["series_id"] }
+    data_composite_key: { file: "main", columns: ["series_id", "year", "period"] }
+  
+  required_fields:
+    series_required: { file: "series", columns: ["series_id"] }
+    data_required: { file: "main", columns: ["series_id", "year", "period"] }
+
+# Common relationships
+common_relationships:
+  series_to_data:
+    from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"

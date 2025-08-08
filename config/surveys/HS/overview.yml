@@ -1,0 +1,143 @@
+# HS Survey Overview Configuration
+# Survey metadata and context information
+config_version: 1
+
+survey:
+  code: "HS"
+  name: "Occupational Injuries and Illnesses Incidences Rate Data"
+  description: "The occupational injury and illness incidence rate is an annual measure of incidence of work-related injuries and illnesses and is in the form of the number of injuries and illnesses, or lost workdays per 100 full-time employees. For this purpose, 200,000 employee hours represent 100 employee years."
+  size_class: "small"
+  characteristics:
+    frequency: "annual"
+    coverage: "Virtually the entire private sector, except self-employed individuals, farms with fewer than 11 employees, employers regulated by other Federal safety and health laws, and Federal, State, and local government agencies."
+    time_series_count: "Approximately 835 SIC codes"
+    classification_system: "1987 Standard Industrial Classification (SIC)"
+    update_schedule: "Annual release"
+    begin_year: 1976
+    survey_methodology: "Stratified random sample with a Neyman allocation. The characteristics used to stratify the units are the States, SIC code, and employment."
+    calculation_basis: "The incidence rates represent the number of injuries and/or illnesses or lost workdays per 100 full-time workers and were calculated as: (N/EH) x 200,000."
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/hs.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/hs
+    - Data files are in ASCII text format
+    - Tabs separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/hs.txt
+
+tags: ["occupational_safety", "injury", "illness", "incidence_rate", "annual", "sic"]
+
+definition: |
+  The following is a definition of: OCCUPATIONAL INJURIES AND ILLNESSES INCIDENCES 
+  RATE DATA (HS)
+
+  Survey Description: The occupational injury and illness incidence rate is 
+  an annual measure of incidence of work-related injuries and illnesses and 
+  is in the form of the number of injuries and illnesses, or lost workdays per 
+  100 full-time employees. For this purpose, 200,000 employee hours 
+  represent 100 employee years.
+
+  Data collected through the annual survey are based on records which employers
+  maintain under the Occupational Safety and Health Act. The data include 
+  all cases resulting from work accidents or exposure in the work environment 
+  which result in death, nonfatal illness, or nonfatal injury which involves 
+  medical treatment (beyond first aid), loss of consciousness, restriction of 
+  work or motion, or transfer to another job.
+
+  Virtually the entire private sector is covered by the survey, except self-
+  employed individuals, farms with fewer than 11 employees, employers 
+  regulated by other Federal safety and health laws, and Federal, State, and 
+  local government agencies. Data conforming to definitions of recordable 
+  occupational injuries and illnesses for coal, metal and nonmetal mining, 
+  and railroad transportation are provided by the Mine Safety and Health 
+  Administration, U.S. Department of Labor, and the Federal Railroad 
+  Administration, U.S. Department of Transportation.
+
+  The incidence rates are produced for industries which are based on the 1987 
+  Standard Industrial Classification (SIC). The survey sample design uses 
+  stratified random sample with a Neyman allocation. The characteristics used
+  to stratify the units are the States, SIC code, and employment. The 
+  sampling ratios at the various employment size classes range from all units 
+  above a certain size class selected with certainty through declining 
+  proportions in each smaller employment-size class. The data for all 
+  reporting units in each industry are expanded by the inverse of the sampling
+  ratio, and benchmarked to the appropriate employment level in each industry.
+  
+  Since 1978, about 280,000 sample units were selected nationwide to 
+  participate in the annual survey.
+
+  Summary Data Available: The incidence rates are calculated for three 
+  categories: (1) injury and illness combined, (2) injury only; and 
+  (3) illness only.
+
+  The incidence rates for each category are available at the 2-digit SIC 
+  industry level in agriculture, forestry, and fishing, the 3-digit level in 
+  oil and gas extraction, construction, transportation and public utilities, 
+  wholesale and retail trade, and finance, insurance, and real estate, and 
+  services; and the 4-digit level in manufacturing.
+
+  Estimates of incidence rates for industries are also made for various 
+  severity classifications. For each industry, the incidence rates are 
+  available for total recordable cases, nonfatal cases without lost workdays,
+  lost workday cases, and lost workdays. Lost workday cases include both 
+  cases involving days away from work and cases involving restricted working 
+  activity. The incidence rates are available for both cases, and also for 
+  both types of lost workdays.
+
+  The estimating procedure generates occupational injury and illness estimates
+  for approximately 835 SIC codes. This dataset, however, excludes estimates 
+  for several industry codes if one of the following situations occurred:
+
+     1. Estimates for the industry were based on reports from fewer than 
+        three companies. Moreover, if three or more companies reported data 
+        for the industry, one firm could employ no more than 50 percent of 
+        the workers, or two companies combined could employ no more than 75 
+        percent.
+
+     2. Annual average employment for the industry was fewer than 10,000.  
+        However, estimates for an industry with an annual average employment 
+        of less than 10,000 were published if the majority of the employment
+        was reported in the survey.
+
+     3. The relative standard error on lost workday cases for the industry 
+        at 1 standard error was more than 15 percent in manufacturing and 
+        20 percent in nonmanufacturing.
+
+     4. The benchmark factor for the industry was less than 0.90 or greater 
+        than 1.49.
+
+  Data for an unpublished industry were included in the total for the broader
+  industry level of which it is a part.
+
+  Calculation of Incidence Rates:
+
+     1. The incidence rates represent the number of injuries and/or 
+        illnesses or lost workdays per 100 full-time workers and were 
+        calculated as: (N/EH) x 200,000.
+
+        where:
+
+        N = number of injuries and/or illnesses or lost workdays.
+
+        EH = total hours worked by all employees during the calendar year.
+
+             200,000 = base for 100 full-time equivalent workers 
+             (working 40 hours/week, 50 weeks/year).
+
+     2. Average lost workdays are calculated as:
+
+        Total lost workdays/total lost workday cases.
+
+  Frequency of Observations: All data are annual.
+
+  Data Characteristics: Rates are stored to one decimal place.
+
+  References: BLS Handbook of Methods, Chapter 14, "Occupational Safety 
+              and Health Statistics", Part I, BLS Bulletin 2285, April
+              1988.

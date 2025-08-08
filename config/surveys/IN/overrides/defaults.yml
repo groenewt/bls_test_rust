@@ -1,0 +1,22 @@
+# IN Survey Default Overrides
+# Organizational/team defaults for this survey
+config_version: 1
+
+# Default resource limits for IN survey
+resources:
+  max_threads: 4
+  memory_limit_gb: 4
+
+# Default error handling policy
+error_handling:
+  max_errors: 2000
+  log_errors: true
+
+# Default feature flags
+feature_flags:
+  enable_statistics: true
+  enable_profiling: false
+
+# Default logging level
+logging:
+  level: "info"

@@ -1,0 +1,40 @@
+# defaults.yml
+# Consumer Expenditure Survey - Organizational/team defaults
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+# Default processing settings for CX survey
+processing:
+  strategy:
+    mode: "chunked"
+    max_concurrency: 4
+  
+  resources:
+    max_threads: 4
+    memory_limit_gb: 8
+
+# Default output settings
+output:
+  format: "csv"
+  partitioning:
+    enabled: true
+    partition_by: ["year"]
+
+# Default quality settings
+quality:
+  policy:
+    mode: "fail_on_error"
+    max_error_rate: 0.05
+
+# Default runtime settings
+runtime:
+  feature_flags:
+    enable_checkpoints: true
+    enable_statistics: true
+    enable_profiling: false
+  
+  error_handling:
+    on_error: "continue"
+    max_errors: 2000
+    log_errors: true

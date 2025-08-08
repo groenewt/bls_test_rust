@@ -1,0 +1,93 @@
+config_version: 1
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period", "value"] }
+    - { file: "series", columns: ["series_id", "seasonal", "ftyp_code", "begin_year", "begin_period", "end_year", "end_period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 2009, max: 2067 }
+    - { file: "series", column: "begin_year", min: 2009, max: 2067 }
+    - { file: "series", column: "end_year", min: 2009, max: 2067 }
+  
+  enums:
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+    - { file: "main", column: "period", values: ["A01"] }
+    - { file: "series", column: "begin_period", values: ["A01"] }
+    - { file: "series", column: "end_period", values: ["A01"] }
+  
+  regex:
+    - { file: "series", column: "series_id", pattern: "^FM[U]\\d{4,8}$" }
+    - { file: "main", column: "series_id", pattern: "^FM[U]\\d{4,8}$" }
+  
+  length:
+    - { file: "series", column: "series_id", min: 6, max: 10 }
+    - { file: "main", column: "series_id", min: 6, max: 10 }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+cross_field_validation:
+  - field: "end_year"
+    rule: "greater_than_or_equal"
+    compare_field: "begin_year"
+    message: "End year must be >= begin year"
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "min(year)", "max(year)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+
+validation_rules:
+  series_file:
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^FM[U]\\d{4,8}$"
+      action: "flag"
+      message: "Invalid series ID format: should be FM[U] followed by 4-8 digits"
+    
+    - field: "series_id"
+      rule: "length"
+      min: 6
+      max: 10
+      action: "reject"
+      message: "Series ID must be between 6 and 10 characters"
+    
+    - field: "series_id"
+      rule: "required"
+      action: "reject"
+      message: "Series ID cannot be null"
+    
+    - field: "begin_year"
+      rule: "range"
+      min: 2009
+      max: 2067
+      action: "reject"
+      message: "Begin year must be between 2009 and 2067"
+    
+    - field: "end_year"
+      rule: "range"
+      min: 2009
+      max: 2067
+      action: "reject"
+      message: "End year must be between 2009 and 2067"
+    
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      action: "reject"
+      message: "End year must be >= begin year"
+
+required_fields:
+  series: ["series_id", "seasonal", "ftyp_code", "begin_year", "begin_period", "end_year", "end_period"]
+  main: ["series_id", "year", "period", "value"]
+
+nullable_fields:
+  series: ["footnote_codes"]
+  main: ["footnote_codes"]
+
+unique_fields:
+  series: ["series_id"]

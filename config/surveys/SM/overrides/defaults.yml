@@ -1,0 +1,33 @@
+config_version: 1
+# Organizational defaults for SM survey
+# These settings override the base survey configuration
+
+# Default processing settings for large surveys
+resources:
+  max_threads: 8
+  memory_limit_gb: 16
+
+# Default I/O settings
+io:
+  chunk_size_mb: 100
+  buffer_pool_size: 16
+
+# Default feature flags
+features:
+  use_mmap: true
+  enable_statistics: true
+  enable_profiling: false
+
+# Default error handling
+error_handling:
+  on_error: "continue"
+  max_errors: 5000
+  log_errors: true
+
+# Default output format
+format: "csv"
+
+# Default partitioning
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 512

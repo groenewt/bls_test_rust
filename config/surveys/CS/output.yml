@@ -1,0 +1,102 @@
+config_version: 1
+format: "csv"
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  enabled: true
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_cs"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/CS"
+
+outputs:
+  data_series:
+    format: "csv"
+    partitioning:
+      enabled: true
+      partition_by: ["year"]
+    transformations:
+      sort_by: ["series_id", "year", "period"]
+      deduplicate: true
+      deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+    statistics:
+      enabled: true
+      columns: ["year", "period", "value"]
+      
+  data_dict:
+    format: "csv"
+    output_file: "cs_series_dict.csv"
+    partitioning:
+      enabled: false  # Single file output for series metadata
+    mapping:
+      # Category code mapping
+      category_code:
+        lookup_table: "category"
+        lookup_key: "category_code"
+        lookup_value: "category_text"
+        create_field: "category_text"
+        on_missing: "UNKNOWN_CATEGORY"
+        cache: true
+      # Case code mapping
+      case_code:
+        lookup_table: "case"
+        lookup_key: "case_code"
+        lookup_value: "case_text"
+        create_field: "case_text"
+        on_missing: "UNKNOWN_CASE"
+        cache: true
+      # Age code mapping
+      age_code:
+        lookup_table: "age"
+        lookup_key: "age_code"
+        lookup_value: "age_text"
+        create_field: "age_text"
+        on_missing: "UNKNOWN_AGE"
+        cache: true
+      # Gender code mapping
+      gender_code:
+        lookup_table: "gender"
+        lookup_key: "gender_code"
+        lookup_value: "gender_text"
+        create_field: "gender_text"
+        on_missing: "UNKNOWN_GENDER"
+        cache: true
+      # Race code mapping
+      race_code:
+        lookup_table: "race"
+        lookup_key: "race_code"
+        lookup_value: "race_text"
+        create_field: "race_text"
+        on_missing: "UNKNOWN_RACE"
+        cache: true
+      # Footnote codes mapping (can be multiple)
+      footnote_codes:
+        lookup_table: "footnote"
+        lookup_key: "footnote_code"
+        lookup_value: "footnote_text"
+        create_field: "footnote_texts"
+        multiple: true
+        separator: " "
+        on_missing: "skip"
+        cache: true
+    transformations:
+      sort_by: ["series_id"]
+      deduplicate: false  # Series should be unique by definition
+      deduplicate_on: ["series_id"]
+    statistics:
+      enabled: true
+      columns: ["series_id", "category_code", "begin_year", "end_year"]
+      output_file: "cs_series_dict_stats.json"

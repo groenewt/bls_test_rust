@@ -1,0 +1,33 @@
+# WS Survey Runtime Configuration
+# Feature flags, env overrides mapping, logging
+config_version: 1
+
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: false
+  enable_checkpoints: false
+
+environment_overrides:
+  - key: "BLS_WS_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_WS_MAX_THREADS"
+    maps_to: "resources.max_threads"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_WS_MAX_ERRORS"
+    maps_to: "error_handling.max_errors"
+
+logging:
+  level: "info"
+  structured: true
+
+error_handling:
+  on_error: "continue"
+  max_errors: 1000
+  log_errors: true
+  error_file: "ws_errors.log"
+  
+  checkpoint:
+    enabled: false
+    interval_records: 10000
+    checkpoint_dir: "checkpoints/ws"

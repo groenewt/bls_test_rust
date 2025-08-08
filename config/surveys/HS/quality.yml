@@ -1,0 +1,138 @@
+# HS Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
+config_version: 1
+
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "division_code", "industry_code", "data_type_code", "case_type_code", "begin_year", "begin_period", "end_year", "end_period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1976, max: 1988 }
+    - { file: "main", column: "value", min: -1000.0, max: 1000.0 }
+    - { file: "series", column: "begin_year", min: 1976, max: 1988 }
+    - { file: "series", column: "end_year", min: 1976, max: 1988 }
+  
+  enums:
+    - { file: "main", column: "period", values: ["A01"] }
+    - { file: "series", column: "begin_period", values: ["A01"] }
+    - { file: "series", column: "end_period", values: ["A01"] }
+  
+  regex:
+    - { file: "main", column: "series_id", pattern: "^HS[U]\\d{8}$" }
+    - { file: "series", column: "series_id", pattern: "^HS[U]\\d{8}$" }
+  
+  length:
+    - { file: "main", column: "series_id", exact: 17 }
+    - { file: "series", column: "series_id", exact: 17 }
+    - { file: "series", column: "division_code", exact: 2 }
+    - { file: "series", column: "industry_code", exact: 4 }
+    - { file: "series", column: "data_type_code", exact: 1 }
+    - { file: "series", column: "case_type_code", exact: 1 }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+  
+  uniqueness:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "min(year)", "max(year)", "min(value)", "max(value)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+
+validation_rules:
+  data_series:
+    - field: "value"
+      rule: "range"
+      min: -1000.0
+      max: 1000.0
+      action: "flag"
+      message: "Value outside expected range"
+    
+    - field: "year"
+      rule: "range"
+      min: 1976
+      max: 1988
+      action: "reject"
+      message: "Year must be between 1976 and 1988"
+    
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^HS[U]\\d{8}$"
+      action: "flag"
+      message: "Invalid series ID format"
+    
+    - field: "period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid period value"
+
+  series_dict:
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^HS[U]\\d{8}$"
+      action: "flag"
+      message: "Invalid series ID format: should be HS[U] followed by 8 digits"
+    
+    - field: "series_id"
+      rule: "length"
+      exact: 17
+      action: "reject"
+      message: "Series ID must be exactly 17 characters"
+    
+    - field: "series_id"
+      rule: "required"
+      action: "reject"
+      message: "Series ID cannot be null"
+    
+    - field: "begin_year"
+      rule: "range"
+      min: 1976
+      max: 1988
+      action: "reject"
+      message: "Begin year must be between 1976 and 1988"
+    
+    - field: "begin_year"
+      rule: "numeric"
+      action: "reject"
+      message: "Begin year must be numeric"
+    
+    - field: "end_year"
+      rule: "range"
+      min: 1976
+      max: 1988
+      action: "reject"
+      message: "End year must be between 1976 and 1988"
+    
+    - field: "end_year"
+      rule: "numeric"
+      action: "reject"
+      message: "End year must be numeric"
+    
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      action: "reject"
+      message: "End year must be >= begin year"
+    
+    - field: "begin_period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid begin period value"
+    
+    - field: "end_period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid end period value"

@@ -1,0 +1,7 @@
+# processing.yml
+config_version: 1
+strategy: { mode: "chunked", max_concurrency: 2 }
+resources: { max_threads: 4, memory_limit_gb: 4 }
+io: { chunk_size_mb: 64, buffer_pool_size: 4 }
+features: { use_mmap: true, enable_statistics: true, enable_profiling: false }
+transforms: []

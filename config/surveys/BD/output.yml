@@ -1,0 +1,36 @@
+# BD Survey Output Configuration
+# Output formats, partitioning, compression
+config_version: 1
+
+format: "csv"
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  enabled: true
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_bd"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/BD"
+
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]

@@ -1,0 +1,260 @@
+# CC Survey Data Model Configuration
+# Data model: files, schemas, relationships
+config_version: 1
+
+series:
+  path: "cc.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "CCU010000100000D"
+    sector_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    benefit_code:
+      type: "string"
+      length: 5
+      nullable: false
+      example_value: "10000"
+    industryocc_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "100000"
+    costfactor_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "D"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1994"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "Q05"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2003"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "Q04"
+
+data_files:
+  - id: "main"
+    pattern: "cc.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "CCU010000100000D"
+      year:
+        type: "int32"
+        min: 1986
+        max: 2055
+        nullable: false
+        example_value: 1998
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(Q0[1-5])$"
+        nullable: false
+        example_value: "Q05"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 12.82
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "sector"
+    path: "cc.sector"
+    index: "sector_code"
+    description: "Maps sector codes to sector names"
+    schema:
+      sector_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      sector_title:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "All Civilian"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "benefit"
+    path: "cc.benefit"
+    index: "benefit_code"
+    description: "Maps benefit codes to benefit names"
+    schema:
+      benefit_code:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "10000"
+      benefit_title:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "Total compensation"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "costfactor"
+    path: "cc.costfactor"
+    index: "costfactor_code"
+    description: "Maps cost factor codes to cost factor names"
+    schema:
+      costfactor_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "D"
+      costfactor_text:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "Cost of compensation (Cost per hour worked)"
+
+  - id: "footnote"
+    path: "cc.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "A"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Cost per hour worked is $0.01 or less."
+
+  - id: "industryocc"
+    path: "cc.industryocc"
+    index: "industryocc_code"
+    description: "Maps industry occupation codes to industry occupation names"
+    schema:
+      industryocc_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000001"
+      industryocc_title:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "All workers"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "sector_code" }
+    to: { file: "sector", column: "sector_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "benefit_code" }
+    to: { file: "benefit", column: "benefit_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industryocc_code" }
+    to: { file: "industryocc", column: "industryocc_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "costfactor_code" }
+    to: { file: "costfactor", column: "costfactor_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "sector", columns: ["sector_code"] }
+    - { file: "benefit", columns: ["benefit_code"] }
+    - { file: "costfactor", columns: ["costfactor_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+    - { file: "industryocc", columns: ["industryocc_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "sector_code", "benefit_code", "industryocc_code", "costfactor_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  CCSeriesId: { base: "string", length: 17, pattern: "^CC[US]\\d{15}$" }
+  CCSectorCode: { base: "string", length: 1, pattern: "^[0-9]$" }
+  CCBenefitCode: { base: "string", length: 5, pattern: "^[0-9]{5}$" }
+  CCIndustryOccCode: { base: "string", length: 6, pattern: "^[0-9]{6}$" }
+  CCCostFactorCode: { base: "string", length: 1, pattern: "^[A-Z]$" }
+  CCPeriod: { base: "string", length: 3, pattern: "^Q0[1-5]$" }
+  CCValue: { base: "decimal", precision: 18, scale: 4, min: -10000000000000000.0, max: 10000000000000000.0 }
+  CCYear: { base: "int32", min: 1986, max: 2055 }

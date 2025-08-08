@@ -1,0 +1,151 @@
+config_version: 1
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "aspect", columns: ["series_id", "year", "period", "aspect_type"] }
+    - { file: "series", columns: ["series_id", "seasonal", "owner_code", "industry_code", "occupation_code", "subcell_code", "area_code", "datatype_code", "estimate_code", "begin_year", "begin_period", "end_year", "end_period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 2008, max: 2055 }
+    - { file: "aspect", column: "year", min: 2008, max: 2055 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "aspect", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "series", column: "begin_year", min: 2008, max: 2067 }
+    - { file: "series", column: "end_year", min: 2008, max: 2067 }
+  
+  enums:
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+    - { file: "main", column: "period", values: ["Q01", "Q02", "Q03", "Q04"] }
+    - { file: "aspect", column: "period", values: ["Q01", "Q02", "Q03", "Q04"] }
+    - { file: "series", column: "begin_period", values: ["Q01", "Q02", "Q03", "Q04"] }
+    - { file: "series", column: "end_period", values: ["Q01", "Q02", "Q03", "Q04"] }
+    - { file: "aspect", column: "aspect_type", values: ["R0"] }
+  
+  regex:
+    - { file: "main", column: "series_id", pattern: "^CM[U]\\d{15}$" }
+    - { file: "aspect", column: "series_id", pattern: "^CM[U]\\d{15}$" }
+    - { file: "series", column: "series_id", pattern: "^CM[U]\\d{15}$" }
+    - { file: "main", column: "period", pattern: "^(Q0[1-4])$" }
+    - { file: "aspect", column: "period", pattern: "^(Q0[1-4])$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 17 }
+    - { file: "main", column: "series_id", exact: 17 }
+    - { file: "aspect", column: "series_id", exact: 17 }
+  
+  uniqueness:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "aspect", columns: ["series_id", "year", "period", "aspect_type"] }
+  
+  cross_field:
+    - { file: "series", rule: "end_year >= begin_year", message: "End year must be >= begin year" }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "min(year)", "max(year)", "distinct(period)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+
+validation_rules:
+  data_files:
+    main:
+      - field: "value"
+        rule: "range"
+        min: -10000000000000000.0
+        max: 10000000000000000.0
+        action: "flag"
+      - field: "year"
+        rule: "range"
+        min: 2008
+        max: 2055
+        action: "reject"
+      - field: "series_id"
+        rule: "pattern"
+        pattern: "^CM[U]\\d{15}$"
+        action: "flag"
+      - field: "period"
+        rule: "values"
+        allowed: ["Q01", "Q02", "Q03", "Q04"]
+        action: "flag"
+    
+    aspect:
+      - field: "value"
+        rule: "range"
+        min: -10000000000000000.0
+        max: 10000000000000000.0
+        action: "flag"
+      - field: "year"
+        rule: "range"
+        min: 2008
+        max: 2055
+        action: "reject"
+      - field: "series_id"
+        rule: "pattern"
+        pattern: "^CM[U]\\d{15}$"
+        action: "flag"
+      - field: "period"
+        rule: "values"
+        allowed: ["Q01", "Q02", "Q03", "Q04"]
+        action: "flag"
+      - field: "aspect_type"
+        rule: "values"
+        allowed: ["R0"]
+        action: "flag"
+  
+  series:
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CM[U]\\d{15}$"
+      action: "flag"
+      message: "Invalid series ID format: should be CM[U] followed by 15 digits"
+    - field: "series_id"
+      rule: "length"
+      exact: 17
+      action: "reject"
+      message: "Series ID must be exactly 17 characters"
+    - field: "series_id"
+      rule: "required"
+      action: "reject"
+      message: "Series ID cannot be null"
+    - field: "begin_year"
+      rule: "range"
+      min: 2008
+      max: 2067
+      action: "reject"
+      message: "Begin year must be between 2008 and 2067"
+    - field: "begin_year"
+      rule: "numeric"
+      action: "reject"
+      message: "Begin year must be numeric"
+    - field: "end_year"
+      rule: "range"
+      min: 2008
+      max: 2067
+      action: "reject"
+      message: "End year must be between 2008 and 2067"
+    - field: "end_year"
+      rule: "numeric"
+      action: "reject"
+      message: "End year must be numeric"
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      action: "reject"
+      message: "End year must be >= begin year"
+    - field: "begin_period"
+      rule: "values"
+      allowed: ["Q01", "Q02", "Q03", "Q04"]
+      action: "flag"
+      message: "Invalid begin period value"
+    - field: "end_period"
+      rule: "values"
+      allowed: ["Q01", "Q02", "Q03", "Q04"]
+      action: "flag"
+      message: "Invalid end period value"

@@ -1,0 +1,154 @@
+# Memory Mapping Profiles
+# Reusable memory mapping configurations for different survey sizes and use cases
+config_version: 1
+
+# Memory mapping thresholds by survey size
+mmap_thresholds:
+  micro: &micro_mmap
+    enable_for_mb_greater_than: 50
+    disable_for_mb_less_than: 5
+    use_mmap: false
+    
+  small: &small_mmap
+    enable_for_mb_greater_than: 100
+    disable_for_mb_less_than: 10
+    use_mmap: true
+    
+  medium: &medium_mmap
+    enable_for_mb_greater_than: 200
+    disable_for_mb_less_than: 20
+    use_mmap: true
+    
+  large: &large_mmap
+    enable_for_mb_greater_than: 500
+    disable_for_mb_less_than: 50
+    use_mmap: true
+    
+  massive: &massive_mmap
+    enable_for_mb_greater_than: 1000
+    disable_for_mb_less_than: 100
+    use_mmap: true
+
+# Memory mapping strategies
+mmap_strategies:
+  # Conservative strategy - minimal memory usage
+  conservative: &conservative_mmap
+    <<: *small_mmap
+    prefault_pages: false
+    populate_pages: false
+    lock_pages: false
+    huge_pages: false
+    read_ahead_kb: 128
+    
+  # Balanced strategy - good performance with reasonable memory usage
+  balanced: &balanced_mmap
+    <<: *medium_mmap
+    prefault_pages: false
+    populate_pages: true
+    lock_pages: false
+    huge_pages: false
+    read_ahead_kb: 512
+    
+  # Aggressive strategy - maximum performance
+  aggressive: &aggressive_mmap
+    <<: *large_mmap
+    prefault_pages: true
+    populate_pages: true
+    lock_pages: true
+    huge_pages: true
+    read_ahead_kb: 2048
+    
+  # Sequential access pattern
+  sequential: &sequential_mmap
+    <<: *medium_mmap
+    prefault_pages: false
+    populate_pages: false
+    lock_pages: false
+    huge_pages: false
+    read_ahead_kb: 1024
+    access_pattern: "sequential"
+    
+  # Random access pattern
+  random: &random_mmap
+    <<: *medium_mmap
+    prefault_pages: true
+    populate_pages: true
+    lock_pages: false
+    huge_pages: true
+    read_ahead_kb: 256
+    access_pattern: "random"
+
+# File type specific configurations
+file_type_configs:
+  series_files: &series_mmap
+    <<: *balanced_mmap
+    cache_priority: "high"
+    eviction_policy: "lru"
+    
+  data_files: &data_mmap
+    <<: *aggressive_mmap
+    cache_priority: "medium"
+    eviction_policy: "lfu"
+    
+  lookup_files: &lookup_mmap
+    <<: *conservative_mmap
+    cache_priority: "high"
+    eviction_policy: "lru"
+    
+  index_files: &index_mmap
+    <<: *aggressive_mmap
+    cache_priority: "highest"
+    eviction_policy: "never"
+
+# Environment-specific profiles
+environment_profiles:
+  development: &dev_mmap
+    <<: *conservative_mmap
+    enable_debugging: true
+    track_access_patterns: true
+    log_page_faults: true
+    
+  testing: &test_mmap
+    <<: *balanced_mmap
+    enable_debugging: false
+    track_access_patterns: true
+    log_page_faults: false
+    
+  staging: &staging_mmap
+    <<: *balanced_mmap
+    enable_debugging: false
+    track_access_patterns: false
+    log_page_faults: false
+    
+  production: &prod_mmap
+    <<: *aggressive_mmap
+    enable_debugging: false
+    track_access_patterns: false
+    log_page_faults: false
+
+# Complete mmap configurations combining multiple aspects
+complete_profiles:
+  small_survey_dev:
+    <<: *dev_mmap
+    <<: *series_mmap
+    survey_size_class: "small"
+    
+  medium_survey_prod:
+    <<: *prod_mmap
+    <<: *data_mmap
+    survey_size_class: "medium"
+    
+  large_survey_prod:
+    <<: *prod_mmap
+    <<: *aggressive_mmap
+    survey_size_class: "large"
+    
+  lookup_optimized:
+    <<: *lookup_mmap
+    <<: *random_mmap
+    file_type: "lookup"
+    
+  sequential_data:
+    <<: *data_mmap
+    <<: *sequential_mmap
+    file_type: "data"

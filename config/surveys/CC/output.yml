@@ -1,0 +1,102 @@
+# CC Survey Output Configuration
+# Output formats, partitioning, compression
+config_version: 1
+
+format: "csv"
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+  null_value: ""
+
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_cc"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/CC"
+
+# Data series output configuration
+data_series:
+  format: "csv"
+  partitioning:
+    enabled: true  # Partition by year for time-series analysis
+    partition_by: ["year"]
+  transformations:
+    sort_by: ["series_id", "year", "period"]
+    deduplicate: true
+    deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+  statistics:
+    enabled: true
+    columns: ["year", "period", "value"]
+
+# Data dictionary output configuration  
+data_dict:
+  format: "csv"
+  output_file: "cc_series_dict.csv"
+  partitioning:
+    enabled: false  # Single file output for series metadata
+  
+  # Mapping configuration for lookups
+  mapping:
+    sector_code:
+      lookup_table: "sector"
+      lookup_key: "sector_code"
+      lookup_value: "sector_title"
+      create_field: "sector_name"
+      on_missing: "UNKNOWN_SECTOR"
+      cache: true
+    
+    benefit_code:
+      lookup_table: "benefit"
+      lookup_key: "benefit_code"
+      lookup_value: "benefit_title"
+      create_field: "benefit_name"
+      on_missing: "UNKNOWN_BENEFIT"
+      cache: true
+    
+    industryocc_code:
+      lookup_table: "industryocc"
+      lookup_key: "industryocc_code"
+      lookup_value: "industryocc_title"
+      create_field: "industryocc_name"
+      on_missing: "UNKNOWN_INDUSTRYOCC"
+      cache: true
+    
+    costfactor_code:
+      lookup_table: "costfactor"
+      lookup_key: "costfactor_code"
+      lookup_value: "costfactor_text"
+      create_field: "costfactor_name"
+      on_missing: "UNKNOWN_COSTFACTOR"
+      cache: true
+    
+    footnote_codes:
+      lookup_table: "footnote"
+      lookup_key: "footnote_code"
+      lookup_value: "footnote_text"
+      create_field: "footnote_texts"
+      multiple: true
+      separator: " "
+      on_missing: "skip"
+      cache: true
+  
+  transformations:
+    sort_by: ["series_id"]
+    deduplicate: false  # Series should be unique by definition
+    deduplicate_on: ["series_id"]
+  
+  statistics:
+    enabled: true
+    columns: ["series_id", "sector_code", "benefit_code", "industryocc_code", "begin_year", "end_year"]
+    output_file: "cc_series_dict_stats.json"

@@ -1,0 +1,40 @@
+config_version: 1
+# Production environment overrides for GG survey
+
+# Production processing settings - full resources
+processing:
+  resources:
+    max_threads: 4  # Full resources in production
+    memory_limit_gb: 8
+
+# Production output settings
+output:
+  destination:
+    base_path: "data/processed/bls/GG"
+  # Enable compression for production
+  csv:
+    compression: "gzip"
+
+# Production quality settings - strictest
+quality:
+  policy:
+    mode: "fail_on_error"
+    max_errors: 500  # Lower tolerance for errors in production
+    sample_on_fail_rows: 50
+
+# Production logging - minimal but structured
+logging:
+  level: "warn"  # Only warnings and errors in production
+  structured: true
+
+# Production feature flags - optimized for performance
+feature_flags:
+  enable_profiling: false
+  enable_statistics_collection: true
+  enable_checkpoints: true
+
+# Production checkpoint settings - more frequent
+checkpoint:
+  enabled: true
+  interval_records: 25000  # More frequent checkpoints in production
+  cleanup_on_success: true

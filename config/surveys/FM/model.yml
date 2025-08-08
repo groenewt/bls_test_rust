@@ -1,0 +1,219 @@
+config_version: 1
+series:
+  path: "fm.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id: { type: "string", length: 10, nullable: false }
+    seasonal: { type: "string", length: 1, enum: ["S","U"], nullable: false }
+    series_title: { type: "string", length: 200, nullable: false }
+    fchld_code: { type: "string", length: 2, nullable: false }
+    fdat_code: { type: "string", length: 2, nullable: false }
+    fhlf_code: { type: "string", length: 2, nullable: false }
+    fnmatwk_code: { type: "string", length: 2, nullable: false }
+    fnme_code: { type: "string", length: 2, nullable: false }
+    fnmlf_code: { type: "string", length: 2, nullable: false }
+    fnmu_code: { type: "string", length: 2, nullable: false }
+    fnmws_code: { type: "string", length: 2, nullable: false }
+    forig_code: { type: "string", length: 2, nullable: false }
+    frace_code: { type: "string", length: 2, nullable: false }
+    ftpt_code: { type: "string", length: 2, nullable: false }
+    ftyp_code: { type: "string", length: 2, nullable: false }
+    hhlf_code: { type: "string", length: 2, nullable: false }
+    misclf_code: { type: "string", length: 2, nullable: false }
+    mwlf_code: { type: "string", length: 2, nullable: false }
+    prlf_code: { type: "string", length: 2, nullable: false }
+    chld_code: { type: "string", length: 2, nullable: false }
+    lfst_code: { type: "string", length: 2, nullable: false }
+    mari_code: { type: "string", length: 2, nullable: false }
+    orig_code: { type: "string", length: 2, nullable: false }
+    race_code: { type: "string", length: 2, nullable: false }
+    sexs_code: { type: "string", length: 1, nullable: false }
+    tdat_code: { type: "string", length: 2, nullable: false }
+    wkst_code: { type: "string", length: 2, nullable: false }
+    footnote_codes: { type: "string", length: 10, nullable: true }
+    begin_year: { type: "string", length: 4, nullable: false }
+    begin_period: { type: "string", length: 3, nullable: false }
+    end_year: { type: "string", length: 4, nullable: false }
+    end_period: { type: "string", length: 3, nullable: false }
+
+data_files:
+  - id: "main"
+    pattern: "fm.data.*"
+    index: "series_id"
+    schema:
+      series_id: { type: "string", length: 10 }
+      year: { type: "int32", min: 2009 }
+      period: { type: "string", length: 3, pattern: "^A01$" }
+      value: { type: "decimal", precision: 12, scale: 0 }
+      footnote_codes: { type: "string", length: 10, nullable: true }
+
+lookups:
+  - id: "chld"
+    path: "fm.chld"
+    index: "chld_code"
+    schema:
+      chld_code: { type: "string", length: 2 }
+      chld_text: { type: "string", length: 100 }
+  - id: "fchld"
+    path: "fm.fchld"
+    index: "fchld_code"
+    schema:
+      fchld_code: { type: "string", length: 2 }
+      fchld_text: { type: "string", length: 100 }
+  - id: "fdat"
+    path: "fm.fdat"
+    index: "fdat_code"
+    schema:
+      fdat_code: { type: "string", length: 2 }
+      fdat_text: { type: "string", length: 100 }
+  - id: "fhlf"
+    path: "fm.fhlf"
+    index: "fhlf_code"
+    schema:
+      fhlf_code: { type: "string", length: 2 }
+      fhlf_text: { type: "string", length: 100 }
+  - id: "fnmatwk"
+    path: "fm.fnmatwk"
+    index: "fnmatwk_code"
+    schema:
+      fnmatwk_code: { type: "string", length: 2 }
+      fnmatwk_text: { type: "string", length: 100 }
+  - id: "fnme"
+    path: "fm.fnme"
+    index: "fnme_code"
+    schema:
+      fnme_code: { type: "string", length: 2 }
+      fnme_text: { type: "string", length: 100 }
+  - id: "fnmlf"
+    path: "fm.fnmlf"
+    index: "fnmlf_code"
+    schema:
+      fnmlf_code: { type: "string", length: 2 }
+      fnmlf_text: { type: "string", length: 100 }
+  - id: "fnmu"
+    path: "fm.fnmu"
+    index: "fnmu_code"
+    schema:
+      fnmu_code: { type: "string", length: 2 }
+      fnmu_text: { type: "string", length: 100 }
+  - id: "fnmws"
+    path: "fm.fnmws"
+    index: "fnmws_code"
+    schema:
+      fnmws_code: { type: "string", length: 2 }
+      fnmws_text: { type: "string", length: 100 }
+  - id: "forig"
+    path: "fm.forig"
+    index: "forig_code"
+    schema:
+      forig_code: { type: "string", length: 2 }
+      forig_text: { type: "string", length: 100 }
+  - id: "frace"
+    path: "fm.frace"
+    index: "frace_code"
+    schema:
+      frace_code: { type: "string", length: 2 }
+      frace_text: { type: "string", length: 100 }
+  - id: "ftpt"
+    path: "fm.ftpt"
+    index: "ftpt_code"
+    schema:
+      ftpt_code: { type: "string", length: 2 }
+      ftpt_text: { type: "string", length: 100 }
+  - id: "ftyp"
+    path: "fm.ftyp"
+    index: "ftyp_code"
+    schema:
+      ftyp_code: { type: "string", length: 2 }
+      ftyp_text: { type: "string", length: 100 }
+  - id: "hhlf"
+    path: "fm.hhlf"
+    index: "hhlf_code"
+    schema:
+      hhlf_code: { type: "string", length: 2 }
+      hhlf_text: { type: "string", length: 100 }
+  - id: "misclf"
+    path: "fm.misclf"
+    index: "misclf_code"
+    schema:
+      misclf_code: { type: "string", length: 2 }
+      misclf_text: { type: "string", length: 100 }
+  - id: "mwlf"
+    path: "fm.mwlf"
+    index: "mwlf_code"
+    schema:
+      mwlf_code: { type: "string", length: 2 }
+      mwlf_text: { type: "string", length: 100 }
+  - id: "prlf"
+    path: "fm.prlf"
+    index: "prlf_code"
+    schema:
+      prlf_code: { type: "string", length: 2 }
+      prlf_text: { type: "string", length: 100 }
+  - id: "lfst"
+    path: "fm.lfst"
+    index: "lfst_code"
+    schema:
+      lfst_code: { type: "string", length: 2 }
+      lfst_text: { type: "string", length: 100 }
+  - id: "mari"
+    path: "fm.mari"
+    index: "mari_code"
+    schema:
+      mari_code: { type: "string", length: 2 }
+      mari_text: { type: "string", length: 100 }
+  - id: "orig"
+    path: "fm.orig"
+    index: "orig_code"
+    schema:
+      orig_code: { type: "string", length: 2 }
+      orig_text: { type: "string", length: 100 }
+  - id: "race"
+    path: "fm.race"
+    index: "race_code"
+    schema:
+      race_code: { type: "string", length: 2 }
+      race_text: { type: "string", length: 100 }
+  - id: "sexs"
+    path: "fm.sexs"
+    index: "sexs_code"
+    schema:
+      sexs_code: { type: "string", length: 1 }
+      sexs_text: { type: "string", length: 100 }
+  - id: "tdat"
+    path: "fm.tdat"
+    index: "tdat_code"
+    schema:
+      tdat_code: { type: "string", length: 2 }
+      tdat_text: { type: "string", length: 100 }
+  - id: "wkst"
+    path: "fm.wkst"
+    index: "wkst_code"
+    schema:
+      wkst_code: { type: "string", length: 2 }
+      wkst_text: { type: "string", length: 100 }
+  - id: "footnote"
+    path: "fm.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code: { type: "string", length: 1 }
+      footnote_text: { type: "string", length: 100 }
+  - id: "seasonal"
+    path: "fm.seasonal"
+    index: "seasonal_code"
+    schema:
+      seasonal_code: { type: "string", length: 1 }
+      seasonal_text: { type: "string", length: 100 }
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period", "value"] }
+    - { file: "series", columns: ["series_id", "seasonal", "ftyp_code"] }

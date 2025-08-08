@@ -1,0 +1,66 @@
+# CB Survey Overview Configuration
+# Survey metadata and context information
+config_version: 1
+
+survey:
+  code: "CB"
+  name: "Biennial Nonfatal Occupational Injuries and Illnesses - Characteristics Data"
+  description: "Biennial Nonfatal Occupational Injuries and Illnesses - characteristics data track injuries and illnesses in the workplace, including worker demographics and case circumstances."
+  size_class: "large"
+  characteristics:
+    frequency: "biennial"
+    coverage: "Detailed breakouts of injury and illness data by various characteristics"
+    time_series_count: "Biennial nonfatal occupational injuries and illnesses series"
+    classification_system: "Occupational injuries and illnesses classification"
+    update_schedule: "Biennial release"
+    begin_year: 2022
+    survey_methodology: "Survey respondents provide additional information for cases that resulted in a day away from work, job transfer, or restriction"
+    calculation_basis: "Data reported to one decimal place for rates, rounded to the nearest 10 for counts, and whole number for median days"
+
+contacts:
+  - role: "owner"
+    name: "Junie"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/cb.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/cb
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full documentation: docs/bls/survey/cb.txt
+
+tags: ["occupational_injuries", "workplace_safety", "biennial", "characteristics", "demographics"]
+
+definition: |
+  The following is a definition of: Biennial Nonfatal Occupational Injuries and Illnesses - 
+  characteristics data (cb)
+
+  Survey Description: In addition to industry data on injuries and illnesses, 
+  survey respondents also are asked to provide additional information for a 
+  subset of cases that resulted in a day away from work, job transfer, or 
+  restriction. Employers answer several questions about these cases, including 
+  the worker demographics and occupation as well as the case circumstances 
+  surrounding the injury or illness case. Beginning with the 2021-2022 reference 
+  period, this dataset expanded from including only days away from work cases, 
+  to also including cases that resulted in a day of job transfer restriction, as 
+  well as the combination of the two. This dataset moved to a 2-year reference 
+  period and will be released biennially (every other year).  
+
+  Summary of Data Available: Detailed breakouts of injury and illness data by
+  a variety of characteristics, including age, category, event, gender,
+  industry, length of service, nature, occupation, part of body, race, and
+  source are available.
+
+  Frequency of Observations: Biennial data are available and released every other 
+  year. The reference period in the files is the second year of the two-year period. 
+  For example: For the biennial reference period 2021-2022, the time series data 
+  indicates reference year 2022. 
+
+  Data Characteristics: Data are reported to one decimal place for rates, rounded 
+  to the nearest 10 for counts, and whole number for median days.
+
+  Updating Schedule: OSHS nonfatal injury and illness data characteristics data are 
+  published biennially and include a reference period of 2 years. For example, 
+  2021-2022 includes cases from both years.

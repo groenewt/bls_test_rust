@@ -1,0 +1,16 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/TU"
+  include: ["tu.series", "tu.data.*", "tu.seasonal", "tu.stattype", "tu.datays", "tu.sex", "tu.region", "tu.lfstat", "tu.educ", "tu.maritlstat", "tu.age", "tu.orig", "tu.race", "tu.mjcow", "tu.where", "tu.sjmj", "tu.timeday", "tu.actcode", "tu.occ", "tu.prhhchild", "tu.earn", "tu.who", "tu.hhnscc03", "tu.prownhhchild", "tu.work", "tu.elnum", "tu.ecage", "tu.elfreq", "tu.eldur", "tu.ecytd", "tu.elder", "tu.lfstatw", "tu.pertype", "tu.footnote"]
+  exclude: ["*.tmp", ".*", "*~"]
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["year", "stattype_code"]
+mmap:
+  enable_for_mb_greater_than: 100

@@ -1,0 +1,497 @@
+# config/surveys/gp.yml
+# name: Geographic Profile Survey Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: data/raw/bls/gp
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+#         - full doc: docs/bls/survey/gp.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: gp #survey code (ex.ap,sm,gp)- see docs (docs/surveys/* for all surveys)
+  name: Geographic Profile #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "Geographic Profile series are taken from the Current Population Survey (CPS), conducted by the Bureau of the Census, which produces information about employment and unemployment in States, classified by a variety of demographic and economic characteristics."
+  definition: "
+The following is a definition of:  GEOGRAPHIC PROFILE (GP)
+
+Survey Description:  Geographic Profile series are taken from the Current 
+Population Survey (CPS;  see the Labor Force survey), conducted by the 
+Bureau of the Census, which produces information about employment and 
+unemployment in States, classified by a variety of demographic and economic
+characteristics.
+
+Data for demographic groups were not published in the Geographic Profile 
+where they did not meet BLS publication standards of reliability for the 
+particular area based on the sample in that area.  See Appendix B of the 
+Geographic Profile.  All series used in the development of the Geographic 
+Profile are included here, whether or not they were included in the 
+publication itself.
+
+The official Bureau of Labor Statistics annual average estimates for States,
+which are the basis for determining the eligibility of a State for benefits 
+under Federal economic assistance programs, are obtained directly from the 
+CPS.
+
+Summary Data Available  Presently, there are approximately 8,500 State labor
+force series available in the LABSTAT database.
+
+These series include the major labor force estimates for States as published
+in the annual Geographic Profile of Employment and Unemployment and other 
+BLS publications.
+
+Major employment status series -- civilian labor force, employed, 
+unemployed, and unemployment rate -- are defined by State, race, age, sex, 
+and occupational classification.
+
+Also available are selected series for civilian noninstitutional population 
+by State.
+
+In general, if a selected set of characteristics is available for one State,
+it is available for all States.  However, Hispanic data for 1981-82 are 
+available only for selected States (including Arizona, California, Colorado,
+Florida, Illinois, Indiana, Michigan, New Jersey, New Mexico, New York, 
+Ohio, Pennsylvania, and Texas).
+
+Frequency of Observations:  All data are annual averages.
+
+Data Characteristics:  Rates are expressed as percents with one decimal 
+place.  Levels are measured in thousands of persons and are stored with no 
+decimal places.
+
+Updating Schedule:  Updates are made once a year when the Geogrpahic Profile
+is ready for publication in late March or early April. Historical data are 
+subject to adjustment due to revisions in the State population estimates 
+made by the Bureau of the Census.  These adjustments will be incorporated 
+into LABSTAT with the regular annual update.
+                "
+  characteristics:
+    frequency: annual
+    coverage: "State labor force data classified by demographic and economic characteristics"
+    time_series_count: "Approximately 8,500 State labor force series" 
+    classification_system: "State, race, age, sex, and occupational classification"
+    update_schedule: "Annual release in late March or early April"
+    begin_year: 1981
+    survey_methodology: "Data from the Current Population Survey (CPS) conducted by the Bureau of the Census"
+    calculation_basis: "Rates are expressed as percents with one decimal place. Levels are measured in thousands of persons with no decimal places."
+
+#Survey Series Information
+series:
+  path: "gp.series" #path to series file
+  use_mmap: true
+  series_size_class: Medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17 #USE DEFINED FIELD LENGTH From (docs/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "GPU00100000E0000"
+      map_file: "" #leave blank for none
+    area_type_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    state_code:
+      length: 2
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "state" #leave blank for none
+    area_code:
+      length: 4
+      type: Text
+      example_value: "0000"
+      needs_mapping: true
+      map_file: "area" #leave blank for none
+    size_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    labor_force_code:
+      length: 1
+      type: Text
+      example_value: "E"
+      needs_mapping: true
+      map_file: "labor.force" #leave blank for none
+    charact_code:
+      length: 4
+      type: Text
+      example_value: "0000"
+      needs_mapping: true
+      map_file: "charact" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1981"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "1998"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "GPU00100000E0000"
+      year:
+        length: 4
+        type: values
+        example_value: "1981"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "1491"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ state, area, charact, labor.force ]  # Small, frequently used
+    lazy: [ period ]  # Load on demand
+    mmap: [ ]  # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    area:
+        file_path: "gp.area"
+        name: Area
+        description: "Maps area codes to area names"
+        index_col: "area_code"
+        schema:
+          state_code:
+            length: 2
+            type: str
+            example_value: "04"
+          area_code:
+            length: 4
+            type: str
+            example_value: "6200"
+          area_name:
+            length: 50
+            type: Text
+            example_value: "Phoenix"
+
+    charact:
+        file_path: "gp.charact"
+        name: Characteristics
+        description: "Maps characteristic codes to characteristic descriptions"
+        index_col: "charact_code"
+        schema:
+          charact_code:
+            length: 4
+            type: str
+            example_value: "0020"
+          charact_text:
+            length: 50
+            type: str
+            example_value: "White, 16+;"
+
+    labor.force:
+        file_path: "gp.labor.force"
+        name: Labor Force
+        description: "Maps labor force codes to labor force descriptions"
+        index_col: "labor_force_code"
+        schema:
+          labor_force_code:
+            length: 1
+            type: str
+            example_value: "E"
+          labor_force_text:
+            length: 40
+            type: str
+            example_value: "Employed"
+
+    period:
+        file_path: "gp.period"
+        name: Period
+        description: "Maps period codes to period names"
+        index_col: "period"
+        schema:
+          period:
+            length: 3
+            type: str
+            example_value: "A01"
+          period_abbr:
+            length: 5
+            type: str
+            example_value: "ANN"
+          period_name:
+            length: 20
+            type: str
+            example_value: "Annual"
+
+    state:
+        file_path: "gp.state"
+        name: State
+        description: "Maps state codes to state names"
+        index_col: "state_code"
+        schema:
+          state_code:
+            length: 2
+            type: str
+            example_value: "01"
+          state_name:
+            length: 20
+            type: str
+            example_value: "Alabama"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks due to size
+  max_threads: 4     # Increased parallelization for medium-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ gp.data.1.AllData ]
+      partition_strategy:
+        partition_by: "state_code"
+        file_format: "gp.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1981
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^GP[U]\\d{15}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "A01" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Medium
+      output_file: "gp_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # State code mapping
+        state_code:
+          lookup_table: "state"
+          lookup_key: "state_code"
+          lookup_value: "state_name"
+          create_field: "state_name"
+          on_missing: "UNKNOWN_STATE"
+          cache: true
+        
+        # Area code mapping
+        area_code:
+          lookup_table: "area"
+          lookup_key: "area_code"
+          lookup_value: "area_name"
+          create_field: "area_name"
+          on_missing: "UNKNOWN_AREA"
+          cache: true
+        
+        # Labor force code mapping
+        labor_force_code:
+          lookup_table: "labor.force"
+          lookup_key: "labor_force_code"
+          lookup_value: "labor_force_text"
+          create_field: "labor_force_text"
+          on_missing: "UNKNOWN_LABOR_FORCE"
+          cache: true
+        
+        # Characteristic code mapping
+        charact_code:
+          lookup_table: "charact"
+          lookup_key: "charact_code"
+          lookup_value: "charact_text"
+          create_field: "charact_text"
+          on_missing: "UNKNOWN_CHARACTERISTIC"
+          cache: true
+        
+        # No footnote mapping file exists for gp
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^GP[U]\\d{15}$"
+            action: flag
+            message: "Invalid series ID format: should be GP[U] followed by 15 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1981
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1981 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1981
+            max: 2067
+            action: reject
+            message: "End year must be between 1981 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, area_type_code, state_code, area_code, labor_force_code, charact_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, state_code, area_code, labor_force_code, begin_year, end_year ]
+        output_file: "gp_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 2000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "gp_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/gp"

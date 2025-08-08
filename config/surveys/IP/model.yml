@@ -1,0 +1,330 @@
+# IP Survey Data Model Configuration
+# Data model: files, schemas, relationships
+config_version: 1
+
+series:
+  path: "ip.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 21
+      nullable: false
+      example_value: "IPUBN2111__L000000000"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    sector_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "B"
+    industry_code:
+      type: "string"
+      length: 7
+      nullable: false
+      example_value: "N211___"
+    measure_code:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "L00"
+    duration_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    base_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2012"
+    type_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "I"
+    area_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    series_title:
+      type: "string"
+      length: 256
+      nullable: false
+      example_value: "Labor productivity, mining, oil and gas extraction, NAICS 211"
+    footnote_codes:
+      type: "string"
+      length: 1
+      nullable: true
+      example_value: "e"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1987"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2021"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "ip.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 21
+        nullable: false
+        example_value: "IPUBN2111__L000000000"
+      year:
+        type: "int32"
+        min: 1987
+        max: 2055
+        nullable: false
+        example_value: "2001"
+      period:
+        type: "string"
+        length: 3
+        pattern: "^A01$"
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: "116.6"
+      footnote_codes:
+        type: "string"
+        length: 1
+        nullable: true
+        example_value: "e"
+
+lookups:
+  - id: "area"
+    path: "ip.area"
+    index: "area_code"
+    schema:
+      area_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      area_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "U.S. Total"
+      display_level:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "1"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "1"
+
+  - id: "duration"
+    path: "ip.duration"
+    index: "duration_code"
+    schema:
+      duration_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      duration_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "% Change year ago"
+
+  - id: "footnote"
+    path: "ip.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "e"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: true
+        example_value: ""
+
+  - id: "industry"
+    path: "ip.industry"
+    index: "industry_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 7
+        nullable: false
+        example_value: "N211___"
+      naics_code:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "211"
+      industry_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Oil and gas extraction"
+      display_level:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "1"
+
+  - id: "measure"
+    path: "ip.measure"
+    index: "measure_code"
+    schema:
+      measure_code:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "L00"
+      measure_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Labor productivity"
+      display_level:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "1"
+
+  - id: "seasonal"
+    path: "ip.seasonal"
+    index: "seasonal"
+    schema:
+      seasonal:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "U"
+      seasonal_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Not Seasonally Adjusted"
+
+  - id: "sector"
+    path: "ip.sector"
+    index: "sector_code"
+    schema:
+      sector_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "B"
+      sector_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Mining"
+
+  - id: "type"
+    path: "ip.type"
+    index: "type_code"
+    schema:
+      type_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "E"
+      type_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Employees"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "measure_code" }
+    to: { file: "measure", column: "measure_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "sector_code" }
+    to: { file: "sector", column: "sector_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal" }
+    type: "many-to-one"
+  - from: { file: "series", column: "duration_code" }
+    to: { file: "duration", column: "duration_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "type_code" }
+    to: { file: "type", column: "type_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "seasonal", "sector_code", "industry_code", "measure_code", "duration_code", "begin_year", "begin_period", "end_year", "end_period"] }
+
+types:
+  Year: { base: "int32", range: [1987, 2055] }
+  SeriesId: { base: "string", length: 21, pattern: "^IP[U]\\w{19}$" }
+  Period: { base: "string", pattern: "^A01$" }
+  Value: { base: "decimal", precision: 18, scale: 4 }

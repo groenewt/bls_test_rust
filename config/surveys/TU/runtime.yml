@@ -1,0 +1,23 @@
+config_version: 1
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true
+  enable_parallel_processing: true
+  enable_data_validation: true
+environment_overrides:
+  - key: "BLS_TU_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
+  - key: "BLS_TU_MAX_THREADS"
+    maps_to: "resources.max_threads"
+logging:
+  level: "info"
+  structured: true
+  components:
+    discovery: "info"
+    validation: "warn"
+    processing: "info"
+    output: "info"

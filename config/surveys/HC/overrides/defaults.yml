@@ -1,0 +1,17 @@
+config_version: 1
+# Default overrides for HC survey
+# These settings apply across all environments unless overridden
+
+processing:
+  strategy:
+    max_concurrency: 2  # Default to slightly higher concurrency
+  
+  resources:
+    memory_limit_gb: 6  # Conservative default for medium survey
+
+output:
+  format: "csv"  # Default output format
+  
+quality:
+  policy:
+    mode: "warn_only"  # Default to warnings for development

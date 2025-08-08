@@ -1,0 +1,12 @@
+config_version: 1
+# Organizational defaults for FW survey
+processing:
+  resources:
+    memory_limit_gb: 8
+    max_threads: 2
+
+output:
+  format: "csv"
+  
+logging:
+  level: "warn"

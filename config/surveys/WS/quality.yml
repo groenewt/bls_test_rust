@@ -1,0 +1,178 @@
+# WS Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
+config_version: 1
+
+expectations:
+  non_null:
+    - { file: "series", columns: ["series_id", "measure_code", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1947, max: 2055 }
+    - { file: "series", column: "begin_year", min: 1947, max: 2067 }
+    - { file: "series", column: "end_year", min: 1947, max: 2067 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+  
+  enums:
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+    - { file: "main", column: "period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "begin_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "end_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+  
+  regex:
+    - { file: "series", column: "series_id", pattern: "^WS[SU]\\d{3}$" }
+    - { file: "main", column: "series_id", pattern: "^WS[SU]\\d{3}$" }
+    - { file: "series", column: "measure_code", pattern: "^\\d{3}$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 6 }
+    - { file: "main", column: "series_id", exact: 6 }
+    - { file: "series", column: "measure_code", exact: 3 }
+    - { file: "series", column: "seasonal", exact: 1 }
+    - { file: "series", column: "begin_year", exact: 4 }
+    - { file: "series", column: "end_year", exact: 4 }
+    - { file: "series", column: "begin_period", exact: 3 }
+    - { file: "series", column: "end_period", exact: 3 }
+    - { file: "main", column: "year", exact: 4 }
+    - { file: "main", column: "period", exact: 3 }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+  
+  uniqueness:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+row_count:
+  min: 1
+  warn_below: 10
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(year)", "distinct(period)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+
+validation_rules:
+  data_series:
+    rules:
+      - field: "value"
+        rule: "range"
+        min: -10000000000000000.0
+        max: 10000000000000000.0
+        action: "flag"
+        message: "Value out of expected range"
+      
+      - field: "year"
+        rule: "range"
+        min: 1947
+        max: 2055
+        action: "reject"
+        message: "Year must be between 1947 and 2055"
+      
+      - field: "series_id"
+        rule: "pattern"
+        pattern: "^WS[SU]\\d{3}$"
+        action: "flag"
+        message: "Invalid series ID format"
+      
+      - field: "period"
+        rule: "values"
+        allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"]
+        action: "flag"
+        message: "Invalid period value"
+    
+    required_fields: ["series_id", "year", "period"]
+    nullable_fields: ["value", "footnote_codes"]
+
+  data_dict:
+    rules:
+      - field: "series_id"
+        rule: "pattern"
+        pattern: "^WS[SU]\\d{3}$"
+        action: "flag"
+        message: "Invalid series ID format: should be WS[S/U] followed by 3 digits"
+      
+      - field: "series_id"
+        rule: "length"
+        exact: 6
+        action: "reject"
+        message: "Series ID must be exactly 6 characters"
+      
+      - field: "series_id"
+        rule: "required"
+        action: "reject"
+        message: "Series ID cannot be null"
+      
+      - field: "measure_code"
+        rule: "length"
+        exact: 3
+        action: "reject"
+        message: "Measure code must be exactly 3 characters"
+      
+      - field: "measure_code"
+        rule: "pattern"
+        pattern: "^\\d{3}$"
+        action: "flag"
+        message: "Measure code should be 3 digits"
+      
+      - field: "seasonal"
+        rule: "values"
+        allowed: ["S", "U"]
+        action: "flag"
+        message: "Invalid seasonal value"
+      
+      - field: "begin_year"
+        rule: "range"
+        min: 1947
+        max: 2067
+        action: "reject"
+        message: "Begin year must be between 1947 and 2067"
+      
+      - field: "begin_year"
+        rule: "numeric"
+        action: "reject"
+        message: "Begin year must be numeric"
+      
+      - field: "end_year"
+        rule: "range"
+        min: 1947
+        max: 2067
+        action: "reject"
+        message: "End year must be between 1947 and 2067"
+      
+      - field: "end_year"
+        rule: "numeric"
+        action: "reject"
+        message: "End year must be numeric"
+      
+      - field: "end_year"
+        rule: "greater_than_or_equal"
+        compare_field: "begin_year"
+        action: "reject"
+        message: "End year must be >= begin year"
+      
+      - field: "begin_period"
+        rule: "values"
+        allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"]
+        action: "flag"
+        message: "Invalid begin period value"
+      
+      - field: "end_period"
+        rule: "values"
+        allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"]
+        action: "flag"
+        message: "Invalid end period value"
+      
+      - field: "end_year"
+        rule: "date_logic_check"
+        check_fields: ["begin_year"]
+        validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+        action: "flag"
+        message: "End date must be after or equal to begin date"
+    
+    required_fields: ["series_id", "measure_code", "seasonal", "begin_year", "begin_period", "end_year", "end_period"]
+    nullable_fields: []
+    unique_fields: ["series_id"]

@@ -1,0 +1,23 @@
+config_version: 1
+survey:
+  code: "FM"
+  name: "Marital and Family Labor Force Statistics"
+  description: "The marital and family labor force statistics (FM) database from the Current Population Survey reflects data published each year in the news release, 'Employment Characteristics of Families.'"
+  size_class: "small"
+  characteristics:
+    frequency: "annual"
+    coverage: "Civilian noninstitutional population age 16 years and over"
+    classification_system: "Marital status, presence and age of own children, employment status"
+    begin_year: 2009
+    update_schedule: "Annual release"
+    survey_methodology: "Monthly survey of about 60,000 eligible households conducted by the U.S. Census Bureau for the Bureau of Labor Statistics."
+    calculation_basis: "Annual averages of information collected monthly in the survey, calculated from not seasonally adjusted monthly data."
+    time_series_count: "Marital and family labor force statistics"
+  contacts:
+    - role: "owner"
+      name: "groenewt"
+      email: ""
+  documentation:
+    primary: "docs/bls/survey/fm.txt"
+    data_dictionary: ""
+  tags: ["marital", "family", "labor", "force", "employment", "characteristics"]

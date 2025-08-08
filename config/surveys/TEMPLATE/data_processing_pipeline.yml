@@ -1,0 +1,16 @@
+# dags.yml
+config_version: 1
+graph:
+  tasks:
+    - { id: "discover", type: "scan", inputs: [] }
+    - { id: "validate", type: "validate_model", inputs: ["discover"] }
+    - { id: "plan", type: "partition_plan", inputs: ["validate"] }
+    - { id: "process", type: "execute", inputs: ["plan"] }
+    - { id: "write", type: "output", inputs: ["process"] }
+    - { id: "qc", type: "quality_checks", inputs: ["write"] }
+edges:
+  - { from: "discover", to: "validate" }
+  - { from: "validate", to: "plan" }
+  - { from: "plan", to: "process" }
+  - { from: "process", to: "write" }
+  - { from: "write", to: "qc" }

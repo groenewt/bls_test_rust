@@ -1,0 +1,65 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/cw"
+  include: [
+    "cw.series",
+    "cw.data.*",
+    "cw.area",
+    "cw.base",
+    "cw.footnote",
+    "cw.item",
+    "cw.period",
+    "cw.periodicity",
+    "cw.seasonal"
+  ]
+  exclude: ["*.tmp", ".*", "*~"]
+  data_files: [
+    "cw.data.0.Current",
+    "cw.data.1.AllItems",
+    "cw.data.2.Summaries",
+    "cw.data.3.AsizeNorthEast",
+    "cw.data.4.AsizeNorthCentral",
+    "cw.data.5.AsizeSouth",
+    "cw.data.6.AsizeWest",
+    "cw.data.7.OtherNorthEast",
+    "cw.data.8.OtherNorthCentral",
+    "cw.data.9.OtherSouth",
+    "cw.data.10.OtherWest",
+    "cw.data.11.USFoodBeverage",
+    "cw.data.12.USHousing",
+    "cw.data.13.USApparel",
+    "cw.data.14.USTransportation",
+    "cw.data.15.USMedical",
+    "cw.data.16.USRecreation",
+    "cw.data.17.USEducationAndCommunication",
+    "cw.data.18.USOtherGoodsAndServices",
+    "cw.data.19.PopulationSize",
+    "cw.data.20.USCommoditiesServicesSpecial"
+  ]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["area_code"]
+  partition_strategy:
+    partition_by: "area_code"
+    file_format: "cw.data.%d.%s"
+    load_dictionary_values: true
+
+mmap:
+  enable_for_mb_greater_than: 100
+  series_files: true
+  data_files: true
+  lookup_files: false
+
+lookup_config:
+  preload: ["area", "item", "seasonal", "period"]
+  lazy: ["footnote", "periodicity", "base"]
+  mmap: []
+  cache_all: true

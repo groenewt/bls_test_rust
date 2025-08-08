@@ -1,0 +1,160 @@
+# quality.yml
+# Consumer Expenditure Survey - Validations, expectations, thresholds
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+expectations:
+  # Non-null field requirements
+  non_null:
+    - { file: "series", columns: ["series_id", "seasonal", "expenditure_code", "demographics_code", "characteristics_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  
+  # Range validations
+  ranges:
+    - { file: "main", column: "year", min: 2003, max: 2055 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "series", column: "begin_year", min: 2003, max: 2067 }
+    - { file: "series", column: "end_year", min: 2003, max: 2067 }
+  
+  # Enumeration validations
+  enums:
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+    - { file: "main", column: "period", values: ["A01"] }
+    - { file: "series", column: "begin_period", values: ["A01"] }
+    - { file: "series", column: "end_period", values: ["A01"] }
+  
+  # Pattern validations
+  regex:
+    - { file: "series", column: "series_id", pattern: "^CX[U]\\d{16}$" }
+    - { file: "main", column: "series_id", pattern: "^CX[U]\\d{16}$" }
+  
+  # Length validations
+  lengths:
+    - { file: "series", column: "series_id", exact: 18 }
+    - { file: "main", column: "series_id", exact: 18 }
+  
+  # Cross-field validations
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+
+# Data quality rules with actions
+validation_rules:
+  # Series file validations
+  series_validations:
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CX[U]\\d{16}$"
+      action: "flag"
+      message: "Invalid series ID format: should be CX[U] followed by 16 digits"
+    
+    - field: "series_id"
+      rule: "length"
+      exact: 18
+      action: "reject"
+      message: "Series ID must be exactly 18 characters"
+    
+    - field: "series_id"
+      rule: "required"
+      action: "reject"
+      message: "Series ID cannot be null"
+    
+    - field: "begin_year"
+      rule: "range"
+      min: 2003
+      max: 2067
+      action: "reject"
+      message: "Begin year must be between 2003 and 2067"
+    
+    - field: "begin_year"
+      rule: "numeric"
+      action: "reject"
+      message: "Begin year must be numeric"
+    
+    - field: "end_year"
+      rule: "range"
+      min: 2003
+      max: 2067
+      action: "reject"
+      message: "End year must be between 2003 and 2067"
+    
+    - field: "end_year"
+      rule: "numeric"
+      action: "reject"
+      message: "End year must be numeric"
+    
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      action: "reject"
+      message: "End year must be >= begin year"
+    
+    - field: "begin_period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid begin period value"
+    
+    - field: "end_period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid end period value"
+
+  # Data file validations
+  data_validations:
+    - field: "value"
+      rule: "range"
+      min: -10000000000000000.0
+      max: 10000000000000000.0
+      action: "flag"
+      message: "Value outside expected range"
+    
+    - field: "year"
+      rule: "range"
+      min: 2003
+      max: 2055
+      action: "reject"
+      message: "Year must be between 2003 and 2055"
+    
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CX[U]\\d{16}$"
+      action: "flag"
+      message: "Invalid series ID format"
+    
+    - field: "period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid period value"
+
+# Row count expectations
+row_count:
+  min: 1
+  warn_below: 100
+
+# Uniqueness constraints
+uniqueness:
+  - { file: "series", columns: ["series_id"] }
+  - { file: "main", columns: ["series_id", "year", "period"] }
+
+# Completeness checks
+completeness:
+  required_fields:
+    series: ["series_id", "seasonal", "expenditure_code", "demographics_code", "characteristics_code", "begin_year", "begin_period", "end_year", "end_period"]
+    main: ["series_id", "year", "period"]
+  nullable_fields:
+    series: ["footnote_codes"]
+    main: ["value", "footnote_codes"]
+
+# Metrics collection
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "min(year)", "max(year)", "avg(value)"]
+  persist: true
+
+# Quality policy
+policy:
+  mode: "fail_on_error"  # Continue processing but flag errors
+  sample_on_fail_rows: 50
+  max_error_rate: 0.05  # 5% error rate threshold

@@ -1,0 +1,24 @@
+config_version: 1
+# Production environment overrides for CU survey
+
+processing:
+  resources:
+    max_threads: 8
+    memory_limit_gb: 16
+
+features:
+  enable_profiling: false
+  enable_statistics: true
+
+logging:
+  level: "warn"
+
+error_handling:
+  max_errors: 5000
+  on_error: "continue"
+
+output:
+  format: "parquet"
+  parquet:
+    compression: "zstd"
+    compression_level: 3

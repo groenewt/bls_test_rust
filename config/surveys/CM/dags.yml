@@ -1,0 +1,80 @@
+config_version: 1
+graph:
+  tasks:
+    - id: "discover"
+      type: "scan"
+      inputs: []
+      retries: { max: 2, backoff_sec: 10 }
+      sla_minutes: 5
+    - id: "validate"
+      type: "validate_model"
+      inputs: ["discover"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 10
+    - id: "plan"
+      type: "partition_plan"
+      inputs: ["validate"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 5
+    - id: "process_series"
+      type: "execute"
+      inputs: ["plan"]
+      parallelism: 2
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 30
+    - id: "process_data"
+      type: "execute"
+      inputs: ["plan"]
+      parallelism: 2
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 45
+    - id: "process_aspect"
+      type: "execute"
+      inputs: ["plan"]
+      parallelism: 1
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 20
+    - id: "write_series"
+      type: "output"
+      inputs: ["process_series"]
+      retries: { max: 1, backoff_sec: 10 }
+      sla_minutes: 15
+    - id: "write_data"
+      type: "output"
+      inputs: ["process_data"]
+      retries: { max: 1, backoff_sec: 10 }
+      sla_minutes: 20
+    - id: "write_aspect"
+      type: "output"
+      inputs: ["process_aspect"]
+      retries: { max: 1, backoff_sec: 10 }
+      sla_minutes: 10
+    - id: "qc"
+      type: "quality_checks"
+      inputs: ["write_series", "write_data", "write_aspect"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 15
+
+  edges:
+    - from: "discover"
+      to: "validate"
+    - from: "validate"
+      to: "plan"
+    - from: "plan"
+      to: "process_series"
+    - from: "plan"
+      to: "process_data"
+    - from: "plan"
+      to: "process_aspect"
+    - from: "process_series"
+      to: "write_series"
+    - from: "process_data"
+      to: "write_data"
+    - from: "process_aspect"
+      to: "write_aspect"
+    - from: "write_series"
+      to: "qc"
+    - from: "write_data"
+      to: "qc"
+    - from: "write_aspect"
+      to: "qc"

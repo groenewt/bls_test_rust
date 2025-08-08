@@ -1,0 +1,102 @@
+config_version: 1
+graph:
+  tasks:
+    - id: "discover"
+      type: "scan"
+      inputs: []
+      retries: { max: 2, backoff_sec: 10 }
+      sla_minutes: 5
+      description: "Discover CW survey data files"
+    
+    - id: "validate_files"
+      type: "validate_model"
+      inputs: ["discover"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 10
+      description: "Validate file schemas and structure"
+    
+    - id: "load_lookups"
+      type: "load_lookups"
+      inputs: ["validate_files"]
+      retries: { max: 2, backoff_sec: 5 }
+      sla_minutes: 15
+      description: "Load lookup tables (area, item, seasonal, etc.)"
+    
+    - id: "plan_partitions"
+      type: "partition_plan"
+      inputs: ["load_lookups"]
+      retries: { max: 1, backoff_sec: 10 }
+      sla_minutes: 5
+      description: "Plan data partitioning strategy"
+    
+    - id: "process_series"
+      type: "execute"
+      inputs: ["plan_partitions"]
+      parallelism: 2
+      retries: { max: 1, backoff_sec: 30 }
+      sla_minutes: 60
+      description: "Process series data with transformations"
+    
+    - id: "process_data"
+      type: "execute"
+      inputs: ["process_series"]
+      parallelism: 4
+      retries: { max: 1, backoff_sec: 30 }
+      sla_minutes: 120
+      description: "Process main data files"
+    
+    - id: "write_series_dict"
+      type: "output"
+      inputs: ["process_series"]
+      retries: { max: 2, backoff_sec: 15 }
+      sla_minutes: 30
+      description: "Write series dictionary with mappings"
+    
+    - id: "write_data_series"
+      type: "output"
+      inputs: ["process_data"]
+      retries: { max: 2, backoff_sec: 15 }
+      sla_minutes: 45
+      description: "Write processed data series"
+    
+    - id: "quality_checks"
+      type: "quality_checks"
+      inputs: ["write_series_dict", "write_data_series"]
+      retries: { max: 1, backoff_sec: 10 }
+      sla_minutes: 20
+      description: "Run data quality validations"
+    
+    - id: "generate_stats"
+      type: "statistics"
+      inputs: ["quality_checks"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 10
+      description: "Generate processing statistics"
+
+  edges:
+    - from: "discover"
+      to: "validate_files"
+    - from: "validate_files"
+      to: "load_lookups"
+    - from: "load_lookups"
+      to: "plan_partitions"
+    - from: "plan_partitions"
+      to: "process_series"
+    - from: "process_series"
+      to: "process_data"
+    - from: "process_series"
+      to: "write_series_dict"
+    - from: "process_data"
+      to: "write_data_series"
+    - from: "write_series_dict"
+      to: "quality_checks"
+    - from: "write_data_series"
+      to: "quality_checks"
+    - from: "quality_checks"
+      to: "generate_stats"
+
+  settings:
+    max_parallel_tasks: 4
+    default_timeout_minutes: 30
+    checkpoint_enabled: true
+    checkpoint_interval_tasks: 3

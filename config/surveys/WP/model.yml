@@ -1,0 +1,219 @@
+# WP Survey Data Model Configuration
+# Data model: files, schemas, relationships
+config_version: 1
+
+series:
+  path: "wp.series"
+  index: "series_id"
+  estimated_size_gb: 2.0
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "WPS00000000"
+    group_code:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "01"
+    item_code:
+      type: "string"
+      length: 12
+      nullable: false
+      example_value: "1101"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    base_date:
+      type: "string"
+      length: 6
+      nullable: true
+      example_value: "8206"
+    series_title:
+      type: "string"
+      length: 256
+      nullable: true
+      example_value: "PPI Commodity data for Farm products-Citrus fruits, seasonally adjusted"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1967"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: true
+      example_value: "1974"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: true
+      example_value: "M12"
+
+data_files:
+  - id: "main"
+    pattern: "wp.data.*"
+    index: "series_id"
+    estimated_size_gb: 5.0
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "WPS011101"
+      year:
+        type: "int32"
+        min: 1947
+        max: 2055
+        nullable: false
+        example_value: 1994
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: "105.9"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "group"
+    path: "wp.group"
+    index: "group_code"
+    description: "Maps group codes to group names"
+    schema:
+      group_code:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "02"
+      group_text:
+        type: "string"
+        length: 150
+        nullable: false
+        example_value: "Processed foods and feeds"
+
+  - id: "item"
+    path: "wp.item"
+    index: "item_code"
+    description: "Maps item codes to item names"
+    schema:
+      group_code:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "01"
+      item_code:
+        type: "string"
+        length: 12
+        nullable: false
+        example_value: "1101"
+      item_text:
+        type: "string"
+        length: 150
+        nullable: false
+        example_value: "Citrus fruits"
+
+  - id: "footnote"
+    path: "wp.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "P"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: false
+        example_value: "Preliminary"
+
+  - id: "period"
+    path: "wp.period"
+    index: "period"
+    description: "Maps period codes to period names"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+
+  - id: "seasonal"
+    path: "wp.seasonal"
+    index: "seasonal"
+    description: "Maps seasonal codes to seasonal names"
+    schema:
+      seasonal:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "S"
+      seasonal_text:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "Seasonally adjusted"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "group_code" }
+    to: { file: "group", column: "group_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "item_code" }
+    to: { file: "item", column: "item_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal" }
+    type: "many-to-one"
+  - from: { file: "series", column: "begin_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "series", column: "end_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "group_code", "item_code", "seasonal", "begin_year", "begin_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  Year: { base: "int32", range: [1947, 2055] }
+  Money: { base: "decimal", precision: 18, scale: 4 }

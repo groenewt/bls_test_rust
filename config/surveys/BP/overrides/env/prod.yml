@@ -1,0 +1,18 @@
+config_version: 1
+# Production environment overrides for BP survey
+
+logging:
+  level: "warn"
+  structured: true
+
+policy:
+  mode: "fail_on_error"
+  max_errors: 100
+
+resources:
+  memory_limit_gb: 8
+  max_threads: 4
+
+feature_flags:
+  enable_profiling: false
+  enable_hot_reloads: false

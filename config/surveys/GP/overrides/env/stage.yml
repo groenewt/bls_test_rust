@@ -1,0 +1,24 @@
+config_version: 1
+# Staging environment overrides for GP survey
+
+processing:
+  strategy:
+    max_concurrency: 2
+  resources:
+    max_threads: 4
+    memory_limit_gb: 6
+
+features:
+  enable_profiling: false
+
+logging:
+  level: "info"
+
+error_handling:
+  max_errors: 500
+  on_error: "continue"
+
+quality:
+  policy:
+    mode: "fail_on_error"
+    sample_on_fail_rows: 25

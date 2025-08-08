@@ -1,0 +1,33 @@
+# CF Survey Production Environment Overrides
+config_version: 1
+
+# Production-specific processing settings
+processing:
+  resources:
+    max_threads: 8  # More resources in production
+    memory_limit_gb: 16
+  features:
+    enable_profiling: false
+    enable_statistics: false  # Disable for performance
+
+# Production output settings
+output:
+  destination:
+    base_path: "data/prod/processed/bls/CF"
+
+# Production quality settings
+quality:
+  policy:
+    mode: "fail_on_error"  # Strict validation in production
+    sample_on_fail_rows: 100
+
+# Production runtime settings
+runtime:
+  logging:
+    level: "warn"  # Less verbose logging in production
+  development:
+    enable_debug_output: false
+    save_intermediate_files: false
+    verbose_logging: false
+  feature_flags:
+    enable_hot_reloads: false

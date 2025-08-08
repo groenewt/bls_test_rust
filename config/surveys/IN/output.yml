@@ -1,0 +1,92 @@
+# IN Survey Output Configuration
+# Output formats, partitioning, compression
+config_version: 1
+
+format: "csv"
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_in"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/IN"
+
+outputs:
+  data_series:
+    format: "csv"
+    partitioning:
+      enabled: true
+      partition_by: ["year"]
+    transformations:
+      sort_by: ["series_id", "year", "period"]
+      deduplicate: true
+      deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+    statistics:
+      enabled: true
+      columns: ["year", "period", "value"]
+
+  data_dict:
+    format: "csv"
+    partitioning:
+      enabled: false
+    output_file: "in_series_dict.csv"
+    mapping:
+      seasonal:
+        lookup_table: "seasonal"
+        lookup_key: "seasonal_code"
+        lookup_value: "seasonal_text"
+        create_field: "seasonal_text"
+        on_missing: "UNKNOWN_SEASONAL"
+        cache: true
+      economicseries_code:
+        lookup_table: "economicseries"
+        lookup_key: "economicseries_code"
+        lookup_value: "economicseries_text"
+        create_field: "economicseries_text"
+        on_missing: "UNKNOWN_ECONOMICSERIES"
+        cache: true
+      country_code:
+        lookup_table: "country"
+        lookup_key: "country_code"
+        lookup_value: "country_text"
+        create_field: "country_text"
+        on_missing: "UNKNOWN_COUNTRY"
+        cache: true
+      industry_code:
+        lookup_table: "industry"
+        lookup_key: "industry_code"
+        lookup_value: "industry_text"
+        create_field: "industry_text"
+        on_missing: "UNKNOWN_INDUSTRY"
+        cache: true
+      footnote_codes:
+        lookup_table: "footnote"
+        lookup_key: "footnote_code"
+        lookup_value: "footnote_text"
+        create_field: "footnote_texts"
+        multiple: true
+        separator: " "
+        on_missing: "skip"
+        cache: true
+    transformations:
+      sort_by: ["series_id"]
+      deduplicate: false
+      deduplicate_on: ["series_id"]
+    statistics:
+      enabled: true
+      columns: ["series_id", "economicseries_code", "begin_year", "end_year"]
+      output_file: "in_series_dict_stats.json"

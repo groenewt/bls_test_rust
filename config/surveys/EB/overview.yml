@@ -1,0 +1,23 @@
+config_version: 1
+survey:
+  code: "EB"
+  name: "Employee Benefits Survey"
+  description: "The Employee Benefits Survey (EBS) is an annual survey of the incidence and provisions of selected benefits provided by employers. The survey collects data from a sample of approximately 6,000 private sector and State and local government establishments."
+  size_class: "small"
+  characteristics:
+    frequency: "annual"
+    coverage: "Private sector and State and local government establishments"
+    classification_system: "Benefit types, establishment types, and employee characteristics"
+    begin_year: 1979
+    update_schedule: "Annual release, typically in the summer following the reference year"
+    survey_methodology: "Sample of approximately 6,000 private sector and State and local government establishments"
+    calculation_basis: "Percentage of employees who participate in a benefit, or average benefit provision"
+    time_series_count: "Employee benefits data"
+  contacts:
+    - role: "owner"
+      name: "Junie"
+      email: ""
+  documentation:
+    primary: "docs/bls/survey/eb.txt"
+    data_dictionary: ""
+  tags: ["employee", "benefits", "survey", "establishments", "compensation"]

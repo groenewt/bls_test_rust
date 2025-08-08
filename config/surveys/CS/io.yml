@@ -1,0 +1,48 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/cs"
+  include: 
+    - "cs.series"
+    - "cs.data.*"
+    - "cs.age"
+    - "cs.case"
+    - "cs.category"
+    - "cs.datatype"
+    - "cs.event"
+    - "cs.footnote"
+    - "cs.gender"
+    - "cs.hour"
+    - "cs.industry"
+    - "cs.los"
+    - "cs.nature"
+    - "cs.occupation"
+    - "cs.ownership"
+    - "cs.pob"
+    - "cs.race"
+    - "cs.source"
+    - "cs.special"
+    - "cs.state"
+    - "cs.time"
+    - "cs.weekday"
+  exclude: ["*.tmp", ".*", "*~", "*.log", "*.bak"]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+    max_combined_size_mb: 500
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["year", "category_code"]
+  
+mmap:
+  enable_for_mb_greater_than: 100
+  
+lookup_config:
+  preload: ["age", "gender", "race", "case"]  # Small, frequently used
+  lazy: ["footnote", "datatype", "category", "event", "nature", "source"]  # Load on demand
+  mmap: ["industry", "occupation"]  # Use memory mapping for large files
+  cache_all: true  # Small enough to keep in memory

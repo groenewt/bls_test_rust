@@ -1,0 +1,62 @@
+# IP Survey Overview Configuration
+# Survey metadata and context information
+config_version: 1
+
+survey:
+  code: "IP"
+  name: "Industry Productivity"
+  description: "The Industry Productivity program produces annual measures of labor productivity (output per hour), unit labor costs, and related series for a select group of U.S. industries."
+  size_class: "medium"
+  characteristics:
+    frequency: "annual"
+    coverage: "Select group of U.S. industries"
+    time_series_count: "Industry productivity time series data"
+    classification_system: "Industry codes, sector codes, and measure codes"
+    update_schedule: "Periodically throughout the year, with 3-4 news releases annually"
+    begin_year: 1987
+    survey_methodology: "The Industry Productivity program produces annual measures of labor productivity, unit labor costs, and related series."
+    calculation_basis: "Indexes and annual percent changes for labor productivity, output, hours worked, employment, labor compensation, and unit labor costs."
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/ip.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/ip
+    - Data files are in ASCII text format
+    - Tabs separate data elements in an original BLS file
+    - Full documentation: docs/bls/survey/ip.txt
+
+tags: ["productivity", "industry", "labor", "annual", "output", "costs"]
+
+definition: |
+  The following is a definition of: INDUSTRY PRODUCTIVITY (IP) 
+
+  Survey Description: The Industry Productivity program produces annual measures of labor 
+  productivity (output per hour), unit labor costs, and related series for a select group 
+  of U.S. industries.
+
+  Time Series Available: Indexes and annual percent changes are available by industry for 
+  labor productivity (output per hour), output per worker, real sectoral output, sectoral 
+  output price deflator, hours worked, employment, labor compensation, and unit labor 
+  costs. Level data underlying the productivity and cost measures - including sectoral 
+  output, labor compensation, hours worked, and employment - also are available.
+
+  Frequency of Observations: Series are available on an annual basis, and therefore, are 
+  not seasonally adjusted. For most industries, the indexes begin in 1987 and annual 
+  percent change time-series begin in 1988.
+
+  Base Periods: The base period for the industry productivity and related 
+  indexes is 2012 = 100.
+
+  Update Schedule: Updates are performed periodically throughout the year as source data 
+  become available. Typically, updates are announced through 3 to 4 news releases each 
+  year, with each news release covering industries in a different sector or combination 
+  of sectors, such that all industries are updated at least once a year.
+
+  Reference: BLS Handbook of Methods, "Industry Productivity Measures" 
+  (see: https://www.bls.gov/opub/hom/inp/home.htm).

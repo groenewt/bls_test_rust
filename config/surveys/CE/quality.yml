@@ -1,0 +1,196 @@
+# CE Survey Quality Configuration
+config_version: 1
+
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "supersector_code", "industry_code", "datatype_code", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1939, max: 2055 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "series", column: "begin_year", min: 1939, max: 2067 }
+    - { file: "series", column: "end_year", min: 1939, max: 2067 }
+  
+  enums:
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+  
+  regex:
+    - { file: "main", column: "series_id", pattern: "^CE[SU]\\d{14}$" }
+    - { file: "main", column: "period", pattern: "^(M\\d{2})$" }
+    - { file: "series", column: "series_id", pattern: "^CE[SU]\\d{14}$" }
+    - { file: "series", column: "supersector_code", pattern: "^[0-9]{2}$" }
+    - { file: "series", column: "industry_code", pattern: "^[0-9]{8}$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 17 }
+    - { file: "series", column: "supersector_code", exact: 2 }
+    - { file: "series", column: "industry_code", exact: 8 }
+    - { file: "main", column: "series_id", exact: 17 }
+  
+  values:
+    - { file: "main", column: "period", allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "begin_period", allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "end_period", allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+  
+  lookup_exists:
+    - { file: "series", column: "supersector_code", lookup_table: "supersector" }
+    - { file: "series", column: "industry_code", lookup_table: "industry" }
+    - { file: "series", column: "datatype_code", lookup_table: "datatype" }
+    - { file: "series", column: "seasonal", lookup_table: "seasonal" }
+  
+  cross_field:
+    - { file: "series", rule: "end_year >= begin_year", message: "End year must be >= begin year" }
+    - { file: "series", rule: "(end_year > begin_year) OR (end_year == begin_year AND end_period >= begin_period)", message: "End date must be after or equal to begin date" }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(year)", "distinct(period)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"  # warn_only|fail_on_error
+  sample_on_fail_rows: 50
+
+# Validation rules with actions
+validation_rules:
+  data_file:
+    - field: "value"
+      rule: "range"
+      min: -10000000000000000.0
+      max: 10000000000000000.0
+      action: "flag"
+      message: "Value outside expected range"
+    
+    - field: "year"
+      rule: "range"
+      min: 1939
+      max: 2055
+      action: "reject"
+      message: "Year must be between 1939 and 2055"
+    
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CE[SU]\\d{14}$"
+      action: "flag"
+      message: "Invalid series ID format"
+    
+    - field: "period"
+      rule: "values"
+      allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"]
+      action: "flag"
+      message: "Invalid period value"
+
+  series_file:
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CE[SU]\\d{14}$"
+      action: "flag"
+      message: "Invalid series ID format: should be CE[S/U] followed by 14 digits"
+    
+    - field: "series_id"
+      rule: "length"
+      exact: 17
+      action: "reject"
+      message: "Series ID must be exactly 17 characters"
+    
+    - field: "series_id"
+      rule: "required"
+      action: "reject"
+      message: "Series ID cannot be null"
+    
+    - field: "supersector_code"
+      rule: "length"
+      exact: 2
+      action: "reject"
+      message: "Supersector code must be exactly 2 characters"
+    
+    - field: "supersector_code"
+      rule: "pattern"
+      pattern: "^[0-9]{2}$"
+      action: "flag"
+      message: "Supersector code should be 2 digits"
+    
+    - field: "supersector_code"
+      rule: "lookup_exists"
+      lookup_table: "supersector"
+      action: "flag"
+      message: "Supersector code not found in supersector lookup table"
+    
+    - field: "industry_code"
+      rule: "length"
+      exact: 8
+      action: "reject"
+      message: "Industry code must be exactly 8 characters"
+    
+    - field: "industry_code"
+      rule: "pattern"
+      pattern: "^[0-9]{8}$"
+      action: "flag"
+      message: "Industry code should be 8 digits"
+    
+    - field: "begin_year"
+      rule: "range"
+      min: 1939
+      max: 2067
+      action: "reject"
+      message: "Begin year must be between 1939 and 2067"
+    
+    - field: "begin_year"
+      rule: "numeric"
+      action: "reject"
+      message: "Begin year must be numeric"
+    
+    - field: "end_year"
+      rule: "range"
+      min: 1939
+      max: 2067
+      action: "reject"
+      message: "End year must be between 1939 and 2067"
+    
+    - field: "end_year"
+      rule: "numeric"
+      action: "reject"
+      message: "End year must be numeric"
+    
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      action: "reject"
+      message: "End year must be >= begin year"
+    
+    - field: "begin_period"
+      rule: "values"
+      allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"]
+      action: "flag"
+      message: "Invalid begin period value"
+    
+    - field: "end_period"
+      rule: "values"
+      allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"]
+      action: "flag"
+      message: "Invalid end period value"
+    
+    - field: "end_year"
+      rule: "date_logic_check"
+      check_fields: ["begin_year"]
+      validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+      action: "flag"
+      message: "End date must be after or equal to begin date"
+
+# Completeness checks
+required_fields:
+  main: ["series_id", "year", "period"]
+  series: ["series_id", "supersector_code", "industry_code", "datatype_code", "seasonal", "begin_year", "begin_period", "end_year", "end_period"]
+
+nullable_fields:
+  main: ["value", "footnote_codes"]
+  series: ["series_title", "footnote_codes"]
+
+# Uniqueness constraints
+unique_fields:
+  main: [["series_id", "year", "period"]]
+  series: [["series_id"]]

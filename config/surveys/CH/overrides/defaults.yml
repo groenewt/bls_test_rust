@@ -1,0 +1,28 @@
+# CH Survey Organizational Defaults
+config_version: 1
+
+# Default processing settings for CH survey
+processing:
+  io:
+    buffer_pool_size: 12  # Standard buffer pool size
+
+# Default output settings
+output:
+  parquet:
+    enable_dictionary: true
+    bloom_filters: true
+  
+  # Default statistics collection
+  data_series:
+    statistics:
+      enabled: true
+
+# Default quality settings
+quality:
+  metrics:
+    persist: true
+
+# Default runtime settings
+runtime:
+  logging:
+    structured: true

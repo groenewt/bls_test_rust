@@ -1,0 +1,79 @@
+config_version: 1
+format: "csv"
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_gp"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/GP"
+
+data_series:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: true
+      partition_by: ["year"]
+    use_mmap: true
+    series_size_class: "Medium"
+    list_data_files: ["gp.data.1.AllData"]
+    partition_strategy:
+      partition_by: "state_code"
+      file_format: "gp.data.%d.%s"
+      load_dictionary_values: true
+
+data_dict:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: false
+    use_mmap: true
+    series_size_class: "Medium"
+    output_file: "gp_series_dict.csv"
+    
+    mapping:
+      state_code:
+        lookup_table: "state"
+        lookup_key: "state_code"
+        lookup_value: "state_name"
+        create_field: "state_name"
+        on_missing: "UNKNOWN_STATE"
+        cache: true
+      
+      area_code:
+        lookup_table: "area"
+        lookup_key: "area_code"
+        lookup_value: "area_name"
+        create_field: "area_name"
+        on_missing: "UNKNOWN_AREA"
+        cache: true
+      
+      labor_force_code:
+        lookup_table: "labor_force"
+        lookup_key: "labor_force_code"
+        lookup_value: "labor_force_text"
+        create_field: "labor_force_text"
+        on_missing: "UNKNOWN_LABOR_FORCE"
+        cache: true
+      
+      charact_code:
+        lookup_table: "charact"
+        lookup_key: "charact_code"
+        lookup_value: "charact_text"
+        create_field: "charact_text"
+        on_missing: "UNKNOWN_CHARACTERISTIC"
+        cache: true

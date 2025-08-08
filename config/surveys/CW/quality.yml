@@ -1,0 +1,150 @@
+config_version: 1
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "area_code", "item_code", "seasonal", "periodicity_code", "base_code", "begin_year", "begin_period", "end_year", "end_period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1913, max: 2067 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "series", column: "begin_year", min: 1913, max: 2067 }
+    - { file: "series", column: "end_year", min: 1913, max: 2067 }
+  
+  enums:
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+    - { file: "main", column: "period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"] }
+    - { file: "series", column: "begin_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"] }
+    - { file: "series", column: "end_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"] }
+  
+  regex:
+    - { file: "main", column: "series_id", pattern: "^CW[SU][RS]\\d{4}[A-Z0-9]{2,8}$" }
+    - { file: "series", column: "series_id", pattern: "^CW[SU][RS]\\d{4}[A-Z0-9]{2,8}$" }
+  
+  length:
+    - { file: "main", column: "series_id", exact: 17 }
+    - { file: "series", column: "series_id", exact: 17 }
+    - { file: "series", column: "area_code", exact: 4 }
+    - { file: "series", column: "item_code", exact: 8 }
+    - { file: "series", column: "seasonal", exact: 1 }
+    - { file: "series", column: "periodicity_code", exact: 1 }
+    - { file: "series", column: "base_code", exact: 1 }
+  
+  cross_field:
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      file: "series"
+      message: "End year must be >= begin year"
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(area_code)", "distinct(item_code)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+
+validation_rules:
+  data_series:
+    - field: "value"
+      rule: "range"
+      min: -10000000000000000.0
+      max: 10000000000000000.0
+      action: "flag"
+      message: "Value outside expected range"
+    
+    - field: "year"
+      rule: "range"
+      min: 1913
+      max: 2067
+      action: "reject"
+      message: "Year must be between 1913 and 2067"
+    
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CW[SU][RS]\\d{4}[A-Z0-9]{2,8}$"
+      action: "flag"
+      message: "Invalid series ID format"
+    
+    - field: "period"
+      rule: "values"
+      allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"]
+      action: "flag"
+      message: "Invalid period value"
+
+  series_dict:
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CW[SU][RS]\\d{4}[A-Z0-9]{2,8}$"
+      action: "flag"
+      message: "Invalid series ID format: should be CW[SU][RS] followed by 4 digits and 2-8 alphanumeric characters"
+    
+    - field: "series_id"
+      rule: "length"
+      exact: 17
+      action: "reject"
+      message: "Series ID must be exactly 17 characters"
+    
+    - field: "series_id"
+      rule: "required"
+      action: "reject"
+      message: "Series ID cannot be null"
+    
+    - field: "begin_year"
+      rule: "range"
+      min: 1913
+      max: 2067
+      action: "reject"
+      message: "Begin year must be between 1913 and 2067"
+    
+    - field: "begin_year"
+      rule: "numeric"
+      action: "reject"
+      message: "Begin year must be numeric"
+    
+    - field: "end_year"
+      rule: "range"
+      min: 1913
+      max: 2067
+      action: "reject"
+      message: "End year must be between 1913 and 2067"
+    
+    - field: "end_year"
+      rule: "numeric"
+      action: "reject"
+      message: "End year must be numeric"
+    
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      action: "reject"
+      message: "End year must be >= begin year"
+    
+    - field: "begin_period"
+      rule: "values"
+      allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"]
+      action: "flag"
+      message: "Invalid begin period value"
+    
+    - field: "end_period"
+      rule: "values"
+      allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "S01", "S02", "S03"]
+      action: "flag"
+      message: "Invalid end period value"
+
+completeness:
+  required_fields:
+    main: ["series_id", "year", "period"]
+    series: ["series_id", "area_code", "item_code", "seasonal", "periodicity_code", "base_code", "begin_year", "begin_period", "end_year", "end_period"]
+  nullable_fields:
+    main: ["value", "footnote_codes"]
+    series: ["footnote_codes"]
+
+uniqueness:
+  constraints:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }

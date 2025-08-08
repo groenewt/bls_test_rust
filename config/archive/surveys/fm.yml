@@ -1,0 +1,927 @@
+# config/surveys/fm.yml
+# name: Marital and Family Labor Force Statistics Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: data/raw/bls/fm
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+#         - full doc: docs/bls/survey/fm.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: fm #survey code (ex.ap,sm,fm)- see docs (docs/surveys/* for all surveys)
+  name: Marital and Family Labor Force Statistics #friendly survey name
+  size_class: small #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The marital and family labor force statistics (FM) database from the Current Population Survey reflects data published each year in the news release, 'Employment Characteristics of Families.'"
+  definition: "
+The following is a definition of: MARITAL AND FAMILY LABOR FORCE STATISTICS (FM)
+
+Survey Description: The Current Population Survey (CPS), frequently referred to as the household survey, 
+is a monthly survey of about 60,000 eligible households. The CPS provides information about the civilian 
+noninstitutional population age 16 years and over. All persons are classified as employed, unemployed, 
+or not in the labor force.
+
+The CPS estimates are available by various demographic characteristics, including age, sex, race, 
+Hispanic or Latino ethnicity, and marital status. Numerous cross-tabulations of labor force variables 
+by demographic and labor force characteristics are available.
+
+The marital and family labor force statistics (FM) database from the Current Population Survey reflects 
+data published each year in the news release, 'Employment Characteristics of Families.'
+
+At the present time, only data for persons are available in the FM database. Person data include 
+employment status by marital status and presence and age of own children. For example, the FM database 
+includes the labor force participation rate of mothers with children under age 6.
+
+Data series for families, including the number of families by family type and employment and unemployment 
+of family members, will be added in the future.
+
+The data are annual averages of information collected monthly in the survey. The annual averages are 
+calculated from not seasonally adjusted monthly data. At present, the FM database has data beginning 
+with 2009 annual averages.
+                "
+  characteristics:
+    frequency: annual
+    coverage: "Civilian noninstitutional population age 16 years and over"
+    time_series_count: "Marital and family labor force statistics" 
+    classification_system: "Marital status, presence and age of own children, employment status"
+    update_schedule: "Annual release"
+    begin_year: 2009
+    survey_methodology: "Monthly survey of about 60,000 eligible households conducted by the U.S. Census Bureau for the Bureau of Labor Statistics."
+    calculation_basis: "Annual averages of information collected monthly in the survey, calculated from not seasonally adjusted monthly data."
+
+#Survey Series Information
+series:
+  path: "fm.series" #path to series file
+  use_mmap: true
+  series_size_class: small #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 10
+      type: Text
+      example_value: "FMUF011"
+      map_file: "" #leave blank for none
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "U"
+      needs_mapping: true
+      map_file: "seasonal" #leave blank for none
+    series_title:
+      length: 200
+      type: Text
+      example_value: "Total families - total"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    fchld_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "fchld" #leave blank for none
+    fdat_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "fdat" #leave blank for none
+    fhlf_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "fhlf" #leave blank for none
+    fnmatwk_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "fnmatwk" #leave blank for none
+    fnme_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "fnme" #leave blank for none
+    fnmlf_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "fnmlf" #leave blank for none
+    fnmu_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "fnmu" #leave blank for none
+    fnmws_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "fnmws" #leave blank for none
+    forig_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "forig" #leave blank for none
+    frace_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "frace" #leave blank for none
+    ftpt_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "ftpt" #leave blank for none
+    ftyp_code:
+      length: 2
+      type: Text
+      example_value: "01"
+      needs_mapping: true
+      map_file: "ftyp" #leave blank for none
+    hhlf_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "hhlf" #leave blank for none
+    misclf_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "misclf" #leave blank for none
+    mwlf_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "mwlf" #leave blank for none
+    prlf_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "prlf" #leave blank for none
+    chld_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "chld" #leave blank for none
+    lfst_code:
+      length: 2
+      type: Text
+      example_value: "99"
+      needs_mapping: true
+      map_file: "lfst" #leave blank for none
+    mari_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "mari" #leave blank for none
+    orig_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "orig" #leave blank for none
+    race_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "race" #leave blank for none
+    sexs_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "sexs" #leave blank for none
+    tdat_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "tdat" #leave blank for none
+    wkst_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "wkst" #leave blank for none
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: ""
+      needs_mapping: true
+      map_file: "footnote" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "2009"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2024"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 10
+        type: Text
+        example_value: "FMUF011"
+      year:
+        length: 4
+        type: values
+        example_value: "2009"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "78361"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ chld, mari, race, sexs ]  # Small, frequently used
+    lazy: [ footnote, ftyp, lfst, seasonal ]  # Load on demand
+    mmap: [ ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    chld:
+        file_path: "fm.chld"
+        name: Children
+        description: "Maps children codes to children descriptions"
+        index_col: "chld_code"
+        schema:
+          chld_code:
+            length: 2
+            type: str
+            example_value: "00"
+          chld_text:
+            length: 100
+            type: str
+            example_value: "All persons"
+    
+    fchld:
+        file_path: "fm.fchld"
+        name: Family Children
+        description: "Maps family children codes to family children descriptions"
+        index_col: "fchld_code"
+        schema:
+          fchld_code:
+            length: 2
+            type: str
+            example_value: "00"
+          fchld_text:
+            length: 100
+            type: str
+            example_value: "All families"
+    
+    fdat:
+        file_path: "fm.fdat"
+        name: Family Data Type
+        description: "Maps family data type codes to family data type descriptions"
+        index_col: "fdat_code"
+        schema:
+          fdat_code:
+            length: 2
+            type: str
+            example_value: "00"
+          fdat_text:
+            length: 100
+            type: str
+            example_value: "Level"
+    
+    fhlf:
+        file_path: "fm.fhlf"
+        name: Family Household Labor Force
+        description: "Maps family household labor force codes to descriptions"
+        index_col: "fhlf_code"
+        schema:
+          fhlf_code:
+            length: 2
+            type: str
+            example_value: "00"
+          fhlf_text:
+            length: 100
+            type: str
+            example_value: "All families"
+    
+    fnmatwk:
+        file_path: "fm.fnmatwk"
+        name: Family Not At Work
+        description: "Maps family not at work codes to descriptions"
+        index_col: "fnmatwk_code"
+        schema:
+          fnmatwk_code:
+            length: 2
+            type: str
+            example_value: "00"
+          fnmatwk_text:
+            length: 100
+            type: str
+            example_value: "All families"
+    
+    fnme:
+        file_path: "fm.fnme"
+        name: Family Not Employed
+        description: "Maps family not employed codes to descriptions"
+        index_col: "fnme_code"
+        schema:
+          fnme_code:
+            length: 2
+            type: str
+            example_value: "00"
+          fnme_text:
+            length: 100
+            type: str
+            example_value: "All families"
+    
+    fnmlf:
+        file_path: "fm.fnmlf"
+        name: Family Not in Labor Force
+        description: "Maps family not in labor force codes to descriptions"
+        index_col: "fnmlf_code"
+        schema:
+          fnmlf_code:
+            length: 2
+            type: str
+            example_value: "00"
+          fnmlf_text:
+            length: 100
+            type: str
+            example_value: "All families"
+    
+    fnmu:
+        file_path: "fm.fnmu"
+        name: Family Not Unemployed
+        description: "Maps family not unemployed codes to descriptions"
+        index_col: "fnmu_code"
+        schema:
+          fnmu_code:
+            length: 2
+            type: str
+            example_value: "00"
+          fnmu_text:
+            length: 100
+            type: str
+            example_value: "All families"
+    
+    fnmws:
+        file_path: "fm.fnmws"
+        name: Family Not Working Status
+        description: "Maps family not working status codes to descriptions"
+        index_col: "fnmws_code"
+        schema:
+          fnmws_code:
+            length: 2
+            type: str
+            example_value: "00"
+          fnmws_text:
+            length: 100
+            type: str
+            example_value: "All families"
+    
+    footnote:
+        file_path: "fm.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "C"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: ""
+    
+    forig:
+        file_path: "fm.forig"
+        name: Family Origin
+        description: "Maps family origin codes to family origin descriptions"
+        index_col: "forig_code"
+        schema:
+          forig_code:
+            length: 2
+            type: str
+            example_value: "00"
+          forig_text:
+            length: 100
+            type: str
+            example_value: "All origins"
+    
+    frace:
+        file_path: "fm.frace"
+        name: Family Race
+        description: "Maps family race codes to family race descriptions"
+        index_col: "frace_code"
+        schema:
+          frace_code:
+            length: 2
+            type: str
+            example_value: "00"
+          frace_text:
+            length: 100
+            type: str
+            example_value: "All races"
+    
+    ftpt:
+        file_path: "fm.ftpt"
+        name: Full-time/Part-time Status
+        description: "Maps full-time/part-time status codes to descriptions"
+        index_col: "ftpt_code"
+        schema:
+          ftpt_code:
+            length: 2
+            type: str
+            example_value: "00"
+          ftpt_text:
+            length: 100
+            type: str
+            example_value: "All workers"
+    
+    ftyp:
+        file_path: "fm.ftyp"
+        name: Family Type
+        description: "Maps family type codes to family type descriptions"
+        index_col: "ftyp_code"
+        schema:
+          ftyp_code:
+            length: 2
+            type: str
+            example_value: "01"
+          ftyp_text:
+            length: 100
+            type: str
+            example_value: "Total families"
+    
+    hhlf:
+        file_path: "fm.hhlf"
+        name: Household Labor Force
+        description: "Maps household labor force codes to descriptions"
+        index_col: "hhlf_code"
+        schema:
+          hhlf_code:
+            length: 2
+            type: str
+            example_value: "00"
+          hhlf_text:
+            length: 100
+            type: str
+            example_value: "All households"
+    
+    lfst:
+        file_path: "fm.lfst"
+        name: Labor Force Status
+        description: "Maps labor force status codes to labor force status descriptions"
+        index_col: "lfst_code"
+        schema:
+          lfst_code:
+            length: 2
+            type: str
+            example_value: "99"
+          lfst_text:
+            length: 100
+            type: str
+            example_value: "Not applicable"
+    
+    mari:
+        file_path: "fm.mari"
+        name: Marital Status
+        description: "Maps marital status codes to marital status descriptions"
+        index_col: "mari_code"
+        schema:
+          mari_code:
+            length: 2
+            type: str
+            example_value: "00"
+          mari_text:
+            length: 100
+            type: str
+            example_value: "All marital statuses"
+    
+    misclf:
+        file_path: "fm.misclf"
+        name: Miscellaneous Labor Force
+        description: "Maps miscellaneous labor force codes to descriptions"
+        index_col: "misclf_code"
+        schema:
+          misclf_code:
+            length: 2
+            type: str
+            example_value: "00"
+          misclf_text:
+            length: 100
+            type: str
+            example_value: "All persons"
+    
+    mwlf:
+        file_path: "fm.mwlf"
+        name: Married Women Labor Force
+        description: "Maps married women labor force codes to descriptions"
+        index_col: "mwlf_code"
+        schema:
+          mwlf_code:
+            length: 2
+            type: str
+            example_value: "00"
+          mwlf_text:
+            length: 100
+            type: str
+            example_value: "All married women"
+    
+    orig:
+        file_path: "fm.orig"
+        name: Origin
+        description: "Maps origin codes to origin descriptions"
+        index_col: "orig_code"
+        schema:
+          orig_code:
+            length: 2
+            type: str
+            example_value: "00"
+          orig_text:
+            length: 100
+            type: str
+            example_value: "All origins"
+    
+    prlf:
+        file_path: "fm.prlf"
+        name: Parent Labor Force
+        description: "Maps parent labor force codes to parent labor force descriptions"
+        index_col: "prlf_code"
+        schema:
+          prlf_code:
+            length: 2
+            type: str
+            example_value: "00"
+          prlf_text:
+            length: 100
+            type: str
+            example_value: "All parents"
+    
+    race:
+        file_path: "fm.race"
+        name: Race
+        description: "Maps race codes to race descriptions"
+        index_col: "race_code"
+        schema:
+          race_code:
+            length: 2
+            type: str
+            example_value: "00"
+          race_text:
+            length: 100
+            type: str
+            example_value: "All races"
+    
+    seasonal:
+        file_path: "fm.seasonal"
+        name: Seasonal Adjustment
+        description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+        index_col: "seasonal_code"
+        schema:
+          seasonal_code:
+            length: 1
+            type: str
+            example_value: "U"
+          seasonal_text:
+            length: 100
+            type: str
+            example_value: "Not seasonally adjusted"
+    
+    sexs:
+        file_path: "fm.sexs"
+        name: Sex
+        description: "Maps sex codes to sex descriptions"
+        index_col: "sexs_code"
+        schema:
+          sexs_code:
+            length: 1
+            type: str
+            example_value: "0"
+          sexs_text:
+            length: 100
+            type: str
+            example_value: "Both sexes"
+    
+    tdat:
+        file_path: "fm.tdat"
+        name: Type of Data
+        description: "Maps type of data codes to type of data descriptions"
+        index_col: "tdat_code"
+        schema:
+          tdat_code:
+            length: 2
+            type: str
+            example_value: "00"
+          tdat_text:
+            length: 100
+            type: str
+            example_value: "Level"
+    
+    wkst:
+        file_path: "fm.wkst"
+        name: Work Status
+        description: "Maps work status codes to work status descriptions"
+        index_col: "wkst_code"
+        schema:
+          wkst_code:
+            length: 2
+            type: str
+            example_value: "00"
+          wkst_text:
+            length: 100
+            type: str
+            example_value: "All persons"
+
+processing:
+  # Strategy for small survey
+  strategy: in_memory  # Process in memory due to small size
+  max_threads: 2     # Moderate parallelization for small-sized data
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: small
+      list_data_files: [ fm.data.0.Current, fm.data.1.AllData ]
+      partition_strategy:
+        partion_by: "ftyp_code"
+        file_format: "fm.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 2009
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^FM[U]\\d{4,8}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "A01" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: small
+      output_file: "fm_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Seasonal code mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal_code"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_text"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Family type code mapping
+        ftyp_code:
+          lookup_table: "ftyp"
+          lookup_key: "ftyp_code"
+          lookup_value: "ftyp_text"
+          create_field: "ftyp_text"
+          on_missing: "UNKNOWN_FAMILY_TYPE"
+          cache: true
+        
+        # Children code mapping
+        chld_code:
+          lookup_table: "chld"
+          lookup_key: "chld_code"
+          lookup_value: "chld_text"
+          create_field: "chld_text"
+          on_missing: "UNKNOWN_CHILDREN"
+          cache: true
+        
+        # Marital status code mapping
+        mari_code:
+          lookup_table: "mari"
+          lookup_key: "mari_code"
+          lookup_value: "mari_text"
+          create_field: "mari_text"
+          on_missing: "UNKNOWN_MARITAL_STATUS"
+          cache: true
+        
+        # Race code mapping
+        race_code:
+          lookup_table: "race"
+          lookup_key: "race_code"
+          lookup_value: "race_text"
+          create_field: "race_text"
+          on_missing: "UNKNOWN_RACE"
+          cache: true
+        
+        # Sex code mapping
+        sexs_code:
+          lookup_table: "sexs"
+          lookup_key: "sexs_code"
+          lookup_value: "sexs_text"
+          create_field: "sexs_text"
+          on_missing: "UNKNOWN_SEX"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^FM[U]\\d{4,8}$"
+            action: flag
+            message: "Invalid series ID format: should be FM[U] followed by 4-8 digits"
+          
+          - field: series_id
+            rule: length
+            min: 6
+            max: 10
+            action: reject
+            message: "Series ID must be between 6 and 10 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 2009
+            max: 2067
+            action: reject
+            message: "Begin year must be between 2009 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 2009
+            max: 2067
+            action: reject
+            message: "End year must be between 2009 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, seasonal, ftyp_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, ftyp_code, begin_year, end_year ]
+        output_file: "fm_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 1000    # Stop if too many errors
+  log_errors: true
+  error_file: "fm_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints
+    interval_records: 10000
+    checkpoint_dir: "checkpoints/fm"

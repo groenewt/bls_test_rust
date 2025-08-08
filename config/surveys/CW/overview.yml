@@ -1,0 +1,75 @@
+config_version: 1
+survey:
+  code: "CW"
+  name: "Consumer Price Index - All Urban Wage earners and clerical workers"
+  description: "The Consumer Price Index (CPI) is a statistical measure of change, over time, of the prices of goods and services in major expenditure groups--such as food, housing, apparel, transportation, and medical care--typically purchased by urban consumers."
+  size_class: "large"
+  characteristics:
+    frequency: "monthly"
+    coverage: "Urban wage earners and clerical workers"
+    classification_system: "Area codes, item codes, and seasonal adjustment"
+    begin_year: 1913
+    update_schedule: "Monthly release, typically between the 10th and 14th of the month following the reference month"
+  contacts:
+    - role: "owner"
+      name: "groenewt"
+      email: "groenewt@example.org"
+  documentation:
+    primary: "docs/bls/survey/cw.txt"
+    data_dictionary: "docs/bls/dictionaries/cw.md"
+  tags: ["consumer_price_index", "urban_wage_earners", "clerical_workers", "time-series"]
+  definition: |
+    The Consumer Price Index (CPI) is a statistical measure
+    of change, over time, of the prices of goods and services in major 
+    expenditure groups--such as food, housing, apparel, transportation, and 
+    medical care--typically purchased by urban consumers.  Essentially, it 
+    compares the cost of a sample "market basket" of goods and services in a 
+    specific month relative to the cost of the same "market basket" in an 
+    earlier reference period.  This reference period is designated as the base 
+    period.
+
+    The CPI publishes indexes for two 
+    populations; urban wage earners and clerical workers (CW), and all urban 
+    consumers (CU).  
+
+    To construct the two indexes, thousands of prices for commodities and services purchased by consumers  
+    are collected in a sample of 75 urban places. Rent data is collected in separate sample of thousands of rental units.  
+    Comparison of indexes for individual CMSA's or cities show only the relative
+    change over time in prices between locations. These indexes cannot be used
+    to measure interarea differences in price levels or living costs.
+
+    Summary Data Available: U.S. average indexes for both populations are 
+    available for several hundred  consumer items and groups of items. In addition, 
+    many of the indexes have been adjusted for seasonality.  The indexes 
+    are monthly. Different indexes go back to different years, with the earliest, including all items, 
+    dating to  1913. Semi-annual indexes have been 
+    calculated for many items for comparison with semi-annual areas 
+    mentioned below. Semi-annual indexes are available from 1984 forward.
+
+    Area indexes for both populations are available for 23 urban places. For 
+    each area, indexes are published for a subset of items and groups. The indexes
+    are published monthly for three areas and bimonthly for twenty areas. Regional and division level 
+    indexes for both populations are available for a subset of items and groups published. Indexes are published 
+    for four regions and nine divisions. Regional indexes date to 1966; divisional indexes are newer, dating to 2018.  
+    Indexes are monthly, with Semi-annual indexes 
+    also calculated for selected  items.  
+
+    City-size class indexes for both populations are available for two size classes 
+    with a similar subset of groups and items  
+    Region/city-size indexes (for example, Midwest size class B/C)for both populations are also available monthly. 
+
+    Frequency of Observations:  U.S. city average indexes, regional indexes, 
+    division indexes, size class indexes, and three metro area indexes are monthly. 20 metro area indexes are bimonthly.
+
+    Annual Averages: Annual averages are available for all unadjusted series 
+    in the CW and CU.
+
+    Base Periods: Most indexes have a base period of 1982-1984 = 100. Other 
+    indexes, mainly newer indexes, are based more recently.  The base period value is generally 100.0, 
+    with rare exceptions where the base is set to 1000 to avoid loss of precision. The index
+    for the "Purchasing Power" values (AAOR and SAOR) have a base period value of 1.000.
+
+    Data Characteristics: Indexes are published to three decimal places.
+
+    Updating Schedule:  Updates become available with the release of new data, typically between the 10th and 14th of the month 
+    following the reference month.

@@ -1,0 +1,15 @@
+# II Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default overrides can be specified here
+# These will be applied after the base survey configuration
+# but before environment-specific overrides
+
+# Example overrides:
+# resources:
+#   max_threads: 4
+#   memory_limit_gb: 8
+
+# logging:
+#   level: "warn"

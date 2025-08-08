@@ -1,0 +1,303 @@
+config_version: 1
+series:
+  path: "tu.series"
+  index: "series_id"
+  estimated_size_gb: 1.0
+  schema:
+    series_id: { type: "string", length: 18, nullable: false }
+    seasonal: { type: "string", length: 1, nullable: false }
+    stattype_code: { type: "string", length: 5, nullable: false }
+    datays_code: { type: "string", length: 2, nullable: false }
+    sex_code: { type: "string", length: 1, nullable: false }
+    region_code: { type: "string", length: 2, nullable: false }
+    lfstat_code: { type: "string", length: 2, nullable: false }
+    educ_code: { type: "string", length: 2, nullable: false }
+    maritlstat_code: { type: "string", length: 2, nullable: false }
+    age_code: { type: "string", length: 3, nullable: false }
+    orig_code: { type: "string", length: 2, nullable: false }
+    race_code: { type: "string", length: 2, nullable: false }
+    mjcow_code: { type: "string", length: 2, nullable: false }
+    nmet_code: { type: "string", length: 1, nullable: false }
+    where_code: { type: "string", length: 2, nullable: false }
+    sjmj_code: { type: "string", length: 1, nullable: false }
+    timeday_code: { type: "string", length: 2, nullable: false }
+    actcode_code: { type: "string", length: 6, nullable: false }
+    industry_code: { type: "string", length: 4, nullable: false }
+    occ_code: { type: "string", length: 4, nullable: false }
+    prhhchild_code: { type: "string", length: 4, nullable: false }
+    earn_code: { type: "string", length: 2, nullable: false }
+    disability_code: { type: "string", length: 2, nullable: false }
+    who_code: { type: "string", length: 2, nullable: false }
+    hhnscc03_code: { type: "string", length: 2, nullable: false }
+    schenr_code: { type: "string", length: 1, nullable: false }
+    prownhhchild_code: { type: "string", length: 2, nullable: false }
+    work_code: { type: "string", length: 3, nullable: false }
+    elnum_code: { type: "string", length: 3, nullable: false }
+    ecage_code: { type: "string", length: 1, nullable: false }
+    elfreq_code: { type: "string", length: 2, nullable: false }
+    eldur_code: { type: "string", length: 2, nullable: false }
+    elwho_code: { type: "string", length: 1, nullable: false }
+    ecytd_code: { type: "string", length: 1, nullable: false }
+    elder_code: { type: "string", length: 1, nullable: false }
+    lfstatw_code: { type: "string", length: 3, nullable: false }
+    pertype_code: { type: "string", length: 2, nullable: false }
+    series_title: { type: "string", length: 200, nullable: true }
+    footnote_codes: { type: "string", length: 10, nullable: true }
+    begin_year: { type: "string", length: 4, nullable: false }
+    begin_period: { type: "string", length: 3, nullable: false }
+    end_year: { type: "string", length: 4, nullable: false }
+    end_period: { type: "string", length: 3, nullable: false }
+
+data_files:
+  - id: "main"
+    pattern: "tu.data.*"
+    index: "series_id"
+    schema:
+      series_id: { type: "string", length: 18, nullable: false }
+      year: { type: "int32", min: 2003, max: 2055 }
+      period: { type: "string", length: 3, pattern: "^(A01|Q0[1-4])$" }
+      value: { type: "decimal", precision: 18, scale: 4, nullable: true }
+      footnote_codes: { type: "string", length: 10, nullable: true }
+
+lookups:
+  - id: "seasonal"
+    path: "tu.seasonal"
+    index: "seasonal_code"
+    schema:
+      seasonal_code: { type: "string", length: 1, nullable: false }
+      seasonal_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "stattype"
+    path: "tu.stattype"
+    index: "stattype_code"
+    schema:
+      stattype_code: { type: "string", length: 5, nullable: false }
+      stattype_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "datays"
+    path: "tu.datays"
+    index: "datays_code"
+    schema:
+      datays_code: { type: "string", length: 2, nullable: false }
+      datays_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "sex"
+    path: "tu.sex"
+    index: "sex_code"
+    schema:
+      sex_code: { type: "string", length: 1, nullable: false }
+      sex_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "region"
+    path: "tu.region"
+    index: "region_code"
+    schema:
+      region_code: { type: "string", length: 2, nullable: false }
+      region_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "lfstat"
+    path: "tu.lfstat"
+    index: "lfstat_code"
+    schema:
+      lfstat_code: { type: "string", length: 2, nullable: false }
+      lfstat_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "educ"
+    path: "tu.educ"
+    index: "educ_code"
+    schema:
+      educ_code: { type: "string", length: 2, nullable: false }
+      educ_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "maritlstat"
+    path: "tu.maritlstat"
+    index: "maritlstat_code"
+    schema:
+      maritlstat_code: { type: "string", length: 2, nullable: false }
+      maritlstat_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "age"
+    path: "tu.age"
+    index: "age_code"
+    schema:
+      age_code: { type: "string", length: 3, nullable: false }
+      age_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "orig"
+    path: "tu.orig"
+    index: "orig_code"
+    schema:
+      orig_code: { type: "string", length: 2, nullable: false }
+      orig_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "race"
+    path: "tu.race"
+    index: "race_code"
+    schema:
+      race_code: { type: "string", length: 2, nullable: false }
+      race_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "mjcow"
+    path: "tu.mjcow"
+    index: "mjcow_code"
+    schema:
+      mjcow_code: { type: "string", length: 2, nullable: false }
+      mjcow_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "where"
+    path: "tu.where"
+    index: "where_code"
+    schema:
+      where_code: { type: "string", length: 2, nullable: false }
+      where_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "sjmj"
+    path: "tu.sjmj"
+    index: "sjmj_code"
+    schema:
+      sjmj_code: { type: "string", length: 1, nullable: false }
+      sjmj_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "timeday"
+    path: "tu.timeday"
+    index: "timeday_code"
+    schema:
+      timeday_code: { type: "string", length: 2, nullable: false }
+      timeday_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "actcode"
+    path: "tu.actcode"
+    index: "actcode_code"
+    schema:
+      actcode_code: { type: "string", length: 6, nullable: false }
+      actcode_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "occ"
+    path: "tu.occ"
+    index: "occ_code"
+    schema:
+      occ_code: { type: "string", length: 4, nullable: false }
+      occ_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "prhhchild"
+    path: "tu.prhhchild"
+    index: "prhhchild_code"
+    schema:
+      prhhchild_code: { type: "string", length: 4, nullable: false }
+      prhhchild_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "earn"
+    path: "tu.earn"
+    index: "earn_code"
+    schema:
+      earn_code: { type: "string", length: 2, nullable: false }
+      earn_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "who"
+    path: "tu.who"
+    index: "who_code"
+    schema:
+      who_code: { type: "string", length: 2, nullable: false }
+      who_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "hhnscc03"
+    path: "tu.hhnscc03"
+    index: "hhnscc03_code"
+    schema:
+      hhnscc03_code: { type: "string", length: 2, nullable: false }
+      hhnscc03_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "prownhhchild"
+    path: "tu.prownhhchild"
+    index: "prownhhchild_code"
+    schema:
+      prownhhchild_code: { type: "string", length: 2, nullable: false }
+      prownhhchild_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "work"
+    path: "tu.work"
+    index: "work_code"
+    schema:
+      work_code: { type: "string", length: 3, nullable: false }
+      work_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "elnum"
+    path: "tu.elnum"
+    index: "elnum_code"
+    schema:
+      elnum_code: { type: "string", length: 3, nullable: false }
+      elnum_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "ecage"
+    path: "tu.ecage"
+    index: "ecage_code"
+    schema:
+      ecage_code: { type: "string", length: 1, nullable: false }
+      ecage_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "elfreq"
+    path: "tu.elfreq"
+    index: "elfreq_code"
+    schema:
+      elfreq_code: { type: "string", length: 2, nullable: false }
+      elfreq_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "eldur"
+    path: "tu.eldur"
+    index: "eldur_code"
+    schema:
+      eldur_code: { type: "string", length: 2, nullable: false }
+      eldur_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "ecytd"
+    path: "tu.ecytd"
+    index: "ecytd_code"
+    schema:
+      ecytd_code: { type: "string", length: 1, nullable: false }
+      ecytd_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "elder"
+    path: "tu.elder"
+    index: "elder_code"
+    schema:
+      elder_code: { type: "string", length: 1, nullable: false }
+      elder_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "lfstatw"
+    path: "tu.lfstatw"
+    index: "lfstatw_code"
+    schema:
+      lfstatw_code: { type: "string", length: 3, nullable: false }
+      lfstatw_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "pertype"
+    path: "tu.pertype"
+    index: "pertype_code"
+    schema:
+      pertype_code: { type: "string", length: 2, nullable: false }
+      pertype_text: { type: "string", length: 100, nullable: false }
+  
+  - id: "footnote"
+    path: "tu.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code: { type: "string", length: 1, nullable: false }
+      footnote_text: { type: "string", length: 100, nullable: false }
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "stattype_code", "datays_code"] }
+
+types:
+  aliases:
+    Year: { base: "int32", range: [2003, 2055] }
+    TimeUseValue: { base: "decimal", precision: 18, scale: 4 }

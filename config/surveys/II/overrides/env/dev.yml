@@ -1,0 +1,17 @@
+# II Survey Development Environment Overrides
+config_version: 1
+
+# Development environment specific settings
+resources:
+  max_threads: 4
+  memory_limit_gb: 8
+
+logging:
+  level: "debug"
+
+features:
+  enable_profiling: true
+
+# Reduced error thresholds for development
+error_recovery:
+  max_errors: 100

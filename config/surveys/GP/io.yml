@@ -1,0 +1,25 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/gp"
+  include: ["gp.series", "gp.data.*", "gp.area", "gp.charact", "gp.labor.force", "gp.period", "gp.state"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["state_code", "year"]
+
+mmap:
+  enable_for_mb_greater_than: 100
+  
+lookup_config:
+  preload: ["state", "area", "charact", "labor_force"]
+  lazy: ["period"]
+  mmap: []
+  cache_all: true

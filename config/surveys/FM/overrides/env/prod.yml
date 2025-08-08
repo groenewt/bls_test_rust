@@ -1,0 +1,28 @@
+config_version: 1
+# Production environment overrides for FM survey
+
+logging:
+  level: "warn"
+  components:
+    discovery: "warn"
+    validation: "warn"
+    processing: "warn"
+    output: "warn"
+    quality: "error"
+
+features:
+  enable_profiling: false
+  enable_statistics_collection: false  # Disabled for performance
+
+resources:
+  max_threads: 4
+  memory_limit_gb: 8
+
+destination:
+  base_path: "data/processed/bls/FM"
+
+policy:
+  mode: "fail_on_error"  # Strict validation for production
+
+parquet:
+  compression_level: 6  # Higher compression for storage efficiency

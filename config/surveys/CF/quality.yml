@@ -1,0 +1,253 @@
+# CF Survey Quality Configuration
+config_version: 1
+
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "category_code", "datatype_code", "case_code", "industry_code", "event_code", "source_code", "occupation_code", "begin_year", "begin_period", "end_year", "end_period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1992, max: 2055 }
+    - { file: "main", column: "value", min: 0, max: 100000 }
+    - { file: "series", column: "begin_year", min: 1992, max: 2055 }
+    - { file: "series", column: "end_year", min: 1992, max: 2055 }
+  
+  enums:
+    - { file: "main", column: "period", values: ["A01"] }
+    - { file: "series", column: "begin_period", values: ["A01"] }
+    - { file: "series", column: "end_period", values: ["A01"] }
+  
+  regex:
+    - { file: "main", column: "series_id", pattern: "^CF[US]\\d{10}$" }
+    - { file: "series", column: "series_id", pattern: "^CF[US]\\d{10}$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 17 }
+    - { file: "series", column: "category_code", exact: 2 }
+    - { file: "series", column: "datatype_code", exact: 1 }
+    - { file: "series", column: "case_code", exact: 1 }
+    - { file: "series", column: "industry_code", exact: 4 }
+    - { file: "series", column: "event_code", exact: 4 }
+    - { file: "series", column: "source_code", exact: 4 }
+    - { file: "series", column: "occupation_code", exact: 4 }
+  
+  lookup_exists:
+    - { file: "series", column: "category_code", lookup_table: "category" }
+    - { file: "series", column: "datatype_code", lookup_table: "datatype" }
+    - { file: "series", column: "case_code", lookup_table: "case" }
+    - { file: "series", column: "industry_code", lookup_table: "industry" }
+    - { file: "series", column: "event_code", lookup_table: "event" }
+    - { file: "series", column: "source_code", lookup_table: "source" }
+    - { file: "series", column: "occupation_code", lookup_table: "occupation" }
+  
+  cross_field:
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      file: "series"
+      message: "End year must be >= begin year"
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(category_code)", "distinct(year)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"   # warn_only|fail_on_error
+  sample_on_fail_rows: 50
+
+validation_rules:
+  data_series:
+    - field: "value"
+      rule: "range"
+      min: 0
+      max: 100000
+      action: "flag"
+      message: "Fatality counts should be non-negative and reasonable"
+    
+    - field: "year"
+      rule: "range"
+      min: 1992
+      max: 2055
+      action: "reject"
+      message: "Year must be between 1992 and 2055"
+    
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CF[US]\\d{10}$"
+      action: "flag"
+      message: "Invalid series ID format"
+    
+    - field: "period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid period value - should be A01 for annual data"
+
+  series_metadata:
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^CF[US]\\d{10}$"
+      action: "flag"
+      message: "Invalid series ID format: should be CF[U/S][10 digits]"
+    
+    - field: "series_id"
+      rule: "length"
+      exact: 17
+      action: "reject"
+      message: "Series ID must be exactly 17 characters"
+    
+    - field: "series_id"
+      rule: "required"
+      action: "reject"
+      message: "Series ID cannot be null"
+    
+    - field: "category_code"
+      rule: "length"
+      exact: 2
+      action: "reject"
+      message: "Category code must be exactly 2 characters"
+    
+    - field: "category_code"
+      rule: "lookup_exists"
+      lookup_table: "category"
+      action: "flag"
+      message: "Category code not found in category lookup table"
+    
+    - field: "datatype_code"
+      rule: "length"
+      exact: 1
+      action: "reject"
+      message: "Datatype code must be exactly 1 character"
+    
+    - field: "datatype_code"
+      rule: "lookup_exists"
+      lookup_table: "datatype"
+      action: "flag"
+      message: "Datatype code not found in datatype lookup table"
+    
+    - field: "case_code"
+      rule: "length"
+      exact: 1
+      action: "reject"
+      message: "Case code must be exactly 1 character"
+    
+    - field: "case_code"
+      rule: "lookup_exists"
+      lookup_table: "case"
+      action: "flag"
+      message: "Case code not found in case lookup table"
+    
+    - field: "industry_code"
+      rule: "length"
+      exact: 4
+      action: "reject"
+      message: "Industry code must be exactly 4 characters"
+    
+    - field: "industry_code"
+      rule: "lookup_exists"
+      lookup_table: "industry"
+      action: "flag"
+      message: "Industry code not found in industry lookup table"
+    
+    - field: "event_code"
+      rule: "length"
+      exact: 4
+      action: "reject"
+      message: "Event code must be exactly 4 characters"
+    
+    - field: "event_code"
+      rule: "lookup_exists"
+      lookup_table: "event"
+      action: "flag"
+      message: "Event code not found in event lookup table"
+    
+    - field: "source_code"
+      rule: "length"
+      exact: 4
+      action: "reject"
+      message: "Source code must be exactly 4 characters"
+    
+    - field: "source_code"
+      rule: "lookup_exists"
+      lookup_table: "source"
+      action: "flag"
+      message: "Source code not found in source lookup table"
+    
+    - field: "occupation_code"
+      rule: "length"
+      exact: 4
+      action: "reject"
+      message: "Occupation code must be exactly 4 characters"
+    
+    - field: "occupation_code"
+      rule: "lookup_exists"
+      lookup_table: "occupation"
+      action: "flag"
+      message: "Occupation code not found in occupation lookup table"
+    
+    - field: "begin_year"
+      rule: "range"
+      min: 1992
+      max: 2055
+      action: "reject"
+      message: "Begin year must be between 1992 and 2055"
+    
+    - field: "begin_year"
+      rule: "numeric"
+      action: "reject"
+      message: "Begin year must be numeric"
+    
+    - field: "end_year"
+      rule: "range"
+      min: 1992
+      max: 2055
+      action: "reject"
+      message: "End year must be between 1992 and 2055"
+    
+    - field: "end_year"
+      rule: "numeric"
+      action: "reject"
+      message: "End year must be numeric"
+    
+    - field: "end_year"
+      rule: "greater_than_or_equal"
+      compare_field: "begin_year"
+      action: "reject"
+      message: "End year must be >= begin year"
+    
+    - field: "begin_period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid begin period value"
+    
+    - field: "end_period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+      message: "Invalid end period value"
+    
+    - field: "end_year"
+      rule: "date_logic_check"
+      check_fields: ["begin_year"]
+      validation: "(end_year >= begin_year) OR (end_year is null and begin_year is null)"
+      action: "flag"
+      message: "End date must be after or equal to begin date"
+
+completeness:
+  required_fields:
+    main: ["series_id", "year", "period"]
+    series: ["series_id", "category_code", "datatype_code", "case_code", "industry_code", "event_code", "source_code", "occupation_code", "begin_year", "begin_period", "end_year", "end_period"]
+  
+  nullable_fields:
+    main: ["value", "footnote_codes"]
+    series: []
+
+uniqueness:
+  unique_fields:
+    main: [["series_id", "year", "period"]]
+    series: [["series_id"]]

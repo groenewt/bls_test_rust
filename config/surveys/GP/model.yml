@@ -1,0 +1,219 @@
+config_version: 1
+series:
+  path: "gp.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "GPU00100000E0000"
+    area_type_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    state_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    area_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0000"
+    size_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    labor_force_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "E"
+    charact_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0000"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1981"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1998"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "gp.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "GPU00100000E0000"
+      year:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "1981"
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "A01"
+        pattern: "^A01$"
+      value:
+        type: "string"
+        length: 12
+        nullable: true
+        example_value: "1491"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "area"
+    path: "gp.area"
+    index: "area_code"
+    description: "Maps area codes to area names"
+    schema:
+      state_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "04"
+      area_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "6200"
+      area_name:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "Phoenix"
+  
+  - id: "charact"
+    path: "gp.charact"
+    index: "charact_code"
+    description: "Maps characteristic codes to characteristic descriptions"
+    schema:
+      charact_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "0020"
+      charact_text:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "White, 16+;"
+  
+  - id: "labor_force"
+    path: "gp.labor.force"
+    index: "labor_force_code"
+    description: "Maps labor force codes to labor force descriptions"
+    schema:
+      labor_force_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "E"
+      labor_force_text:
+        type: "string"
+        length: 40
+        nullable: false
+        example_value: "Employed"
+  
+  - id: "period"
+    path: "gp.period"
+    index: "period"
+    description: "Maps period codes to period names"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "A01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "ANN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Annual"
+  
+  - id: "state"
+    path: "gp.state"
+    index: "state_code"
+    description: "Maps state codes to state names"
+    schema:
+      state_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      state_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Alabama"
+
+relationships:
+  - from: { file: "series", column: "state_code" }
+    to: { file: "state", column: "state_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "labor_force_code" }
+    to: { file: "labor_force", column: "labor_force_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "charact_code" }
+    to: { file: "charact", column: "charact_code" }
+    type: "many-to-one"
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "area_type_code", "state_code", "area_code", "labor_force_code", "charact_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  aliases:
+    Year: { base: "string", length: 4, range: [1981, 2067] }
+    Period: { base: "string", length: 3, pattern: "^A01$" }
+    SeriesId: { base: "string", length: 17, pattern: "^GP[U]\\d{15}$" }

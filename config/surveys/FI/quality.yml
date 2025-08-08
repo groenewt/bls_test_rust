@@ -1,0 +1,57 @@
+config_version: 1
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "category_code", "datatype_code", "case_code", "industry_code", "event_code", "source_code", "occupation_code", "area_code"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1992, max: 2055 }
+    - { file: "main", column: "value", min: 0, max: 100000 }  # Fatal injuries count can't be negative, reasonable upper limit
+  
+  enums:
+    - { file: "main", column: "period", values: ["A01"] }  # Annual data only
+  
+  regex:
+    - { file: "main", column: "series_id", pattern: "^FI[US]\\d{15}$" }
+    - { file: "series", column: "series_id", pattern: "^FI[US]\\d{15}$" }
+  
+  row_count:
+    min: 1
+    warn_below: 100
+
+validation:
+  rules:
+    - field: "value"
+      rule: "range"
+      min: 0
+      max: 100000
+      action: "flag"  # Flag but don't reject
+    
+    - field: "year"
+      rule: "range"
+      min: 1992
+      max: 2055
+      action: "reject"
+    
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^FI[US]\\d{15}$"
+      action: "flag"
+    
+    - field: "period"
+      rule: "values"
+      allowed: ["A01"]
+      action: "flag"
+  
+  completeness:
+    required_fields: ["series_id", "year", "period"]
+    nullable_fields: ["value", "footnote_codes"]
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "min(value)", "max(value)", "avg(value)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"  # warn_only|fail_on_error
+  sample_on_fail_rows: 50
+  max_errors: 1000

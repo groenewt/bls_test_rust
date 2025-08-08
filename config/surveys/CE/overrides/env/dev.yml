@@ -1,0 +1,38 @@
+# CE Survey Development Environment Overrides
+config_version: 1
+
+# Development-specific processing settings
+processing:
+  resources:
+    max_threads: 4  # Reduced for development
+    memory_limit_gb: 8  # Reduced for development
+  features:
+    enable_profiling: true
+    enable_statistics: true
+
+# Development output settings
+output:
+  destination:
+    base_path: "data/dev/processed/bls/CE"
+
+# Development quality settings
+quality:
+  policy:
+    mode: "warn_only"  # More lenient for development
+    sample_on_fail_rows: 10
+
+# Development runtime settings
+runtime:
+  logging:
+    level: "debug"
+  development:
+    enable_debug_output: true
+    save_intermediate_files: true
+    verbose_logging: true
+  feature_flags:
+    enable_hot_reloads: true
+
+# Development error handling
+error_handling:
+  max_errors: 100  # Lower threshold for development
+  log_errors: true

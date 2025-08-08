@@ -1,0 +1,31 @@
+config_version: 1
+format: "csv"
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  partition_by: []
+  max_file_size_mb: 100
+
+naming:
+  dataset: "bls_bp"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/BP"
+
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]

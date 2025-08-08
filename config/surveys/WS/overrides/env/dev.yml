@@ -1,0 +1,13 @@
+# WS Survey Development Environment Overrides
+config_version: 1
+
+# Development environment specific overrides
+logging:
+  level: "debug"
+
+error_handling:
+  max_errors: 100
+
+processing:
+  features:
+    enable_profiling: true

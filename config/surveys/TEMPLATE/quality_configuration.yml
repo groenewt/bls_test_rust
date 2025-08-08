@@ -1,0 +1,6 @@
+# quality.yml
+config_version: 1
+expectations: {}
+row_count: { min: 1 }
+metrics: { collect: [], persist: false }
+policy: { mode: "warn_only", sample_on_fail_rows: 20 }

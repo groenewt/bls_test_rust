@@ -1,0 +1,21 @@
+config_version: 1
+# Development environment overrides for HC survey
+
+processing:
+  resources:
+    max_threads: 2
+    memory_limit_gb: 4
+  
+  features:
+    enable_profiling: true
+
+quality:
+  policy:
+    mode: "warn_only"
+    sample_on_fail_rows: 10
+
+logging:
+  level: "debug"
+
+error_handling:
+  max_errors: 100  # Lower threshold for development

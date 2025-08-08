@@ -1,0 +1,31 @@
+# IP Survey Development Environment Overrides
+config_version: 1
+
+# Development processing settings
+processing:
+  strategy:
+    mode: "in_memory"
+    max_concurrency: 1
+  resources:
+    max_threads: 2
+    memory_limit_gb: 2
+  features:
+    enable_profiling: true
+
+# Development output settings
+output:
+  destination:
+    base_path: "data/processed/bls/IP/dev"
+
+# Development quality settings
+quality:
+  policy:
+    mode: "warn_only"
+    sample_on_fail_rows: 10
+
+# Development runtime settings
+runtime:
+  logging:
+    level: "debug"
+  error_handling:
+    max_errors: 100

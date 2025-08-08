@@ -1,0 +1,23 @@
+config_version: 1
+format: "parquet"
+parquet:
+  compression: "zstd"
+  compression_level: 3
+  row_group_size: 10000
+  enable_dictionary: true
+  bloom_filters: false
+
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 128
+
+naming:
+  dataset: "bls_fm"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/FM"

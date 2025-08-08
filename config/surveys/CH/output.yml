@@ -1,0 +1,124 @@
+# CH Survey Output Configuration
+config_version: 1
+
+format: "parquet"  # Parquet format for large datasets
+
+parquet:
+  compression: "snappy"  # Good balance between speed and compression
+  compression_level: 3
+  row_group_size: 50000
+  enable_dictionary: true
+  bloom_filters: true
+
+partitioning:
+  enabled: true  # Partition for large dataset
+  partition_by: ["year"]  # Partition by year for time-series analysis
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_ch"
+  version: "v1"
+
+evolution:
+  mode: "compatible"  # Compatible schema evolution
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/CH"
+
+# Data series output configuration
+data_series:
+  transformations:
+    sort_by: ["series_id", "year", "period"]
+    deduplicate: true
+    deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+    
+    # Column encoding optimization for Parquet
+    encoding:
+      series_id: "dictionary"  # Repeated values
+      category_code: "dictionary"
+      datatype_code: "dictionary"
+      case_code: "dictionary"
+      year: "delta"  # Sequential years
+      period: "dictionary"
+      value: "plain"  # Values vary widely
+
+  # Statistics for query optimization
+  statistics:
+    enabled: true
+    columns: ["year", "period", "value"]
+
+# Data dictionary output configuration
+data_dict:
+  format: "parquet"
+  compression: "snappy"
+  
+  partitioning:
+    enabled: false  # Single file output for series metadata
+  
+  output_file: "ch_series_dict.parquet"
+  
+  # Mapping configuration for lookups
+  mapping:
+    # Category code mapping
+    category_code:
+      lookup_table: "category"
+      lookup_key: "category_code"
+      lookup_value: "category_text"
+      create_field: "category_name"
+      on_missing: "UNKNOWN_CATEGORY"
+      cache: true
+    
+    # Datatype code mapping
+    datatype_code:
+      lookup_table: "datatype"
+      lookup_key: "datatype_code"
+      lookup_value: "datatype_text"
+      create_field: "datatype_name"
+      on_missing: "UNKNOWN_DATATYPE"
+      cache: true
+    
+    # Case code mapping
+    case_code:
+      lookup_table: "case"
+      lookup_key: "case_code"
+      lookup_value: "case_text"
+      create_field: "case_name"
+      on_missing: "UNKNOWN_CASE"
+      cache: true
+    
+    # Age code mapping
+    age_code:
+      lookup_table: "age"
+      lookup_key: "age_code"
+      lookup_value: "age_text"
+      create_field: "age_name"
+      on_missing: "UNKNOWN_AGE"
+      cache: true
+    
+    # Gender code mapping
+    gender_code:
+      lookup_table: "gender"
+      lookup_key: "gender_code"
+      lookup_value: "gender_text"
+      create_field: "gender_name"
+      on_missing: "UNKNOWN_GENDER"
+      cache: true
+    
+    # Industry code mapping
+    industry_code:
+      lookup_table: "industry"
+      lookup_key: "industry_code"
+      lookup_value: "industry_text"
+      create_field: "industry_name"
+      on_missing: "UNKNOWN_INDUSTRY"
+      cache: true
+    
+    # State code mapping
+    state_code:
+      lookup_table: "state"
+      lookup_key: "state_code"
+      lookup_value: "state_text"
+      create_field: "state_name"
+      on_missing: "UNKNOWN_STATE"
+      cache: true

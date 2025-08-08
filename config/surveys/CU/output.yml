@@ -1,0 +1,109 @@
+config_version: 1
+format: "csv"
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_cu"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/CU"
+
+outputs:
+  data_series:
+    format: "csv"
+    partitioning:
+      enabled: true
+      partition_by: ["year"]
+    transformations:
+      sort_by: ["series_id", "year", "period"]
+      deduplicate: true
+      deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+    statistics:
+      enabled: true
+      columns: ["year", "period", "value"]
+
+  data_dict:
+    format: "csv"
+    partitioning:
+      enabled: false
+    output_file: "cu_series_dict.csv"
+    mapping:
+      area_code:
+        lookup_table: "area"
+        lookup_key: "area_code"
+        lookup_value: "area_name"
+        create_field: "area_name"
+        on_missing: "UNKNOWN_AREA"
+        cache: true
+      item_code:
+        lookup_table: "item"
+        lookup_key: "item_code"
+        lookup_value: "item_name"
+        create_field: "item_name"
+        on_missing: "UNKNOWN_ITEM"
+        cache: true
+      seasonal:
+        lookup_table: "seasonal"
+        lookup_key: "seasonal"
+        lookup_value: "seasonal_text"
+        create_field: "seasonal_text"
+        on_missing: "UNKNOWN_SEASONAL"
+        cache: true
+      periodicity_code:
+        lookup_table: "periodicity"
+        lookup_key: "periodicity_code"
+        lookup_value: "periodicity_text"
+        create_field: "periodicity_text"
+        on_missing: "UNKNOWN_PERIODICITY"
+        cache: true
+      base_code:
+        lookup_table: "base"
+        lookup_key: "base_code"
+        lookup_value: "base_text"
+        create_field: "base_text"
+        on_missing: "UNKNOWN_BASE"
+        cache: true
+      begin_period:
+        lookup_table: "period"
+        lookup_key: "period"
+        lookup_value: "period_name"
+        create_field: "begin_period_name"
+        on_missing: "keep_original"
+        cache: true
+      end_period:
+        lookup_table: "period"
+        lookup_key: "period"
+        lookup_value: "period_name"
+        create_field: "end_period_name"
+        on_missing: "keep_original"
+        cache: true
+      footnote_codes:
+        lookup_table: "footnote"
+        lookup_key: "footnote_code"
+        lookup_value: "footnote_text"
+        create_field: "footnote_texts"
+        multiple: true
+        separator: " "
+        on_missing: "skip"
+        cache: true
+    transformations:
+      sort_by: ["series_id"]
+      deduplicate: false
+      deduplicate_on: ["series_id"]
+    statistics:
+      enabled: true
+      columns: ["series_id", "area_code", "item_code", "begin_year", "end_year"]
+      output_file: "cu_series_dict_stats.json"

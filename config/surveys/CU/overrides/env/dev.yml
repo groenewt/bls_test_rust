@@ -1,0 +1,18 @@
+config_version: 1
+# Development environment overrides for CU survey
+
+processing:
+  resources:
+    max_threads: 4
+    memory_limit_gb: 8
+
+features:
+  enable_profiling: true
+  enable_statistics: true
+
+logging:
+  level: "debug"
+
+error_handling:
+  max_errors: 100
+  on_error: "continue"

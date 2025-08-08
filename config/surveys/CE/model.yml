@@ -1,0 +1,240 @@
+# CE Survey Data Model Configuration
+config_version: 1
+
+series:
+  path: "ce.series"
+  index: "series_id"
+  estimated_size_gb: 2.0
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "CEU0500000001"
+    supersector_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "05"
+    industry_code:
+      type: "string"
+      length: 8
+      nullable: false
+      example_value: "05000000"
+    datatype_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    seasonal:
+      type: "string"
+      length: 1
+      enum: ["S", "U"]
+      nullable: false
+      example_value: "S"
+    series_title:
+      type: "string"
+      length: 104
+      nullable: true
+      example_value: "All employees, thousands, total private, seasonally adjusted"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: "I"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1990"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2025"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M06"
+
+data_files:
+  - id: "main"
+    pattern: "ce.data.*"
+    index: "series_id"
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "CEU0500000001"
+      year:
+        type: "int32"
+        min: 1939
+        max: 2055
+        nullable: false
+        example_value: "2025"
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2})$"
+        nullable: false
+        example_value: "M06"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: "103623"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: "p"
+
+lookups:
+  - id: "datatype"
+    path: "ce.datatype"
+    index: "data_type_code"
+    schema:
+      data_type_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      data_type_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All employees, thousands"
+
+  - id: "footnote"
+    path: "ce.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "p"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "preliminary"
+
+  - id: "industry"
+    path: "ce.industry"
+    index: "industry_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 8
+        nullable: false
+        example_value: "05000000"
+      naics_code:
+        type: "string"
+        length: 13
+        nullable: true
+        example_value: "236"
+      publishing_status:
+        type: "string"
+        length: 2
+        nullable: true
+        example_value: "A"
+      industry_name:
+        type: "string"
+        length: 80
+        nullable: false
+        example_value: "Total private"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: true
+        example_value: "0"
+
+  - id: "period"
+    path: "ce.period"
+    index: "period"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+
+  - id: "seasonal"
+    path: "ce.seasonal"
+    index: "seasonal"
+    schema:
+      seasonal:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "S"
+      seasonal_text:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "Seasonally Adjusted"
+
+  - id: "supersector"
+    path: "ce.supersector"
+    index: "supersector_code"
+    schema:
+      supersector_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "05"
+      supersector_name:
+        type: "string"
+        length: 60
+        nullable: false
+        example_value: "Total private"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "supersector_code" }
+    to: { file: "supersector", column: "supersector_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "datatype_code" }
+    to: { file: "datatype", column: "data_type_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "supersector_code", "industry_code", "datatype_code", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
+
+types:
+  aliases:
+    Year: { base: "int32", range: [1939, 2067] }
+    Money: { base: "decimal", precision: 18, scale: 4 }
+    Period: { base: "string", pattern: "^(M\\d{2})$" }

@@ -1,0 +1,52 @@
+# CB Survey IO Configuration
+# Input discovery, patterns, partition hints
+config_version: 1
+
+discovery:
+  root: "data/raw/bls/cb"
+  include: [
+    "cb.series",
+    "cb.data.*",
+    "cb.age",
+    "cb.case",
+    "cb.category",
+    "cb.datatype",
+    "cb.event",
+    "cb.footnote",
+    "cb.gender",
+    "cb.hour",
+    "cb.industry",
+    "cb.los",
+    "cb.medical",
+    "cb.nature",
+    "cb.occupation",
+    "cb.ownership",
+    "cb.pob",
+    "cb.race",
+    "cb.source",
+    "cb.special",
+    "cb.state",
+    "cb.time",
+    "cb.weekday"
+  ]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["state_code"]
+
+mmap:
+  enable_for_mb_greater_than: 100
+
+lookup_config:
+  preload: ["age", "case", "category", "datatype", "gender", "ownership", "state"]
+  lazy: ["event", "footnote", "hour", "industry", "los", "medical", "nature", "occupation", "pob", "race", "source", "special", "time", "weekday"]
+  mmap: []
+  cache_all: true

@@ -1,0 +1,104 @@
+# output.yml
+# Consumer Expenditure Survey - Output formats, partitioning, compression
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+format: "csv"  # Primary output format
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  enabled: true
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_cx"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/CX"
+
+# Data series output configuration
+data_series:
+  format: "csv"
+  partitioning:
+    enabled: true
+    partition_by: ["year"]
+  transformations:
+    sort_by: ["series_id", "year", "period"]
+    deduplicate: true
+    deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+  statistics:
+    enabled: true
+    columns: ["year", "period", "value"]
+
+# Data dictionary output configuration  
+data_dict:
+  format: "csv"
+  output_file: "cx_series_dict.csv"
+  partitioning:
+    enabled: false  # Single file output for series metadata
+  
+  # Mapping configuration for lookups
+  mapping:
+    seasonal:
+      lookup_table: "seasonal"
+      lookup_key: "seasonal_code"
+      lookup_value: "seasonal_text"
+      create_field: "seasonal_text"
+      on_missing: "UNKNOWN_SEASONAL"
+      cache: true
+    
+    expenditure_code:
+      lookup_table: "expenditure"
+      lookup_key: "expenditure_code"
+      lookup_value: "expenditure_text"
+      create_field: "expenditure_text"
+      on_missing: "UNKNOWN_EXPENDITURE"
+      cache: true
+    
+    demographics_code:
+      lookup_table: "demographics"
+      lookup_key: "demographics_code"
+      lookup_value: "demographics_text"
+      create_field: "demographics_text"
+      on_missing: "UNKNOWN_DEMOGRAPHICS"
+      cache: true
+    
+    characteristics_code:
+      lookup_table: "characteristics"
+      lookup_key: "characteristics_code"
+      lookup_value: "characteristics_text"
+      create_field: "characteristics_text"
+      on_missing: "UNKNOWN_CHARACTERISTICS"
+      cache: true
+    
+    footnote_codes:
+      lookup_table: "footnote"
+      lookup_key: "footnote_code"
+      lookup_value: "footnote_text"
+      create_field: "footnote_texts"
+      multiple: true
+      separator: " "
+      on_missing: "skip"
+      cache: true
+  
+  transformations:
+    sort_by: ["series_id"]
+    deduplicate: false
+    deduplicate_on: ["series_id"]
+  
+  statistics:
+    enabled: true
+    columns: ["series_id", "expenditure_code", "demographics_code", "characteristics_code", "begin_year", "end_year"]
+    output_file: "cx_series_dict_stats.json"

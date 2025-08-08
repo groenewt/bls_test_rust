@@ -1,0 +1,13 @@
+config_version: 1
+# Development environment overrides
+processing:
+  features:
+    enable_profiling: true
+  resources:
+    max_threads: 1
+
+logging:
+  level: "debug"
+
+error_handling:
+  max_errors: 100

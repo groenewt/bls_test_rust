@@ -1,0 +1,53 @@
+# CH Survey Input/Output Discovery Configuration
+config_version: 1
+
+discovery:
+  root: "data/raw/bls/ch"
+  include: 
+    - "ch.series"
+    - "ch.data.*"
+    - "ch.age"
+    - "ch.case"
+    - "ch.category"
+    - "ch.datatype"
+    - "ch.event"
+    - "ch.gender"
+    - "ch.hour"
+    - "ch.industry"
+    - "ch.los"
+    - "ch.nature"
+    - "ch.occupation"
+    - "ch.ownership"
+    - "ch.pob"
+    - "ch.race"
+    - "ch.source"
+    - "ch.special"
+    - "ch.state"
+    - "ch.time"
+    - "ch.weekday"
+    - "ch.footnote"
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"  # Smart combining for large dataset
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"  # Adaptive partitioning for large survey
+  max_partition_size_mb: 500
+  partition_by: ["year", "category_code"]
+
+mmap:
+  enable_for_mb_greater_than: 100  # Use memory mapping for files larger than 100MB
+
+lookup_loading:
+  # Preload small, frequently used lookup files
+  preload: ["age", "case", "datatype", "gender", "hour", "los", "ownership", "race", "special", "state", "time", "weekday", "footnote"]
+  # Load larger lookup files on demand
+  lazy: ["category", "event", "industry", "nature", "occupation", "pob", "source"]
+  # Use memory mapping for very large lookup files
+  mmap: []
+  # Keep all lookups in memory once loaded
+  cache_all: true

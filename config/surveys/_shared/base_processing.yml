@@ -1,0 +1,98 @@
+# Base Processing Configuration
+# Shared processing strategies and resource configurations
+config_version: 1
+
+# Processing strategy profiles based on survey size
+strategy_profiles:
+  micro:
+    mode: "in_memory"
+    max_concurrency: 1
+    resources:
+      max_threads: 2
+      memory_limit_gb: 1
+    io:
+      chunk_size_mb: 16
+      buffer_pool_size: 2
+    features:
+      use_mmap: false
+      enable_statistics: true
+      enable_profiling: false
+
+  small:
+    mode: "in_memory"
+    max_concurrency: 2
+    resources:
+      max_threads: 4
+      memory_limit_gb: 4
+    io:
+      chunk_size_mb: 32
+      buffer_pool_size: 4
+    features:
+      use_mmap: true
+      enable_statistics: true
+      enable_profiling: false
+
+  medium:
+    mode: "chunked"
+    max_concurrency: 4
+    resources:
+      max_threads: 8
+      memory_limit_gb: 8
+    io:
+      chunk_size_mb: 64
+      buffer_pool_size: 8
+    features:
+      use_mmap: true
+      enable_statistics: true
+      enable_profiling: false
+
+  large:
+    mode: "parallel"
+    max_concurrency: 8
+    resources:
+      max_threads: 16
+      memory_limit_gb: 16
+    io:
+      chunk_size_mb: 128
+      buffer_pool_size: 16
+    features:
+      use_mmap: true
+      enable_statistics: true
+      enable_profiling: true
+
+  massive:
+    mode: "streaming"
+    max_concurrency: 16
+    resources:
+      max_threads: 32
+      memory_limit_gb: 32
+    io:
+      chunk_size_mb: 256
+      buffer_pool_size: 32
+    features:
+      use_mmap: true
+      enable_statistics: true
+      enable_profiling: true
+
+# Common transforms
+common_transforms:
+  normalize_period:
+    id: "normalize_period"
+    expr: "upper(period)"
+  
+  parse_decimal_value:
+    id: "parse_value"
+    expr: "to_decimal(value, 18, 4)"
+  
+  clean_series_id:
+    id: "clean_series_id"
+    expr: "trim(series_id)"
+  
+  validate_year:
+    id: "validate_year"
+    expr: "case when year between 1900 and 2100 then year else null end"
+
+# Memory mapping thresholds
+mmap_thresholds:
+  enable_for_mb_greater_than: 100
+  disable_for_mb_less_than: 10

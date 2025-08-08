@@ -1,0 +1,535 @@
+# .config/surveys/in.yml
+# name: International Labor Statistics Processing Configuration
+# description:
+# author: Junie
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/in
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/in.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: in #survey code (ex.ap,sm,in)- see docs (.docs/surveys/* for all surveys)
+  name: International Labor Statistics #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The Bureau of Labor Statistics (BLS) collects and publishes statistical information to compare labor conditions and developments in the United States and selected foreign economies. All of the measures are based on data from the statistical agencies of the foreign economies covered or from international organizations."
+  definition: "
+The following is a definition of:  INTERNATIONAL LABOR STATISTICS (IN)
+
+Survey Description:  The Bureau of Labor Statistics (BLS) collects and publishes 
+statistical information to compare labor conditions and developments in the United States 
+and selected foreign economies.  All of the measures are based on data from the 
+statistical agencies of the foreign economies covered or from international 
+organizations.  The Bureau does not initiate surveys or data collection programs abroad.
+
+The statistical concepts and methods used in different countries are developed primarily 
+to meet domestic rather than international needs.  When there are substantial conceptual 
+differences, BLS adjusts the data to improve comparability or describes the differences 
+so users will not draw misleading conclusions.  In adjusting data for greater 
+comparability, BLS must depend on the availability of relevant information, and in some 
+instances it is necessary to make estimates based on incomplete data.  Therefore it is 
+possible to achieve only approximate statistical comparability among countries.
+
+The following are summary descriptions of the three general International Labor 
+Statistics (IN) series available on LABSTAT: labor force, productivity, and consumer 
+price indexes (CPI).  Adjustments for comparability of concepts are made for the first 
+two series.  For the CPI, however, no adjustments are made except to convert the indexes 
+to a common base year.
+                "
+  characteristics:
+    frequency: "annual and quarterly"
+    coverage: "International labor statistics for various countries"
+    time_series_count: "International labor statistics time series data" 
+    classification_system: "Country codes, economic series codes, industry codes"
+    update_schedule: "Labor force statistics are updated once or twice yearly; Seasonally adjusted quarterly unemployment rates are updated quarterly. Indexes of manufacturing productivity, labor costs, and related measures are updated twice a year. Consumer price indexes are updated annually."
+    begin_year: 1950
+    survey_methodology: "Data collected from statistical agencies of foreign economies or international organizations"
+    calculation_basis: "Indexes, rates or ratios, and quantity levels"
+
+#Survey Series Information
+series:
+  path: "in.series" #path to series file
+  use_mmap: true
+  series_size_class: Medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17
+      type: Text
+      example_value: "INS00220000AU0M"
+      map_file: "" #leave blank for none
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "S"
+      needs_mapping: true
+      map_file: "seasonal" #leave blank for none
+    economicseries_code:
+      length: 4
+      type: Text
+      example_value: "0022"
+      needs_mapping: true
+      map_file: "economicseries" #leave blank for none
+    industry_code:
+      length: 4
+      type: Text
+      example_value: "0000"
+      needs_mapping: true
+      map_file: "industry" #leave blank for none
+    country_code:
+      length: 2
+      type: Text
+      example_value: "AU"
+      needs_mapping: true
+      map_file: "country" #leave blank for none
+    economicgroup_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "economicgroup" #leave blank for none
+    periodicity_code:
+      length: 1
+      type: Text
+      example_value: "M"
+      needs_mapping: true
+      map_file: "periodicity" #leave blank for none
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: ""
+      needs_mapping: true
+      map_file: "footnote" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "2007"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "M01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2013"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "M06"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "INS00220000AU0M"
+      year:
+        length: 4
+        type: values
+        example_value: "2007"
+      period:
+        length: 3
+        type: Text
+        example_value: "M01"
+      value:
+        length: 12
+        type: values
+        example_value: "4.5"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ country, seasonal, economicseries ]  # Small, frequently used
+    lazy: [ footnote, industry, period, periodicity, economicgroup ]  # Load on demand
+    mmap: [ ]  # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    country:
+        file_path: "in.country"
+        name: Country
+        description: "Maps country codes to country names"
+        index_col: "country_code"
+        schema:
+          country_code:
+            length: 2
+            type: str
+            example_value: "AU"
+          country_text:
+            length: 20
+            type: str
+            example_value: "AUSTRALIA"
+
+    economicseries:
+        file_path: "in.economicseries"
+        name: Economic Series
+        description: "Maps economic series codes to economic series names"
+        index_col: "economicseries_code"
+        schema:
+          economicseries_code:
+            length: 4
+            type: str
+            example_value: "0022"
+          economicseries_text:
+            length: 100
+            type: str
+            example_value: "UNEMPLOYMENT RATES"
+
+    economicgroup:
+        file_path: "in.economicgroup"
+        name: Economic Group
+        description: "Maps economic group codes to economic group names"
+        index_col: "economicgroup_code"
+        schema:
+          economicgroup_code:
+            length: 1
+            type: str
+            example_value: "0"
+          economicgroup_text:
+            length: 100
+            type: str
+            example_value: "All groups"
+
+    footnote:
+        file_path: "in.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "P"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: "Preliminary"
+
+    industry:
+        file_path: "in.industry"
+        name: Industry
+        description: "Maps industry codes to industry names"
+        index_col: "industry_code"
+        schema:
+          industry_code:
+            length: 4
+            type: str
+            example_value: "0000"
+          industry_text:
+            length: 100
+            type: str
+            example_value: "Whole economy"
+          display_level:
+            length: 1
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 3
+            type: str
+            example_value: "1"
+
+    period:
+        file_path: "in.period"
+        name: Period
+        description: "Maps period codes to period names"
+        index_col: "period"
+        schema:
+          period:
+            length: 3
+            type: str
+            example_value: "M01"
+          period_abbr:
+            length: 5
+            type: str
+            example_value: "JAN"
+          period_name:
+            length: 20
+            type: str
+            example_value: "January"
+
+    periodicity:
+        file_path: "in.periodicity"
+        name: Periodicity
+        description: "Maps periodicity codes to periodicity names"
+        index_col: "periodicity_code"
+        schema:
+          periodicity_code:
+            length: 1
+            type: str
+            example_value: "M"
+          periodicity_text:
+            length: 20
+            type: str
+            example_value: "Monthly"
+
+    seasonal:
+        file_path: "in.seasonal"
+        name: Seasonal Adjustment
+        description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+        index_col: "seasonal_code"
+        schema:
+          seasonal_code:
+            length: 1
+            type: str
+            example_value: "S"
+          seasonal_text:
+            length: 100
+            type: str
+            example_value: "Seasonally adjusted"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks due to size
+  max_threads: 4     # Increased parallelization for medium-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ in.data.0.Current, in.data.1.AllData ]
+      partition_strategy:
+        partion_by: "economicseries_code"
+        file_format: "in.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1950
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^IN[SU]\\d{14}[MQ]$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "A01" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Medium
+      output_file: "in_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Seasonal code mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal_code"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_text"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Economic series code mapping
+        economicseries_code:
+          lookup_table: "economicseries"
+          lookup_key: "economicseries_code"
+          lookup_value: "economicseries_text"
+          create_field: "economicseries_text"
+          on_missing: "UNKNOWN_ECONOMICSERIES"
+          cache: true
+        
+        # Country code mapping
+        country_code:
+          lookup_table: "country"
+          lookup_key: "country_code"
+          lookup_value: "country_text"
+          create_field: "country_text"
+          on_missing: "UNKNOWN_COUNTRY"
+          cache: true
+        
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_text"
+          create_field: "industry_text"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^IN[SU]\\d{14}[MQ]$"
+            action: flag
+            message: "Invalid series ID format: should be IN[S|U] followed by 14 digits and ending with M or Q"
+          
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1950
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1950 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1950
+            max: 2067
+            action: reject
+            message: "End year must be between 1950 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "A01" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "A01" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, seasonal, economicseries_code, industry_code, country_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, economicseries_code, begin_year, end_year ]
+        output_file: "in_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 2000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "in_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/in"

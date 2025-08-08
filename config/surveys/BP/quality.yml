@@ -1,0 +1,64 @@
+config_version: 1
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "measure_code", "unit_code", "periodicity_code", "alteration_code", "industry_code", "contract_duration", "contract_selection", "begin_year", "begin_period", "end_year", "end_period"] }
+  
+  ranges:
+    - { file: "main", column: "value", min: -100.0, max: 100.0 }
+    - { file: "main", column: "year", min: 1983, max: 2055 }
+    - { file: "series", column: "begin_year", min: 1983, max: 2067 }
+    - { file: "series", column: "end_year", min: 1983, max: 2067 }
+  
+  enums:
+    - { file: "main", column: "period", values: ["Q01", "Q02", "Q03", "Q04", "Q05"] }
+    - { file: "series", column: "begin_period", values: ["Q01", "Q02", "Q03", "Q04", "Q05"] }
+    - { file: "series", column: "end_period", values: ["Q01", "Q02", "Q03", "Q04", "Q05"] }
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+  
+  regex:
+    - { file: "main", column: "series_id", pattern: "^BP[US]\\d{11}$" }
+    - { file: "series", column: "series_id", pattern: "^BP[SU]\\d{11}$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 13 }
+    - { file: "series", column: "measure_code", exact: 2 }
+    - { file: "series", column: "unit_code", exact: 1 }
+    - { file: "series", column: "periodicity_code", exact: 1 }
+    - { file: "series", column: "alteration_code", exact: 1 }
+    - { file: "series", column: "industry_code", exact: 2 }
+    - { file: "series", column: "contract_duration", exact: 1 }
+    - { file: "series", column: "contract_selection", exact: 2 }
+    - { file: "series", column: "begin_year", exact: 4 }
+    - { file: "series", column: "begin_period", exact: 3 }
+    - { file: "series", column: "end_year", exact: 4 }
+    - { file: "series", column: "end_period", exact: 3 }
+  
+  lookup_exists:
+    - { file: "series", column: "measure_code", lookup_table: "measure" }
+    - { file: "series", column: "unit_code", lookup_table: "unit" }
+    - { file: "series", column: "periodicity_code", lookup_table: "periodicity" }
+    - { file: "series", column: "alteration_code", lookup_table: "alteration" }
+    - { file: "series", column: "industry_code", lookup_table: "industry" }
+    - { file: "series", column: "contract_duration", lookup_table: "duration" }
+    - { file: "series", column: "contract_selection", lookup_table: "selection" }
+    - { file: "series", column: "begin_period", lookup_table: "period" }
+    - { file: "series", column: "end_period", lookup_table: "period" }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(year)", "distinct(period)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+  max_errors: 1000
+  log_errors: true
+  error_file: "bp_errors.log"

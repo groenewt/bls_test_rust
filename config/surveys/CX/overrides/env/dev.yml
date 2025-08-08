@@ -1,0 +1,38 @@
+# dev.yml
+# Consumer Expenditure Survey - Development environment overrides
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+# Development-specific processing settings
+processing:
+  resources:
+    max_threads: 2        # Reduced for development machines
+    memory_limit_gb: 4    # Lower memory limit for dev
+
+# Development output settings
+output:
+  destination:
+    base_path: "data/processed/dev/bls/CX"
+
+# Development quality settings - more lenient
+quality:
+  policy:
+    mode: "warn_only"     # Don't fail on errors in dev
+    max_error_rate: 0.10  # Allow higher error rate in dev
+    sample_on_fail_rows: 10
+
+# Development runtime settings
+runtime:
+  feature_flags:
+    enable_profiling: true    # Enable profiling in dev
+    enable_hot_reloads: true  # Allow hot reloads in dev
+  
+  logging:
+    level: "debug"            # More verbose logging in dev
+  
+  error_handling:
+    max_errors: 500           # Lower threshold for dev testing
+  
+  monitoring:
+    enable_metrics: false     # Disable metrics collection in dev

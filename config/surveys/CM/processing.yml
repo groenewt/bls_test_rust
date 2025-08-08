@@ -1,0 +1,19 @@
+config_version: 1
+strategy:
+  mode: "chunked"
+  max_concurrency: 4
+
+resources:
+  max_threads: 4
+  memory_limit_gb: 4
+
+io:
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+
+features:
+  use_mmap: true
+  enable_statistics: true
+  enable_profiling: false
+
+transforms: []

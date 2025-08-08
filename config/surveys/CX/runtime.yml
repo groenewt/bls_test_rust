@@ -1,0 +1,64 @@
+# runtime.yml
+# Consumer Expenditure Survey - Feature flags, env overrides mapping, logging
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true
+  enable_checkpoints: true
+  enable_statistics: true
+  enable_profiling: false
+  enable_parallel_processing: true
+
+environment_overrides:
+  - key: "BLS_CX_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_CX_MAX_THREADS"
+    maps_to: "resources.max_threads"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
+  - key: "BLS_CX_CHUNK_SIZE_MB"
+    maps_to: "io.chunk_size_mb"
+  - key: "BLS_CX_MAX_ERRORS"
+    maps_to: "error_handling.max_errors"
+  - key: "BLS_CX_ERROR_ACTION"
+    maps_to: "error_handling.on_error"
+
+logging:
+  level: "info"        # trace|debug|info|warn|error
+  structured: true
+  log_file: "cx_processing.log"
+  error_log_file: "cx_errors.log"
+
+# Error handling and recovery settings
+error_handling:
+  on_error: "continue"  # Continue processing other records
+  max_errors: 2000      # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "cx_errors.log"
+  
+  # Checkpoint settings for recovery
+  checkpoint:
+    enabled: true       # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/cx"
+    cleanup_on_success: true
+    max_checkpoint_age_hours: 24
+
+# Performance monitoring
+monitoring:
+  enable_metrics: true
+  metrics_interval_seconds: 30
+  memory_usage_threshold: 0.8  # Alert when memory usage exceeds 80%
+  processing_time_threshold_minutes: 120  # Alert if processing takes longer than 2 hours
+
+# Resource limits
+resource_limits:
+  max_memory_gb: 8
+  max_processing_time_minutes: 180
+  max_file_size_gb: 5
+  max_concurrent_files: 10

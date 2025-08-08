@@ -1,0 +1,38 @@
+# CE Survey Production Environment Overrides
+config_version: 1
+
+# Production-specific processing settings
+processing:
+  resources:
+    max_threads: 16  # Maximum parallelization for production
+    memory_limit_gb: 32  # Increased for production workloads
+  features:
+    enable_profiling: false  # Disabled for performance
+    enable_statistics: true
+
+# Production output settings
+output:
+  destination:
+    base_path: "data/final/bls/CE"
+
+# Production quality settings
+quality:
+  policy:
+    mode: "fail_on_error"  # Strict validation for production
+    sample_on_fail_rows: 100
+
+# Production runtime settings
+runtime:
+  logging:
+    level: "warn"  # Minimal logging for production
+  development:
+    enable_debug_output: false
+    save_intermediate_files: false
+    verbose_logging: false
+  feature_flags:
+    enable_hot_reloads: false
+
+# Production error handling
+error_handling:
+  max_errors: 10000  # Higher threshold for production datasets
+  log_errors: true

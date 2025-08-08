@@ -1,0 +1,67 @@
+# CF Survey Overview Configuration
+config_version: 1
+
+survey:
+  code: "CF"
+  name: "Census of Fatal Occupational Injuries"
+  description: "Census of Fatal Occupational Injuries (CFOI) data on fatal occupational injuries."
+  size_class: "medium"      # micro|small|medium|large|massive
+  
+  characteristics:
+    frequency: "annual"
+    coverage: "All 50 States and the District of Columbia"
+    classification_system: "1990 Bureau of the Census Occupational Classification System and 1987 Standard Industrial Classification Manual"
+    begin_year: 1992
+    update_schedule: "Approximately 8 months following the close of the reference year"
+    survey_methodology: "The State agencies collect, code, and verify fatality data which are collected from workers' compensation reports, death certificates, accident reports and news media, as well as from Federal agency sources provided by BLS."
+    calculation_basis: "Actual counts of fatal occupational injuries"
+    time_series_count: "Varies by year"
+
+  definition: |
+    The following is a definition of: CENSUS OF FATAL OCCUPATIONAL INJURIES (1992-2002) (CF)
+
+    Survey Description:   
+
+    The Bureau of Labor Statistics (BLS) Census of Fatal Occupational Injuries 
+    (CFOI) program collects data on fatal occupational injuries that is comprehensive, 
+    timely, and verifiable. All groups of employees are included in CFOI, including 
+    private sector workers, government workers, self-employed, and family 
+    businesses. The program is a cooperative venture between the BLS and State 
+    agencies. The State agencies collect, code, and verify fatality data which are 
+    collected from workers' compensation reports, death certificates, accident 
+    reports and news media, as well as from Federal agency sources provided by BLS.  
+    All 50 States and the District of Columbia are represented in the CFOI data.
+
+    The data are ultimately sent to BLS for tabulation of national occupational 
+    fatality numbers. BLS provides detailed data on case characteristics such as 
+    the event or exposure leading to the fatality, the source of the fatality, and 
+    worker activity at the time of the incident. Event or exposure and source codes 
+    are based on the BLS Occupational Injury and Illness Classification structure. 
+    BLS also tabulates the number of occupational fatalities by demographic attributes 
+    such as age, sex, race, ethnic origin, and occupation. (Occupation 
+    classifications are based on the 1990 Bureau of the Census Occupational 
+    Classification System.) These tabulations may be summarized by major industry 
+    groups or by detailed industry (based on the 1987 Standard Industrial 
+    Classification Manual.) A distinction is made between private sector and 
+    government industries.  
+
+    Summary data available: The Census of Fatal Occupational Injuries data series 
+    started in 1992.
+
+    Frequency of observations: All data are annual.
+
+    Data characteristics: All figures are actual numbers of fatalities.
+
+    Updating schedule: Updates to the data become available approximately 8 months 
+    following the close of the reference year.
+
+  contacts:
+    - role: "owner"
+      name: "BLS CFOI Team"
+      email: "cfoi@bls.gov"
+
+  documentation:
+    primary: "docs/bls/survey/cf.txt"
+    data_dictionary: "docs/bls/dictionaries/cf.md"
+
+  tags: ["occupational", "injuries", "fatalities", "safety", "annual"]

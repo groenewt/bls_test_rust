@@ -1,0 +1,48 @@
+# prod.yml
+# Consumer Expenditure Survey - Production environment overrides
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+# Production-specific processing settings
+processing:
+  resources:
+    max_threads: 8        # Maximum threads for production
+    memory_limit_gb: 16   # Full memory allocation for production
+
+# Production output settings
+output:
+  destination:
+    base_path: "data/processed/prod/bls/CX"
+
+# Production quality settings - strict
+quality:
+  policy:
+    mode: "fail_on_error"
+    max_error_rate: 0.01  # Very low error tolerance in production
+    sample_on_fail_rows: 50
+
+# Production runtime settings
+runtime:
+  feature_flags:
+    enable_profiling: false   # No profiling overhead in production
+    enable_hot_reloads: false # No hot reloads in production
+  
+  logging:
+    level: "warn"             # Minimal logging in production
+  
+  error_handling:
+    max_errors: 2000          # Original production threshold
+  
+  monitoring:
+    enable_metrics: true      # Full metrics collection
+    metrics_interval_seconds: 30  # Frequent monitoring
+    memory_usage_threshold: 0.85  # Stricter memory monitoring
+    processing_time_threshold_minutes: 90  # Tighter time limits
+
+# Production resource limits - strict
+resource_limits:
+  max_memory_gb: 16
+  max_processing_time_minutes: 120
+  max_file_size_gb: 10
+  max_concurrent_files: 8

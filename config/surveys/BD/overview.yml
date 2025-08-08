@@ -1,0 +1,64 @@
+# BD Survey Overview Configuration
+# Survey metadata and context information
+config_version: 1
+
+survey:
+  code: "BD"
+  name: "Business Employment Dynamics"
+  description: "Business Employment Dynamics statistics track changes in employment at the establishment level, revealing the dynamics underlying net changes in employment."
+  size_class: "medium"
+  characteristics:
+    frequency: "quarterly"
+    coverage: "National, state, and industry data on employment changes"
+    time_series_count: "Business Employment Dynamics series"
+    classification_system: "NAICS (North American Industry Classification System)"
+    update_schedule: "Quarterly release"
+    begin_year: 1992
+    survey_methodology: "Derived from the Quarterly Census of Employment and Wages program, which covers about 98 percent of employment on nonfarm payrolls."
+    calculation_basis: "Longitudinal tracking of establishment data across quarters"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/bd.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/bd
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/bd.txt
+
+tags: ["employment", "business_dynamics", "quarterly", "establishment", "job_flows"]
+
+definition: |
+  The following is a definition of: BUSINESS EMPLOYMENT DYNAMICS
+
+  Program Description: Business Employment Dynamics statistics track changes
+  in employment at the establishment level, revealing the dynamics underlying net
+  changes in employment.
+
+  Summary Data Available: Quarterly data on Business Employment Dynamics are
+  derived from the Quarterly Census of Employment and Wages program.
+  This program is the quarterly census of all establishments under State
+  unemployment insurance programs, representing about 98 percent of employment on
+  nonfarm payrolls. The data include all establishments subject to the State
+  unemployment insurance (UI) laws and Federal agencies subject to the
+  Unemployment Compensation for Federal Employees (UCFE) program. Major
+  exclusions from UI coverage are the self-employed workers, religious
+  organizations, most agricultural workers on small farms, members of the Armed
+  Forces and certain small nonprofit organizations.
+
+  The Business Employment Dynamics totals require that establishment data be
+  linked across quarters. This longitudinal aspect of the data allows the
+  tracking of when establishments open, close, and expand or contract their
+  employees. There are four types of job flows: employment gains at opening
+  establishments, employment expansions at existing establishments, employment
+  losses at closing establishments, and employment contractions at existing
+  establishments. Increases in employment at opening and expanding
+  establishments sum to measure job gains. Declines in employment at closing and
+  contracting establishments sum to measure job losses. The more traditional
+  measure of a net change in the employment is the difference between the number
+  of jobs gained and the number of jobs lost.

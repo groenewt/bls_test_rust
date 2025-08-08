@@ -1,0 +1,263 @@
+config_version: 1
+series:
+  path: "bg.series"
+  index: "series_id"
+  estimated_size_gb: 0.01
+  schema:
+    series_id:
+      type: "string"
+      length: 13
+      nullable: false
+      example_value: "BGU01111001"
+    measure_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    unit_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    alteration_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    sector_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    contract_duration:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    contract_selection:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1984"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "Q02"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1995"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "Q02"
+
+data_files:
+  - id: "main"
+    pattern: "bg.data.*"
+    index: "series_id"
+    schema:
+      series_id:
+        type: "string"
+        length: 13
+        nullable: false
+        example_value: "BGU01111001"
+      year:
+        type: "int32"
+        min: 1980
+        max: 2000
+        nullable: false
+        example_value: "1984"
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(Q0[1-5]|Q13)$"
+        nullable: false
+        example_value: "Q02"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: "3.9"
+      cont_break:
+        type: "string"
+        length: 1
+        nullable: true
+        example_value: "N"
+      status:
+        type: "string"
+        length: 1
+        nullable: true
+        example_value: "F"
+      footnote_exists:
+        type: "string"
+        length: 1
+        nullable: true
+        example_value: "N"
+
+lookups:
+  - id: "alteration"
+    path: "bg.alteration"
+    index: "alteration_code"
+    schema:
+      alteration_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      alteration_text:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "Changes (net increases, and no change)"
+  
+  - id: "duration"
+    path: "bg.duration"
+    index: "contract_duration"
+    schema:
+      contract_duration:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      contract_duration_text:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "All contracts"
+  
+  - id: "measure"
+    path: "bg.measure"
+    index: "measure_code"
+    schema:
+      measure_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      measure_text:
+        type: "string"
+        length: 90
+        nullable: false
+        example_value: "First contract year wage rate, all settlmts., 1,000 or more wkrs."
+  
+  - id: "period"
+    path: "bg.period"
+    index: "period"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "Q01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "QTR2"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Second Quarter"
+  
+  - id: "sector"
+    path: "bg.sector"
+    index: "sector_code"
+    schema:
+      sector_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      sector_name:
+        type: "string"
+        length: 40
+        nullable: false
+        example_value: "State and local government"
+  
+  - id: "selection"
+    path: "bg.selection"
+    index: "contract_selection"
+    schema:
+      contract_selection:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      contract_selection_text:
+        type: "string"
+        length: 80
+        nullable: false
+        example_value: "All contracts negotiated in periods"
+  
+  - id: "unit"
+    path: "bg.unit"
+    index: "unit_code"
+    schema:
+      unit_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      unit_text:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Mean (in percents)"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "measure_code" }
+    to: { file: "measure", column: "measure_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "unit_code" }
+    to: { file: "unit", column: "unit_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "alteration_code" }
+    to: { file: "alteration", column: "alteration_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "sector_code" }
+    to: { file: "sector", column: "sector_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "contract_duration" }
+    to: { file: "duration", column: "contract_duration" }
+    type: "many-to-one"
+  - from: { file: "series", column: "contract_selection" }
+    to: { file: "selection", column: "contract_selection" }
+    type: "many-to-one"
+  - from: { file: "series", column: "begin_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "series", column: "end_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
+
+types:
+  Year: { base: "int32", range: [1980, 2000] }
+  Period: { base: "string", pattern: "^(Q0[1-5]|Q13)$" }
+  SeriesId: { base: "string", length: 13, pattern: "^BG[US].{11}$" }

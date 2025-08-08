@@ -1,0 +1,267 @@
+config_version: 1
+series:
+  path: "sm.series"
+  index: "series_id"
+  estimated_size_gb: 2.0
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "SMS00000000000000021"
+    state_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    area_code:
+      type: "string"
+      length: 5
+      nullable: false
+      example_value: "00000"
+    supersector_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    industry_code:
+      type: "string"
+      length: 8
+      nullable: false
+      example_value: "00000000"
+    data_type_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "21"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    benchmark_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2024"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1991"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2025"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M06"
+
+data_files:
+  - id: "main"
+    pattern: "sm.data.*"
+    index: "series_id"
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "SMS00000000000000021"
+      year:
+        type: "int32"
+        min: 1991
+        max: 2055
+        nullable: false
+        example_value: "2025"
+      period:
+        type: "string"
+        length: 3
+        pattern: "^M(0[1-9]|1[0-2])$"
+        nullable: false
+        example_value: "M06"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: "81.4"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "area"
+    path: "sm.area"
+    index: "area_code"
+    schema:
+      area_code:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "00000"
+      area_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Statewide"
+  
+  - id: "data_type"
+    path: "sm.data_type"
+    index: "data_type_code"
+    schema:
+      data_type_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      data_type_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All Employees, In Thousands"
+  
+  - id: "footnote"
+    path: "sm.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "C"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: ""
+  
+  - id: "industry"
+    path: "sm.industry"
+    index: "industry_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 8
+        nullable: false
+        example_value: "00000000"
+      industry_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Total Nonfarm"
+  
+  - id: "period"
+    path: "sm.period"
+    index: "period"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      mm:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "JAN"
+      month:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+  
+  - id: "seasonal"
+    path: "sm.seasonal"
+    index: "seasonal_code"
+    schema:
+      seasonal_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "S"
+      seasonal_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Seasonally Adjusted"
+  
+  - id: "state"
+    path: "sm.state"
+    index: "state_code"
+    schema:
+      state_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "00"
+      state_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All States"
+  
+  - id: "supersector"
+    path: "sm.supersector"
+    index: "supersector_code"
+    schema:
+      supersector_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "00"
+      supersector_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Total Nonfarm"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "state_code" }
+    to: { file: "state", column: "state_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "supersector_code" }
+    to: { file: "supersector", column: "supersector_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "data_type_code" }
+    to: { file: "data_type", column: "data_type_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "state_code", "area_code", "supersector_code", "industry_code", "data_type_code", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  Year: { base: "int32", range: [1991, 2055] }
+  Period: { base: "string", pattern: "^M(0[1-9]|1[0-2])$" }
+  SeriesId: { base: "string", length: 30, pattern: "^SM[SU]\\d{28}$" }

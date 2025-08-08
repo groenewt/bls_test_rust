@@ -1,0 +1,17 @@
+# II Survey Staging Environment Overrides
+config_version: 1
+
+# Staging environment specific settings
+resources:
+  max_threads: 6
+  memory_limit_gb: 12
+
+logging:
+  level: "info"
+
+features:
+  enable_profiling: false
+
+# Moderate error thresholds for staging
+error_recovery:
+  max_errors: 1000

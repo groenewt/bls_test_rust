@@ -1,0 +1,24 @@
+config_version: 1
+# Staging environment overrides for FM survey
+
+logging:
+  level: "info"
+  components:
+    discovery: "info"
+    validation: "info"
+    processing: "info"
+    output: "info"
+    quality: "warn"
+
+features:
+  enable_profiling: false
+  enable_statistics_collection: true
+
+resources:
+  max_threads: 2
+
+destination:
+  base_path: "data/processed/bls/FM/stage"
+
+policy:
+  mode: "warn_only"  # More lenient for testing

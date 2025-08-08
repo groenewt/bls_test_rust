@@ -1,0 +1,67 @@
+# WP Survey Quality Configuration
+# Validations, expectations, thresholds
+config_version: 1
+
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "group_code", "item_code", "seasonal", "begin_year", "begin_period"] }
+  
+  ranges:
+    - { file: "main", column: "year", min: 1947, max: 2055 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "series", column: "begin_year", min: 1947, max: 2067 }
+    - { file: "series", column: "end_year", min: 1947, max: 2067 }
+  
+  enums:
+    - { file: "main", column: "period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "begin_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "end_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+  
+  regex:
+    - { file: "main", column: "series_id", pattern: "^WP[SU]\\d{8}$" }
+    - { file: "series", column: "series_id", pattern: "^WP[SU]\\d{8}$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 30 }
+    - { file: "series", column: "group_code", exact: 3 }
+    - { file: "series", column: "item_code", exact: 12 }
+  
+  lookup_exists:
+    - { file: "series", column: "group_code", lookup_table: "group" }
+    - { file: "series", column: "item_code", lookup_table: "item" }
+    - { file: "series", column: "seasonal", lookup_table: "seasonal" }
+    - { file: "series", column: "begin_period", lookup_table: "period" }
+    - { file: "series", column: "end_period", lookup_table: "period" }
+    - { file: "main", column: "period", lookup_table: "period" }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year OR (end_year IS NULL AND begin_year IS NOT NULL)", message: "End year must be >= begin year" }
+  
+  numeric:
+    - { file: "series", columns: ["begin_year", "end_year"] }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+uniqueness:
+  - { file: "series", columns: ["series_id"] }
+  - { file: "main", columns: ["series_id", "year", "period"] }
+
+completeness:
+  required_fields:
+    - { file: "series", columns: ["series_id", "group_code", "item_code", "seasonal", "begin_year", "begin_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  nullable_fields:
+    - { file: "series", columns: ["series_title", "base_date", "end_year", "end_period"] }
+    - { file: "main", columns: ["value", "footnote_codes"] }
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "min(year)", "max(year)", "avg(value)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+  max_errors: 5000

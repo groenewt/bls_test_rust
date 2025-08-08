@@ -1,0 +1,30 @@
+# CH Survey Staging Environment Overrides
+config_version: 1
+
+# Staging-specific processing settings
+processing:
+  features:
+    enable_profiling: false
+    enable_statistics: true
+
+# Staging output settings
+output:
+  destination:
+    base_path: "data/stage/processed/bls/CH"
+
+# Staging quality settings
+quality:
+  policy:
+    mode: "fail_on_error"  # Strict validation like production
+    sample_on_fail_rows: 25
+
+# Staging runtime settings
+runtime:
+  logging:
+    level: "info"
+  development:
+    enable_debug_output: false
+    save_intermediate_files: false
+    verbose_logging: false
+  feature_flags:
+    enable_hot_reloads: false

@@ -1,0 +1,22 @@
+# IP Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
+config_version: 1
+
+discovery:
+  root: "data/raw/bls/ip"
+  include: ["ip.series", "ip.data.*", "ip.area", "ip.duration", "ip.footnote", "ip.industry", "ip.measure", "ip.seasonal", "ip.sector", "ip.type"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "size_based"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["sector_code"]
+
+mmap:
+  enable_for_mb_greater_than: 100

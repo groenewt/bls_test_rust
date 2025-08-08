@@ -1,0 +1,14 @@
+# io.yml
+config_version: 1
+discovery:
+  root: "data/raw/bls/TEMPLATE"
+  include: []
+  exclude: ["*.tmp","*~",".*"]
+combining:
+  enabled: false
+partition_hints:
+  strategy: "size_based"
+  max_partition_size_mb: 512
+  partition_by: []
+mmap:
+  enable_for_mb_greater_than: 100

@@ -1,0 +1,128 @@
+# CE Survey Output Configuration
+config_version: 1
+
+format: "csv"  # parquet|csv|json
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  enabled: true
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_ce"
+  version: "v1"
+
+evolution:
+  mode: "compatible"  # strict|compatible|additive
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/CE"
+
+# Data series output configuration
+data_series:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: true
+      partition_by: ["year"]
+    use_mmap: true
+    series_size_class: "Large"
+    list_data_files: ["ce.data.0.ALLCESSeries", "ce.data.01a.CurrentSeasAE", "ce.data.00a.TotalNonfarm.Employment", "ce.data.05a.TotalPrivate.Employment"]
+    partition_strategy:
+      partition_by: "supersector_code"
+      file_format: "ce.data.%d.%s"
+      load_dictionary_values: true
+    transformations:
+      sort_by: ["series_id", "year", "period"]
+      deduplicate: true
+      deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+    statistics:
+      enabled: true
+      columns: ["year", "period", "value"]
+
+# Data dictionary output configuration
+data_dict:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: false  # Single file output for series metadata
+    use_mmap: true
+    series_size_class: "Large"
+    output_file: "ce_series_dict.csv"
+    
+    # Mapping configuration for lookups
+    mapping:
+      supersector_code:
+        lookup_table: "supersector"
+        lookup_key: "supersector_code"
+        lookup_value: "supersector_name"
+        create_field: "supersector_name"
+        on_missing: "UNKNOWN_SUPERSECTOR"
+        cache: true
+      
+      industry_code:
+        lookup_table: "industry"
+        lookup_key: "industry_code"
+        lookup_value: "industry_name"
+        create_field: "industry_name"
+        on_missing: "UNKNOWN_INDUSTRY"
+        cache: true
+      
+      datatype_code:
+        lookup_table: "datatype"
+        lookup_key: "data_type_code"
+        lookup_value: "data_type_text"
+        create_field: "datatype_name"
+        on_missing: "UNKNOWN_DATATYPE"
+        cache: true
+      
+      seasonal:
+        lookup_table: "seasonal"
+        lookup_key: "seasonal"
+        lookup_value: "seasonal_text"
+        create_field: "seasonal_text"
+        on_missing: "UNKNOWN_SEASONAL"
+        cache: true
+      
+      begin_period:
+        lookup_table: "period"
+        lookup_key: "period"
+        lookup_value: "period_name"
+        create_field: "begin_period_name"
+        on_missing: "keep_original"
+        cache: true
+      
+      end_period:
+        lookup_table: "period"
+        lookup_key: "period"
+        lookup_value: "period_name"
+        create_field: "end_period_name"
+        on_missing: "keep_original"
+        cache: true
+      
+      footnote_codes:
+        lookup_table: "footnote"
+        lookup_key: "footnote_code"
+        lookup_value: "footnote_text"
+        create_field: "footnote_texts"
+        multiple: true
+        separator: " "
+        on_missing: "skip"
+        cache: true
+    
+    transformations:
+      sort_by: ["series_id"]
+      deduplicate: false  # Series should be unique by definition
+      deduplicate_on: ["series_id"]
+    
+    statistics:
+      enabled: true
+      columns: ["series_id", "supersector_code", "industry_code", "begin_year", "end_year"]
+      output_file: "ce_series_dict_stats.json"

@@ -1,0 +1,89 @@
+# AP Survey Quality Configuration
+# Validations, expectations, thresholds
+config_version: 1
+
+expectations:
+  non_null:
+    - { file: "series", columns: ["series_id", "area_code", "item_code"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "area", columns: ["area_code", "area_name"] }
+    - { file: "item", columns: ["item_code", "item_name"] }
+    - { file: "period", columns: ["period", "period_name"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+
+  ranges:
+    - { file: "main", column: "year", min: 1900, max: 2055 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "series", column: "begin_year", min: 1900, max: 2055 }
+    - { file: "series", column: "end_year", min: 1900, max: 2055 }
+
+  enums:
+    - { file: "main", column: "period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "begin_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "end_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+
+  regex:
+    - { file: "series", column: "series_id", pattern: "^APU[0-9A-Z]+$" }
+    - { file: "main", column: "series_id", pattern: "^APU[0-9A-Z]+$" }
+    - { file: "main", column: "period", pattern: "^M\\d{2}$" }
+
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "area", columns: ["area_code"] }
+    - { file: "item", columns: ["item_code"] }
+    - { file: "period", columns: ["period"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+
+  referential_integrity:
+    - { from_file: "main", from_column: "series_id", to_file: "series", to_column: "series_id" }
+    - { from_file: "series", from_column: "area_code", to_file: "area", to_column: "area_code" }
+    - { from_file: "series", from_column: "item_code", to_file: "item", to_column: "item_code" }
+    - { from_file: "main", from_column: "period", to_file: "period", to_column: "period" }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct_count", "min", "max"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"
+  sample_on_fail_rows: 50
+
+# Validation rules with actions
+validation_rules:
+  - field: "value"
+    rule: "range"
+    min: -10000000000000000.0
+    max: 10000000000000000.0
+    action: "flag"  # Flag but don't reject
+    
+  - field: "year"
+    rule: "range"
+    min: 1900
+    max: 2055
+    action: "reject"  # Reject invalid years
+    
+  - field: "series_id"
+    rule: "pattern"
+    pattern: "^APU[0-9A-Z]+$"
+    description: "Invalid series ID format: should be APU followed by area and item codes"
+    action: "flag"
+    
+  - field: "period"
+    rule: "values"
+    allowed: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"]
+    action: "flag"
+
+# Completeness checks
+completeness:
+  required_fields: ["series_id", "year", "period"]
+  nullable_fields: ["value", "footnote_codes"]
+
+# Statistics for query optimization
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]

@@ -1,0 +1,86 @@
+# CH Survey Quality Configuration
+config_version: 1
+
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id"] }
+
+  ranges:
+    - { file: "main", column: "year", min: 1900, max: 2100 }
+    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+
+  patterns:
+    - { file: "main", column: "series_id", pattern: "^CH[US][0-9A-Z]{15}$" }
+    - { file: "main", column: "period", pattern: "^A01$" }
+    - { file: "series", column: "series_id", pattern: "^CH[US][0-9A-Z]{15}$" }
+
+  enums:
+    - { file: "main", column: "period", values: ["A01"] }
+
+  uniqueness:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+  relationships:
+    - { from_file: "main", from_column: "series_id", to_file: "series", to_column: "series_id", type: "foreign_key" }
+
+row_count:
+  min: 1
+  warn_below: 100
+
+metrics:
+  collect: ["row_count", "null_count", "distinct(series_id)", "min(year)", "max(year)", "avg(value)"]
+  persist: true
+
+policy:
+  mode: "fail_on_error"  # Strict validation for production data
+  sample_on_fail_rows: 50
+
+validation_rules:
+  # Data quality checks for main data file
+  - field: "value"
+    rule: "range"
+    min: -10000000000000000.0
+    max: 10000000000000000.0
+    action: "flag"  # Flag but don't reject
+    description: "Value should be within reasonable range"
+
+  - field: "year"
+    rule: "range"
+    min: 1900
+    max: 2055
+    action: "reject"
+    description: "Year must be within valid range"
+
+  - field: "series_id"
+    rule: "pattern"
+    pattern: "^CH[US][0-9A-Z]{15}$"
+    action: "flag"
+    description: "Series ID should match CH survey pattern"
+
+  - field: "period"
+    rule: "values"
+    allowed: ["A01"]
+    action: "flag"
+    description: "Period should be A01 for annual data"
+
+# Completeness checks
+required_fields: ["series_id", "year", "period"]
+nullable_fields: ["value", "footnote_codes"]
+
+# Cross-file validation
+cross_file_checks:
+  - name: "series_data_consistency"
+    description: "Ensure all series in data file exist in series file"
+    check_type: "referential_integrity"
+    from_file: "main"
+    from_column: "series_id"
+    to_file: "series"
+    to_column: "series_id"
+    action: "warn"
+
+  - name: "lookup_consistency"
+    description: "Ensure all lookup codes exist in respective lookup tables"
+    check_type: "lookup_validation"
+    action: "warn"

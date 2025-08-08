@@ -1,0 +1,47 @@
+config_version: 1
+format: "csv"
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 512
+naming:
+  dataset: "bls_tu"
+  version: "v1"
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+destination:
+  base_path: "data/processed/bls/TU"
+validation:
+  rules:
+    - field: "value"
+      rule: "range"
+      min: -10000000000000000.0
+      max: 10000000000000000.0
+      action: "flag"
+    - field: "year"
+      rule: "range"
+      min: 2003
+      max: 2055
+      action: "reject"
+    - field: "series_id"
+      rule: "pattern"
+      pattern: "^TU[U]\\d{16}$"
+      action: "flag"
+    - field: "period"
+      rule: "values"
+      allowed: ["A01", "Q01", "Q02", "Q03", "Q04"]
+      action: "flag"
+  required_fields: ["series_id", "year", "period"]
+  nullable_fields: ["value", "footnote_codes"]
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]

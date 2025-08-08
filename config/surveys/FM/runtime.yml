@@ -1,0 +1,29 @@
+config_version: 1
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true
+  enable_statistics_collection: true
+  enable_profiling: false
+  cache_lookup_tables: true
+
+environment_overrides:
+  - key: "BLS_FM_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
+  - key: "BLS_FM_USE_MMAP"
+    maps_to: "features.use_mmap"
+  - key: "BLS_FM_MAX_THREADS"
+    maps_to: "resources.max_threads"
+
+logging:
+  level: "info"
+  structured: true
+  components:
+    discovery: "info"
+    validation: "info"
+    processing: "info"
+    output: "info"
+    quality: "warn"

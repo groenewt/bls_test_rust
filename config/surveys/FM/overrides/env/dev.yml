@@ -1,0 +1,21 @@
+config_version: 1
+# Development environment overrides for FM survey
+
+logging:
+  level: "debug"
+  components:
+    discovery: "debug"
+    validation: "debug"
+    processing: "debug"
+    output: "debug"
+    quality: "info"
+
+features:
+  enable_profiling: true
+  enable_statistics_collection: true
+
+resources:
+  max_threads: 1  # Single-threaded for easier debugging
+
+destination:
+  base_path: "data/processed/bls/FM/dev"

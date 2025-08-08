@@ -1,0 +1,72 @@
+# AP Survey Overview Configuration
+# Survey metadata and context information
+config_version: 1
+
+survey:
+  code: "AP"
+  name: "Average Price Data"
+  description: "Average consumer prices for selected items, collected monthly from retail stores."
+  size_class: "small"
+  characteristics:
+    frequency: "monthly"
+    coverage: "Average consumer prices for household fuel and motor fuel are available for the U.S. city average, 23 urban areas, 4 regions, 12 region/size class groupings, and 9 divisions. Average consumer prices for food are available for the U.S. city average, and four regions."
+    time_series_count: "1,482 series"
+    classification_system: "Consumer goods and services categories"
+    update_schedule: "Monthly release, typically mid-month"
+    begin_year: 1978
+    survey_methodology: "Prices, except for electricity, are collected monthly by BLS representatives in the 75 urban areas priced for the CPI. Electricity prices are collected for the BLS for the same 75 areas on a monthly basis by the Department of Energy using mail questionnaires. All fuel prices include applicable Federal, State, and local taxes; prices for natural gas and electricity also include fuel and purchased gas adjustments."
+    calculation_basis: "Average of prices collected during reference period"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/ap.md"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/ap
+    - Data files are in ASCII text format
+    - Spaces separate data elements in original BLS files
+    - Average prices are stored to three decimal places
+    - Monthly data available for up to 6 household fuel categories, 6 motor fuel categories, and around 100 food categories
+    - All data are monthly; annual averages are not available
+    - Updates become available with the monthly release of new data, typically from the 10th to the 14th of the month following the reference month
+
+tags: ["average_price", "consumer_price", "monthly", "fuel", "food", "cpi"]
+
+definition: |
+  The following is a definition of: Average Price Data (AP)
+
+  Survey Description: Average consumer prices are calculated for household
+  fuel, motor fuel, and food items from prices collected for the Consumer
+  Price Index (CPI). Average prices are best used to measure the price level
+  in a particular month, not to measure price change over time. It is more
+  appropriate to use CPI index values for the particular item categories to measure
+  price change.
+
+  Prices, except for electricity, are collected monthly by BLS representatives
+  in the 75 urban areas priced for the CPI. Electricity prices are collected
+  for the BLS for the same 75 areas on a monthly basis by the Department of
+  Energy using mail questionnaires. All fuel prices include applicable
+  Federal, State, and local taxes; prices for natural gas and electricity also
+  include fuel and purchased gas adjustments.
+
+  Summary Data Available: Average consumer prices for household fuel and
+  motor fuel are available for the U.S. city average, 23 urban areas, 4
+  regions, 12 region/size class groupings, and 9 divisions.
+
+  Average consumer prices for food are available for the U.S. city average, and
+  four regions.
+
+  Monthly data are available for up to 6 household fuel categories, 6
+  motor fuel categories, and around 100 food categories.
+
+  Frequency of Observations: All data are monthly; annual averages are not
+  available.
+
+  Data Characteristics: Average prices are stored to three decimal places.
+
+  Updating Schedule: Updates become available with the monthly release of new data, typically from the 10th to the 14th of the month
+  following the reference month.

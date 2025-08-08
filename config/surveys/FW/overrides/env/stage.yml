@@ -1,0 +1,12 @@
+config_version: 1
+# Staging environment overrides
+processing:
+  resources:
+    max_threads: 2
+    memory_limit_gb: 12
+
+logging:
+  level: "info"
+
+error_handling:
+  max_errors: 1000

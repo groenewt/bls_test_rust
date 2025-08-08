@@ -1,0 +1,71 @@
+# WP Survey Overview Configuration
+# Survey metadata and context information
+config_version: 1
+
+survey:
+  code: "WP"
+  name: "Producer Price Index"
+  description: "About 10,000 PPIs for individual products and groups of products are released each month. PPIs are available for the output of nearly all industries in the goods-producing sectors of the U.S. economy--mining, manufacturing, agriculture, fishing, and forestry--as well as natural gas, electricity, construction, and goods competitive with those made in the producing sectors, such as waste and scrap materials."
+  size_class: "large"
+  characteristics:
+    frequency: "monthly"
+    coverage: "National"
+    time_series_count: "More than 4,000 commodity price indexes"
+    classification_system: "PPI commodity classification system"
+    update_schedule: "Monthly, near the middle of the month following a given reference month"
+    begin_year: 1947
+    survey_methodology: "Scientific (probability) sampling techniques"
+    calculation_basis: "Actual revenue or net transaction prices producers receive for sales of their outputs"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/wp.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/wp
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/wp.txt
+
+tags: ["producer_price", "commodity", "monthly", "price_index", "manufacturing"]
+
+definition: |
+  The following is a description of: PRODUCER PRICE INDEX-Current Commodity Series (WP)
+
+  Survey Description: About 10,000 PPIs for individual products and groups of products
+  are released each month. PPIs are available for the output of nearly all industries in
+  the goods-producing sectors of the U.S. economy--mining, manufacturing, agriculture, 
+  fishing, and forestry--as well as natural gas, electricity, construction, and goods
+  competitive with those made in the producing sectors, such as waste and scrap materials. 
+  The PPI program covers approximately 72 percent of the service sector's output, as 
+  measured by revenue reported in the 2007 Economic Census. Data includes industries in the
+  following sectors: wholesale and retail trade; transportation and warehousing; information;
+  finance and insurance; real estate brokering, rental, and leasing; professional, scientific,
+  and technical services; administrative, support, and waste management services; health care
+  and social assistance; and accommodation.
+
+  To the extent possible, prices used in constructing the indexes are the 
+  actual revenue or net transaction prices producers receive for sales of
+  their outputs. Scientific (probability) sampling techniques are 
+  used to select reporting establishments, products, and transactions for all
+  types and volumes of output (not just volume-sellers).
+
+  The commodity classification structure of the PPI organizes products by 
+  similarity of end use or material composition, regardless of whether the 
+  products are classified as primary or secondary in their industry of origin. 
+  This system is unique to the PPI and does not match any other standard coding 
+  structure. The commodity classification system is organized as a hierarchical 
+  structure that starts with major commodity groupings (2-digit level of aggregation). 
+  Each major commodity grouping includes (in descending order of aggregation) 
+  subgroups (3-digit level), product classes (4-digit level), subproduct classes 
+  (5- and 6-digit level), item groupings (7-digit level), and individual items 
+  (8-, 9-, and 10-digit levels). Commodity-based FD-ID price indexes regroup 
+  commodities at the subproduct class (six-digit) level, according to the class 
+  of buyer and the amount of physical processing or assembling the products have 
+  undergone. Commodity-based Inputs to Industries indexes regroup commodities to form
+  indexes for the net input to industry production (excluding capital investment,
+  labor, and imports).

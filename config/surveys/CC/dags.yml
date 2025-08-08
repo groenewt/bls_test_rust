@@ -1,0 +1,107 @@
+# CC Survey DAG Configuration
+# Pipeline DAG with tasks, dependencies, retries, and SLAs
+config_version: 1
+
+graph:
+  tasks:
+    - id: "discover"
+      type: "scan"
+      description: "Discover and scan input files"
+      inputs: []
+      retries: { max: 2, backoff_sec: 10 }
+      sla_minutes: 5
+      
+    - id: "validate_model"
+      type: "validate_model"
+      description: "Validate data model and schema"
+      inputs: ["discover"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 10
+      
+    - id: "load_lookups"
+      type: "load_lookups"
+      description: "Load lookup tables (sector, benefit, costfactor, footnote, industryocc)"
+      inputs: ["validate_model"]
+      retries: { max: 2, backoff_sec: 5 }
+      sla_minutes: 10
+      
+    - id: "validate_data"
+      type: "validate_data"
+      description: "Validate data quality and integrity"
+      inputs: ["load_lookups"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 20
+      
+    - id: "plan"
+      type: "partition_plan"
+      description: "Create processing and partition plan"
+      inputs: ["validate_data"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 10
+      
+    - id: "process_series"
+      type: "execute"
+      description: "Process series data"
+      inputs: ["plan"]
+      parallelism: 2
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 45
+      
+    - id: "process_data"
+      type: "execute"
+      description: "Process main data files"
+      inputs: ["process_series"]
+      parallelism: 2
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 60
+      
+    - id: "write_output"
+      type: "output"
+      description: "Write processed data to output format"
+      inputs: ["process_data"]
+      retries: { max: 2, backoff_sec: 15 }
+      sla_minutes: 30
+      
+    - id: "create_data_dict"
+      type: "create_dictionary"
+      description: "Create data dictionary with lookups"
+      inputs: ["write_output"]
+      retries: { max: 1, backoff_sec: 10 }
+      sla_minutes: 15
+      
+    - id: "quality_checks"
+      type: "quality_checks"
+      description: "Run final quality checks and validation"
+      inputs: ["create_data_dict"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 20
+
+  edges:
+    - from: "discover"
+      to: "validate_model"
+    - from: "validate_model"
+      to: "load_lookups"
+    - from: "load_lookups"
+      to: "validate_data"
+    - from: "validate_data"
+      to: "plan"
+    - from: "plan"
+      to: "process_series"
+    - from: "process_series"
+      to: "process_data"
+    - from: "process_data"
+      to: "write_output"
+    - from: "write_output"
+      to: "create_data_dict"
+    - from: "create_data_dict"
+      to: "quality_checks"
+
+# Global DAG settings
+settings:
+  max_active_runs: 1
+  catchup: false
+  depends_on_past: false
+  email_on_failure: true
+  email_on_retry: false
+  retries: 1
+  retry_delay_minutes: 5

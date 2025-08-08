@@ -1,0 +1,43 @@
+# IP Survey Runtime Configuration
+# Feature flags, env overrides mapping, logging
+config_version: 1
+
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true
+  enable_checkpoints: true
+
+environment_overrides:
+  - key: "BLS_IP_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
+  - key: "BLS_IP_MAX_THREADS"
+    maps_to: "resources.max_threads"
+  - key: "BLS_IP_CHUNK_SIZE_MB"
+    maps_to: "io.chunk_size_mb"
+
+logging:
+  level: "info"
+  structured: true
+
+# Error handling configuration
+error_handling:
+  on_error: "continue"
+  max_errors: 2000
+  log_errors: true
+  error_file: "ip_errors.log"
+  
+  checkpoint:
+    enabled: true
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/ip"
+
+# Lookup configuration
+lookup_config:
+  preload: ["area", "sector", "measure", "industry"]
+  lazy: ["footnote", "duration", "type", "seasonal"]
+  mmap: []
+  cache_all: true

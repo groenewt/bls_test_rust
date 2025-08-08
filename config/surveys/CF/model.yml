@@ -1,0 +1,287 @@
+# CF Survey Data Model Configuration
+config_version: 1
+
+series:
+  path: "cf.series"
+  index: "series_id"
+  estimated_size_gb: 0.5
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "CFU00000080"
+    category_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+      needs_mapping: true
+      map_file: "category"
+    datatype_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "8"
+      needs_mapping: true
+      map_file: "datatype"
+    case_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "9"
+      needs_mapping: true
+      map_file: "case"
+    industry_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0100"
+      needs_mapping: true
+      map_file: "industry"
+    event_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "639X"
+      needs_mapping: true
+      map_file: "event"
+    source_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "98XX"
+      needs_mapping: true
+      map_file: "source"
+    occupation_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0040"
+      needs_mapping: true
+      map_file: "occupation"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1992"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2000"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "cf.data.*"
+    index: "series_id"
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "CFU00000080"
+      year:
+        type: "int32"
+        length: 4
+        nullable: false
+        example_value: "1996"
+        min: 1992
+        max: 2055
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "int32"
+        length: 12
+        nullable: true
+        example_value: "6202"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "case"
+    path: "cf.case"
+    name: "Case"
+    description: "Identifies the type of case for which data are available"
+    index: "case_code"
+    schema:
+      case_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "9"
+      case_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+  - id: "category"
+    path: "cf.category"
+    name: "Category"
+    description: "Identifies the category of the observation"
+    index: "category_code"
+    schema:
+      case_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "9"
+      category_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "AA"
+      category_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+  - id: "category2"
+    path: "cf.category2"
+    name: "Category2"
+    description: "Additional category information"
+    index: "category_code"
+    schema:
+      category_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "AB"
+      category_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+  - id: "datatype"
+    path: "cf.datatype"
+    name: "Datatype"
+    description: "Identifies the datatype of the observation"
+    index: "datatype_code"
+    schema:
+      datatype_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "8"
+      datatype_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+  - id: "event"
+    path: "cf.event"
+    name: "Event"
+    description: "Names the event which resulted in the reported injury"
+    index: "event_code"
+    schema:
+      event_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "639X"
+      event_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+  - id: "footnote"
+    path: "cf.footnote"
+    name: "Footnotes"
+    description: "Identifies footnotes for the data series"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "C"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+  - id: "industry"
+    path: "cf.industry"
+    name: "Industry"
+    description: "Identifies the industry for which data are observed"
+    index: "industry_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "0119"
+      industry_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+  - id: "occupation"
+    path: "cf.occupation"
+    name: "Occupation"
+    description: "Identifies the occupation of the person experiencing the injury"
+    index: "occupation_code"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "0030"
+      occupation_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+  - id: "source"
+    path: "cf.source"
+    name: "Source"
+    description: "Identifies the source of injury"
+    index: "source_code"
+    schema:
+      source_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "98XX"
+      source_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "category_code", "datatype_code", "case_code", "industry_code", "event_code", "source_code", "occupation_code", "begin_year", "begin_period", "end_year", "end_period"] }

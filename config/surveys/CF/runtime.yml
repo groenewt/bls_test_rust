@@ -1,0 +1,37 @@
+# CF Survey Runtime Configuration
+config_version: 1
+
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true
+  enable_profiling: false
+  enable_statistics: true
+  enable_debug_output: false
+  save_intermediate_files: false
+  verbose_logging: false
+
+environment_overrides:
+  - key: "BLS_CF_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
+  - key: "BLS_CF_MAX_THREADS"
+    maps_to: "resources.max_threads"
+  - key: "BLS_CF_CHUNK_SIZE_MB"
+    maps_to: "io.chunk_size_mb"
+  - key: "BLS_CF_USE_MMAP"
+    maps_to: "features.use_mmap"
+  - key: "BLS_CF_MAX_ERRORS"
+    maps_to: "error_handling.max_errors"
+
+logging:
+  level: "info"        # trace|debug|info|warn|error
+  structured: true
+  output_file: "cf_processing.log"
+
+development:
+  enable_debug_output: false
+  save_intermediate_files: false
+  verbose_logging: false

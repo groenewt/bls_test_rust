@@ -1,0 +1,12 @@
+config_version: 1
+# Organization/team defaults for FM survey
+# These settings override the base configuration
+
+resources:
+  max_threads: 2  # Conservative default for shared environments
+
+logging:
+  level: "warn"  # Less verbose for production environments
+
+features:
+  enable_profiling: false  # Disabled by default for performance

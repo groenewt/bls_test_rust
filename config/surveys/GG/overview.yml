@@ -1,0 +1,23 @@
+config_version: 1
+survey:
+  code: "GG"
+  name: "Green Goods and Services Survey"
+  description: "The Green Goods and Services (GGS) program provides national and State estimates of GGS employment levels and rates by North American Industrial Classification System (NAICS) industry code and ownership."
+  size_class: "medium"
+  characteristics:
+    frequency: "quarterly"
+    coverage: "National and State estimates of GGS employment levels and rates by NAICS industry code and ownership"
+    classification_system: "2007 NAICS codes"
+    begin_year: 2010
+    update_schedule: "To be determined"
+    survey_methodology: "Sample of approximately 120,000 randomly selected establishments per year from the Quarterly Census of Employment and Wages (QCEW) sample frame"
+    calculation_basis: "Employment levels and rates associated with producing green goods or providing green services"
+    time_series_count: "Green Goods and Services Survey series"
+  contacts:
+    - role: "owner"
+      name: "groenewt"
+      email: ""
+  documentation:
+    primary: "docs/bls/survey/gg.txt"
+    data_dictionary: ""
+  tags: ["green", "goods", "services", "employment", "environment", "naics"]

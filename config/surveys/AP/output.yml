@@ -1,0 +1,81 @@
+# AP Survey Output Configuration
+# Output formats, partitioning, compression
+config_version: 1
+
+format: "csv"
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+  null_value: ""
+
+partitioning:
+  partition_by: []
+  max_file_size_mb: 256
+
+naming:
+  dataset: "bls_ap"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/AP"
+
+# Data series output configuration
+data_series:
+  format: "csv"
+  partitioning:
+    enabled: false  # Single file output for small dataset
+  transformations:
+    sort_by: ["series_id", "year", "period"]
+    deduplicate: true
+    deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+  statistics:
+    enabled: true
+    columns: ["year", "period", "value"]
+
+# Data dictionary output configuration  
+data_dict:
+  format: "csv"
+  output_file: "ap_series_dict.csv"
+  partitioning:
+    enabled: false  # Single file output for series metadata
+  
+  # Mapping configuration for lookups
+  mapping:
+    area_code:
+      lookup_table: "area"
+      lookup_key: "area_code"
+      lookup_value: "area_name"
+      create_field: "area_name"
+      on_missing: "UNKNOWN_AREA"
+      cache: true
+    
+    item_code:
+      lookup_table: "item"
+      lookup_key: "item_code"
+      lookup_value: "item_name"
+      create_field: "item_name"
+      on_missing: "UNKNOWN_ITEM"
+      cache: true
+    
+    begin_period:
+      lookup_table: "period"
+      lookup_key: "period"
+      lookup_value: "period_name"
+      create_field: "begin_period_name"
+      on_missing: "keep_original"
+      cache: true
+    
+    end_period:
+      lookup_table: "period"
+      lookup_key: "period"
+      lookup_value: "period_name"
+      create_field: "end_period_name"
+      on_missing: "keep_original"
+      cache: true

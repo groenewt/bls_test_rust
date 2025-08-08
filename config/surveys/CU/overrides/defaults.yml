@@ -1,0 +1,15 @@
+config_version: 1
+# Organization/team defaults for CU survey
+# These settings override the base configuration
+
+processing:
+  resources:
+    max_threads: 8
+    memory_limit_gb: 16
+
+output:
+  format: "csv"
+  
+error_handling:
+  max_errors: 5000
+  on_error: "continue"

@@ -1,0 +1,19 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/fm"
+  include: ["fm.series", "fm.data.*", "fm.chld", "fm.fchld", "fm.fdat", "fm.fhlf", "fm.fnmatwk", "fm.fnme", "fm.fnmlf", "fm.fnmu", "fm.fnmws", "fm.forig", "fm.frace", "fm.ftpt", "fm.ftyp", "fm.hhlf", "fm.misclf", "fm.mwlf", "fm.prlf", "fm.lfst", "fm.mari", "fm.orig", "fm.race", "fm.sexs", "fm.tdat", "fm.wkst", "fm.footnote", "fm.seasonal"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: false
+  strategy: "none"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "size_based"
+  max_partition_size_mb: 100
+  partition_by: ["year"]
+
+mmap:
+  enable_for_mb_greater_than: 50

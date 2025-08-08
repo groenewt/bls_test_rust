@@ -1,0 +1,19 @@
+config_version: 1
+strategy:
+  mode: "in_memory"
+  max_concurrency: 2
+
+resources:
+  max_threads: 2
+  memory_limit_gb: 4
+
+io:
+  chunk_size_mb: 32
+  buffer_pool_size: 4
+
+features:
+  use_mmap: false
+  enable_statistics: true
+  enable_profiling: false
+
+transforms: []

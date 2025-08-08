@@ -1,0 +1,24 @@
+# IN Survey Development Environment Overrides
+config_version: 1
+
+# Development-specific settings
+logging:
+  level: "debug"
+
+feature_flags:
+  enable_profiling: true
+  enable_hot_reloads: true
+
+# Reduced resource limits for development
+resources:
+  max_threads: 2
+  memory_limit_gb: 2
+
+# More lenient error handling for development
+error_handling:
+  max_errors: 5000
+  on_error: "continue"
+
+# Smaller chunks for faster iteration
+io:
+  chunk_size_mb: 25

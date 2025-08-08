@@ -1,0 +1,25 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/FI"
+  include: ["fi.series", "fi.data.*", "fi.area", "fi.case", "fi.category", "fi.category2", "fi.datatype", "fi.event", "fi.footnote", "fi.industry", "fi.occupation", "fi.source"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["area_code"]
+
+mmap:
+  enable_for_mb_greater_than: 100
+
+lookup_config:
+  preload: ["area", "industry", "occupation"]  # Small, frequently used
+  lazy: ["footnote", "case", "category", "datatype", "event", "source"]  # Load on demand
+  mmap: []  # Use for large files
+  cache_all: true  # Small enough to keep in memory

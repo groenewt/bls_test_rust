@@ -1,0 +1,28 @@
+# AP Survey Processing Configuration
+# Strategy, resources, chunking, mmap, cache
+config_version: 1
+
+strategy:
+  mode: "in_memory"  # Load entirely into memory for small survey
+  max_concurrency: 1
+
+resources:
+  max_threads: 2  # Limited parallelization needed for small survey
+  memory_limit_gb: 2
+
+io:
+  chunk_size_mb: 10
+  buffer_pool_size: 4
+
+features:
+  use_mmap: false  # Too small to benefit from mmap
+  enable_statistics: true
+  enable_profiling: false
+
+transforms:
+  - id: "normalize_period"
+    expr: "upper(period)"
+  - id: "parse_value"
+    expr: "to_decimal(value, 18, 4)"
+  - id: "clean_series_id"
+    expr: "trim(series_id)"

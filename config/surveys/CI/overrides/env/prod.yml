@@ -1,0 +1,36 @@
+# CI Survey Production Environment Overrides
+config_version: 1
+
+# Production-specific processing settings
+processing:
+  resources:
+    max_threads: 8  # More threads for production
+    memory_limit_gb: 8  # More memory for production
+  features:
+    enable_profiling: false
+    enable_statistics: false  # Disable for performance
+
+# Production output settings
+output:
+  destination:
+    base_path: "data/final/bls/CI"
+  parquet:
+    compression: "zstd"  # Better compression for production
+    compression_level: 6
+
+# Production quality settings
+quality:
+  policy:
+    mode: "fail_on_error"  # Strict validation
+    sample_on_fail_rows: 100
+
+# Production runtime settings
+runtime:
+  logging:
+    level: "warn"  # Minimal logging for performance
+  development:
+    enable_debug_output: false
+    save_intermediate_files: false
+    verbose_logging: false
+  feature_flags:
+    enable_hot_reloads: false

@@ -1,0 +1,41 @@
+config_version: 1
+# Staging environment overrides for CM survey
+
+# Staging processing settings
+processing:
+  strategy:
+    max_concurrency: 2  # Moderate concurrency for staging
+  resources:
+    max_threads: 4
+    memory_limit_gb: 6  # More memory than dev, less than prod
+  io:
+    chunk_size_mb: 40  # Medium chunk size
+
+# Staging output settings
+output:
+  format: "parquet"  # Test production format
+  parquet:
+    compression: "snappy"
+    row_group_size: 50000
+  destination:
+    base_path: "data/stage/processed/bls/CM"
+
+# Staging quality settings
+quality:
+  policy:
+    mode: "fail_on_error"  # Stricter than dev, same as prod
+    sample_on_fail_rows: 25
+
+# Staging runtime settings
+runtime:
+  feature_flags:
+    enable_hot_reloads: false
+    enable_profiling: false
+  
+  logging:
+    level: "info"  # Production-like logging
+  
+  error_handling:
+    max_errors: 1500  # Between dev and prod
+    checkpoint:
+      interval_records: 25000

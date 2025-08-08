@@ -1,0 +1,64 @@
+# CB Survey Output Configuration
+# Output formats, partitioning, compression
+config_version: 1
+
+format: "csv"
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_cb"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/CB"
+
+data_series:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: true
+      partition_by: ["year"]
+    use_mmap: true
+    series_size_class: "Large"
+    list_data_files: ["cb.data.0.Current", "cb.data.1.AllData"]
+    partition_strategy:
+      partition_by: "state_code"
+      file_format: "cb.data.%d.%s"
+      load_dictionary_values: true
+    transformations:
+      sort_by: ["series_id", "year", "period"]
+      deduplicate: true
+      deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+    statistics:
+      enabled: true
+      columns: ["year", "period", "value"]
+
+data_dict:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: false
+    use_mmap: true
+    series_size_class: "Large"
+    output_file: "cb_series_dict.csv"
+    transformations:
+      sort_by: ["series_id"]
+      deduplicate: false
+      deduplicate_on: ["series_id"]
+    statistics:
+      enabled: true
+      columns: ["series_id", "category_code", "datatype_code", "case_code", "begin_year", "end_year"]
+      output_file: "cb_series_dict_stats.json"

@@ -1,0 +1,331 @@
+config_version: 1
+series:
+  path: "gg.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 23
+      nullable: false
+      example_value: "GGUQ000002211190150010R"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    periodicity_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "Q"
+    area_code:
+      type: "string"
+      length: 5
+      nullable: false
+      example_value: "00000"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "221119"
+    altenergy_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    own_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "5"
+    sizeclass_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    dataelement_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    futureuse_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    ratelevel_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "R"
+    footnote_codes:
+      type: "string"
+      length: 2
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2010"
+    begin_period:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "Q4"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2011"
+    end_period:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "Q1"
+
+data_files:
+  - id: "main"
+    pattern: "gg.data.*"
+    index: "series_id"
+    schema:
+      series_id:
+        type: "string"
+        length: 23
+        nullable: false
+        example_value: "GGUQ000002211190150010R"
+      year:
+        type: "int32"
+        min: 2010
+        max: 2055
+        nullable: false
+        example_value: "2010"
+      period:
+        type: "string"
+        length: 3
+        pattern: "^Q0[1-4]$"
+        nullable: false
+        example_value: "Q03"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: "955712"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "altenergy"
+    path: "gg.altenergy"
+    index: "altenergy_code"
+    schema:
+      altenergy_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      altenergy_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Alternative Energy"
+  
+  - id: "area"
+    path: "gg.area"
+    index: "area_code"
+    schema:
+      area_code:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "34000"
+      area_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "New Jersey"
+  
+  - id: "dataelement"
+    path: "gg.dataelement"
+    index: "dataelement_code"
+    schema:
+      dataelement_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      dataelement_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "GGS employment"
+  
+  - id: "footnote"
+    path: "gg.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "5"
+      footnote_text:
+        type: "string"
+        length: 250
+        nullable: false
+        example_value: "Data not available."
+  
+  - id: "greenquartile"
+    path: "gg.greenquartile"
+    index: "greenquartile_code"
+    schema:
+      greenquartile_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      greenquartile_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "First quartile"
+  
+  - id: "industry"
+    path: "gg.industry"
+    index: "industry_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "334300"
+      industry_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Audio and video equipment mfg."
+  
+  - id: "own"
+    path: "gg.own"
+    index: "own_code"
+    schema:
+      own_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "2"
+      own_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "State government"
+  
+  - id: "periodicity"
+    path: "gg.periodicity"
+    index: "periodicity_code"
+    schema:
+      periodicity_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "Q"
+      periodicity_text:
+        type: "string"
+        length: 9
+        nullable: false
+        example_value: "Quarterly rolling year"
+  
+  - id: "ratelevel"
+    path: "gg.ratelevel"
+    index: "ratelevel_code"
+    schema:
+      ratelevel_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "R"
+      ratelevel_text:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "Rate"
+  
+  - id: "seasonal"
+    path: "gg.seasonal"
+    index: "seasonal_code"
+    schema:
+      seasonal_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "U"
+      seasonal_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Not seasonally adjusted"
+  
+  - id: "size"
+    path: "gg.size"
+    index: "size_code"
+    schema:
+      size_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      size_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All size classes"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "periodicity_code" }
+    to: { file: "periodicity", column: "periodicity_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "altenergy_code" }
+    to: { file: "altenergy", column: "altenergy_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "own_code" }
+    to: { file: "own", column: "own_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "sizeclass_code" }
+    to: { file: "size", column: "size_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "dataelement_code" }
+    to: { file: "dataelement", column: "dataelement_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "ratelevel_code" }
+    to: { file: "ratelevel", column: "ratelevel_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "seasonal", "periodicity_code", "area_code", "industry_code", "altenergy_code", "own_code", "sizeclass_code", "dataelement_code", "ratelevel_code", "begin_year", "begin_period", "end_year", "end_period"] }
+
+types:
+  Year: { base: "int32", range: [2010, 2055] }
+  QuarterlyPeriod: { base: "string", pattern: "^Q0[1-4]$" }
+  SeriesID: { base: "string", length: 23, pattern: "^GG[US]Q\\d{19}$" }

@@ -1,0 +1,13 @@
+# WS Survey Staging Environment Overrides
+config_version: 1
+
+# Staging environment specific overrides
+logging:
+  level: "info"
+
+error_handling:
+  max_errors: 500
+
+processing:
+  features:
+    enable_profiling: false

@@ -1,0 +1,295 @@
+config_version: 1
+series:
+  path: "cm.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+    seasonal:
+      type: "string"
+      length: 1
+      enum: ["S", "U"]
+      nullable: false
+    owner_code:
+      type: "string"
+      length: 1
+      nullable: false
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+    occupation_code:
+      type: "string"
+      length: 6
+      nullable: false
+    subcell_code:
+      type: "string"
+      length: 2
+      nullable: false
+    area_code:
+      type: "string"
+      length: 5
+      nullable: false
+    datatype_code:
+      type: "string"
+      length: 1
+      nullable: false
+    estimate_code:
+      type: "string"
+      length: 2
+      nullable: false
+    series_title:
+      type: "string"
+      length: 250
+      nullable: true
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+
+data_files:
+  - id: "main"
+    pattern: "cm.data.*"
+    index: "series_id"
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+      year:
+        type: "int32"
+        min: 2008
+        max: 2055
+      period:
+        type: "string"
+        pattern: "^(Q0[1-4])$"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+  - id: "aspect"
+    pattern: "map/cm.aspect"
+    index: "series_id"
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+      year:
+        type: "int32"
+        min: 2008
+        max: 2055
+      period:
+        type: "string"
+        pattern: "^(Q0[1-4])$"
+      aspect_type:
+        type: "string"
+        length: 2
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+
+lookups:
+  - id: "area"
+    path: "cm.area"
+    index: "area_code"
+    schema:
+      area_code:
+        type: "string"
+        length: 5
+      area_text:
+        type: "string"
+        length: 100
+      display_level:
+        type: "string"
+        length: 2
+      selectable:
+        type: "string"
+        length: 1
+      sort_sequence:
+        type: "string"
+        length: 5
+  - id: "datatype"
+    path: "cm.datatype"
+    index: "datatype_code"
+    schema:
+      datatype_code:
+        type: "string"
+        length: 1
+      datatype_text:
+        type: "string"
+        length: 100
+      display_level:
+        type: "string"
+        length: 2
+      selectable:
+        type: "string"
+        length: 1
+      sort_sequence:
+        type: "string"
+        length: 5
+  - id: "estimate"
+    path: "cm.estimate"
+    index: "estimate_code"
+    schema:
+      estimate_code:
+        type: "string"
+        length: 2
+      estimate_text:
+        type: "string"
+        length: 100
+      display_level:
+        type: "string"
+        length: 2
+      selectable:
+        type: "string"
+        length: 1
+      sort_sequence:
+        type: "string"
+        length: 5
+  - id: "footnote"
+    path: "cm.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 3
+      footnote_text:
+        type: "string"
+        length: 200
+  - id: "industry"
+    path: "cm.industry"
+    index: "industry_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+      industry_text:
+        type: "string"
+        length: 100
+      display_level:
+        type: "string"
+        length: 2
+      selectable:
+        type: "string"
+        length: 1
+      sort_sequence:
+        type: "string"
+        length: 5
+  - id: "occupation"
+    path: "cm.occupation"
+    index: "occupation_code"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 6
+      occupation_text:
+        type: "string"
+        length: 100
+      display_level:
+        type: "string"
+        length: 2
+      selectable:
+        type: "string"
+        length: 1
+      sort_sequence:
+        type: "string"
+        length: 5
+  - id: "owner"
+    path: "cm.owner"
+    index: "owner_code"
+    schema:
+      owner_code:
+        type: "string"
+        length: 1
+      owner_text:
+        type: "string"
+        length: 100
+      display_level:
+        type: "string"
+        length: 2
+      selectable:
+        type: "string"
+        length: 1
+      sort_sequence:
+        type: "string"
+        length: 5
+  - id: "seasonal"
+    path: "cm.seasonal"
+    index: "seasonal"
+    schema:
+      seasonal:
+        type: "string"
+        length: 1
+      seasonal_text:
+        type: "string"
+        length: 30
+  - id: "subcell"
+    path: "cm.subcell"
+    index: "subcell_code"
+    schema:
+      subcell_code:
+        type: "string"
+        length: 2
+      subcell_text:
+        type: "string"
+        length: 100
+      display_level:
+        type: "string"
+        length: 2
+      selectable:
+        type: "string"
+        length: 1
+      sort_sequence:
+        type: "string"
+        length: 5
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "aspect", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "aspect", columns: ["series_id", "year", "period", "aspect_type"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "aspect", columns: ["series_id", "year", "period", "aspect_type"] }
+    - { file: "series", columns: ["series_id", "seasonal", "owner_code", "industry_code", "occupation_code", "subcell_code", "area_code", "datatype_code", "estimate_code", "begin_year", "begin_period", "end_year", "end_period"] }
+
+types:
+  aliases:
+    Year: { base: "int32", range: [2008, 2055] }
+    Quarter: { base: "string", pattern: "^(Q0[1-4])$" }
+    Money: { base: "decimal", precision: 18, scale: 4 }

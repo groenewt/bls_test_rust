@@ -1,0 +1,500 @@
+Below is a refactored, scalable survey configuration guideline set that separates concerns into distinct, composable YAML files. It is designed to be adaptable across different data configurations and to support gradual evolution, validation, and overrides.
+
+Goals
+- Separation of concerns: split overview, data model, processing, DAGs, output, quality, and runtime into distinct files.
+- Composability: allow shared base configs and per-survey overlays.
+- Explicit versioning: enable schema evolution and migrations.
+- Environment-aware: support environment overlays (dev/stage/prod) and runtime overrides.
+- Strong validation: enforce consistent schemas and cross-file constraints.
+
+Recommended directory layout
+- config/surveys/<SURVEY_CODE>/
+  - overview.yml            # Survey metadata and human context
+  - model.yml               # Data model: files, schemas, relationships
+  - io.yml                  # Input discovery, patterns, and partition hints
+  - processing.yml          # Strategy, resources, chunking, mmap, cache
+  - output.yml              # Output formats, partitioning, compression
+  - dags.yml                # DAG: tasks, dependencies, retry, SLAs
+  - quality.yml             # Validation, expectations, thresholds
+  - runtime.yml             # Runtime toggles, feature flags, env hooks
+  - overrides/
+    - defaults.yml          # Org-wide defaults for this survey
+    - local.yml             # Developer machine overrides (gitignored)
+    - env/
+      - dev.yml
+      - stage.yml
+      - prod.yml
+  - README.md               # Notes for this survey (optional)
+
+- config/surveys/_shared/   # Shared building blocks
+  - base_model.yml
+  - base_processing.yml
+  - base_output.yml
+  - base_quality.yml
+  - macros/                 # Reusable YAML anchors/fragments
+    - partitions.yml
+    - parquet.yml
+    - mmap_profiles.yml
+
+General conventions
+- Version field in each file:
+  - config_version: 1
+  - Declare per-file schema versions to enable focused migrations.
+- Naming:
+  - Filenames in lowercase with hyphens or underscores, e.g., processing.yml.
+  - Survey code uppercase within file content; folder name matches code (e.g., CS → config/surveys/CS).
+- References:
+  - Use reusable anchors from _shared/macros where helpful (e.g., common parquet settings).
+- Overrides:
+  - Merge order: shared base → survey files → overrides/defaults → overrides/env/<env> → overrides/local.
+  - Later layers take precedence.
+- Validation modes:
+  - strict: fail on first error
+  - lenient: collect all errors and warnings, return comprehensive report
+
+File-by-file guidelines and templates
+
+1) overview.yml
+Purpose: human-centric metadata to orient readers and tools.
+- yaml
+```yaml
+config_version: 1
+survey:
+  code: "CS"
+  name: "Consumer Expenditure Survey"
+  description: "Measures expenditures, income, and demographic characteristics."
+  size_class: "massive"      # micro|small|medium|large|massive
+  characteristics:
+    frequency: "monthly"
+    coverage: "US, state"
+    classification_system: "NAICS"
+    begin_year: 1984
+    update_schedule: "monthly"
+contacts:
+  - role: "owner"
+    name: "Team Name"
+    email: "owner@example.org"
+documentation:
+  primary: "docs/bls/survey/CS.txt"
+  data_dictionary: "docs/bls/dictionaries/CS.md"
+tags: ["expenditure", "household", "time-series"]
+```
+
+
+2) model.yml
+Purpose: data model: files, schemas, relationships, keys, and types.
+- yaml
+```yaml
+config_version: 1
+series:
+  path: "cs.series"
+  index: "series_id"
+  estimated_size_gb: 2.0
+  schema:
+    series_id: { type: "string", length: 30, nullable: false }
+    seasonal:  { type: "string", length: 1,  enum: ["S","U"], nullable: false }
+    # ...
+data_files:
+  # File classes may vary by survey; support multiple patterns
+  - id: "main"
+    pattern: "cs.data.*"
+    index: "series_id"
+    schema:
+      series_id: { type: "string", length: 30 }
+      year:      { type: "int32",  min: 1900 }
+      period:    { type: "string", pattern: "^(M\\d{2}|Q\\d{2}|A01)$" }
+      value:     { type: "decimal", precision: 18, scale: 4 }
+      footnote_codes: { type: "string", nullable: true }
+lookups:
+  - id: "industry"
+    path: "cs.industry"
+    index: "industry_code"
+    schema:
+      industry_code: { type: "string", length: 6 }
+      industry_name: { type: "string", length: 100 }
+relationships:
+  - from: { file: "main",   column: "industry_code" }
+    to:   { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+  required_fields:
+    - { file: "main", columns: ["series_id","year","period","value"] }
+types:
+  # Optional shared type aliases for consistency
+  aliases:
+    Year:   { base: "int32",  range: [1900, 2100] }
+    Money:  { base: "decimal", precision: 18, scale: 2 }
+```
+
+
+3) io.yml
+Purpose: input discovery, partition hints, and combining rules.
+- yaml
+```yaml
+config_version: 1
+discovery:
+  root: "data/raw/bls/CS"
+  include: ["cs.series", "cs.data.*", "cs.industry"]
+  exclude: ["*.tmp", ".*", "*~"]
+combining:
+  enabled: true
+  strategy: "smart"   # none|size_based|geographic|temporal|smart
+  thresholds:
+    small_file_mb: 10
+partition_hints:
+  strategy: "adaptive"    # size_based|geographic|temporal|adaptive
+  max_partition_size_mb: 500
+  partition_by: ["year","state"]
+mmap:
+  enable_for_mb_greater_than: 100
+```
+
+
+4) processing.yml
+Purpose: strategy, concurrency, memory, cache, and transforms.
+- yaml
+```yaml
+config_version: 1
+strategy:
+  mode: "exclusive"     # in_memory|chunked|parallel|streaming|exclusive
+  max_concurrency: 1
+resources:
+  max_threads: 16
+  memory_limit_gb: 16
+io:
+  chunk_size_mb: 64
+  buffer_pool_size: 8
+features:
+  use_mmap: true
+  enable_statistics: true
+  enable_profiling: false
+transforms:
+  # Optional: declarative transforms
+  - id: "normalize_period"
+    expr: "upper(period)"
+  - id: "parse_value"
+    expr: "to_decimal(value, 18, 4)"
+```
+
+
+5) output.yml
+Purpose: output types, partitions, compression, and schema evolution rules.
+- yaml
+```yaml
+config_version: 1
+format: "parquet"    # parquet|csv|json
+parquet:
+  compression: "zstd"
+  compression_level: 3
+  row_group_size: 50000
+  enable_dictionary: true
+  bloom_filters: true
+partitioning:
+  partition_by: ["year","state"]
+  max_file_size_mb: 512
+naming:
+  dataset: "bls_cs"
+  version: "v1"
+evolution:
+  mode: "compatible"   # strict|compatible|additive
+  allow_nullability_change: false
+destination:
+  base_path: "data/processed/bls/CS"
+```
+
+
+6) dags.yml
+Purpose: pipeline DAG with tasks, dependencies, retries, and SLAs.
+- yaml
+```yaml
+config_version: 1
+graph:
+  tasks:
+    - id: "discover"
+      type: "scan"
+      inputs: []
+      retries: { max: 2, backoff_sec: 10 }
+      sla_minutes: 5
+    - id: "validate"
+      type: "validate_model"
+      inputs: ["discover"]
+      retries: { max: 1, backoff_sec: 5 }
+    - id: "plan"
+      type: "partition_plan"
+      inputs: ["validate"]
+    - id: "process"
+      type: "execute"
+      inputs: ["plan"]
+      parallelism: 2
+    - id: "write"
+      type: "output"
+      inputs: ["process"]
+    - id: "qc"
+      type: "quality_checks"
+      inputs: ["write"]
+edges:
+  - from: "discover"
+    to:   "validate"
+  - from: "validate"
+    to:   "plan"
+  - from: "plan"
+    to:   "process"
+  - from: "process"
+    to:   "write"
+  - from: "write"
+    to:   "qc"
+```
+
+
+7) quality.yml
+Purpose: data quality expectations, validations, and thresholds.
+- yaml
+```yaml
+config_version: 1
+expectations:
+  non_null:
+    - { file: "main", columns: ["series_id","year","period","value"] }
+  ranges:
+    - { file: "main", column: "year", min: 1900, max: 2100 }
+  enums:
+    - { file: "series", column: "seasonal", values: ["S","U"] }
+  regex:
+    - { file: "main", column: "period", pattern: "^(M\\d{2}|Q\\d{2}|A01)$" }
+row_count:
+  min: 1
+  warn_below: 100
+metrics:
+  collect: ["row_count","null_count","distinct(series_id)"]
+  persist: true
+policy:
+  mode: "fail_on_error"   # warn_only|fail_on_error
+  sample_on_fail_rows: 50
+```
+
+
+8) runtime.yml
+Purpose: runtime feature flags and environment mappings.
+- yaml
+```yaml
+config_version: 1
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true
+environment_overrides:
+  - key: "BLS_CS_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
+logging:
+  level: "info"        # trace|debug|info|warn|error
+  structured: true
+```
+
+
+Overrides and layering
+- Shared base:
+  - Put reusable defaults in config/surveys/_shared/ files.
+  - Example: base_processing.yml with generic profiles for small/medium/large surveys.
+- Survey-specific:
+  - The files in config/surveys/<CODE>/ define the canonical intent for that survey.
+- Environment overlays:
+  - config/surveys/<CODE>/overrides/env/<env>.yml contains environment-specific deltas.
+- Local overrides:
+  - config/surveys/<CODE>/overrides/local.yml is for developer machines; ensure it is gitignored.
+- Merge strategy:
+  - Use deep merge where lists specify a “merge_key” (e.g., id) to avoid accidental duplication.
+  - On conflict, later layers win, but log a warning with both values and source files to aid troubleshooting.
+
+Validation and linting
+- Per-file schema validation:
+  - Each YAML has its own schema; validate on load.
+- Cross-file validation:
+  - Ensure references align:
+    - model.series.index exists in the series schema.
+    - model.data_files[*].index exists in the target schema.
+    - relationships reference valid file IDs and columns.
+  - Ensure processing/output/partitioning combinations are consistent:
+    - row_group_size > 0 for parquet.
+    - partitioning.columns must exist in the model.
+  - Ensure DAG tasks reference existing capabilities.
+- Lints:
+  - Require survey.code to equal folder name (case-insensitive).
+  - Forbid unknown top-level keys.
+  - Enforce naming conventions for IDs and files.
+
+Scalability patterns for multiple “data configs”
+- Variants per survey:
+  - Add sibling variant folders: config/surveys/<CODE>__variantA, or keep a single folder with variant-specific overlay files: overrides/variant/<variant>.yml.
+  - Choose variant via a runtime input (e.g., --variant variantA) or env var.
+- Multi-source surveys:
+  - In model.yml, allow multiple data_files blocks with distinct IDs and grouping. Use io.yml to define separate discovery roots if needed.
+- Seasonal data shifts:
+  - Use environment overlays to change discovery patterns, partition strategy, or memory policies per season or year.
+- Schema drift:
+  - Use output.evolution settings and versioned schemas:
+    - model.v1.yml, model.v2.yml with explicit migration notes.
+  - Provide a migration.yml that describes field renames, type changes, and default value fill policies.
+
+Testing and promotion
+- Validation commands:
+  - list: summarize discovered survey folders and validation status.
+  - validate: run schema + cross-file checks; support --json output for CI.
+  - explain: print effective config after applying overlays and env overrides.
+- CI:
+  - Validate all surveys and variants for every PR.
+  - Block merges on breaking changes unless a migration plan is included.
+- Golden files:
+  - Keep expected “effective config” snapshots for key surveys; diff on change to detect accidental regressions.
+
+Operational hints
+- Discovery performance:
+  - Cache results for large directories; invalidate on mtime changes.
+- Logging:
+  - Use structured logs with fields: survey_code, file, layer, key_path, action (merged/overridden), old_value, new_value.
+- Docs:
+  - Keep a short README.md in each survey with links to the most important files and any non-obvious modeling decisions.
+
+Minimal bootstrap template
+Copy these into config/surveys/TEMPLATE/ when onboarding a new survey.
+
+- yaml
+```yaml
+# overview.yml
+config_version: 1
+survey:
+  code: "TEMPLATE"
+  name: "Template Survey"
+  description: "Short description"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []
+```
+
+
+- yaml
+```yaml
+# model.yml
+config_version: 1
+series:
+  path: ""
+  index: "series_id"
+  schema: {}
+data_files: []
+lookups: []
+relationships: []
+constraints: {}
+types: {}
+```
+
+
+- yaml
+```yaml
+# io.yml
+config_version: 1
+discovery:
+  root: "data/raw/bls/TEMPLATE"
+  include: []
+  exclude: ["*.tmp","*~",".*"]
+combining:
+  enabled: false
+partition_hints:
+  strategy: "size_based"
+  max_partition_size_mb: 512
+  partition_by: []
+mmap:
+  enable_for_mb_greater_than: 100
+```
+
+
+- yaml
+```yaml
+# processing.yml
+config_version: 1
+strategy: { mode: "chunked", max_concurrency: 2 }
+resources: { max_threads: 4, memory_limit_gb: 4 }
+io: { chunk_size_mb: 64, buffer_pool_size: 4 }
+features: { use_mmap: true, enable_statistics: true, enable_profiling: false }
+transforms: []
+```
+
+
+- yaml
+```yaml
+# output.yml
+config_version: 1
+format: "parquet"
+parquet:
+  compression: "snappy"
+  row_group_size: 100000
+  enable_dictionary: true
+partitioning:
+  partition_by: []
+  max_file_size_mb: 512
+naming: { dataset: "bls_template", version: "v1" }
+evolution: { mode: "compatible", allow_nullability_change: false }
+destination: { base_path: "data/processed/bls/TEMPLATE" }
+```
+
+
+- yaml
+```yaml
+# dags.yml
+config_version: 1
+graph:
+  tasks:
+    - { id: "discover", type: "scan", inputs: [] }
+    - { id: "validate", type: "validate_model", inputs: ["discover"] }
+    - { id: "plan", type: "partition_plan", inputs: ["validate"] }
+    - { id: "process", type: "execute", inputs: ["plan"] }
+    - { id: "write", type: "output", inputs: ["process"] }
+    - { id: "qc", type: "quality_checks", inputs: ["write"] }
+edges:
+  - { from: "discover", to: "validate" }
+  - { from: "validate", to: "plan" }
+  - { from: "plan", to: "process" }
+  - { from: "process", to: "write" }
+  - { from: "write", to: "qc" }
+```
+
+
+- yaml
+```yaml
+# quality.yml
+config_version: 1
+expectations: {}
+row_count: { min: 1 }
+metrics: { collect: [], persist: false }
+policy: { mode: "warn_only", sample_on_fail_rows: 20 }
+```
+
+
+- yaml
+```yaml
+# runtime.yml
+config_version: 1
+feature_flags: { enable_hot_reloads: false, use_memory_map_series: false }
+environment_overrides: []
+logging: { level: "info", structured: true }
+```
+
+
+How to adopt incrementally
+1) Start by splitting the current monolithic survey config into overview.yml, model.yml, processing.yml, and output.yml.
+2) Move discovery/partition/combining into io.yml.
+3) Introduce quality.yml for validations and checks.
+4) Add dags.yml to model the orchestration explicitly.
+5) Create overrides/env/dev.yml and overrides/env/prod.yml for environment shifts.
+6) Add a “validate” command that loads all layers in merge order and performs:
+   - Per-file schema validation
+   - Cross-file consistency checks
+   - Lint rules
+
+This structure positions you to scale to many surveys, variants, and evolving schemas while keeping each concern clean, testable, and maintainable. If you want, I can tailor a set of lint rules and a validation checklist aligned to your current survey set.

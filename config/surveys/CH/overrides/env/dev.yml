@@ -1,0 +1,38 @@
+# CH Survey Development Environment Overrides
+config_version: 1
+
+# Development-specific processing settings
+processing:
+  resources:
+    max_threads: 4  # Lower thread count for dev
+    memory_limit_gb: 8  # Reduced memory for dev environment
+  
+  features:
+    enable_profiling: true  # Enable profiling in dev
+    enable_statistics: true
+
+# Development output settings
+output:
+  destination:
+    base_path: "data/dev/processed/bls/CH"
+  
+  parquet:
+    compression: "snappy"  # Faster compression for dev
+    row_group_size: 10000  # Smaller row groups for faster iteration
+
+# Development quality settings
+quality:
+  policy:
+    mode: "warn_only"  # More lenient validation in dev
+    sample_on_fail_rows: 10
+
+# Development runtime settings
+runtime:
+  logging:
+    level: "debug"  # More verbose logging in dev
+  development:
+    enable_debug_output: true
+    save_intermediate_files: true
+    verbose_logging: true
+  feature_flags:
+    enable_hot_reloads: true  # Enable hot reloads in dev

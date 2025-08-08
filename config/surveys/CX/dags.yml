@@ -1,0 +1,122 @@
+# dags.yml
+# Consumer Expenditure Survey - DAG tasks, dependencies, retries, SLAs
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+graph:
+  tasks:
+    - id: "discover"
+      type: "scan"
+      description: "Discover and scan input files"
+      inputs: []
+      retries: { max: 2, backoff_sec: 10 }
+      sla_minutes: 5
+      
+    - id: "validate_input"
+      type: "validate_model"
+      description: "Validate input data model and schemas"
+      inputs: ["discover"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 10
+      
+    - id: "load_lookups"
+      type: "load_lookups"
+      description: "Load lookup tables (demographics, characteristics, etc.)"
+      inputs: ["validate_input"]
+      retries: { max: 2, backoff_sec: 5 }
+      sla_minutes: 5
+      
+    - id: "plan"
+      type: "partition_plan"
+      description: "Create processing and partitioning plan"
+      inputs: ["load_lookups"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 5
+      
+    - id: "process_series"
+      type: "process_series"
+      description: "Process series data with transformations"
+      inputs: ["plan"]
+      parallelism: 2
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 30
+      
+    - id: "process_data"
+      type: "process_data"
+      description: "Process main data files"
+      inputs: ["plan"]
+      parallelism: 4
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 60
+      
+    - id: "join_lookups"
+      type: "join_lookups"
+      description: "Join data with lookup tables for enrichment"
+      inputs: ["process_series", "process_data"]
+      retries: { max: 2, backoff_sec: 15 }
+      sla_minutes: 20
+      
+    - id: "write_data_series"
+      type: "output"
+      description: "Write processed data series to output"
+      inputs: ["join_lookups"]
+      retries: { max: 3, backoff_sec: 10 }
+      sla_minutes: 15
+      
+    - id: "write_data_dict"
+      type: "output"
+      description: "Write data dictionary with mappings"
+      inputs: ["join_lookups"]
+      retries: { max: 3, backoff_sec: 10 }
+      sla_minutes: 10
+      
+    - id: "quality_checks"
+      type: "quality_checks"
+      description: "Run data quality validations and checks"
+      inputs: ["write_data_series", "write_data_dict"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 15
+      
+    - id: "generate_stats"
+      type: "statistics"
+      description: "Generate processing and data statistics"
+      inputs: ["quality_checks"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 5
+
+  edges:
+    - from: "discover"
+      to: "validate_input"
+    - from: "validate_input"
+      to: "load_lookups"
+    - from: "load_lookups"
+      to: "plan"
+    - from: "plan"
+      to: "process_series"
+    - from: "plan"
+      to: "process_data"
+    - from: "process_series"
+      to: "join_lookups"
+    - from: "process_data"
+      to: "join_lookups"
+    - from: "join_lookups"
+      to: "write_data_series"
+    - from: "join_lookups"
+      to: "write_data_dict"
+    - from: "write_data_series"
+      to: "quality_checks"
+    - from: "write_data_dict"
+      to: "quality_checks"
+    - from: "quality_checks"
+      to: "generate_stats"
+
+# Global DAG settings
+settings:
+  max_active_runs: 1
+  catchup: false
+  depends_on_past: false
+  email_on_failure: true
+  email_on_retry: false
+  retries: 1
+  retry_delay_minutes: 5

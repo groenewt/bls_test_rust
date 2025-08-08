@@ -1,0 +1,28 @@
+# CE Survey Input/Output Discovery Configuration
+config_version: 1
+
+discovery:
+  root: "data/raw/bls/CE"
+  include: ["ce.series", "ce.data.*", "ce.datatype", "ce.footnote", "ce.industry", "ce.period", "ce.seasonal", "ce.supersector"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"  # none|size_based|geographic|temporal|smart
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"  # size_based|geographic|temporal|adaptive
+  max_partition_size_mb: 500
+  partition_by: ["year", "supersector_code"]
+
+mmap:
+  enable_for_mb_greater_than: 100
+
+# Lookup file loading configuration
+lookup_config:
+  preload: ["datatype", "supersector"]  # Small, frequently used
+  lazy: ["footnote", "period", "seasonal"]  # Load on demand
+  mmap: ["industry"]  # Use memory mapping for large files
+  cache_all: true  # Small enough to keep in memory

@@ -1,0 +1,25 @@
+# CE Survey Default Overrides
+config_version: 1
+
+# Default processing settings for CE survey
+processing:
+  resources:
+    max_threads: 8
+    memory_limit_gb: 16
+
+# Default quality settings
+quality:
+  policy:
+    mode: "fail_on_error"
+    sample_on_fail_rows: 50
+
+# Default runtime settings
+runtime:
+  logging:
+    level: "info"
+  development:
+    enable_debug_output: false
+    save_intermediate_files: false
+    verbose_logging: false
+  feature_flags:
+    enable_hot_reloads: false

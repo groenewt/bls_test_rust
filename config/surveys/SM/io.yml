@@ -1,0 +1,19 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/sm"
+  include: ["sm.series", "sm.data.*", "sm.area", "sm.data_type", "sm.footnote", "sm.industry", "sm.period", "sm.seasonal", "sm.state", "sm.supersector"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["year", "state_code"]
+
+mmap:
+  enable_for_mb_greater_than: 100

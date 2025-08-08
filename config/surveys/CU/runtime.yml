@@ -1,0 +1,34 @@
+config_version: 1
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true
+  enable_checkpoints: true
+  enable_profiling: true
+  enable_statistics: true
+
+environment_overrides:
+  - key: "BLS_CU_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
+  - key: "BLS_CU_MAX_THREADS"
+    maps_to: "resources.max_threads"
+  - key: "BLS_CU_CHUNK_SIZE_MB"
+    maps_to: "io.chunk_size_mb"
+
+logging:
+  level: "info"
+  structured: true
+
+error_handling:
+  on_error: "continue"
+  max_errors: 5000
+  log_errors: true
+  error_file: "cu_errors.log"
+  
+  checkpoint:
+    enabled: true
+    interval_records: 100000
+    checkpoint_dir: "checkpoints/cu"

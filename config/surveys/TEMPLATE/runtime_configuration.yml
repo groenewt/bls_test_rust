@@ -1,0 +1,5 @@
+# runtime.yml
+config_version: 1
+feature_flags: { enable_hot_reloads: false, use_memory_map_series: false }
+environment_overrides: []
+logging: { level: "info", structured: true }

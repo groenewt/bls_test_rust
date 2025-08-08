@@ -1,0 +1,28 @@
+config_version: 1
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true
+  enable_checkpoint: false
+  enable_profiling: false
+
+environment_overrides:
+  - key: "BLS_BP_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
+  - key: "BLS_MAX_ERRORS"
+    maps_to: "policy.max_errors"
+  - key: "BLS_LOG_LEVEL"
+    maps_to: "logging.level"
+
+logging:
+  level: "info"
+  structured: true
+  log_file: "bp_processing.log"
+
+checkpoint:
+  enabled: false
+  interval_records: 10000
+  checkpoint_dir: "checkpoints/bp"

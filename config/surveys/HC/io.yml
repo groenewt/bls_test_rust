@@ -1,0 +1,25 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/hc"
+  include: ["hc.series", "hc.data.*", "hc.age", "hc.case", "hc.category", "hc.category2", "hc.datatype", "hc.event", "hc.footnote", "hc.gender", "hc.industry", "hc.los", "hc.nature", "hc.occupation", "hc.pob", "hc.race", "hc.source"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["year", "datatype_code"]
+
+mmap:
+  enable_for_mb_greater_than: 100
+  
+lookup_config:
+  preload: ["age", "gender", "race", "nature"]
+  lazy: ["footnote", "datatype", "category", "case", "los"]
+  mmap: ["industry", "occupation", "event", "source"]
+  cache_all: true

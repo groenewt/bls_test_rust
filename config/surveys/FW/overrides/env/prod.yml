@@ -1,0 +1,15 @@
+config_version: 1
+# Production environment overrides
+processing:
+  resources:
+    max_threads: 4
+    memory_limit_gb: 16
+
+logging:
+  level: "warn"
+
+error_handling:
+  max_errors: 2000
+  
+feature_flags:
+  enable_hot_reloads: false

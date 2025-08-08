@@ -1,0 +1,64 @@
+# CC Survey Runtime Configuration
+# Feature flags, env overrides mapping, logging
+config_version: 1
+
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true  # Medium survey, use mmap for efficiency
+  enable_parallel_processing: true  # Multi-threaded for medium data
+  enable_caching: true
+  enable_lookup_preload: true
+  enable_data_validation: true
+  enable_statistics_collection: true
+  enable_profiling: false
+  enable_checkpoints: true  # Enable checkpoints for medium-sized data
+
+environment_overrides:
+  - key: "BLS_CC_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_CC_MAX_THREADS"
+    maps_to: "resources.max_threads"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_CC_OUTPUT_PATH"
+    maps_to: "destination.base_path"
+  - key: "BLS_CC_ENABLE_VALIDATION"
+    maps_to: "feature_flags.enable_data_validation"
+  - key: "BLS_CC_LOG_LEVEL"
+    maps_to: "logging.level"
+  - key: "BLS_CC_MAX_ERRORS"
+    maps_to: "error_handling.max_errors"
+  - key: "BLS_CC_CHUNK_SIZE_MB"
+    maps_to: "io.chunk_size_mb"
+
+logging:
+  level: "info"        # trace|debug|info|warn|error
+  structured: true
+  include_survey_code: true
+  include_timestamps: true
+  
+# Development and debugging settings
+development:
+  enable_debug_output: false
+  save_intermediate_files: false
+  verbose_logging: false
+  
+# Performance monitoring
+monitoring:
+  enable_metrics: true
+  metrics_interval_seconds: 60
+  track_memory_usage: true
+  track_processing_time: true
+
+# Error handling & recovery
+error_handling:
+  on_error: "continue"  # Continue processing other records
+  max_errors: 2000      # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "cc_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/cc"

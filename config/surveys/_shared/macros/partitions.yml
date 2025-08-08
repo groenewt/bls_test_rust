@@ -1,0 +1,78 @@
+# Partition Macros
+# Reusable partitioning configurations
+config_version: 1
+
+# Standard partition configurations
+partitions:
+  # Temporal partitioning
+  yearly: &yearly_partition
+    strategy: "temporal"
+    partition_by: ["year"]
+    max_partition_size_mb: 512
+    
+  monthly: &monthly_partition
+    strategy: "temporal"
+    partition_by: ["year", "period"]
+    max_partition_size_mb: 256
+    
+  quarterly: &quarterly_partition
+    strategy: "temporal"
+    partition_by: ["year", "quarter"]
+    max_partition_size_mb: 384
+    
+  # Geographic partitioning
+  by_area: &area_partition
+    strategy: "geographic"
+    partition_by: ["area_code"]
+    max_partition_size_mb: 512
+    
+  by_state: &state_partition
+    strategy: "geographic"
+    partition_by: ["state_code"]
+    max_partition_size_mb: 256
+    
+  # Combined partitioning
+  yearly_by_area: &yearly_area_partition
+    strategy: "temporal_geographic"
+    partition_by: ["year", "area_code"]
+    max_partition_size_mb: 256
+    
+  monthly_by_area: &monthly_area_partition
+    strategy: "temporal_geographic"
+    partition_by: ["year", "period", "area_code"]
+    max_partition_size_mb: 128
+    
+  # Size-based partitioning
+  size_small: &size_small_partition
+    strategy: "size_based"
+    partition_by: []
+    max_partition_size_mb: 256
+    
+  size_medium: &size_medium_partition
+    strategy: "size_based"
+    partition_by: []
+    max_partition_size_mb: 512
+    
+  size_large: &size_large_partition
+    strategy: "size_based"
+    partition_by: []
+    max_partition_size_mb: 1024
+
+# Partition hints by survey characteristics
+hints:
+  high_frequency_temporal:
+    <<: *monthly_partition
+    adaptive_sizing: true
+    
+  low_frequency_temporal:
+    <<: *yearly_partition
+    adaptive_sizing: false
+    
+  geographic_focus:
+    <<: *area_partition
+    enable_pruning: true
+    
+  mixed_analysis:
+    <<: *yearly_area_partition
+    enable_pruning: true
+    adaptive_sizing: true

@@ -1,0 +1,13 @@
+# overview.yml
+config_version: 1
+survey:
+  code: "TEMPLATE"
+  name: "Template Survey"
+  description: "Short description"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

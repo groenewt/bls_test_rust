@@ -1,0 +1,61 @@
+config_version: 1
+survey:
+  code: "BP"
+  name: "Collective Bargaining Series - Private Sector"
+  description: "This series summarizes wage-rate changes in major collective bargaining agreements (covering 1,000 workers or more) for production and related workers in manufacturing and nonsupervisory workers in nonmanufacturing."
+  size_class: "small"
+  characteristics:
+    frequency: "quarterly"
+    coverage: "Data on wage-rate changes in major collective bargaining agreements for production and related workers in manufacturing and nonsupervisory workers in nonmanufacturing."
+    classification_system: "Industry classification"
+    begin_year: 1983
+    update_schedule: "Updates are available about 4 weeks after the end of each calendar quarter."
+    survey_methodology: "Data are collected from major collective bargaining agreements covering 1,000 workers or more."
+    calculation_basis: "Percent changes in wage rates and compensation"
+    time_series_count: "Collective Bargaining Series - Private Sector"
+  contacts:
+    - role: "owner"
+      name: "BLS Team"
+      email: "bls@example.org"
+  documentation:
+    primary: "docs/bls/survey/bp.txt"
+    data_dictionary: "docs/bls/dictionaries/bp.md"
+  tags: ["collective bargaining", "wage rates", "compensation", "private sector"]
+  definition: |
+    The following is a definition of:  COLLECTIVE BARGAINING SERIES - PRIVATE SECTOR (BP)
+
+    Survey Description:  This series summarizes wage-rate changes in major 
+    collective bargaining agreements (covering 1,000 workers or more) for 
+    production and related workers in manufacturing and nonsupervisory workers 
+    in nonmanufacturing.  Compensation (wages and benefits) changes are measured
+    for agreements covering 5,000 workers or more.
+
+    Summary Data Available:
+
+    Wage-Rate Changes:  "Settlements" data measure specified net increases, 
+    decreases, and zero change in wage rates resulting from settlements 
+    negotiated in the reference period.  Changes occurring within 12 months of 
+    the contract effective date ("first-year") and all changes that occur over 
+    the contract term expressed as an annual rate ("over the life") are 
+    presented.  Data on "wage-rate changes under all major agreements" include 
+    increases, decreases and zero change in wage rates during the reference 
+    period for all workers in the series, regardless of the contract settlement 
+    date.  Included are changes stemming from settlements reached in the 
+    calendar year, from agreements reached in a prior year with changes deferred
+    to the reference period, and from COLA clauses.  Lump-sum payments are 
+    excluded from "settlements" data and from "wage-rate changes under all major 
+    agreements".
+
+    Compensation Changes:  These data reflect changes (net increases, decreases,
+    and zero change) in employee compensation (wages and benefits) resulting 
+    from settlements covering 5,000 workers or more which were negotiated in the
+    reference period.  The "compensation rate" change measures net increases, 
+    decreases, and zero change in compensation rates per work hour resulting 
+    from contract settlements.  Lump-sum payments are excluded.  Changes 
+    occurring within 12 months of the contract effective date ("first year") and
+    all changes that occur over the contract term expressed as an annual rate 
+    ("over the life") are presented.  The "compensation cost" change measures 
+    net increases, decreases, and zero change in the costs for employee 
+    compensation per work hour, including specified lump-sum payments, and 
+    reflects the timing of compensation rate changes.  Changes that occur over 
+    the contract term are expressed as an annual rate ("over the life").

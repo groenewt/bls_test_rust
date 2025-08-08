@@ -1,0 +1,39 @@
+# io.yml
+# Consumer Expenditure Survey - Input discovery, patterns, partition hints
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+discovery:
+  root: "data/raw/bls/cx"
+  include: 
+    - "cx.series"
+    - "cx.data.*"
+    - "cx.characteristics"
+    - "cx.demographics"
+    - "cx.expenditure"
+    - "cx.footnote"
+    - "cx.seasonal"
+  exclude: ["*.tmp", ".*", "*~", "*.bak"]
+
+combining:
+  enabled: true
+  strategy: "smart"   # Combine based on file patterns and sizes
+  thresholds:
+    small_file_mb: 10
+    max_combined_size_mb: 100
+
+partition_hints:
+  strategy: "adaptive"    # Adapt based on data characteristics
+  max_partition_size_mb: 500
+  partition_by: ["year", "demographics_code"]
+  
+mmap:
+  enable_for_mb_greater_than: 100  # Use memory mapping for files larger than 100MB
+  
+# Lookup file loading strategy
+lookup_loading:
+  preload: ["demographics", "characteristics"]  # Small, frequently used
+  lazy: ["footnote", "seasonal"]  # Load on demand
+  mmap: ["expenditure"]  # Use memory mapping for large files
+  cache_all: true  # Small enough to keep in memory

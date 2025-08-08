@@ -1,0 +1,18 @@
+# WS Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default overrides can be placed here
+# These will be applied after the base survey configuration
+# but before environment-specific overrides
+
+# Example overrides:
+# processing:
+#   resources:
+#     max_threads: 4
+#
+# output:
+#   format: "parquet"
+#
+# logging:
+#   level: "debug"

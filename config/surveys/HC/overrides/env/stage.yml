@@ -1,0 +1,24 @@
+config_version: 1
+# Staging environment overrides for HC survey
+
+processing:
+  resources:
+    max_threads: 6
+    memory_limit_gb: 12
+  
+  features:
+    enable_profiling: false
+
+quality:
+  policy:
+    mode: "fail_on_error"
+    sample_on_fail_rows: 25
+
+logging:
+  level: "info"
+
+error_handling:
+  max_errors: 1000  # Moderate threshold for staging
+
+output:
+  format: "parquet"  # Use parquet for better performance testing

@@ -1,0 +1,57 @@
+# IN Survey Overview Configuration
+# Survey metadata and context information
+config_version: 1
+
+survey:
+  code: "IN"
+  name: "International Labor Statistics"
+  description: "The Bureau of Labor Statistics (BLS) collects and publishes statistical information to compare labor conditions and developments in the United States and selected foreign economies. All of the measures are based on data from the statistical agencies of the foreign economies covered or from international organizations."
+  size_class: "medium"
+  characteristics:
+    frequency: "annual and quarterly"
+    coverage: "International labor statistics for various countries"
+    time_series_count: "International labor statistics time series data"
+    classification_system: "Country codes, economic series codes, industry codes"
+    update_schedule: "Labor force statistics are updated once or twice yearly; Seasonally adjusted quarterly unemployment rates are updated quarterly. Indexes of manufacturing productivity, labor costs, and related measures are updated twice a year. Consumer price indexes are updated annually."
+    begin_year: 1950
+    survey_methodology: "Data collected from statistical agencies of foreign economies or international organizations"
+    calculation_basis: "Indexes, rates or ratios, and quantity levels"
+
+contacts:
+  - role: "owner"
+    name: "Junie"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/in.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/in
+    - Data files are in ASCII text format
+    - Tabs separate data elements in an original BLS file
+    - Full documentation: docs/bls/survey/in.txt
+
+tags: ["international", "labor_statistics", "comparative", "foreign_economies", "unemployment", "productivity", "consumer_price"]
+
+definition: |
+  The following is a definition of: INTERNATIONAL LABOR STATISTICS (IN)
+
+  Survey Description: The Bureau of Labor Statistics (BLS) collects and publishes 
+  statistical information to compare labor conditions and developments in the United States 
+  and selected foreign economies. All of the measures are based on data from the 
+  statistical agencies of the foreign economies covered or from international 
+  organizations. The Bureau does not initiate surveys or data collection programs abroad.
+
+  The statistical concepts and methods used in different countries are developed primarily 
+  to meet domestic rather than international needs. When there are substantial conceptual 
+  differences, BLS adjusts the data to improve comparability or describes the differences 
+  so users will not draw misleading conclusions. In adjusting data for greater 
+  comparability, BLS must depend on the availability of relevant information, and in some 
+  instances it is necessary to make estimates based on incomplete data. Therefore it is 
+  possible to achieve only approximate statistical comparability among countries.
+
+  The following are summary descriptions of the three general International Labor 
+  Statistics (IN) series available on LABSTAT: labor force, productivity, and consumer 
+  price indexes (CPI). Adjustments for comparability of concepts are made for the first 
+  two series. For the CPI, however, no adjustments are made except to convert the indexes 
+  to a common base year.

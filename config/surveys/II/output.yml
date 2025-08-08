@@ -1,0 +1,121 @@
+# II Survey Output Configuration
+# Output formats, partitioning, compression
+config_version: 1
+
+format: "csv"
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  enabled: true
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_ii"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/II"
+
+# Data series output configuration
+data_series:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: true
+      partition_by: ["year"]
+    use_mmap: true
+    series_size_class: "large"
+    list_data_files: ["ii.data.1.AllData"]
+    partition_strategy:
+      partition_by: "data_type_code"
+      file_format: "ii.data.%d.%s"
+      load_dictionary_values: true
+    transformations:
+      sort_by: ["series_id", "year", "period"]
+      deduplicate: true
+      deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+    statistics:
+      enabled: true
+      columns: ["year", "period", "value"]
+
+# Data dictionary output configuration
+data_dict:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: false  # Single file output for series metadata
+    use_mmap: true
+    series_size_class: "large"
+    output_file: "ii_series_dict.csv"
+    
+    # Mapping configuration for lookups
+    mapping:
+      supersector_code:
+        lookup_table: "supersector"
+        lookup_key: "supersector_code"
+        lookup_value: "supersector_name"
+        create_field: "supersector_name"
+        on_missing: "UNKNOWN_SUPERSECTOR"
+        cache: true
+      
+      industry_code:
+        lookup_table: "industry"
+        lookup_key: "industry_code"
+        lookup_value: "industry_name"
+        create_field: "industry_name"
+        on_missing: "UNKNOWN_INDUSTRY"
+        cache: true
+      
+      data_type_code:
+        lookup_table: "data_type"
+        lookup_key: "data_type_code"
+        lookup_value: "data_type_text"
+        create_field: "data_type_text"
+        on_missing: "UNKNOWN_DATA_TYPE"
+        cache: true
+      
+      case_type_code:
+        lookup_table: "case_type"
+        lookup_key: "case_type_code"
+        lookup_value: "case_type_text"
+        create_field: "case_type_text"
+        on_missing: "UNKNOWN_CASE_TYPE"
+        cache: true
+      
+      area_code:
+        lookup_table: "area"
+        lookup_key: "area_code"
+        lookup_value: "area_name"
+        create_field: "area_name"
+        on_missing: "UNKNOWN_AREA"
+        cache: true
+      
+      footnote_codes:
+        lookup_table: "footnote"
+        lookup_key: "footnote_code"
+        lookup_value: "footnote_text"
+        create_field: "footnote_texts"
+        multiple: true
+        separator: " "
+        on_missing: "skip"
+        cache: true
+    
+    transformations:
+      sort_by: ["series_id"]
+      deduplicate: false
+      deduplicate_on: ["series_id"]
+    
+    statistics:
+      enabled: true
+      columns: ["series_id", "supersector_code", "industry_code", "data_type_code", "case_type_code", "area_code", "begin_year", "end_year"]
+      output_file: "ii_series_dict_stats.json"

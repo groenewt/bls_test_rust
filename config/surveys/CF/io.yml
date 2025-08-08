@@ -1,0 +1,27 @@
+# CF Survey Input/Output Discovery Configuration
+config_version: 1
+
+discovery:
+  root: "data/raw/bls/CF"
+  include: ["cf.series", "cf.data.*", "cf.case", "cf.category", "cf.category2", "cf.datatype", "cf.event", "cf.footnote", "cf.industry", "cf.occupation", "cf.source"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"   # none|size_based|geographic|temporal|smart
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "adaptive"    # size_based|geographic|temporal|adaptive
+  max_partition_size_mb: 500
+  partition_by: ["category_code"]
+
+mmap:
+  enable_for_mb_greater_than: 100
+
+lookup_config:
+  preload: ["case", "category", "datatype"]  # Small, frequently used
+  lazy: ["footnote", "event", "source", "occupation", "industry", "category2"]  # Load on demand
+  mmap: []  # use it for large files
+  cache_all: true  # Small enough to keep in memory

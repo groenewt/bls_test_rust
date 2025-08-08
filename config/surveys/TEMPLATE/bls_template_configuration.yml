@@ -1,0 +1,13 @@
+# output.yml
+config_version: 1
+format: "parquet"
+parquet:
+  compression: "snappy"
+  row_group_size: 100000
+  enable_dictionary: true
+partitioning:
+  partition_by: []
+  max_file_size_mb: 512
+naming: { dataset: "bls_template", version: "v1" }
+evolution: { mode: "compatible", allow_nullability_change: false }
+destination: { base_path: "data/processed/bls/TEMPLATE" }

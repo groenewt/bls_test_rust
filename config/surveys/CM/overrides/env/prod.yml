@@ -1,0 +1,48 @@
+config_version: 1
+# Production environment overrides for CM survey
+
+# Production processing settings
+processing:
+  strategy:
+    max_concurrency: 4  # Full concurrency for production
+  resources:
+    max_threads: 8
+    memory_limit_gb: 16  # Maximum memory for production
+  io:
+    chunk_size_mb: 64  # Larger chunks for efficiency
+    buffer_pool_size: 16
+
+# Production output settings
+output:
+  format: "parquet"  # Optimized format for production
+  parquet:
+    compression: "zstd"
+    compression_level: 3
+    row_group_size: 100000
+    enable_dictionary: true
+    bloom_filters: true
+  destination:
+    base_path: "data/processed/bls/CM"
+
+# Production quality settings
+quality:
+  policy:
+    mode: "fail_on_error"  # Strict quality enforcement
+    sample_on_fail_rows: 50
+
+# Production runtime settings
+runtime:
+  feature_flags:
+    enable_hot_reloads: false
+    enable_profiling: false
+    enable_checkpoints: true
+    enable_error_recovery: true
+  
+  logging:
+    level: "warn"  # Minimal logging for production
+    structured: true
+  
+  error_handling:
+    max_errors: 2000  # Higher threshold for production
+    checkpoint:
+      interval_records: 50000  # Less frequent checkpoints for performance

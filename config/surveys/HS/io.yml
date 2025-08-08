@@ -1,0 +1,22 @@
+# HS Survey IO Configuration
+# Input discovery, patterns, partition hints
+config_version: 1
+
+discovery:
+  root: "data/raw/bls/hs"
+  include: ["hs.series", "hs.data.*", "hs.case.type", "hs.data.type", "hs.division", "hs.industry", "hs.period"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: false
+  strategy: "none"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "size_based"
+  max_partition_size_mb: 100
+  partition_by: []
+
+mmap:
+  enable_for_mb_greater_than: 10

@@ -1,0 +1,609 @@
+# .config/surveys/ip.yml
+# name: Industry Productivity Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/ip
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/ip.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: ip #survey code (ex.ap,sm,ip)- see docs (.docs/surveys/* for all surveys)
+  name: Industry Productivity #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The Industry Productivity program produces annual measures of labor productivity (output per hour), unit labor costs, and related series for a select group of U.S. industries."
+  definition: "
+The following is a definition of: INDUSTRY PRODUCTIVITY (IP) 
+
+Survey Description: The Industry Productivity program produces annual measures of labor 
+productivity (output per hour), unit labor costs, and related series for a select group 
+of U.S. industries.
+
+Time Series Available: Indexes and annual percent changes are available by industry for 
+labor productivity (output per hour), output per worker, real sectoral output, sectoral 
+output price deflator, hours worked, employment, labor compensation, and unit labor 
+costs. Level data underlying the productivity and cost measures - including sectoral 
+output, labor compensation, hours worked, and employment - also are available.
+
+Frequency of Observations: Series are available on an annual basis, and therefore, are 
+not seasonally adjusted. For most industries, the indexes begin in 1987 and annual 
+percent change time-series begin in 1988.
+
+Base Periods: The base period for the industry productivity and related 
+indexes is 2012 = 100.
+
+Update Schedule: Updates are performed periodically throughout the year as source data 
+become available. Typically, updates are announced through 3 to 4 news releases each 
+year, with each news release covering industries in a different sector or combination 
+of sectors, such that all industries are updated at least once a year.
+
+Reference: BLS Handbook of Methods, \"Industry Productivity Measures\" 
+(see: https://www.bls.gov/opub/hom/inp/home.htm).
+                "
+  characteristics:
+    frequency: annual
+    coverage: "Select group of U.S. industries"
+    time_series_count: "Industry productivity time series data" 
+    classification_system: "Industry codes, sector codes, and measure codes"
+    update_schedule: "Periodically throughout the year, with 3-4 news releases annually"
+    begin_year: 1987
+    survey_methodology: "The Industry Productivity program produces annual measures of labor productivity, unit labor costs, and related series."
+    calculation_basis: "Indexes and annual percent changes for labor productivity, output, hours worked, employment, labor compensation, and unit labor costs."
+
+#Survey Series Information
+series:
+  path: "ip.series" #path to series file
+  use_mmap: true
+  series_size_class: Medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 21 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "IPUBN2111__L000000000"
+      map_file: "" #leave blank for none
+    seasonal:
+      length: 1
+      type: Text
+      example_value: "U"
+      needs_mapping: true
+      map_file: "seasonal" #leave blank for none
+    sector_code:
+      length: 1
+      type: Text
+      example_value: "B"
+      needs_mapping: true
+      map_file: "sector" #leave blank for none
+    industry_code:
+      length: 7
+      type: Text
+      example_value: "N211___"
+      needs_mapping: true
+      map_file: "industry" #leave blank for none
+    measure_code:
+      length: 3
+      type: Text
+      example_value: "L00"
+      needs_mapping: true
+      map_file: "measure" #leave blank for none
+    duration_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "duration" #leave blank for none
+    base_year:
+      length: 4
+      type: Text
+      example_value: "2012"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    type_code:
+      length: 1
+      type: Text
+      example_value: "I"
+      needs_mapping: true
+      map_file: "type" #leave blank for none
+    area_code:
+      length: 6
+      type: Text
+      example_value: "000000"
+      needs_mapping: true
+      map_file: "area" #leave blank for none
+    series_title:
+      length: 256
+      type: Text
+      example_value: "Labor productivity, mining, oil and gas extraction, NAICS 211"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    footnote_codes:
+      length: 1
+      type: Text
+      example_value: "e"
+      needs_mapping: true
+      map_file: "footnote" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1987"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "2021"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 21
+        type: Text
+        example_value: "IPUBN2111__L000000000"
+      year:
+        length: 4
+        type: values
+        example_value: "2001"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "116.6"
+      footnote_codes:
+        length: 1
+        type: Text
+        example_value: "e"
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ area, sector, measure, industry ]  # Small, frequently used
+    lazy: [ footnote, duration, type, seasonal ]  # Load on demand
+    mmap: [ ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    area:
+        file_path: "ip.area"
+        name: Area
+        description: "Maps area codes to area names"
+        index_col: "area_code"
+        schema:
+          area_code:
+            length: 6
+            type: str
+            example_value: "000000"
+          area_text:
+            length: 100
+            type: Text
+            example_value: "U.S. Total"
+          display_level:
+            length: 2
+            type: str
+            example_value: "1"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "1"
+
+    duration:
+        file_path: "ip.duration"
+        name: Duration
+        description: "Maps duration codes to duration descriptions"
+        index_col: "duration_code"
+        schema:
+          duration_code:
+            length: 1
+            type: str
+            example_value: "1"
+          duration_text:
+            length: 100
+            type: str
+            example_value: "% Change year ago"
+
+    footnote:
+        file_path: "ip.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "e"
+          footnote_text:
+            length: 200
+            type: str
+            example_value: ""
+
+    industry:
+        file_path: "ip.industry"
+        name: Industry
+        description: "Maps industry codes to industry names"
+        index_col: "industry_code"
+        schema:
+          industry_code:
+            length: 7
+            type: str
+            example_value: "N211___"
+          naics_code:
+            length: 50
+            type: str
+            example_value: "211"
+          industry_text:
+            length: 100
+            type: str
+            example_value: "Oil and gas extraction"
+          display_level:
+            length: 2
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "1"
+
+    measure:
+        file_path: "ip.measure"
+        name: Measure
+        description: "Maps measure codes to measure descriptions"
+        index_col: "measure_code"
+        schema:
+          measure_code:
+            length: 3
+            type: str
+            example_value: "L00"
+          measure_text:
+            length: 100
+            type: str
+            example_value: "Labor productivity"
+          display_level:
+            length: 2
+            type: str
+            example_value: "0"
+          selectable:
+            length: 1
+            type: str
+            example_value: "T"
+          sort_sequence:
+            length: 5
+            type: str
+            example_value: "1"
+
+    seasonal:
+        file_path: "ip.seasonal"
+        name: Seasonal Adjustment
+        description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+        index_col: "seasonal"
+        schema:
+          seasonal:
+            length: 1
+            type: str
+            example_value: "U"
+          seasonal_text:
+            length: 100
+            type: str
+            example_value: "Not Seasonally Adjusted"
+
+    sector:
+        file_path: "ip.sector"
+        name: Sector
+        description: "Maps sector codes to sector names"
+        index_col: "sector_code"
+        schema:
+          sector_code:
+            length: 1
+            type: str
+            example_value: "B"
+          sector_text:
+            length: 100
+            type: str
+            example_value: "Mining"
+
+    type:
+        file_path: "ip.type"
+        name: Type
+        description: "Maps type codes to type descriptions"
+        index_col: "type_code"
+        schema:
+          type_code:
+            length: 1
+            type: str
+            example_value: "E"
+          type_text:
+            length: 100
+            type: str
+            example_value: "Employees"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks due to size
+  max_threads: 4     # Increased parallelization for medium-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ ip.data.0.Current, ip.data.1.AllData ]
+      partition_strategy:
+        partion_by: "sector_code"
+        file_format: "ip.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1987
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^IP[U]\\w{19}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "A01" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Medium
+      output_file: "ip_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Seasonal code mapping
+        seasonal:
+          lookup_table: "seasonal"
+          lookup_key: "seasonal"
+          lookup_value: "seasonal_text"
+          create_field: "seasonal_text"
+          on_missing: "UNKNOWN_SEASONAL"
+          cache: true
+        
+        # Sector code mapping
+        sector_code:
+          lookup_table: "sector"
+          lookup_key: "sector_code"
+          lookup_value: "sector_text"
+          create_field: "sector_text"
+          on_missing: "UNKNOWN_SECTOR"
+          cache: true
+        
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_text"
+          create_field: "industry_text"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+        
+        # Measure code mapping
+        measure_code:
+          lookup_table: "measure"
+          lookup_key: "measure_code"
+          lookup_value: "measure_text"
+          create_field: "measure_text"
+          on_missing: "UNKNOWN_MEASURE"
+          cache: true
+        
+        # Duration code mapping
+        duration_code:
+          lookup_table: "duration"
+          lookup_key: "duration_code"
+          lookup_value: "duration_text"
+          create_field: "duration_text"
+          on_missing: "UNKNOWN_DURATION"
+          cache: true
+        
+        # Type code mapping
+        type_code:
+          lookup_table: "type"
+          lookup_key: "type_code"
+          lookup_value: "type_text"
+          create_field: "type_text"
+          on_missing: "UNKNOWN_TYPE"
+          cache: true
+        
+        # Area code mapping
+        area_code:
+          lookup_table: "area"
+          lookup_key: "area_code"
+          lookup_value: "area_text"
+          create_field: "area_text"
+          on_missing: "UNKNOWN_AREA"
+          cache: true
+        
+        # Footnote codes mapping
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^IP[U]\\w{19}$"
+            action: flag
+            message: "Invalid series ID format: should be IP[U] followed by 19 characters"
+          
+          - field: series_id
+            rule: length
+            exact: 21
+            action: reject
+            message: "Series ID must be exactly 21 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1987
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1987 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1987
+            max: 2067
+            action: reject
+            message: "End year must be between 1987 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, seasonal, sector_code, industry_code, measure_code, duration_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, sector_code, industry_code, measure_code, begin_year, end_year ]
+        output_file: "ip_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 2000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "ip_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/ip"

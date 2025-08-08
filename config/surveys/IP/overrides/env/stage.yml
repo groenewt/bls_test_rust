@@ -1,0 +1,31 @@
+# IP Survey Staging Environment Overrides
+config_version: 1
+
+# Staging processing settings
+processing:
+  strategy:
+    mode: "chunked"
+    max_concurrency: 2
+  resources:
+    max_threads: 4
+    memory_limit_gb: 8
+  features:
+    enable_profiling: false
+
+# Staging output settings
+output:
+  destination:
+    base_path: "data/processed/bls/IP/stage"
+
+# Staging quality settings
+quality:
+  policy:
+    mode: "fail_on_error"
+    sample_on_fail_rows: 25
+
+# Staging runtime settings
+runtime:
+  logging:
+    level: "info"
+  error_handling:
+    max_errors: 1000

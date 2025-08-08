@@ -1,0 +1,214 @@
+# HS Survey Model Configuration
+# Data model: files, schemas, relationships
+config_version: 1
+
+series:
+  path: "hs.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "HSU00000001"
+    division_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    industry_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0000"
+    data_type_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    case_type_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1976"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1988"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "hs.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.05
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "HSU00000001"
+      year:
+        type: "int32"
+        min: 1976
+        max: 1988
+        nullable: false
+        example_value: 1976
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "decimal"
+        precision: 12
+        scale: 1
+        nullable: true
+        example_value: "0.3"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "case_type"
+    path: "hs.case.type"
+    index: "case_type_code"
+    schema:
+      case_type_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      case_type_text:
+        type: "string"
+        length: 55
+        nullable: false
+        example_value: "Total recordable cases"
+
+  - id: "data_type"
+    path: "hs.data.type"
+    index: "data_type_code"
+    schema:
+      data_type_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      data_type_text:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "Incidence rates"
+
+  - id: "division"
+    path: "hs.division"
+    index: "division_code"
+    schema:
+      division_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "00"
+      division_name:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "Total private industry"
+
+  - id: "industry"
+    path: "hs.industry"
+    index: "industry_code"
+    schema:
+      division_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "00"
+      industry_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "0000"
+      industry_name:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "Total private industry"
+
+  - id: "period"
+    path: "hs.period"
+    index: "period"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "A01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "ANN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Annual"
+
+relationships:
+  - from: { file: "series", column: "division_code" }
+    to: { file: "division", column: "division_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "data_type_code" }
+    to: { file: "data_type", column: "data_type_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "case_type_code" }
+    to: { file: "case_type", column: "case_type_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "begin_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "series", column: "end_period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "division_code", "industry_code", "data_type_code", "case_type_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  Year: { base: "int32", range: [1976, 1988] }
+  SeriesId: { base: "string", pattern: "^HS[U]\\d{8}$", length: 17 }
+  Period: { base: "string", enum: ["A01"] }
+  IncidenceRate: { base: "decimal", precision: 12, scale: 1, min: -1000.0, max: 1000.0 }

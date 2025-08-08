@@ -1,0 +1,504 @@
+config_version: 1
+series:
+  path: "cs.series"
+  index: "series_id"
+  estimated_size_gb: 2.0
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "csU00X11XXXX3E100"
+    category_code:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "00X"
+    datatype_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "3"
+    case_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "E"
+    age_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "00XXXX"
+    los_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0XXXXX"
+    race_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0XXXXX"
+    gender_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0XXXXX"
+    pob_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0XXXXX"
+    event_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0000XX"
+    source_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0000XX"
+    occupation_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    nature_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "0000XX"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    time_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    hour_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    weekday_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    special_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    ownership_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    state_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2011"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2013"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "cs.data.*"
+    index: "series_id"
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "csU00X00XXXX3E100"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: "2011"
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(A\\d{2}|Q\\d{2})$"
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: "10.2"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "age"
+    path: "cs.age"
+    index: "age_code"
+    schema:
+      age_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      age_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "20-24"
+  - id: "case"
+    path: "cs.case"
+    index: "case_code"
+    schema:
+      case_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "E"
+      case_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+  - id: "category"
+    path: "cs.category"
+    index: "category_code"
+    schema:
+      case_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "3"
+      category_code:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "00X"
+      category_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+  - id: "datatype"
+    path: "cs.datatype"
+    index: "datatype_code"
+    schema:
+      datatype_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "3"
+      datatype_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+  - id: "event"
+    path: "cs.event"
+    index: "event_code"
+    schema:
+      event_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "00XXXX"
+      event_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Falls, slips, trips"
+  - id: "footnote"
+    path: "cs.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "P"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+  - id: "gender"
+    path: "cs.gender"
+    index: "gender_code"
+    schema:
+      gender_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      gender_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Male"
+  - id: "hour"
+    path: "cs.hour"
+    index: "hour_code"
+    schema:
+      hour_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      hour_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "1 - 2 hours"
+  - id: "industry"
+    path: "cs.industry"
+    index: "industry_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      industry_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Construction"
+  - id: "los"
+    path: "cs.los"
+    index: "los_code"
+    schema:
+      los_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      los_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "1-5 years"
+  - id: "nature"
+    path: "cs.nature"
+    index: "nature_code"
+    schema:
+      nature_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "0XXXXX"
+      nature_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Fractures"
+  - id: "occupation"
+    path: "cs.occupation"
+    index: "occupation_code"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      occupation_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Roofers"
+  - id: "ownership"
+    path: "cs.ownership"
+    index: "ownership_code"
+    schema:
+      ownership_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      ownership_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Detailed Private Industry"
+  - id: "pob"
+    path: "cs.pob"
+    index: "pob_code"
+    schema:
+      pob_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "0XXXXX"
+      pob_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Knee(s)"
+  - id: "race"
+    path: "cs.race"
+    index: "race_code"
+    schema:
+      race_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      race_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Hispanic"
+  - id: "source"
+    path: "cs.source"
+    index: "source_code"
+    schema:
+      source_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "0XXXXX"
+      source_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Band saws"
+  - id: "special"
+    path: "cs.special"
+    index: "special_code"
+    schema:
+      special_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      special_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Musculoskeletal disorders"
+  - id: "state"
+    path: "cs.state"
+    index: "state_code"
+    schema:
+      state_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "00"
+      state_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Arizona"
+  - id: "time"
+    path: "cs.time"
+    index: "time_code"
+    schema:
+      time_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      time_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "12:01AM-4:00AM"
+  - id: "weekday"
+    path: "cs.weekday"
+    index: "weekday_code"
+    schema:
+      weekday_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      weekday_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Sunday"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "age_code" }
+    to: { file: "age", column: "age_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "case_code" }
+    to: { file: "case", column: "case_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "category_code" }
+    to: { file: "category", column: "category_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "datatype_code" }
+    to: { file: "datatype", column: "datatype_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "event_code" }
+    to: { file: "event", column: "event_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "gender_code" }
+    to: { file: "gender", column: "gender_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "nature_code" }
+    to: { file: "nature", column: "nature_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "occupation_code" }
+    to: { file: "occupation", column: "occupation_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "race_code" }
+    to: { file: "race", column: "race_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "source_code" }
+    to: { file: "source", column: "source_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "category_code", "datatype_code", "case_code", "begin_year", "begin_period", "end_year", "end_period"] }
+
+types:
+  Year: { base: "int32", range: [2011, 2067] }
+  SeriesId: { base: "string", pattern: "^cs[U]\\d{15}$", length: 17 }
+  Period: { base: "string", enum: ["A01", "Q01", "Q02", "Q03", "Q04"] }
+  Value: { base: "decimal", precision: 18, scale: 4 }

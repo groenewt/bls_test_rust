@@ -1,0 +1,39 @@
+# CH Survey Production Environment Overrides
+config_version: 1
+
+# Production-specific processing settings
+processing:
+  resources:
+    max_threads: 16  # Full thread utilization in production
+    memory_limit_gb: 32  # Maximum memory for production
+  
+  features:
+    enable_profiling: false  # Disable profiling in production
+    enable_statistics: true
+
+# Production output settings
+output:
+  destination:
+    base_path: "data/prod/processed/bls/CH"
+  
+  parquet:
+    compression: "zstd"  # Better compression for production storage
+    compression_level: 6  # Higher compression level
+    row_group_size: 100000  # Larger row groups for better compression
+
+# Production quality settings
+quality:
+  policy:
+    mode: "fail_on_error"  # Strict validation in production
+    sample_on_fail_rows: 100
+
+# Production runtime settings
+runtime:
+  logging:
+    level: "warn"  # Minimal logging in production
+  development:
+    enable_debug_output: false
+    save_intermediate_files: false
+    verbose_logging: false
+  feature_flags:
+    enable_hot_reloads: false

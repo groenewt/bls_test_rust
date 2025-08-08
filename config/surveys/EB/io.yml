@@ -1,0 +1,19 @@
+config_version: 1
+discovery:
+  root: "data/raw/bls/eb"
+  include: ["eb.series", "eb.data.*", "eb.period", "eb.title", "eb.type", "eb.seasonal", "eb.footnote"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: false
+  strategy: "none"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "size_based"
+  max_partition_size_mb: 100
+  partition_by: ["year"]
+
+mmap:
+  enable_for_mb_greater_than: 10

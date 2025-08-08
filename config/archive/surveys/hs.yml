@@ -1,0 +1,554 @@
+# config/surveys/hs.yml
+# name: Occupational Injuries and Illnesses Incidences Rate Data Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: data/raw/bls/hs
+#         - Data files are in ASCII text format
+#         - Tabs separate data elements in an original BLS file
+#         - full doc: docs/bls/survey/hs.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: hs #survey code (ex.ap,sm,hs)- see docs (docs/surveys/* for all surveys)
+  name: Occupational Injuries and Illnesses Incidences Rate Data #friendly survey name
+  size_class: small #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "The occupational injury and illness incidence rate is an annual measure of incidence of work-related injuries and illnesses and is in the form of the number of injuries and illnesses, or lost workdays per 100 full-time employees. For this purpose, 200,000 employee hours represent 100 employee years."
+  definition: "
+The following is a definition of:  OCCUPATIONAL INJURIES AND ILLNESSES INCIDENCES 
+				   RATE DATA (HS)
+
+Survey Description:  The occupational injury and illness incidence rate is 
+an annual measure of incidence of work-related injuries and illnesses and 
+is in the form of the number of injuries and illnesses, or lost workdays per 
+100 full-time employees.  For this purpose, 200,000 employee hours 
+represent 100 employee years.
+
+Data collected through the annual survey are based on records which employer
+s maintain under the Occupational Safety and Health Act.  The data include 
+all cases resulting from work accidents or exposure in the work environment 
+which result in death, nonfatal illness, or nonfatal injury which involves 
+medical treatment (beyond first aid), loss of consciousness, restriction of 
+work or motion, or transfer to another job.
+
+Virtually the entire private sector is covered by the survey, except self-
+employed individuals, farms with fewer than 11 employees, employers 
+regulated by other Federal safety and health laws, and Federal, State, and 
+local government agencies.  Data conforming to definitions of recordable 
+occupational injuries and illnesses for coal, metal and nonmetal mining, 
+and railroad transportation are provided by the Mine Safety and Health 
+Administration, U.S. Department of Labor, and the Federal Railroad 
+Administration, U.S. Department of Transportation.
+
+The incidence rates are produced for industries which are based on the 1987 
+Standard Industrial Classification (SIC).  The survey sample design uses 
+stratified random sample with a Neyman allocation.  The characteristics used
+to stratify the units are the States, SIC code, and employment.  The 
+sampling ratios at the various employment size classes range from all units 
+above a certain size class selected with certainty through declining 
+proportions in each smaller employment-size class.  The data for all 
+reporting units in each industry are expanded by the inverse of the sampling
+ratio, and benchmarked to the appropriate employment level in each industry.
+  
+Since 1978, about 280,000 sample units were selected nationwide to 
+participate in the annual survey.
+
+Summary Data Available:  The incidence rates are calculated for three 
+categories:  (1)  injury and illness combined, (2)  injury only; and 
+(3)  illness only.
+
+
+The incidence rates for each category are available at the 2-digit SIC 
+industry level in agriculture, forestry, and fishing, the 3-digit level in 
+oil and gas extraction, construction, transportation and public utilities, 
+wholesale and retail trade, and finance, insurance, and real estate, and 
+services; and the 4-digit level in manufacturing.
+
+Estimates of incidence rates for industries are also made for various 
+severity classifications.  For each industry, the incidence rates are 
+available for total recordable cases, nonfatal cases without lost workdays,
+lost workday cases, and lost workdays.  Lost workday cases include both 
+cases involving days away from work and cases involving restricted working 
+activity.  The incidence rates are available for both cases, and also for 
+both types of lost workdays.
+
+The estimating procedure generates occupational injury and illness estimates
+for approximately 835 SIC codes.  This dataset, however, excludes estimates 
+for several industry codes if one of the following situations occurred:
+
+   1.	Estimates for the industry were based on reports from fewer than 
+	three companies.  Moreover, if three or more companies reported data 
+	for the industry, one firm could employ no more than 50 percent of 
+	the workers, or two companies combined could employ no more than 75 
+	percent.
+
+   2.	Annual average employment for the industry was fewer than 10,000.  
+	However, estimates for an industry with an annual average employment 
+	of less than 10,000 were published if the majority of the employment
+	was reported in the survey.
+
+   3.	The relative standard error on lost workday cases for the industry 
+	at 1 standard error was more than 15 percent in manufacturing and 
+	20 percent in nonmanufacturing.
+
+   4.	The benchmark factor for the industry was less than 0.90 or greater 
+	than 1.49.
+
+Data for an unpublished industry were included in the total for the broader
+industry level of which it is a part.
+
+
+Calculation of Incidence Rates:
+
+   1.	The incidence rates represent the number of injuries and/or 
+	illnesses or lost workdays per 100 full-time workers and were 
+	calculated as:  (N/EH) x 200,000.
+
+	where:
+
+	N = number of injuries and/or illnesses or lost workdays.
+
+	EH = total hours worked by all employees during the calendar year.
+
+	     200,000 = base for 100 full-time equivalent workers 
+	     (working 40 hours/week, 50 weeks/year).
+
+   2.	Average lost workdays are calculated as:
+
+	Total lost workdays/total lost workday cases.
+
+Frequency of Observations:  All data are annual.
+
+Data Characteristics:  Rates are stored to one decimal place.
+
+References:	BLS Handbook of Methods, Chapter 14, \"Occupational Safety 
+		and Health Statistics\", Part I, BLS Bulletin 2285, April
+		1988.
+                "
+  characteristics:
+    frequency: annual
+    coverage: "Virtually the entire private sector, except self-employed individuals, farms with fewer than 11 employees, employers regulated by other Federal safety and health laws, and Federal, State, and local government agencies."
+    time_series_count: "Approximately 835 SIC codes" 
+    classification_system: "1987 Standard Industrial Classification (SIC)"
+    update_schedule: "Annual release"
+    begin_year: 1976
+    survey_methodology: "Stratified random sample with a Neyman allocation. The characteristics used to stratify the units are the States, SIC code, and employment."
+    calculation_basis: "The incidence rates represent the number of injuries and/or illnesses or lost workdays per 100 full-time workers and were calculated as: (N/EH) x 200,000."
+
+#Survey Series Information
+series:
+  path: "hs.series" #path to series file
+  use_mmap: true
+  series_size_class: Small #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17 #USE DEFINED FIELD LENGTH From (docs/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "HSU00000001"
+      map_file: "" #leave blank for none
+    division_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "division" #leave blank for none
+    industry_code:
+      length: 4
+      type: Text
+      example_value: "0000"
+      needs_mapping: true
+      map_file: "industry" #leave blank for none
+    data_type_code:
+      length: 1
+      type: Text
+      example_value: "0"
+      needs_mapping: true
+      map_file: "data.type" #leave blank for none
+    case_type_code:
+      length: 1
+      type: Text
+      example_value: "1"
+      needs_mapping: true
+      map_file: "case.type" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1976"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: true
+      map_file: "period" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "1988"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: true
+      map_file: "period" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "HSU00000001"
+      year:
+        length: 4
+        type: values
+        example_value: "1976"
+      period:
+        length: 3
+        type: Text
+        example_value: "A01"
+      value:
+        length: 12
+        type: values
+        example_value: "0.3"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ case.type, data.type, division ]  # Small, frequently used
+    lazy: [ period ]  # Load on demand
+    mmap: [ industry ] # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    case.type:
+        file_path: "hs.case.type"
+        name: Case Type
+        description: "Maps case type codes to case type descriptions"
+        index_col: "case_type_code"
+        schema:
+          case_type_code:
+            length: 1
+            type: str
+            example_value: "1"
+          case_type_text:
+            length: 55
+            type: Text
+            example_value: "Total recordable cases"
+
+    data.type:
+        file_path: "hs.data.type"
+        name: Data Type
+        description: "Maps data type codes to data type descriptions"
+        index_col: "data_type_code"
+        schema:
+          data_type_code:
+            length: 1
+            type: str
+            example_value: "0"
+          data_type_text:
+            length: 30
+            type: str
+            example_value: "Incidence rates"
+
+    division:
+        file_path: "hs.division"
+        name: Division
+        description: "Maps division codes to division names"
+        index_col: "division_code"
+        schema:
+          division_code:
+            length: 2
+            type: str
+            example_value: "00"
+          division_name:
+            length: 50
+            type: str
+            example_value: "Total private industry"
+
+    industry:
+        file_path: "hs.industry"
+        name: Industry
+        description: "Maps industry codes to industry names"
+        index_col: "industry_code"
+        schema:
+          division_code:
+            length: 2
+            type: str
+            example_value: "00"
+          industry_code:
+            length: 4
+            type: str
+            example_value: "0000"
+          industry_name:
+            length: 50
+            type: str
+            example_value: "Total private industry"
+
+    period:
+        file_path: "hs.period"
+        name: Period
+        description: "Maps period codes to period names"
+        index_col: "period"
+        schema:
+          period:
+            length: 3
+            type: str
+            example_value: "A01"
+          period_abbr:
+            length: 5
+            type: str
+            example_value: "ANN"
+          period_name:
+            length: 20
+            type: str
+            example_value: "Annual"
+
+processing:
+  # Strategy for small survey
+  strategy: in_memory  # Process in memory due to small size
+  max_threads: 2     # Moderate parallelization for small-sized data
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Small enough for single file
+        partition_by: []
+      use_mmap: true
+      series_size_class: Small
+      list_data_files: [ hs.data.1.1976to1980, hs.data.2.1981to1984, hs.data.3.1985to1988 ]
+      partition_strategy:
+        partion_by: ""
+        file_format: "hs.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -1000.0 # MIN RANGE
+                max: 1000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1976
+                max: 1988
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^HS[U]\\d{8}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "A01" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Small
+      output_file: "hs_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Division code mapping
+        division_code:
+          lookup_table: "division"
+          lookup_key: "division_code"
+          lookup_value: "division_name"
+          create_field: "division_name"
+          on_missing: "UNKNOWN_DIVISION"
+          cache: true
+        
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_name"
+          create_field: "industry_name"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+        
+        # Data type code mapping
+        data_type_code:
+          lookup_table: "data.type"
+          lookup_key: "data_type_code"
+          lookup_value: "data_type_text"
+          create_field: "data_type_text"
+          on_missing: "UNKNOWN_DATA_TYPE"
+          cache: true
+        
+        # Case type code mapping
+        case_type_code:
+          lookup_table: "case.type"
+          lookup_key: "case_type_code"
+          lookup_value: "case_type_text"
+          create_field: "case_type_text"
+          on_missing: "UNKNOWN_CASE_TYPE"
+          cache: true
+        
+        # Period mapping
+        begin_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "begin_period_name"
+          on_missing: "UNKNOWN_PERIOD"
+          cache: true
+        
+        end_period:
+          lookup_table: "period"
+          lookup_key: "period"
+          lookup_value: "period_name"
+          create_field: "end_period_name"
+          on_missing: "UNKNOWN_PERIOD"
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^HS[U]\\d{8}$"
+            action: flag
+            message: "Invalid series ID format: should be HS[U] followed by 8 digits"
+          
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1976
+            max: 1988
+            action: reject
+            message: "Begin year must be between 1976 and 1988"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1976
+            max: 1988
+            action: reject
+            message: "End year must be between 1976 and 1988"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year >= begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, division_code, industry_code, data_type_code, case_type_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: []
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, division_code, industry_code, data_type_code, case_type_code, begin_year, end_year ]
+        output_file: "hs_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 1000    # Stop if too many errors
+  log_errors: true
+  error_file: "hs_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: false  # Disable checkpoints for small data
+    interval_records: 10000
+    checkpoint_dir: "checkpoints/hs"

@@ -1,0 +1,169 @@
+
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+cm.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+cs.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+cu.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+cw.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+cx.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+eb.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+fi.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+fm.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+fw.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+gg.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+gp.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+hc.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+hs.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+ii.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+in.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+ip.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+sm.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+tu.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+wm.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+wp.yml
+
+We changed the configuration structure and need to update existing configurations 1 survey at a time, based on the new configuration:
+docs/ref/survey_configuration_guide.md
+To help inform migration see:
+config/surveys/MIGRATION_GAMEPLAN.md
+DO NOT MAKE ANY CHANGES OUTSIDE config/*;
+Your series to migrate is:
+ws.yml

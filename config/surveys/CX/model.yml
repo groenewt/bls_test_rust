@@ -1,0 +1,249 @@
+# model.yml
+# Consumer Expenditure Survey - Data model: files, schemas, relationships
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+series:
+  path: "cx.series"
+  index: "series_id"
+  estimated_size_gb: 0.5  # Medium size class
+  schema:
+    series_id:
+      type: "string"
+      length: 18
+      nullable: false
+      example_value: "CXU010101LB01010000"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+      enum: ["S", "U"]
+    expenditure_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "010101"
+    demographics_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "LB01"
+    characteristics_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    series_title:
+      type: "string"
+      length: 200
+      nullable: false
+      example_value: "Food, All Consumer Units"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2003"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2024"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "cx.data.*"
+    index: "series_id"
+    estimated_size_gb: 1.0
+    schema:
+      series_id:
+        type: "string"
+        length: 18
+        nullable: false
+        example_value: "CXU010101LB01010000"
+      year:
+        type: "int32"
+        min: 2003
+        max: 2055
+        nullable: false
+        example_value: 2003
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "A01"
+        pattern: "^A01$"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 7023
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "characteristics"
+    path: "cx.characteristics"
+    index: "characteristics_code"
+    description: "Maps characteristics codes to characteristics names"
+    schema:
+      demographics_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "LB01"
+      characteristics_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      characteristics_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All Consumer Units"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "1010"
+
+  - id: "demographics"
+    path: "cx.demographics"
+    index: "demographics_code"
+    description: "Maps demographics codes to demographics names"
+    schema:
+      demographics_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "LB01"
+      demographics_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Income quintiles"
+
+  - id: "expenditure"
+    path: "cx.expenditure"
+    index: "expenditure_code"
+    description: "Maps expenditure codes to expenditure categories"
+    schema:
+      expenditure_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "010101"
+      expenditure_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Food"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "1010"
+
+  - id: "footnote"
+    path: "cx.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "C"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: true
+        example_value: ""
+
+  - id: "seasonal"
+    path: "cx.seasonal"
+    index: "seasonal_code"
+    description: "Maps seasonal adjustment codes to seasonal adjustment descriptions"
+    schema:
+      seasonal_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "U"
+      seasonal_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Not seasonally adjusted"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "expenditure_code" }
+    to: { file: "expenditure", column: "expenditure_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "demographics_code" }
+    to: { file: "demographics", column: "demographics_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "characteristics_code" }
+    to: { file: "characteristics", column: "characteristics_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "seasonal", "expenditure_code", "demographics_code", "characteristics_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  Year: { base: "int32", range: [2003, 2067] }
+  SeriesId: { base: "string", length: 18, pattern: "^CX[U]\\d{16}$" }
+  Period: { base: "string", pattern: "^A01$" }
+  Value: { base: "decimal", precision: 18, scale: 4 }

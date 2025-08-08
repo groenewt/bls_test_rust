@@ -1,0 +1,29 @@
+config_version: 1
+# Development environment overrides for GG survey
+
+# Development processing settings
+processing:
+  resources:
+    max_threads: 2  # Limited resources in dev
+    memory_limit_gb: 4
+
+# Development output settings
+output:
+  destination:
+    base_path: "data/processed/dev/bls/GG"
+
+# Development quality settings - more lenient
+quality:
+  policy:
+    mode: "warn_only"
+    max_errors: 5000
+    sample_on_fail_rows: 10
+
+# Development logging - more verbose
+logging:
+  level: "debug"
+  structured: true
+
+# Development feature flags
+feature_flags:
+  enable_profiling: true  # Enable profiling in dev for performance analysis

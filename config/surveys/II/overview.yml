@@ -1,0 +1,114 @@
+# II Survey Overview Configuration
+# Survey metadata and context information
+config_version: 1
+
+survey:
+  code: "II"
+  name: "Occupational Injuries and Illnesses Industry Data"
+  description: "Occupational injury and illness counts and incidence rates are annual measures of the level and frequency of work-related injuries and illnesses. The rate equals the form of the number of injuries and illnesses per 100 full-time employees."
+  size_class: "large"
+  characteristics:
+    frequency: "annual"
+    coverage: "Virtually the entire private sector is covered by the survey, except self-employed individuals, farms with fewer than 11 employees, and employers regulated by other Federal safety and health laws."
+    time_series_count: "Occupational injury and illness counts and incidence rates"
+    classification_system: "2002 North American Industry Classification System (NAICS)"
+    update_schedule: "Annual release"
+    begin_year: 2000
+    survey_methodology: "The survey sample design uses stratified random sample with a Neyman allocation. The characteristics used to stratify the units are the States, NAICS code, and employment."
+    calculation_basis: "The incidence rates represent the number of injuries and/or illnesses per 100 full-time workers and were calculated as: (N/EH) x 200,000 (20,000,000 for illness rates)."
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/ii.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/ii
+    - Data files are in ASCII text format
+    - Tabs separate data elements in an original BLS file
+    - Rates are stored to one decimal place
+    - Number of cases are in thousands
+    - Reports are collected from about 180,000 sample units
+
+tags: ["occupational_injuries", "illnesses", "industry", "annual", "naics", "safety"]
+
+definition: |
+  The following is a definition of: OCCUPATIONAL INJURIES AND ILLNESSES 
+                     INDUSTRY DATA (II)
+
+  Survey Description: Occupational injury and illness counts and incidence rates 
+  are annual measures of the level and frequency of work-related injuries and 
+  illnesses. The rate equals the form of the number of injuries and illnesses 
+  per 100 full-time employees. 
+
+  Data collected through the annual survey are based on records which employers 
+  maintain under the Occupational Safety and Health Act. Data include all cases 
+  resulting from accidents or exposure in the work environment that result in a 
+  nonfatal illness or injury. Some of these cases involve lost work time-- the 
+  incident may result in a work absence, restriction of work or motion, or 
+  transfer to another job. Other recordable cases do not involve any lost days. 
+  Recordkeeping guidelines are maintained by the Occupational Safety and Health 
+  Administration.
+
+  Virtually the entire private sector is covered by the survey, except 
+  self-employed individuals, farms with fewer than 11 employees, and employers 
+  regulated by other Federal safety and health laws. National estimates 
+  exclude Federal, State, and local government agencies, but data for selected 
+  States include State and local government. Data conforming to definitions of 
+  recordable occupational injuries and illnesses for coal, metal and nonmetal 
+  mining, and railroad transportation are provided by the Mine Safety and Health 
+  Administration, U.S. Department of Labor, and the Federal Railroad Administration, 
+  U.S. Department of Transportation.
+
+  The incidence rates are produced for industries which are based on the 2002 
+  North American Industry Classification System (NAICS). The survey sample design 
+  uses stratified random sample with a Neyman allocation. The characteristics used
+  to stratify the units are the States, NAICS code, and employment. The data for all 
+  reporting units in each industry are expanded by the inverse of the sampling
+  ratio, and benchmarked to the appropriate employment level in each industry.  
+  Reports are collected from about 180,000 sample units.
+
+  Summary Data Available: Incidence rates and counts are calculated for three 
+  categories for total recordable cases: (1) injury and illness combined, 
+  (2) injury only; and (3) illness only.
+
+  Additionally, estimates of incidence rates and case counts are also available 
+  for various severity classifications. For each injuries and illnesses in each 
+  industry, the incidence rates and numbers of cases are available for total nonfatal 
+  recordable cases; cases with days away from work, job transfer or restriction; 
+  cases with days away from work; cases with job transfer or restriction only; and 
+  other recordable cases. 
+
+  Data also include rates and numbers of cases, by various illness categories:  
+  skin diseases or disorders, respiratory conditions, poisonings, and all other 
+  illnesses. 
+
+  Data for an unpublished industry were included in the total for the broader 
+  industry level of which it is a part.
+
+  Calculation of Incidence Rates:
+
+     	The incidence rates represent the number of injuries and/or 
+  	illnesses per 100 full-time workers and were calculated as:  
+
+  	(N/EH) x 200,000 (20,000,000 for illness rates).
+
+  	where:
+
+  	N = number of injuries and/or illnesses.
+
+  	EH = total hours worked by all employees during the calendar year.
+
+  	     200,000 = base for 100 full-time equivalent workers 
+  	     (working 40 hours/week, 50 weeks/year). 
+  	
+  	     20,000,000 =base for 10,000 full-time equivalent workers
+  	     (working 40 hours/week, 50 weeks/year).
+
+  Frequency of Observations: All data are annual.
+
+  Data Characteristics: Rates are stored to one decimal place. Number of cases are
+  		       in thousands.

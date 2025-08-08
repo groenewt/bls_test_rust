@@ -1,0 +1,118 @@
+config_version: 1
+format: "csv"
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  enabled: false
+  partition_by: []
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_bg"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/BG"
+
+data_series:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: false
+    use_mmap: false
+    series_size_class: "micro"
+    list_data_files: ["bg.data.1.AllData"]
+    partition_strategy:
+      partition_by: "sector_code"
+      file_format: "bg.data.%d.%s"
+      load_dictionary_values: true
+    transformations:
+      sort_by: ["series_id", "year", "period"]
+      deduplicate: true
+      deduplicate_on: ["series_id", "year", "period"]
+    statistics:
+      enabled: true
+      columns: ["year", "period", "value"]
+
+data_dict:
+  basic_load:
+    format: "csv"
+    partitioning:
+      enabled: false
+    use_mmap: false
+    series_size_class: "micro"
+    output_file: "bg_series_dict.csv"
+    mapping:
+      measure_code:
+        lookup_table: "measure"
+        lookup_key: "measure_code"
+        lookup_value: "measure_text"
+        create_field: "measure_name"
+        on_missing: "UNKNOWN_MEASURE"
+        cache: true
+      unit_code:
+        lookup_table: "unit"
+        lookup_key: "unit_code"
+        lookup_value: "unit_text"
+        create_field: "unit_name"
+        on_missing: "UNKNOWN_UNIT"
+        cache: true
+      alteration_code:
+        lookup_table: "alteration"
+        lookup_key: "alteration_code"
+        lookup_value: "alteration_text"
+        create_field: "alteration_name"
+        on_missing: "UNKNOWN_ALTERATION"
+        cache: true
+      sector_code:
+        lookup_table: "sector"
+        lookup_key: "sector_code"
+        lookup_value: "sector_name"
+        create_field: "sector_name"
+        on_missing: "UNKNOWN_SECTOR"
+        cache: true
+      contract_duration:
+        lookup_table: "duration"
+        lookup_key: "contract_duration"
+        lookup_value: "contract_duration_text"
+        create_field: "contract_duration_name"
+        on_missing: "UNKNOWN_DURATION"
+        cache: true
+      contract_selection:
+        lookup_table: "selection"
+        lookup_key: "contract_selection"
+        lookup_value: "contract_selection_text"
+        create_field: "contract_selection_name"
+        on_missing: "UNKNOWN_SELECTION"
+        cache: true
+      begin_period:
+        lookup_table: "period"
+        lookup_key: "period"
+        lookup_value: "period_name"
+        create_field: "begin_period_name"
+        on_missing: "keep_original"
+        cache: true
+      end_period:
+        lookup_table: "period"
+        lookup_key: "period"
+        lookup_value: "period_name"
+        create_field: "end_period_name"
+        on_missing: "keep_original"
+        cache: true
+    transformations:
+      sort_by: ["series_id"]
+      deduplicate: false
+      deduplicate_on: ["series_id"]
+    statistics:
+      enabled: true
+      columns: ["series_id", "measure_code", "sector_code", "begin_year", "end_year"]
+      output_file: "bg_series_dict_stats.json"

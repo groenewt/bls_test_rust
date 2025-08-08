@@ -1,0 +1,18 @@
+config_version: 1
+# Staging environment overrides for CU survey
+
+processing:
+  resources:
+    max_threads: 6
+    memory_limit_gb: 12
+
+features:
+  enable_profiling: false
+  enable_statistics: true
+
+logging:
+  level: "info"
+
+error_handling:
+  max_errors: 1000
+  on_error: "continue"

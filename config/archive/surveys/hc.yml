@@ -1,0 +1,752 @@
+# .config/surveys/hc.yml
+# name: Occupational Injuries and Illnesses - Characteristics Data Processing Configuration
+# description:
+# author: groenewt
+# date: 2025-08-07
+# notes:
+#         - data location: .data.raw/bls/hc
+#         - Data files are in ASCII text format
+#         - Spaces separate data elements in an original BLS file
+#         - full doc: .docs/bls/survey/hc.txt
+# changes:
+
+#General Survey Information
+survey:
+  code: hc #survey code (ex.ap,sm,hc)- see docs (.docs/surveys/* for all surveys)
+  name: Occupational Injuries and Illnesses - Characteristics Data #friendly survey name
+  size_class: medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  description: "Besides injury and illness counts, survey respondents also are asked to provide additional information for a subset of the most serious nonfatal cases logged, namely, those that involved at least 1 day away from work, beyond the day of injury or onset of illness. Employers answer several questions about these cases, including the demographics of the worker disabled, the nature of the disabling condition, and the event and source producing that condition."
+  definition: "
+The following is a definition of:  Occupational Injuries and Illnesses - 
+characteristics data (HC)
+
+Survey Description:  Besides injury and illness counts, survey respondents 
+also are asked to provide additional information for a subset of the most 
+serious nonfatal cases logged, namely, those that involved at least 1 day 
+away from work, beyond the day of injury or onset of illness. Employers 
+answer several questions about these cases, including the demographics of 
+the worker disabled, the nature of the disabling condition, and the event 
+and source producing that condition. 
+
+Summary Data Available: Detailed breakouts of injury and illness data by
+a variety of characteristics, including age, category, event, gender,
+industry, length of service, nature, occupation, part of body, race, and
+source are available.
+
+Frequency of Observations: Monthly, quarterly, and annual data are 
+available.
+
+Data Characteristics:  Data are reported to one decimal place.
+
+Updating Schedule: OSHS Characteristics data are published annually.
+                "
+  characteristics:
+    frequency: annual
+    coverage: "Detailed breakouts of injury and illness data by a variety of characteristics"
+    time_series_count: "Occupational injuries and illnesses characteristics data" 
+    classification_system: "Age, category, event, gender, industry, length of service, nature, occupation, part of body, race, and source"
+    update_schedule: "Annual release"
+    begin_year: 1992
+    survey_methodology: "Survey respondents provide additional information for a subset of the most serious nonfatal cases logged."
+    calculation_basis: "Data are reported to one decimal place."
+
+#Survey Series Information
+series:
+  path: "hc.series" #path to series file
+  use_mmap: true
+  series_size_class: Medium #Micro (<10 MB), Small (10-100 MB), Medium (100-1 GB), Large (1-5 GB), Massive (5 GB +)
+  idx_col: "series_id"
+  schema:
+    series_id:
+      length: 17 #USE DEFINED FIELD LENGTH From (.docus/bls/survey/${SURVEY_CODE}.txt)
+      type: Text
+      example_value: "HCUSH332233"
+      map_file: "" #leave blank for none
+    category_code:
+      length: 2
+      type: Text
+      example_value: "00"
+      needs_mapping: true
+      map_file: "category2" #leave blank for none
+    datatype_code:
+      length: 1
+      type: Text
+      example_value: "3"
+      needs_mapping: true
+      map_file: "datatype" #leave blank for none
+    casetype_code:
+      length: 1
+      type: Text
+      example_value: "3"
+      needs_mapping: true
+      map_file: "case" #leave blank for none
+    age_code:
+      length: 4
+      type: Text
+      example_value: "19XX"
+      needs_mapping: true
+      map_file: "age" #leave blank for none
+    los_code:
+      length: 4
+      type: Text
+      example_value: "0000"
+      needs_mapping: true
+      map_file: "los" #leave blank for none
+    race_code:
+      length: 4
+      type: Text
+      example_value: "1XXX"
+      needs_mapping: true
+      map_file: "race" #leave blank for none
+    gender_code:
+      length: 4
+      type: Text
+      example_value: "MXXX"
+      needs_mapping: true
+      map_file: "gender" #leave blank for none
+    pob_code:
+      length: 4
+      type: Text
+      example_value: "00XX"
+      needs_mapping: true
+      map_file: "pob" #leave blank for none
+    event_code:
+      length: 4
+      type: Text
+      example_value: "010X"
+      needs_mapping: true
+      map_file: "event" #leave blank for none
+    source_code:
+      length: 4
+      type: Text
+      example_value: "0110"
+      needs_mapping: true
+      map_file: "source" #leave blank for none
+    occupation_code:
+      length: 4
+      type: Text
+      example_value: "0090"
+      needs_mapping: true
+      map_file: "occupation" #leave blank for none
+    nature_code:
+      length: 4
+      type: Text
+      example_value: "011X"
+      needs_mapping: true
+      map_file: "nature" #leave blank for none
+    industry_code:
+      length: 4
+      type: Text
+      example_value: "0100"
+      needs_mapping: true
+      map_file: "industry" #leave blank for none
+    footnote_codes:
+      length: 10
+      type: Text
+      example_value: ""
+      needs_mapping: true
+      map_file: "footnote" #leave blank for none
+    begin_year:
+      length: 4
+      type: Text
+      example_value: "1992"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    begin_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_year:
+      length: 4
+      type: Text
+      example_value: "1999"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+    end_period:
+      length: 3
+      type: Text
+      example_value: "A01"
+      needs_mapping: false
+      map_file: "" #leave blank for none
+
+data_file:
+  general:
+    use_mmap: true
+    series_id_col: "series_id"
+    obs_value: "value"
+    schema:
+      series_id:
+        length: 17
+        type: Text
+        example_value: "HCUSH332233"
+      year:
+        length: 4
+        type: values
+        example_value: "1998"
+      period:
+        length: 3
+        type: Text
+        example_value: "M01"
+      value:
+        length: 12
+        type: values
+        example_value: "2360"
+      footnote_codes:
+        length: 10
+        type: Text
+        example_value: ""
+
+lookup_files: #DEFINE SCHEMA AND ATTRIBUTES FOR LOOKUP FILES (maps to series)
+  lookup_config:
+    preload: [ age, gender, race, nature ]  # Small, frequently used
+    lazy: [ footnote, datatype, category, case, los ]  # Load on demand
+    mmap: [ industry, occupation, event, source ]  # use it for large files
+    cache_all: true  # Small enough to keep in memory
+  files:
+    age:
+        file_path: "hc.age"
+        name: Age
+        description: "Maps age codes to age ranges"
+        index_col: "age_code"
+        schema:
+          age_code:
+            length: 4
+            type: str
+            example_value: "14XX"
+          age_text:
+            length: 100
+            type: str
+            example_value: "20-24"
+
+    case:
+        file_path: "hc.case"
+        name: Case
+        description: "Maps case codes to case descriptions"
+        index_col: "case_code"
+        schema:
+          case_code:
+            length: 1
+            type: str
+            example_value: "N"
+          case_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    category:
+        file_path: "hc.category"
+        name: Category
+        description: "Maps category codes to category descriptions"
+        index_col: "category_code"
+        schema:
+          case_code:
+            length: 1
+            type: str
+            example_value: "3"
+          category_code:
+            length: 2
+            type: str
+            example_value: "09"
+          category_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    category2:
+        file_path: "hc.category2"
+        name: Category2
+        description: "Maps category codes to category descriptions"
+        index_col: "category_code"
+        schema:
+          category_code:
+            length: 2
+            type: str
+            example_value: "09"
+          category_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    datatype:
+        file_path: "hc.datatype"
+        name: Datatype
+        description: "Maps datatype codes to datatype descriptions"
+        index_col: "datatype_code"
+        schema:
+          datatype_code:
+            length: 1
+            type: str
+            example_value: "3"
+          datatype_text:
+            length: 100
+            type: str
+            example_value: "Text"
+
+    event:
+        file_path: "hc.event"
+        name: Event
+        description: "Maps event codes to event descriptions"
+        index_col: "event_code"
+        schema:
+          event_code:
+            length: 4
+            type: str
+            example_value: "0XXX"
+          event_text:
+            length: 100
+            type: str
+            example_value: "Fall from roof"
+
+    footnote:
+        file_path: "hc.footnote"
+        name: Footnotes
+        description: "Maps footnote codes to footnote text"
+        index_col: "footnote_code"
+        schema:
+          footnote_code:
+            length: 1
+            type: str
+            example_value: "C"
+          footnote_text:
+            length: 100
+            type: str
+            example_value: ""
+
+    gender:
+        file_path: "hc.gender"
+        name: Gender
+        description: "Maps gender codes to gender descriptions"
+        index_col: "gender_code"
+        schema:
+          gender_code:
+            length: 4
+            type: str
+            example_value: "FXXX"
+          gender_text:
+            length: 100
+            type: str
+            example_value: "Female"
+
+    industry:
+        file_path: "hc.industry"
+        name: Industry
+        description: "Maps industry codes to industry descriptions"
+        index_col: "industry_code"
+        schema:
+          industry_code:
+            length: 4
+            type: str
+            example_value: "0100"
+          industry_text:
+            length: 100
+            type: str
+            example_value: "Construction"
+
+    los:
+        file_path: "hc.los"
+        name: Length of Service
+        description: "Maps length of service codes to length of service descriptions"
+        index_col: "los_code"
+        schema:
+          los_code:
+            length: 4
+            type: str
+            example_value: "NRXX"
+          los_text:
+            length: 100
+            type: str
+            example_value: "1-5 years"
+
+    nature:
+        file_path: "hc.nature"
+        name: Nature
+        description: "Maps nature codes to nature descriptions"
+        index_col: "nature_code"
+        schema:
+          nature_code:
+            length: 4
+            type: str
+            example_value: "00XX"
+          nature_text:
+            length: 100
+            type: str
+            example_value: "Burns"
+
+    occupation:
+        file_path: "hc.occupation"
+        name: Occupation
+        description: "Maps occupation codes to occupation descriptions"
+        index_col: "occupation_code"
+        schema:
+          occupation_code:
+            length: 4
+            type: str
+            example_value: "0030"
+          occupation_text:
+            length: 100
+            type: str
+            example_value: "Dentists"
+
+    pob:
+        file_path: "hc.pob"
+        name: Part of Body
+        description: "Maps part of body codes to part of body descriptions"
+        index_col: "pob_code"
+        schema:
+          pob_code:
+            length: 4
+            type: str
+            example_value: "0XXX"
+          pob_text:
+            length: 100
+            type: str
+            example_value: "Forearm(s)"
+
+    race:
+        file_path: "hc.race"
+        name: Race
+        description: "Maps race codes to race descriptions"
+        index_col: "race_code"
+        schema:
+          race_code:
+            length: 4
+            type: str
+            example_value: "2XXX"
+          race_text:
+            length: 100
+            type: str
+            example_value: "Hispanic"
+
+    source:
+        file_path: "hc.source"
+        name: Source
+        description: "Maps source codes to source descriptions"
+        index_col: "source_code"
+        schema:
+          source_code:
+            length: 4
+            type: str
+            example_value: "010X"
+          source_text:
+            length: 100
+            type: str
+            example_value: "Insecticides"
+
+processing:
+  # Strategy for medium survey
+  strategy: chunked  # Process in chunks due to size
+  max_threads: 4     # Increased parallelization for medium-sized data
+  
+  # Chunk settings
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+  
+  # Performance hints
+  use_mmap: true  # Use memory mapping for large files
+  enable_statistics: true
+  enable_profiling: false
+
+output:
+  data_series:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: true  # Partition by year for time-series analysis
+        partition_by: [year]
+      use_mmap: true
+      series_size_class: Medium
+      list_data_files: [ hc.data.0.Current, hc.data.1.AllData ]
+      partition_strategy:
+        partion_by: "datatype_code"
+        file_format: "hc.data.%d.%s"
+        load_dictionary_values: true
+        # Schema optimization
+        transformations:
+          sort_by: [series_id, year, period]
+          deduplicate: true
+          deduplicate_on: [series_id, year, period, footnote_codes]
+
+          validation:
+            # Data quality checks
+            rules:
+              - field: value
+                rule: range
+                min: -10000000000000000.0 # MIN RANGE
+                max: 10000000000000000.0 # MAX RANGE
+                action: flag  # Flag but don't reject
+              
+              - field: year
+                rule: range
+                min: 1992
+                max: 2055
+                action: reject #(flag,ignore, reject,fatal)  *flag while testing
+              
+              - field: series_id
+                rule: pattern
+                pattern: "^HC[U]\\w{15}$"
+                action: flag #flag while testing
+              
+              - field: period
+                rule: values
+                allowed: [ "A01", "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05" ]
+                action: flag #flag while testing
+            
+            # Completeness checks
+            required_fields: [ series_id, year, period ]
+            nullable_fields: [ value, footnote_codes ]
+          # Statistics for query optimization
+          statistics:
+            enabled: true
+            columns: [ year, period, value ]
+
+  data_dict:
+    basic_load:
+      # Format settings
+      format: csv
+      # Partitioning strategy
+      partitioning:
+        enabled: false  # Single file output for series metadata
+      use_mmap: true
+      series_size_class: Medium
+      output_file: "hc_series_dict.csv"
+      
+      # Mapping configuration for lookups
+      mapping:
+        # Category code mapping
+        category_code:
+          lookup_table: "category2"
+          lookup_key: "category_code"
+          lookup_value: "category_text"
+          create_field: "category_text"
+          on_missing: "UNKNOWN_CATEGORY"
+          cache: true
+        
+        # Datatype code mapping
+        datatype_code:
+          lookup_table: "datatype"
+          lookup_key: "datatype_code"
+          lookup_value: "datatype_text"
+          create_field: "datatype_text"
+          on_missing: "UNKNOWN_DATATYPE"
+          cache: true
+        
+        # Case type code mapping
+        casetype_code:
+          lookup_table: "case"
+          lookup_key: "case_code"
+          lookup_value: "case_text"
+          create_field: "casetype_text"
+          on_missing: "UNKNOWN_CASETYPE"
+          cache: true
+        
+        # Age code mapping
+        age_code:
+          lookup_table: "age"
+          lookup_key: "age_code"
+          lookup_value: "age_text"
+          create_field: "age_text"
+          on_missing: "UNKNOWN_AGE"
+          cache: true
+        
+        # Race code mapping
+        race_code:
+          lookup_table: "race"
+          lookup_key: "race_code"
+          lookup_value: "race_text"
+          create_field: "race_text"
+          on_missing: "UNKNOWN_RACE"
+          cache: true
+        
+        # Gender code mapping
+        gender_code:
+          lookup_table: "gender"
+          lookup_key: "gender_code"
+          lookup_value: "gender_text"
+          create_field: "gender_text"
+          on_missing: "UNKNOWN_GENDER"
+          cache: true
+        
+        # Part of body code mapping
+        pob_code:
+          lookup_table: "pob"
+          lookup_key: "pob_code"
+          lookup_value: "pob_text"
+          create_field: "pob_text"
+          on_missing: "UNKNOWN_POB"
+          cache: true
+        
+        # Event code mapping
+        event_code:
+          lookup_table: "event"
+          lookup_key: "event_code"
+          lookup_value: "event_text"
+          create_field: "event_text"
+          on_missing: "UNKNOWN_EVENT"
+          cache: true
+        
+        # Source code mapping
+        source_code:
+          lookup_table: "source"
+          lookup_key: "source_code"
+          lookup_value: "source_text"
+          create_field: "source_text"
+          on_missing: "UNKNOWN_SOURCE"
+          cache: true
+        
+        # Occupation code mapping
+        occupation_code:
+          lookup_table: "occupation"
+          lookup_key: "occupation_code"
+          lookup_value: "occupation_text"
+          create_field: "occupation_text"
+          on_missing: "UNKNOWN_OCCUPATION"
+          cache: true
+        
+        # Nature code mapping
+        nature_code:
+          lookup_table: "nature"
+          lookup_key: "nature_code"
+          lookup_value: "nature_text"
+          create_field: "nature_text"
+          on_missing: "UNKNOWN_NATURE"
+          cache: true
+        
+        # Industry code mapping
+        industry_code:
+          lookup_table: "industry"
+          lookup_key: "industry_code"
+          lookup_value: "industry_text"
+          create_field: "industry_text"
+          on_missing: "UNKNOWN_INDUSTRY"
+          cache: true
+        
+        # Length of service code mapping
+        los_code:
+          lookup_table: "los"
+          lookup_key: "los_code"
+          lookup_value: "los_text"
+          create_field: "los_text"
+          on_missing: "UNKNOWN_LOS"
+          cache: true
+        
+        # Footnote codes mapping (can be multiple)
+        footnote_codes:
+          lookup_table: "footnote"
+          lookup_key: "footnote_code"
+          lookup_value: "footnote_text"
+          create_field: "footnote_texts"
+          multiple: true
+          separator: " "
+          on_missing: skip
+          cache: true
+      
+      transformations:
+        sort_by: [ series_id ]
+        deduplicate: false  # Series should be unique by definition
+        deduplicate_on: [ series_id ]
+      
+      validation:
+        # Data quality checks for series file
+        rules:
+          # Series ID validation
+          - field: series_id
+            rule: pattern
+            pattern: "^HC[U]\\w{15}$"
+            action: flag
+            message: "Invalid series ID format: should be HC[U] followed by 15 characters"
+          
+          - field: series_id
+            rule: length
+            exact: 17
+            action: reject
+            message: "Series ID must be exactly 17 characters"
+          
+          - field: series_id
+            rule: required
+            action: reject
+            message: "Series ID cannot be null"
+          
+          # Begin year validation
+          - field: begin_year
+            rule: range
+            min: 1992
+            max: 2067
+            action: reject
+            message: "Begin year must be between 1992 and 2067"
+          
+          - field: begin_year
+            rule: numeric
+            action: reject
+            message: "Begin year must be numeric"
+          
+          # End year validation
+          - field: end_year
+            rule: range
+            min: 1992
+            max: 2067
+            action: reject
+            message: "End year must be between 1992 and 2067"
+          
+          - field: end_year
+            rule: numeric
+            action: reject
+            message: "End year must be numeric"
+          
+          - field: end_year
+            rule: greater_than_or_equal
+            compare_field: begin_year
+            action: reject
+            message: "End year must be >= begin year"
+          
+          # Begin period validation
+          - field: begin_period
+            rule: values
+            allowed: [ "A01", "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05" ]
+            action: flag
+            message: "Invalid begin period value"
+          
+          # End period validation
+          - field: end_period
+            rule: values
+            allowed: [ "A01", "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05" ]
+            action: flag
+            message: "Invalid end period value"
+          
+          # Cross-field validation: date logic
+          - field: end_year
+            rule: date_logic_check
+            check_fields: [ begin_year ]
+            validation: "(end_year > begin_year) OR (end_year is null and begin_year is null)"
+            action: flag
+            message: "End date must be after or equal to begin date"
+        
+        # Completeness checks
+        required_fields: [ series_id, category_code, datatype_code, casetype_code, begin_year, begin_period, end_year, end_period ]
+        nullable_fields: [ footnote_codes ]
+        
+        # Uniqueness constraint
+        unique_fields: [ series_id ]
+      
+      # Statistics for query optimization
+      statistics:
+        enabled: true
+        columns: [ series_id, category_code, datatype_code, begin_year, end_year ]
+        output_file: "hc_series_dict_stats.json"
+
+# ERROR HANDLING & RECOVERY
+error_handling:
+  # Recovery strategy
+  on_error: continue  # Continue processing other records
+  max_errors: 2000    # Stop if too many errors (increased for larger dataset)
+  log_errors: true
+  error_file: "hc_errors.log"
+  
+  # Checkpoint settings
+  checkpoint:
+    enabled: true  # Enable checkpoints for medium-sized data
+    interval_records: 50000
+    checkpoint_dir: "checkpoints/hc"

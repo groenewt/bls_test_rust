@@ -1,0 +1,53 @@
+# CE Survey Overview Configuration
+config_version: 1
+
+survey:
+  code: "CE"
+  name: "Current Employment Statistics"
+  description: "The Current Employment Statistics (CES) program provides estimates of employment, hours, and earnings information on a national basis and in considerable industry detail."
+  size_class: "large"  # Large (1-5 GB)
+  
+  characteristics:
+    frequency: "monthly"
+    coverage: "National data with considerable industry detail"
+    time_series_count: "Approximately 3,800 monthly series"
+    classification_system: "2022 North American Industry Classification System (NAICS)"
+    update_schedule: "Monthly release, typically on the third Friday following the week containing the 12th of the reference month"
+    begin_year: 1990
+    survey_methodology: "Sample of approximately 121,000 businesses and government agencies representing approximately 631,000 worksites throughout the United States"
+    calculation_basis: "Payroll data collected from business and government establishments"
+
+  contacts:
+    - role: "owner"
+      name: "BLS Team"
+      email: "bls@example.org"
+
+  documentation:
+    primary: "docs/bls/survey/ce.txt"
+    data_dictionary: "docs/bls/dictionaries/CE.md"
+
+  tags: ["employment", "earnings", "hours", "time-series", "naics"]
+
+  definition: |
+    The following is a definition of: CURRENT EMPLOYMENT STATISTICS: EMPLOYMENT, HOURS, AND EARNINGS—NATIONAL (CE)
+
+    Survey Description:
+    The Current Employment Statistics (CES) program provides estimates of employment,
+    hours, and earnings information on a national basis and in considerable industry
+    detail. The Bureau of Labor Statistics collects payroll data each month from a sample
+    of business and government establishments in all nonfarm activities.
+
+    Employment data include series for total employment, number of women employees, and
+    number of production or nonsupervisory employees. Estimates of average hourly
+    earnings, average weekly hours, average weekly earnings, and average weekly overtime
+    hours are produced for both all employees and for production or nonsupervisory
+    employees. Overtime hours are produced for manufacturing industries only.
+
+    A sample of approximately 121,000 businesses and government agencies representing
+    approximately 631,000 worksites throughout the United States is utilized for this
+    monthly survey. The sample contains about 324,000 employer units.
+
+    All employment, hours and earnings series are classified according to the 2022 North
+    American Industry Classification System (NAICS). The industry code used in the survey
+    corresponds to the NAICS code, except in those cases where multiple industries have
+    been combined.

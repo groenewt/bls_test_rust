@@ -1,0 +1,21 @@
+# IP Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default processing overrides
+processing:
+  strategy:
+    max_concurrency: 2
+  resources:
+    max_threads: 8
+
+# Default output overrides
+output:
+  format: "csv"
+  partitioning:
+    max_file_size_mb: 256
+
+# Default quality overrides
+quality:
+  policy:
+    mode: "warn_only"

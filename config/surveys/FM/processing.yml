@@ -1,0 +1,75 @@
+config_version: 1
+strategy:
+  mode: "in_memory"
+  max_concurrency: 1
+
+resources:
+  max_threads: 4
+  memory_limit_gb: 4
+
+io:
+  chunk_size_mb: 32
+  buffer_pool_size: 4
+
+features:
+  use_mmap: true
+  enable_statistics: true
+  enable_profiling: false
+
+lookup_config:
+  preload: ["chld", "mari", "race", "sexs"]
+  lazy: ["footnote", "ftyp", "lfst", "seasonal"]
+  mmap: []
+  cache_all: true
+
+transforms:
+  - id: "normalize_series_id"
+    expr: "upper(series_id)"
+  - id: "validate_period"
+    expr: "case when period = 'A01' then period else null end"
+  - id: "parse_value"
+    expr: "to_decimal(value, 12, 0)"
+
+mappings:
+  chld_code:
+    lookup_table: "chld"
+    lookup_key: "chld_code"
+    lookup_value: "chld_text"
+    create_field: "chld_text"
+    on_missing: "UNKNOWN_CHILD"
+    cache: true
+  mari_code:
+    lookup_table: "mari"
+    lookup_key: "mari_code"
+    lookup_value: "mari_text"
+    create_field: "mari_text"
+    on_missing: "UNKNOWN_MARITAL"
+    cache: true
+  race_code:
+    lookup_table: "race"
+    lookup_key: "race_code"
+    lookup_value: "race_text"
+    create_field: "race_text"
+    on_missing: "UNKNOWN_RACE"
+    cache: true
+  sexs_code:
+    lookup_table: "sexs"
+    lookup_key: "sexs_code"
+    lookup_value: "sexs_text"
+    create_field: "sexs_text"
+    on_missing: "UNKNOWN_SEX"
+    cache: true
+  footnote_codes:
+    lookup_table: "footnote"
+    lookup_key: "footnote_code"
+    lookup_value: "footnote_text"
+    create_field: "footnote_texts"
+    multiple: true
+    separator: " "
+    on_missing: "skip"
+    cache: true
+
+sorting:
+  sort_by: ["series_id"]
+  deduplicate: false
+  deduplicate_on: ["series_id"]

@@ -1,0 +1,38 @@
+config_version: 1
+# Development environment overrides for CM survey
+
+# Development processing settings
+processing:
+  strategy:
+    max_concurrency: 1  # Single thread for debugging
+  resources:
+    max_threads: 2
+    memory_limit_gb: 2  # Lower memory for dev machines
+  io:
+    chunk_size_mb: 25  # Smaller chunks for faster iteration
+
+# Development output settings
+output:
+  format: "csv"
+  destination:
+    base_path: "data/dev/processed/bls/CM"
+
+# Development quality settings
+quality:
+  policy:
+    mode: "warn_only"  # Don't fail on quality issues in dev
+    sample_on_fail_rows: 10  # Smaller sample for debugging
+
+# Development runtime settings
+runtime:
+  feature_flags:
+    enable_hot_reloads: true  # Enable for development
+    enable_profiling: true   # Enable profiling in dev
+  
+  logging:
+    level: "debug"  # Verbose logging for development
+  
+  error_handling:
+    max_errors: 100  # Fail fast in development
+    checkpoint:
+      interval_records: 10000  # More frequent checkpoints

@@ -1,0 +1,24 @@
+# processing.yml
+# Consumer Expenditure Survey - Strategy, resources, chunking, mmap, cache
+# Migrated from cx.yml on 2025-08-07
+
+config_version: 1
+
+strategy:
+  mode: "chunked"     # Process in chunks due to medium size
+  max_concurrency: 4  # Increased parallelization for medium-sized data
+
+resources:
+  max_threads: 4
+  memory_limit_gb: 8  # Appropriate for medium-sized survey
+
+io:
+  chunk_size_mb: 50
+  buffer_pool_size: 8
+
+features:
+  use_mmap: true           # Use memory mapping for large files
+  enable_statistics: true  # Collect statistics for optimization
+  enable_profiling: false  # Disable profiling in production
+
+transforms: []  # No specific transforms defined in original config

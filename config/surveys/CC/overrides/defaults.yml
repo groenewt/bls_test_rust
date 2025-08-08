@@ -1,0 +1,28 @@
+# CC Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default processing overrides for CC survey
+processing:
+  strategy:
+    max_concurrency: 1  # Conservative default for stability
+  
+  resources:
+    memory_limit_gb: 8  # Conservative memory limit
+    max_threads: 2      # Conservative thread count
+
+# Default output overrides
+output:
+  partitioning:
+    max_file_size_mb: 256  # Smaller default file size
+
+# Default quality policy overrides
+quality:
+  policy:
+    mode: "warn_only"  # Less strict for development
+    sample_on_fail_rows: 20
+
+# Default error handling overrides
+error_handling:
+  max_errors: 1000  # Lower threshold for development
+  on_error: "continue"

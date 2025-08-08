@@ -1,0 +1,20 @@
+# WS Survey Production Environment Overrides
+config_version: 1
+
+# Production environment specific overrides
+logging:
+  level: "warn"
+
+error_handling:
+  max_errors: 1000
+
+processing:
+  features:
+    enable_profiling: false
+    enable_statistics: true
+
+output:
+  format: "parquet"
+  parquet:
+    compression: "zstd"
+    compression_level: 3
