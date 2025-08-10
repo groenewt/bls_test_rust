@@ -1,4 +1,35 @@
+# GG Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
 config_version: 1
+
+# Required checks field for QualityConfig
+checks:
+  - name: "series_id_not_null"
+    check_type: "completeness"
+    parameters:
+      columns: ["series_id"]
+    severity: "error"
+  
+  - name: "year_range_check" 
+    check_type: "validity"
+    parameters:
+      column: "year"
+      min: 2010
+      max: 2055
+    severity: "error"
+    
+  - name: "unique_series_combination"
+    check_type: "uniqueness"
+    parameters:
+      columns: ["series_id", "year", "period"]
+    severity: "error"
+
+# Required validation field for QualityConfig
+validation:
+  strict_mode: true
+  fail_on_error: true
+  max_errors: 2000
+
 expectations:
   non_null:
     - { file: "main", columns: ["series_id", "year", "period"] }
@@ -57,23 +88,21 @@ policy:
   log_errors: true
   error_file: "gg_errors.log"
 
-# Data quality rules by action type
-rules:
-  flag:  # Flag but don't reject
-    - { field: "value", rule: "range", min: 0, max: 10000000, message: "Employment count outside reasonable range" }
-    - { field: "series_id", rule: "pattern", pattern: "^GG[US]Q\\d{19}$", message: "Invalid series ID format" }
-    - { field: "period", rule: "values", allowed: ["Q01", "Q02", "Q03", "Q04"], message: "Invalid period value" }
-    - { field: "begin_period", rule: "values", allowed: ["Q1", "Q2", "Q3", "Q4"], message: "Invalid begin period value" }
-    - { field: "end_period", rule: "values", allowed: ["Q1", "Q2", "Q3", "Q4"], message: "Invalid end period value" }
-  
-  reject:  # Reject record
-    - { field: "year", rule: "range", min: 2010, max: 2055, message: "Year outside valid range" }
-    - { field: "series_id", rule: "length", exact: 23, message: "Series ID must be exactly 23 characters" }
-    - { field: "series_id", rule: "required", message: "Series ID cannot be null" }
-    - { field: "area_code", rule: "length", exact: 5, message: "Area code must be exactly 5 characters" }
-    - { field: "industry_code", rule: "length", exact: 6, message: "Industry code must be exactly 6 characters" }
-    - { field: "begin_year", rule: "range", min: 2010, max: 2055, message: "Begin year must be between 2010 and 2055" }
-    - { field: "begin_year", rule: "numeric", message: "Begin year must be numeric" }
-    - { field: "end_year", rule: "range", min: 2010, max: 2055, message: "End year must be between 2010 and 2055" }
-    - { field: "end_year", rule: "numeric", message: "End year must be numeric" }
-    - { field: "end_year", rule: "greater_than_or_equal", compare_field: "begin_year", message: "End year must be >= begin year" }
+actions:
+  value_range_violation: "flag"
+  year_range_violation: "reject"
+  series_id_format_violation: "flag"
+  period_enum_violation: "flag"
+  begin_period_enum_violation: "flag"
+  end_period_enum_violation: "flag"
+  series_id_length_violation: "reject"
+  series_id_missing: "reject"
+  area_code_length_violation: "reject"
+  industry_code_length_violation: "reject"
+  begin_year_range_violation: "reject"
+  begin_year_numeric_violation: "reject"
+  end_year_range_violation: "reject"
+  end_year_numeric_violation: "reject"
+  cross_field_violation: "reject"
+  length_violation: "reject"
+  required_field_missing: "reject"

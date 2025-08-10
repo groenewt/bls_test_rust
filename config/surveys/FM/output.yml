@@ -1,5 +1,15 @@
+# FM Survey Output Configuration
+# Output formats, partitioning, compression
 config_version: 1
-format: "parquet"
+
+# Required formats field as array
+formats: ["parquet"]
+
+# Required output directory and filename pattern
+output_dir: "data/processed/bls/FM"
+filename_pattern: "{survey}_{table}_{timestamp}"
+create_subdirs: true
+
 parquet:
   compression: "zstd"
   compression_level: 3
@@ -8,6 +18,7 @@ parquet:
   bloom_filters: false
 
 partitioning:
+  enabled: true
   partition_by: ["year"]
   max_file_size_mb: 128
 
@@ -21,3 +32,12 @@ evolution:
 
 destination:
   base_path: "data/processed/bls/FM"
+
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]

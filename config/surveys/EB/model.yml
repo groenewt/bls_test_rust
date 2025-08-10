@@ -1,3 +1,5 @@
+# EB Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
 series:
   path: "eb.series"
@@ -16,6 +18,7 @@ data_files:
   - id: "main"
     pattern: "eb.data.*"
     index: "series_id"
+    estimated_size_gb: 0.05
     schema:
       series_id: { type: "string", length: 17, nullable: false }
       year: { type: "string", length: 4, nullable: false }
@@ -94,7 +97,6 @@ constraints:
     - { file: "main", columns: ["series_id", "year", "period"] }
 
 types:
-  aliases:
-    Year: { base: "string", length: 4, pattern: "^[0-9]{4}$" }
-    SeriesId: { base: "string", length: 17, pattern: "^EB[U]\\w{15}$" }
-    Period: { base: "string", length: 3, enum: ["A01"] }
+  Year: { base: "string", length: 4, pattern: "^[0-9]{4}$" }
+  SeriesId: { base: "string", length: 17, pattern: "^EB[U]\\w{15}$" }
+  Period: { base: "string", length: 3, enum: ["A01"] }

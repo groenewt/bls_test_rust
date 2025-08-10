@@ -1,3 +1,139 @@
 # LU Survey Model Configuration
+# Data model: files, schemas, relationships (BLS YAML style for adapter)
 config_version: 1
-models: {}
+
+series:
+  path: "lu.series"
+  index: "series_id"
+  estimated_size_gb: 0.05
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "LUU000000000000000000000000000"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    area_code:
+      type: "string"
+      length: 4
+      nullable: true
+      example_value: "0000"
+    item_code:
+      type: "string"
+      length: 7
+      nullable: true
+      example_value: "0000000"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1950"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2025"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M12"
+
+data_files:
+  - id: "main"
+    pattern: "lu.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.2
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "LUU000000000000000000000000000"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|Q\\d{2}|A01)$"
+        nullable: false
+        example_value: "M06"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 123.4567
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "footnote"
+    path: "lu.footnote"
+    index: "footnote_code"
+    description: "Footnotes"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "C"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: true
+        example_value: ""
+  - id: "period"
+    path: "lu.period"
+    index: "period"
+    description: "Period of observation"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+    - { file: "period", columns: ["period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }

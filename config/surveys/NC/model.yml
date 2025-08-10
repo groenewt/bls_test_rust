@@ -1,3 +1,262 @@
-# NC Survey Model Configuration
+# NC Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "nc.series"
+  index: "series_id"
+  estimated_size_gb: 0.3
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "NCU0099570000000"
+    state_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    area_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "9957"
+    mog_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    occupation_code:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "000"
+    level_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: "00"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1997"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M09"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2000"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M07"
+
+data_files:
+  - id: "current"
+    pattern: "nc.data.0.Current"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "NCU5306633300003"
+      year:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "1999"
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "string"
+        length: 12
+        nullable: false
+        example_value: "0.238"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "alldata"
+    pattern: "nc.data.1.AllData"
+    index: "series_id"
+    estimated_size_gb: 2.0
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "NCU5306633300003"
+      year:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "1999"
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "string"
+        length: 12
+        nullable: false
+        example_value: "10.124"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "area"
+    path: "nc.area"
+    index: "area_code"
+    description: "Area mapping table"
+    schema:
+      area_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "A100"
+      area_name:
+        type: "string"
+        length: 80
+        nullable: false
+        example_value: "Atlanta-Sandy Springs-Roswell, GA"
+
+  - id: "level"
+    path: "nc.level"
+    index: "level_code"
+    description: "Work level mapping"
+    schema:
+      level_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "02"
+      level_text:
+        type: "string"
+        length: 60
+        nullable: false
+        example_value: "Level 2"
+
+  - id: "mogocc"
+    path: "nc.mogocc"
+    index: "mogocc_code"
+    description: "Major occupation groups and detailed occupation codes"
+    schema:
+      mogocc_code:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "01000"
+      occupation_text:
+        type: "string"
+        length: 60
+        nullable: false
+        example_value: "Management occupations"
+
+  - id: "starea"
+    path: "nc.starea"
+    index: "area_code"
+    description: "State-area crosswalk"
+    schema:
+      state_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      area_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "0096"
+      area_text:
+        type: "string"
+        length: 60
+        nullable: false
+        example_value: "Anniston-Oxford-Jacksonville, AL"
+
+  - id: "state"
+    path: "nc.state"
+    index: "state_code"
+    description: "State names"
+    schema:
+      state_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      state_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Alabama"
+
+  - id: "occupation"
+    path: "nc.occupation"
+    index: "occupation_code"
+    description: "Occupation mapping"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "000"
+      occupation_text:
+        type: "string"
+        length: 60
+        nullable: false
+        example_value: "All occupations"
+
+relationships:
+  - from: { file: "current", column: "series_id" }
+    to:   { file: "series",  column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "alldata", column: "series_id" }
+    to:   { file: "series",  column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to:   { file: "area",   column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "state_code" }
+    to:   { file: "state",  column: "state_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "level_code" }
+    to:   { file: "level",  column: "level_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "current", columns: ["series_id", "year", "period"] }
+    - { file: "alldata", columns: ["series_id", "year", "period"] }
+    - { file: "area", columns: ["area_code"] }
+    - { file: "level", columns: ["level_code"] }
+    - { file: "mogocc", columns: ["mogocc_code"] }
+    - { file: "starea", columns: ["area_code"] }
+    - { file: "state", columns: ["state_code"] }
+    - { file: "occupation", columns: ["occupation_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "state_code", "area_code", "occupation_code", "level_code"] }
+    - { file: "current", columns: ["series_id", "year", "period"] }
+    - { file: "alldata", columns: ["series_id", "year", "period"] }

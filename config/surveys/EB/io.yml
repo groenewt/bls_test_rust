@@ -1,3 +1,5 @@
+# EB Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
 config_version: 1
 discovery:
   root: "data/raw/bls/eb"
@@ -17,3 +19,10 @@ partition_hints:
 
 mmap:
   enable_for_mb_greater_than: 10
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

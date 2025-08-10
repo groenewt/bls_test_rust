@@ -1,4 +1,7 @@
+# GP Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "GP"
   name: "Geographic Profile"
@@ -7,17 +10,60 @@ survey:
   characteristics:
     frequency: "annual"
     coverage: "State labor force data classified by demographic and economic characteristics"
+    time_series_count: "Approximately 8,500 State labor force series"
     classification_system: "State, race, age, sex, and occupational classification"
-    begin_year: 1981
     update_schedule: "Annual release in late March or early April"
+    begin_year: 1981
     survey_methodology: "Data from the Current Population Survey (CPS) conducted by the Bureau of the Census"
     calculation_basis: "Rates are expressed as percents with one decimal place. Levels are measured in thousands of persons with no decimal places."
-    time_series_count: "Approximately 8,500 State labor force series"
-  contacts:
-    - role: "owner"
-      name: "groenewt"
-      email: ""
-  documentation:
-    primary: "docs/bls/survey/gp.txt"
-    data_dictionary: ""
-  tags: ["geographic", "profile", "employment", "unemployment", "state", "labor", "demographics"]
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/gp.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/gp
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/gp.txt
+
+tags: ["geographic", "profile", "employment", "unemployment", "state", "labor", "demographics"]
+
+definition: |
+  The following is a definition of: GEOGRAPHIC PROFILE (GP)
+
+  Survey Description: Geographic Profile series are taken from the Current 
+  Population Survey (CPS), conducted by the Bureau of the Census, which produces 
+  information about employment and unemployment in States, classified by a variety 
+  of demographic and economic characteristics.
+
+  Data for demographic groups were not published in the Geographic Profile 
+  where they did not meet BLS publication standards of reliability for the 
+  particular area based on the sample in that area. All series used in the 
+  development of the Geographic Profile are included here, whether or not they 
+  were included in the publication itself.
+
+  Summary Data Available: Presently, there are approximately 8,500 State labor
+  force series available in the LABSTAT database. These series include the major 
+  labor force estimates for States as published in the annual Geographic Profile 
+  of Employment and Unemployment and other BLS publications.
+
+  Major employment status series -- civilian labor force, employed, 
+  unemployed, and unemployment rate -- are defined by State, race, age, sex, 
+  and occupational classification. Also available are selected series for 
+  civilian noninstitutional population by State.
+
+  Frequency of Observations: All data are annual averages.
+
+  Data Characteristics: Rates are expressed as percents with one decimal 
+  place. Levels are measured in thousands of persons and are stored with no 
+  decimal places.
+
+  Updating Schedule: Updates are made once a year when the Geographic Profile
+  is ready for publication in late March or early April. Historical data are 
+  subject to adjustment due to revisions in the State population estimates 
+  made by the Bureau of the Census.

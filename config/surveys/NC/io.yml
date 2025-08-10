@@ -1,17 +1,29 @@
-# NC Survey IO Configuration
+# NC Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
 config_version: 1
-input:
-  base_dir: "data/raw/bls"
-  patterns: []
-  format:
-    type: "fixed_width"
-    encoding: "utf-8"
-  validation:
-    strict: true
-output:
-  base_dir: "data/processed"
-  structure: []
-  naming:
-    pattern: null
-    timestamp_format: null
-    include_survey_code: false
+
+discovery:
+  root: "data/raw/bls/nc"
+  include: ["nc.series", "nc.data.*", "nc.area", "nc.level", "nc.mogocc", "nc.occupation", "nc.state", "nc.starea", "nc.contacts", "nc.txt"]
+  exclude: ["*.tmp", ".*", "*~"]
+
+combining:
+  enabled: true
+  strategy: "smart"
+  thresholds:
+    small_file_mb: 5
+
+partition_hints:
+  strategy: "adaptive"
+  max_partition_size_mb: 300
+  partition_by: ["year", "state_code"]
+
+mmap:
+  enable_for_mb_greater_than: 50
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

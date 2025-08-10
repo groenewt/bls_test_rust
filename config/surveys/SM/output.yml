@@ -1,12 +1,24 @@
+# SM Survey Output Configuration
+# Output formats, partitioning, compression
 config_version: 1
-format: "parquet"
+
+# Required formats field as array
+formats: ["csv"]
+
+# Required output directory and filename pattern
+output_dir: "data/processed/bls/SM"
+filename_pattern: "{survey}_{table}_{timestamp}"
+create_subdirs: true
+
 csv:
   delimiter: ","
   quote_char: "\""
   escape_char: "\\"
   header: true
+  null_value: ""
 
 partitioning:
+  enabled: true
   partition_by: ["year"]
   max_file_size_mb: 512
 
@@ -21,9 +33,17 @@ evolution:
 destination:
   base_path: "data/processed/bls/SM"
 
-# Legacy output configurations for backward compatibility
-data_series:
-  basic_load:
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]
+
+outputs:
+  data_series:
     format: "csv"
     partitioning:
       enabled: true
@@ -36,22 +56,11 @@ data_series:
       enabled: true
       columns: ["year", "period", "value"]
 
-data_dict:
-  basic_load:
+  data_dict:
     format: "csv"
     partitioning:
       enabled: false
     output_file: "sm_series_dict.csv"
-    transformations:
-      sort_by: ["series_id"]
-      deduplicate: false
-      deduplicate_on: ["series_id"]
-    statistics:
-      enabled: true
-      columns: ["series_id", "state_code", "area_code", "industry_code", "begin_year", "end_year"]
-      output_file: "sm_series_dict_stats.json"
-    
-    # Mapping configuration for lookups
     mapping:
       state_code:
         lookup_table: "state"
@@ -110,3 +119,11 @@ data_dict:
         separator: " "
         on_missing: "skip"
         cache: true
+    transformations:
+      sort_by: ["series_id"]
+      deduplicate: false
+      deduplicate_on: ["series_id"]
+    statistics:
+      enabled: true
+      columns: ["series_id", "state_code", "area_code", "industry_code", "begin_year", "end_year"]
+      output_file: "sm_series_dict_stats.json"

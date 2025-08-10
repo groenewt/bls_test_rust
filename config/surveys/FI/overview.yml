@@ -1,4 +1,7 @@
+# FI Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "FI"
   name: "Census of Fatal Occupational Injuries"
@@ -7,17 +10,48 @@ survey:
   characteristics:
     frequency: "annual"
     coverage: "National, state, and metropolitan area data on fatal occupational injuries"
+    time_series_count: "Census of Fatal Occupational Injuries series"
     classification_system: "BLS Occupational Injury and Illness Classification, 2000 Standard Occupational Classification System, 2002 NAICS"
-    begin_year: 1992
     update_schedule: "Annual release, approximately 8 months after reference year"
+    begin_year: 1992
     survey_methodology: "Cooperative venture between BLS and State agencies, collecting data from workers' compensation reports, death certificates, accident reports, news media, and Federal agency sources"
     calculation_basis: "Actual counts of fatal occupational injuries"
-    time_series_count: "Census of Fatal Occupational Injuries series"
-  contacts:
-    - role: "owner"
-      name: "groenewt"
-      email: ""
-  documentation:
-    primary: "docs/bls/survey/fi.txt"
-    data_dictionary: ""
-  tags: ["fatal", "occupational", "injuries", "census", "safety", "workplace"]
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/fi.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/fi
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/fi.txt
+
+tags: ["fatal", "occupational", "injuries", "census", "safety", "workplace"]
+
+definition: |
+  The following is a definition of: CENSUS OF FATAL OCCUPATIONAL INJURIES
+
+  Program Description: The Census of Fatal Occupational Injuries (CFOI) program
+  collects data on fatal occupational injuries that is comprehensive, timely, and
+  verifiable. The program identifies, verifies, and describes fatal occupational
+  injuries.
+
+  Summary Data Available: The CFOI program compiles a count of all fatal
+  occupational injuries occurring during the calendar year. The program uses
+  diverse data sources to identify fatal occupational injuries. Information on
+  each workplace fatality (occupation and other worker characteristics, equipment
+  or machinery involved, and circumstances of the event) is obtained from various
+  sources including death certificates, workers' compensation records, reports to
+  various regulatory agencies, medical examiner reports, and follow-up
+  questionnaires. This multiple source approach assures counts are as complete
+  and accurate as possible. For a fatality to be included in the census, the
+  decedent must have been employed (working for pay, compensation, or profit) at
+  the time of the event, engaged in a legal work activity, or present at the site
+  of work as a requirement of employment. These criteria are generally broader
+  than those used by Federal and State agencies administering specific workplace
+  safety and health or workers' compensation regulations.

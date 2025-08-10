@@ -1,33 +1,43 @@
+# GP Survey Runtime Configuration
+# Feature flags, env overrides mapping, logging
 config_version: 1
+
 feature_flags:
   enable_hot_reloads: false
   use_memory_map_series: true
   enable_checkpoints: true
-  enable_error_recovery: true
+  enable_parallel_processing: true
 
 environment_overrides:
   - key: "BLS_GP_MEMORY_LIMIT_GB"
     maps_to: "resources.memory_limit_gb"
   - key: "BLS_GP_MAX_THREADS"
     maps_to: "resources.max_threads"
+  - key: "BLS_GP_CHUNK_SIZE_MB"
+    maps_to: "io.chunk_size_mb"
+  - key: "BLS_GP_MAX_ERRORS"
+    maps_to: "policy.max_errors"
   - key: "BLS_OUTPUT_FORMAT"
     maps_to: "format"
   - key: "BLS_PARTITION_STRATEGY"
     maps_to: "partition_hints.strategy"
-  - key: "BLS_GP_MAX_ERRORS"
-    maps_to: "policy.max_errors"
 
 logging:
   level: "info"
   structured: true
+
+checkpoint:
+  enabled: true
+  interval_records: 50000
+  checkpoint_dir: "checkpoints/gp"
 
 error_handling:
   on_error: "continue"
   max_errors: 2000
   log_errors: true
   error_file: "gp_errors.log"
-  
-  checkpoint:
-    enabled: true
-    interval_records: 50000
-    checkpoint_dir: "checkpoints/gp"
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60

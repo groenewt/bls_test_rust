@@ -1,29 +1,30 @@
 # FA Survey Processing Configuration
+# Strategy, resources, chunking, mmap, cache
 config_version: 1
 
 # Direct strategy value (not nested)
-strategy: "chunked"
+strategy: "in_memory"
 
 # Flattened configuration fields
-max_threads: 4
-chunk_size: 52428800  # 50MB in bytes
-memory_limit: 4096    # 4GB in MB
-parallel: true       # Multi-threaded processing
+max_threads: 2
+chunk_size: 10485760   # 10MB in bytes
+memory_limit: 2048     # 2GB in MB
+parallel: false       # Single-threaded for small survey
 
 # Chunking configuration
 chunking:
-  size: 52428800      # 50MB in bytes
+  size: 10485760       # 10MB in bytes
   strategy: "sequential"
   overlap: null
 
 # Memory mapping configuration
 mmap:
-  enabled: true       # Beneficial for medium survey
+  enabled: false       # Not needed for small survey
   threshold: null
   prefetch: null
 
 # Cache configuration  
 cache:
   enabled: true
-  size: 4194304       # 4MB cache size
-  ttl: 3600          # 1 hour TTL
+  size: 4194304        # 4MB cache size
+  ttl: 1800           # 30 minutes TTL

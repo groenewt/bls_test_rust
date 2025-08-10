@@ -1,25 +1,43 @@
 # FA Survey Runtime Configuration
+# Feature flags, env overrides mapping, logging
 config_version: 1
 
-features:
-  async_processing: false
-  parallel_io: false
-  memory_optimization: false
-  experimental_features: false
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: false
+  enable_checkpoints: false
+  enable_parallel_processing: false
+
+environment_overrides:
+  - key: "BLS_FA_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_FA_MAX_THREADS"
+    maps_to: "resources.max_threads"
+  - key: "BLS_FA_CHUNK_SIZE_MB"
+    maps_to: "io.chunk_size_mb"
+  - key: "BLS_FA_MAX_ERRORS"
+    maps_to: "policy.max_errors"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_PARTITION_STRATEGY"
+    maps_to: "partition_hints.strategy"
 
 logging:
   level: "info"
-  format: null
-  output: null
-  structured: false
+  structured: true
 
+checkpoint:
+  enabled: false
+  interval_records: 10000
+  checkpoint_dir: "checkpoints/fa"
+
+error_handling:
+  on_error: "continue"
+  max_errors: 1000
+  log_errors: true
+  error_file: "fa_errors.log"
 # Performance monitoring
 monitoring:
   enabled: true  # Required field for MonitoringConfig
   metrics_endpoint: null
   health_check_interval: 60
-
-environment:
-  name: null
-  debug: false
-  profile: null

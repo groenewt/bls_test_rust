@@ -1,0 +1,13 @@
+config_version: 1
+# Organization/team defaults for JT survey
+# These settings override the base survey configuration
+
+# Example overrides (uncomment and modify as needed):
+# resources:
+#   memory_limit_gb: 8
+# 
+# logging:
+#   level: "debug"
+# 
+# policy:
+#   max_errors: 500

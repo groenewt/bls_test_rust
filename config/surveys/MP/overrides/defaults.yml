@@ -1,0 +1,28 @@
+# MP Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default processing overrides for MP survey (flattened structure)
+processing:
+  strategy: "in_memory"  # Appropriate for small annual productivity data
+  memory_limit: 1024     # 1GB in MB - small dataset
+  max_threads: 2
+
+# Default output overrides (flattened structure)
+output:
+  formats: ["csv"]  # Standard format for MP survey
+  output_dir: "data/processed/bls/MP"
+  create_subdirs: true
+
+# Default quality settings (flattened structure)
+quality:
+  validation:
+    fail_on_error: true  # Strict validation by default
+    max_errors: 50       # Lower threshold for small dataset
+
+# Default runtime settings (flattened structure)
+runtime:
+  logging:
+    level: "info"
+  features:
+    enable_data_validation: true

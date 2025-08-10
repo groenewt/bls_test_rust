@@ -37,3 +37,8 @@ error_recovery:
   max_errors: 5000      # Stop if too many errors (increased for larger dataset)
   log_errors: true
   error_file: "ii_errors.log"
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60

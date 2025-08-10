@@ -91,3 +91,13 @@ graph:
     max_parallel_tasks: 4
     timeout_minutes: 180  # 3 hours total timeout
     on_failure: "stop"  # Stop pipeline on task failure
+
+# Global DAG settings
+settings:
+  max_active_runs: 1
+  catchup: false
+  depends_on_past: false
+  email_on_failure: true
+  email_on_retry: false
+  retries: 1
+  retry_delay_minutes: 5

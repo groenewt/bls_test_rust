@@ -1,13 +1,15 @@
+# FI Survey Model Configuration
+# Data structures, schemas, relationships, and constraints
 config_version: 1
 series:
   path: "fi.series"
   index: "series_id"
   estimated_size_gb: 1.0
   schema:
-    series_id: { type: "string", length: 17, nullable: false }
-    category_code: { type: "string", length: 3, nullable: false }
+    series_id: { type: "string", length: 18, nullable: false }
+    category_code: { type: "string", length: 2, nullable: false }
     datatype_code: { type: "string", length: 1, nullable: false }
-    case_code: { type: "string", length: 1, nullable: false }
+    case_code: { type: "string", length: 3, nullable: false }
     industry_code: { type: "string", length: 6, nullable: false }
     event_code: { type: "string", length: 6, nullable: false }
     source_code: { type: "string", length: 6, nullable: false }
@@ -24,7 +26,7 @@ data_files:
     pattern: "fi.data.*"
     index: "series_id"
     schema:
-      series_id: { type: "string", length: 17, nullable: false }
+      series_id: { type: "string", length: 18, nullable: false }
       year: { type: "int32", min: 1992, max: 2055 }
       period: { type: "string", length: 3, pattern: "^A01$" }
       value: { type: "decimal", precision: 12, scale: 0, nullable: true }
@@ -45,15 +47,15 @@ lookups:
     path: "fi.case"
     index: "case_code"
     schema:
-      case_code: { type: "string", length: 1, nullable: false }
+      case_code: { type: "string", length: 3, nullable: false }
       case_text: { type: "string", length: 100, nullable: false }
   
   - id: "category"
     path: "fi.category"
     index: "category_code"
     schema:
-      case_code: { type: "string", length: 1, nullable: false }
-      category_code: { type: "string", length: 3, nullable: false }
+      case_code: { type: "string", length: 3, nullable: false }
+      category_code: { type: "string", length: 2, nullable: false }
       category_text: { type: "string", length: 100, nullable: false }
   
   - id: "datatype"
@@ -148,6 +150,10 @@ constraints:
     - { file: "series", columns: ["series_id", "category_code", "datatype_code", "case_code", "industry_code", "event_code", "source_code", "occupation_code", "area_code"] }
 
 types:
-  aliases:
-    Year: { base: "int32", range: [1992, 2055] }
-    FatalityCount: { base: "decimal", precision: 12, scale: 0, min: 0 }
+  FISeriesId: { base: "string", length: 18, pattern: "^FI[US]\\d{15}$" }
+  FICategoryCode: { base: "string", length: 2, pattern: "^[0-9]{2}$" }
+  FICaseCode: { base: "string", length: 3, pattern: "^[0-9]{3}$" }
+  FIIndustryCode: { base: "string", length: 6, pattern: "^[0-9]{6}$" }
+  FIPeriod: { base: "string", length: 3, pattern: "^A01$" }
+  FIYear: { base: "int32", range: [1992, 2055] }
+  FIFatalityCount: { base: "decimal", precision: 12, scale: 0, min: 0 }

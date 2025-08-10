@@ -1,3 +1,5 @@
+# TU Survey Runtime Configuration
+# Feature flags, env overrides mapping, logging
 config_version: 1
 feature_flags:
   enable_hot_reloads: false
@@ -21,3 +23,8 @@ logging:
     validation: "warn"
     processing: "info"
     output: "info"
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60

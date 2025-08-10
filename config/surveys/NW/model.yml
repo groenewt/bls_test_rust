@@ -1,3 +1,297 @@
-# NW Survey Model Configuration
+# NW Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "nw.series"
+  index: "series_id"
+  estimated_size_gb: 0.3
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "NWU371674020200000000002505000"
+    state_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "37"
+    area_code:
+      type: "string"
+      length: 5
+      nullable: false
+      example_value: "16740"
+    ownership_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "2"
+    estimate_id:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "02"
+    industry_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0000"
+    occupation_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    subcell_id:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "25"
+    datatype_id:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "05"
+    level_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: "00"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2004"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M09"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2008"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M07"
+
+data_files:
+  - id: "current"
+    pattern: "nw.data.0.Current"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "NWU371674020200000000002505000"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2005
+      period:
+        type: "string"
+        length: 3
+        pattern: "^M\\d{2}$"
+        nullable: false
+        example_value: "M06"
+      value:
+        type: "decimal"
+        precision: 12
+        scale: 2
+        nullable: true
+        example_value: 22.67
+      published:
+        type: "string"
+        length: 1
+        nullable: true
+        example_value: "P"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "all_data"
+    pattern: "nw.data.1.AllData"
+    index: "series_id"
+    estimated_size_gb: 2.0
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "NWU371674020200000000002505000"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2005
+      period:
+        type: "string"
+        length: 3
+        pattern: "^M\\d{2}$"
+        nullable: false
+        example_value: "M06"
+      value:
+        type: "decimal"
+        precision: 12
+        scale: 2
+        nullable: true
+        example_value: 22.67
+      published:
+        type: "string"
+        length: 1
+        nullable: true
+        example_value: "P"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "starea"
+    path: "nw.starea"
+    index: "starea_code"
+    description: "Maps state area codes to area names"
+    schema:
+      starea_code:
+        type: "string"
+        length: 7
+        nullable: false
+        example_value: "3716740"
+      starea_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Charlotte-Gastonia-Concord, NC-SC"
+
+  - id: "ownership"
+    path: "nw.ownership"
+    index: "ownership_code"
+    description: "Maps ownership codes to ownership names"
+    schema:
+      ownership_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "2"
+      ownership_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "State and local government"
+
+  - id: "estimate_id"
+    path: "nw.estimate_id"
+    index: "estimate_id_code"
+    description: "Maps estimate ID codes to estimate descriptions"
+    schema:
+      estimate_id_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "02"
+      estimate_id_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Mean hourly earnings"
+
+  - id: "industry"
+    path: "nw.industry"
+    index: "industry_code"
+    description: "Maps industry codes to industry names"
+    schema:
+      industry_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "0000"
+      industry_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All industries"
+
+  - id: "occupation"
+    path: "nw.occupation"
+    index: "occupation_code"
+    description: "Maps occupation codes to occupation names"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      occupation_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All occupations"
+
+  - id: "subcell_id"
+    path: "nw.subcell_id"
+    index: "subcell_id_code"
+    description: "Maps subcell ID codes to characteristic group descriptions"
+    schema:
+      subcell_id_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "25"
+      subcell_id_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All workers"
+
+  - id: "datatype_id"
+    path: "nw.datatype_id"
+    index: "datatype_id_code"
+    description: "Maps data type ID codes to data type descriptions"
+    schema:
+      datatype_id_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "05"
+      datatype_id_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Hourly wage estimates"
+
+  - id: "level"
+    path: "nw.level"
+    index: "level_code"
+    description: "Maps level codes to work level descriptions"
+    schema:
+      level_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "00"
+      level_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All work levels"

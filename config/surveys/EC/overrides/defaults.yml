@@ -1,0 +1,28 @@
+# EC Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default processing overrides for EC survey (flattened structure)
+processing:
+  strategy: "in_memory"  # Appropriate for small survey
+  memory_limit: 2048    # 2GB in MB
+  max_threads: 2
+
+# Default output overrides (flattened structure)
+output:
+  formats: ["csv"]  # Standard format for EC survey
+  output_dir: "data/processed/bls/EC"
+  create_subdirs: true
+
+# Default quality settings (flattened structure)
+quality:
+  validation:
+    fail_on_error: true  # Strict validation by default
+    max_errors: 100
+
+# Default runtime settings (flattened structure)
+runtime:
+  logging:
+    level: "info"
+  features:
+    enable_data_validation: true

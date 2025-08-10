@@ -1,3 +1,220 @@
-# LA Survey Model Configuration
+# LA Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "la.series"
+  index: "series_id"
+  estimated_size_gb: 0.3
+  schema:
+    series_id:
+      type: "string"
+      length: 20
+      nullable: false
+      example_value: "LASBS060000000000003"
+    area_type_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "L"
+    area_code:
+      type: "string"
+      length: 15
+      nullable: false
+      example_value: "BS0600000000000"
+    measure_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "03"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    srd_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "06"
+    series_title:
+      type: "string"
+      length: 120
+      nullable: true
+      example_value: "Unemployment Rate: Balance of California, state less Los Angeles-Long Beach-Glendale MD (S)"
+    footnote_codes:
+      type: "string"
+      length: 1
+      nullable: true
+      example_value: "P"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1976"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2020"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M11"
+
+data_files:
+  - id: "main"
+    pattern: "la.data.*"
+    index: "series_id"
+    estimated_size_gb: 2.0
+    schema:
+      series_id:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "LASBS060000000000003"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 1976
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|M13)$"
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 12
+        scale: 1
+        nullable: true
+        example_value: 9.4
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: "P"
+
+lookups:
+  - id: "area"
+    path: "la.area"
+    index: "area_code"
+    description: "Maps area codes to area names"
+    schema:
+      area_type_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "A"
+      area_code:
+        type: "string"
+        length: 15
+        nullable: false
+        example_value: "ST0100000000000"
+      area_text:
+        type: "string"
+        length: 80
+        nullable: false
+        example_value: "Alabama"
+
+  - id: "area_type"
+    path: "la.area.type"
+    index: "area_type_code"
+    description: "Maps area type codes to area type names"
+    schema:
+      area_type_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "A"
+      area_type_text:
+        type: "string"
+        length: 80
+        nullable: false
+        example_value: "Statewide"
+
+  - id: "footnote"
+    path: "la.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "P"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: true
+        example_value: "Preliminary."
+
+  - id: "measure"
+    path: "la.measure"
+    index: "measure_code"
+    description: "Maps measure codes to measure names"
+    schema:
+      measure_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "03"
+      measure_text:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "unemployment rate"
+
+  - id: "period"
+    path: "la.period"
+    index: "period"
+    description: "Maps period codes to period names"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to:   { file: "series", column: "series_id" }
+    type: "many-to-one"
+
+  - from: { file: "series", column: "area_code" }
+    to:   { file: "area", column: "area_code" }
+    type: "many-to-one"
+
+  - from: { file: "series", column: "area_type_code" }
+    to:   { file: "area_type", column: "area_type_code" }
+    type: "many-to-one"
+
+  - from: { file: "series", column: "measure_code" }
+    to:   { file: "measure", column: "measure_code" }
+    type: "many-to-one"
+
+  - from: { file: "main", column: "footnote_codes" }
+    to:   { file: "footnote", column: "footnote_code" }
+    type: "many-to-many"
+
+  - from: { file: "main", column: "period" }
+    to:   { file: "period", column: "period" }
+    type: "many-to-one"

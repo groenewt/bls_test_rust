@@ -1,3 +1,5 @@
+# TU Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
 series:
   path: "tu.series"

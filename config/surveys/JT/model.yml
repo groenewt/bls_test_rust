@@ -1,3 +1,240 @@
-# JT Survey Model Configuration
+# JT Survey Data Model Configuration
+# Data model: files, schemas, relationships for JOLTS (JT)
 config_version: 1
-models: {}
+
+series:
+  path: "jt.series"
+  index: "series_id"
+  estimated_size_gb: 0.05
+  schema:
+    series_id:
+      type: "string"
+      length: 21
+      nullable: false
+      example_value: "JTS000000000000000JOR"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    state_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    area_code:
+      type: "string"
+      length: 5
+      nullable: false
+      example_value: "00000"
+    sizeclass_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    dataelement_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "JO"
+    ratelevel_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "R"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2000"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M12"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2025"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M08"
+
+data_files:
+  - id: "main"
+    pattern: "jt.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 21
+        nullable: false
+        example_value: "JTS000000000000000JOR"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2025
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|Q\\d{2}|A01)$"
+        nullable: false
+        example_value: "M06"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 4868
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "area"
+    path: "jt.area"
+    index: "area_code"
+    description: "Metropolitan Statistical Area codes"
+    schema:
+      area_code: { type: "string", length: 5, nullable: false, example_value: "00000" }
+      area_text: { type: "string", length: 100, nullable: true, example_value: "All areas" }
+
+  - id: "dataelement"
+    path: "jt.dataelement"
+    index: "dataelement_code"
+    description: "Data element codes"
+    schema:
+      dataelement_code: { type: "string", length: 2, nullable: false, example_value: "JO" }
+      dataelement_text: { type: "string", length: 100, nullable: true, example_value: "Job Openings" }
+
+  - id: "footnote"
+    path: "jt.footnote"
+    index: "footnote_code"
+    description: "Footnote codes"
+    schema:
+      footnote_code: { type: "string", length: 2, nullable: false, example_value: "P" }
+      footnote_text: { type: "string", length: 200, nullable: true, example_value: "" }
+
+  - id: "industry"
+    path: "jt.industry"
+    index: "industry_code"
+    description: "Industry codes (NAICS-based)"
+    schema:
+      industry_code: { type: "string", length: 6, nullable: false, example_value: "000000" }
+      industry_text: { type: "string", length: 100, nullable: true, example_value: "Total nonfarm" }
+
+  - id: "period"
+    path: "jt.period"
+    index: "period"
+    description: "Period codes"
+    schema:
+      period: { type: "string", length: 3, nullable: false, example_value: "M01" }
+      period_abbr: { type: "string", length: 5, nullable: false, example_value: "JAN" }
+      period_name: { type: "string", length: 20, nullable: false, example_value: "January" }
+
+  - id: "ratelevel"
+    path: "jt.ratelevel"
+    index: "ratelevel_code"
+    description: "Rate/Level codes"
+    schema:
+      ratelevel_code: { type: "string", length: 1, nullable: false, example_value: "R" }
+      ratelevel_text: { type: "string", length: 100, nullable: true, example_value: "Rate" }
+
+  - id: "seasonal"
+    path: "jt.seasonal"
+    index: "seasonal_code"
+    description: "Seasonality codes"
+    schema:
+      seasonal_code: { type: "string", length: 1, nullable: false, example_value: "S" }
+      seasonal_text: { type: "string", length: 100, nullable: true, example_value: "Seasonally Adjusted" }
+
+  - id: "sizeclass"
+    path: "jt.sizeclass"
+    index: "sizeclass_code"
+    description: "Establishment size codes"
+    schema:
+      sizeclass_code: { type: "string", length: 2, nullable: false, example_value: "00" }
+      sizeclass_text: { type: "string", length: 100, nullable: true, example_value: "All size classes" }
+
+  - id: "state"
+    path: "jt.state"
+    index: "state_code"
+    description: "State/region codes"
+    schema:
+      state_code: { type: "string", length: 2, nullable: false, example_value: "00" }
+      state_text: { type: "string", length: 100, nullable: true, example_value: "Total US" }
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "sizeclass_code" }
+    to: { file: "sizeclass", column: "sizeclass_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "state_code" }
+    to: { file: "state", column: "state_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "dataelement_code" }
+    to: { file: "dataelement", column: "dataelement_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "ratelevel_code" }
+    to: { file: "ratelevel", column: "ratelevel_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal_code" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "area", columns: ["area_code"] }
+    - { file: "dataelement", columns: ["dataelement_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+    - { file: "industry", columns: ["industry_code"] }
+    - { file: "period", columns: ["period"] }
+    - { file: "ratelevel", columns: ["ratelevel_code"] }
+    - { file: "seasonal", columns: ["seasonal_code"] }
+    - { file: "sizeclass", columns: ["sizeclass_code"] }
+    - { file: "state", columns: ["state_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "seasonal", "industry_code", "state_code", "area_code", "sizeclass_code", "dataelement_code", "ratelevel_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  JTSeriesId: { base: "string", length: 21, pattern: "^JT[SU][0-9A-Z]{18}[RL]$" }
+  JTIndustryCode: { base: "string", length: 6, pattern: "^[0-9]{6}$" }
+  JTStateCode: { base: "string", length: 2, pattern: "^[0-9]{2}$" }
+  JTAreaCode: { base: "string", length: 5, pattern: "^[0-9]{5}$" }
+  JTSizeClass: { base: "string", length: 2, pattern: "^[0-9]{2}$" }
+  JTDataElement: { base: "string", length: 2, pattern: "^[A-Z]{2}$" }
+  JTRateLevel: { base: "string", length: 1, pattern: "^[RL]$" }
+  JTPeriod: { base: "string", length: 3, pattern: "^(M\\d{2}|Q\\d{2}|A01)$" }
+  JTValue: { base: "decimal", precision: 18, scale: 4 }

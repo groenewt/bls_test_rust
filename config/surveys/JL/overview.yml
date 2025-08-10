@@ -1,13 +1,65 @@
 # JL Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "JL"
-  name: "JL Survey"
-  description: "Bureau of Labor Statistics JL survey data"
+  name: "Job Openings and Labor Turnover Survey (JOLTS)"
+  description: "The Job Openings and Labor Turnover Survey program provides national estimates of rates and levels for job openings, hires, and total separations. Total separations are further broken out into quits, layoffs and discharges, and other separations."
   size_class: "medium"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "National and 4 geographic regions (Northeast, Midwest, South, West), 11 major industry divisions"
+    time_series_count: "Job openings, hires, and separations series"
+    classification_system: "NAICS (North American Industry Classification System)"
+    update_schedule: "Monthly release - last week of month for previous month's data"
+    begin_year: 2000
+    begin_period: "December"
+    survey_methodology: "16,000 randomly selected nonfarm establishments from universe of approximately 8 million establishments compiled as part of ES-202 program"
+    calculation_basis: "Sample-based estimates for job openings, hires, quits, layoffs, discharges, and other separations"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/jl.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/jl
+    - Data files are in ASCII text format
+    - Estimates are not seasonally adjusted
+    - All levels published in thousands, rates in percent to one decimal place
+    - Full doc: docs/bls/survey/jl.txt
+
+tags: ["job_openings", "labor_turnover", "hires", "separations", "monthly", "jolts", "employment"]
+
+definition: |
+  The following is a definition of: Job Openings and Labor Turnover Survey (JOLTS)
+
+  Program Description: The Job Openings and Labor Turnover Survey program provides
+  national estimates of rates and levels for job openings, hires, and total 
+  separations. Total separations are further broken out into quits, layoffs and
+  discharges, and other separations.
+
+  Summary Data Available: The estimates are available for eleven major industry 
+  divisions, nine private sector divisions and two public sector divisions, based on 
+  the North American Industry Classification System (NAICS). These divisions include: 
+  Mining; Construction; Durable Goods Manufacturing; Nondurable Goods Manufacturing; 
+  Transportation and Public Utilities; Wholesale Trade; Retail Trade; Finance, 
+  Insurance, and Real Estate; Services; Federal Government; and State and Local Government.
+  
+  Estimates are also available for four geographic regions (Northeast, Midwest,
+  South, and West).
+
+  The sample for the Job Openings and Labor Turnover Survey includes randomly
+  selected nonfarm establishments such as factories, offices, and stores, as
+  well as federal, state, and local government entities in the 50 states and the
+  District of Columbia. The 16,000 establishments in the JOLTS survey are drawn
+  from a universe of approximately eight million establishments compiled as 
+  part of the Covered Employment and Wages, or ES-202, program.
+
+  All data series are available from December 2000 to present. Estimates from JOLTS
+  are not seasonally adjusted, and experience suggests that there is a seasonal pattern
+  to job openings, hires, and separations.

@@ -1,7 +1,33 @@
+# FM Survey Processing Configuration
+# Strategy, resources, chunking, mmap, cache
 config_version: 1
-strategy:
-  mode: "in_memory"
-  max_concurrency: 1
+
+# Direct strategy value (not nested)
+strategy: "in_memory"
+
+# Flattened configuration fields
+max_threads: 4
+chunk_size: 33554432  # 32MB in bytes
+memory_limit: 4096    # 4GB in MB
+parallel: true        # Multi-threaded processing
+
+# Chunking configuration
+chunking:
+  size: 33554432       # 32MB in bytes
+  strategy: "sequential"
+  overlap: null
+
+# Memory mapping configuration
+mmap:
+  enabled: true
+  threshold: null
+  prefetch: null
+
+# Cache configuration  
+cache:
+  enabled: true
+  size: 4194304        # 4MB cache size
+  ttl: 3600            # 1 hour TTL
 
 resources:
   max_threads: 4

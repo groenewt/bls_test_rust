@@ -1,3 +1,5 @@
+# CU Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
 config_version: 1
 discovery:
   root: "data/raw/bls/CU"
@@ -46,4 +48,11 @@ lookup_loading:
   preload: ["area", "item"]
   lazy: ["footnote", "period", "seasonal", "periodicity", "base"]
   mmap: ["aspect"]
+  cache_all: true
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
   cache_all: true

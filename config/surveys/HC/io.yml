@@ -1,3 +1,5 @@
+# HC Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
 config_version: 1
 discovery:
   root: "data/raw/bls/hc"
@@ -22,4 +24,11 @@ lookup_config:
   preload: ["age", "gender", "race", "nature"]
   lazy: ["footnote", "datatype", "category", "case", "los"]
   mmap: ["industry", "occupation", "event", "source"]
+  cache_all: true
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
   cache_all: true

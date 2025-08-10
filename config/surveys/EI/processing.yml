@@ -1,29 +1,30 @@
 # EI Survey Processing Configuration
+# Strategy, resources, chunking, mmap, cache
 config_version: 1
 
 # Direct strategy value (not nested)
 strategy: "chunked"
 
 # Flattened configuration fields
-max_threads: 4
-chunk_size: 52428800  # 50MB in bytes
-memory_limit: 4096    # 4GB in MB
-parallel: true       # Multi-threaded processing
+max_threads: 3
+chunk_size: 31457280    # 30MB in bytes
+memory_limit: 4096      # 4GB in MB
+parallel: true         # Multi-threaded for medium survey
 
 # Chunking configuration
 chunking:
-  size: 52428800      # 50MB in bytes
+  size: 31457280        # 30MB in bytes
   strategy: "sequential"
   overlap: null
 
 # Memory mapping configuration
 mmap:
-  enabled: true       # Beneficial for medium survey
+  enabled: true         # Beneficial for multiple data files
   threshold: null
   prefetch: null
 
 # Cache configuration  
 cache:
   enabled: true
-  size: 4194304       # 4MB cache size
-  ttl: 3600          # 1 hour TTL
+  size: 4194304         # 4MB cache size
+  ttl: 2700            # 45 minutes TTL

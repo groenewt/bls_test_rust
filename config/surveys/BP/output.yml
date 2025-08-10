@@ -1,14 +1,25 @@
+# BP Survey Output Configuration
+# Output formats, partitioning, compression
 config_version: 1
-format: "csv"
+
+# Required formats field as array
+formats: ["csv"]
+
+# Required output directory and filename pattern
+output_dir: "data/processed/bls/BP"
+filename_pattern: "{survey}_{table}_{timestamp}"
+create_subdirs: true
+
 csv:
   delimiter: ","
   quote_char: "\""
   escape_char: "\\"
   header: true
+  null_value: ""
 
 partitioning:
   partition_by: []
-  max_file_size_mb: 100
+  max_file_size_mb: 256
 
 naming:
   dataset: "bls_bp"
@@ -21,6 +32,7 @@ evolution:
 destination:
   base_path: "data/processed/bls/BP"
 
+# Optional transformations/statistics (ignored by core OutputConfig, kept for reference parity)
 transformations:
   sort_by: ["series_id", "year", "period"]
   deduplicate: true

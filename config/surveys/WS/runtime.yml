@@ -6,6 +6,7 @@ feature_flags:
   enable_hot_reloads: false
   use_memory_map_series: false
   enable_checkpoints: false
+  enable_parallel_processing: false
 
 environment_overrides:
   - key: "BLS_WS_MEMORY_LIMIT_GB"
@@ -21,13 +22,18 @@ logging:
   level: "info"
   structured: true
 
+checkpoint:
+  enabled: false
+  interval_records: 10000
+  checkpoint_dir: "checkpoints/ws"
+
 error_handling:
   on_error: "continue"
   max_errors: 1000
   log_errors: true
   error_file: "ws_errors.log"
-  
-  checkpoint:
-    enabled: false
-    interval_records: 10000
-    checkpoint_dir: "checkpoints/ws"
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60

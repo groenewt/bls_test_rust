@@ -1,3 +1,221 @@
-# MP Survey Model Configuration
+# MP Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "mp.series"
+  index: "series_id"
+  estimated_size_gb: 0.02
+  schema:
+    series_id:
+      type: "string"
+      length: 25
+      nullable: false
+      example_value: "MPU491001010000000"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    sector_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "4900"
+    measure_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    duration_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "A0"
+    series_title:
+      type: "string"
+      length: 200
+      nullable: true
+      example_value: "Total factor productivity index for Private business, 2012=100"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1987"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2024"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "mp.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.05
+    schema:
+      series_id:
+        type: "string"
+        length: 25
+        nullable: false
+        example_value: "MPU491001010000000"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(A01)$"
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 3
+        nullable: true
+        example_value: 101.234
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "duration"
+    path: "mp.duration"
+    index: "duration_code"
+    description: "Duration codes"
+    schema:
+      duration_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "A0"
+      duration_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Annual"
+
+  - id: "footnote"
+    path: "mp.footnote"
+    index: "footnote_code"
+    description: "Footnote codes"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "C"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: true
+        example_value: ""
+
+  - id: "measure"
+    path: "mp.measure"
+    index: "measure_code"
+    description: "Measure codes"
+    schema:
+      measure_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      measure_text:
+        type: "string"
+        length: 200
+        nullable: false
+        example_value: "Total factor productivity index"
+
+  - id: "period"
+    path: "mp.period"
+    index: "period"
+    description: "Period codes"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "A01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: true
+        example_value: "ANN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Annual"
+
+  - id: "sector"
+    path: "mp.sector"
+    index: "sector_code"
+    description: "Sector codes"
+    schema:
+      sector_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "4900"
+      sector_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Private business"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "duration_code" }
+    to: { file: "duration", column: "duration_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "measure_code" }
+    to: { file: "measure", column: "measure_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "sector_code" }
+    to: { file: "sector", column: "sector_code" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "duration", columns: ["duration_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+    - { file: "measure", columns: ["measure_code"] }
+    - { file: "period", columns: ["period"] }
+    - { file: "sector", columns: ["sector_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "seasonal", "sector_code", "measure_code", "duration_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  MPSeriesId: { base: "string", length: 25 }
+  MPSectorCode: { base: "string", length: 4, pattern: "^[0-9]{4}$" }
+  MPPeriod: { base: "string", length: 3, pattern: "^(A01)$" }
+  MPValue: { base: "decimal", precision: 18, scale: 3 }

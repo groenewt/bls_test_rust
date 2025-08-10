@@ -112,3 +112,8 @@ mapping_config:
     separator: " "
     on_missing: "skip"
     cache: true
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60

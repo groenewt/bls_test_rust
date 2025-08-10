@@ -1,3 +1,5 @@
+# CW Survey Data Model Configuration
+# Schema definitions for series, data files, lookups, and constraints
 config_version: 1
 series:
   path: "cw.series"

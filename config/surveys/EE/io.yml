@@ -1,17 +1,37 @@
-# EE Survey IO Configuration
+# EE Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
 config_version: 1
-input:
-  base_dir: "data/raw/bls"
-  patterns: []
-  format:
-    type: "fixed_width"
-    encoding: "utf-8"
-  validation:
-    strict: true
-output:
-  base_dir: "data/processed"
-  structure: []
-  naming:
-    pattern: null
-    timestamp_format: null
-    include_survey_code: false
+
+discovery:
+  root: "data/raw/bls/ee"
+  include: [
+    "ee.series",
+    "data/ee.data.*",
+    "map/ee.industry",
+    "map/ee.datatype",
+    "map/ee.period",
+    "map/ee.seasonal",
+    "map/ee.footnote"
+  ]
+  exclude: ["*.tmp", ".*", "*~", "*.bak"]
+
+combining:
+  enabled: false
+  strategy: "none"
+  thresholds:
+    small_file_mb: 50
+
+partition_hints:
+  strategy: "size_based"
+  max_partition_size_mb: 512
+  partition_by: ["year"]
+  
+mmap:
+  enable_for_mb_greater_than: 100
+  
+# Lookup file loading strategy
+lookup_strategy:
+  preload: ["datatype", "period", "seasonal"]
+  lazy: ["footnote"]
+  mmap: ["industry"]
+  cache_all: false

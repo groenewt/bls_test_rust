@@ -1,45 +1,63 @@
+# CS Survey DAG Configuration
+# Pipeline DAG with tasks, dependencies, retries, and SLAs
 config_version: 1
+
 graph:
   tasks:
     - id: "discover"
       type: "scan"
+      description: "Discover and scan input files"
       inputs: []
       retries: { max: 2, backoff_sec: 10 }
       sla_minutes: 5
+      
     - id: "validate"
       type: "validate_model"
+      description: "Validate data model and schema"
       inputs: ["discover"]
       retries: { max: 1, backoff_sec: 5 }
       sla_minutes: 10
+      
     - id: "plan"
       type: "partition_plan"
+      description: "Create processing and partition plan"
       inputs: ["validate"]
       retries: { max: 1, backoff_sec: 5 }
       sla_minutes: 5
+      
     - id: "process_series"
       type: "execute"
+      description: "Process series data"
       inputs: ["plan"]
       parallelism: 1
       retries: { max: 2, backoff_sec: 30 }
       sla_minutes: 60
+      
     - id: "process_data"
       type: "execute"
+      description: "Process main data files"
       inputs: ["plan"]
       parallelism: 2
       retries: { max: 2, backoff_sec: 30 }
       sla_minutes: 120
+      
     - id: "write_series"
       type: "output"
+      description: "Write processed series data to output format"
       inputs: ["process_series"]
       retries: { max: 1, backoff_sec: 10 }
       sla_minutes: 30
+      
     - id: "write_data"
       type: "output"
+      description: "Write processed main data to output format"
       inputs: ["process_data"]
       retries: { max: 1, backoff_sec: 10 }
       sla_minutes: 60
+      
     - id: "qc"
       type: "quality_checks"
+      description: "Run final quality checks and validation"
       inputs: ["write_series", "write_data"]
       retries: { max: 1, backoff_sec: 5 }
       sla_minutes: 15
@@ -61,3 +79,13 @@ graph:
       to: "qc"
     - from: "write_data"
       to: "qc"
+
+# Global DAG settings
+settings:
+  max_active_runs: 1
+  catchup: false
+  depends_on_past: false
+  email_on_failure: true
+  email_on_retry: false
+  retries: 1
+  retry_delay_minutes: 5

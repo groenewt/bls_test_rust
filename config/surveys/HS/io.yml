@@ -8,15 +8,22 @@ discovery:
   exclude: ["*.tmp", ".*", "*~"]
 
 combining:
-  enabled: false
-  strategy: "none"
+  enabled: true
+  strategy: "smart"
   thresholds:
     small_file_mb: 10
 
 partition_hints:
-  strategy: "size_based"
-  max_partition_size_mb: 100
-  partition_by: []
+  strategy: "adaptive"
+  max_partition_size_mb: 500
+  partition_by: ["year", "division_code"]
 
 mmap:
-  enable_for_mb_greater_than: 10
+  enable_for_mb_greater_than: 100
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

@@ -1,0 +1,59 @@
+# EI Survey DAG Configuration
+# Pipeline DAG with tasks, dependencies, retries, and SLAs
+config_version: 1
+
+graph:
+  tasks:
+    - id: "discover"
+      type: "scan"
+      inputs: []
+      retries: { max: 2, backoff_sec: 10 }
+      sla_minutes: 5
+    - id: "validate"
+      type: "validate_model"
+      inputs: ["discover"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 8
+    - id: "plan"
+      type: "partition_plan"
+      inputs: ["validate"]
+      retries: { max: 1, backoff_sec: 5 }
+      sla_minutes: 5
+    - id: "process"
+      type: "execute"
+      inputs: ["plan"]
+      parallelism: 3
+      retries: { max: 2, backoff_sec: 30 }
+      sla_minutes: 45
+    - id: "write"
+      type: "output"
+      inputs: ["process"]
+      retries: { max: 2, backoff_sec: 15 }
+      sla_minutes: 25
+    - id: "qc"
+      type: "quality_checks"
+      inputs: ["write"]
+      retries: { max: 1, backoff_sec: 10 }
+      sla_minutes: 12
+
+  edges:
+    - from: "discover"
+      to: "validate"
+    - from: "validate"
+      to: "plan"
+    - from: "plan"
+      to: "process"
+    - from: "process"
+      to: "write"
+    - from: "write"
+      to: "qc"
+
+# Global DAG settings
+settings:
+  max_active_runs: 1
+  catchup: false
+  depends_on_past: false
+  email_on_failure: true
+  email_on_retry: false
+  retries: 1
+  retry_delay_minutes: 5

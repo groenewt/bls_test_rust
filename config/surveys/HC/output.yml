@@ -1,12 +1,24 @@
+# HC Survey Output Configuration
+# Output formats, partitioning, compression
 config_version: 1
-format: "csv"
+
+# Required formats field as array
+formats: ["csv"]
+
+# Required output directory and filename pattern
+output_dir: "data/processed/bls/HC"
+filename_pattern: "{survey}_{table}_{timestamp}"
+create_subdirs: true
+
 csv:
   delimiter: ","
   quote_char: "\""
   escape_char: "\\"
   header: true
+  null_value: ""
 
 partitioning:
+  enabled: true
   partition_by: ["year"]
   max_file_size_mb: 512
 
@@ -20,6 +32,15 @@ evolution:
 
 destination:
   base_path: "data/processed/bls/HC"
+
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]
 
 data_series:
   basic_load:

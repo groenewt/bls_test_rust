@@ -1,13 +1,63 @@
 # EE Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "EE"
-  name: "EE Survey"
-  description: "Bureau of Labor Statistics EE survey data"
-  size_class: "medium"
+  name: "Employment, Hours, and Earnings--National"
+  description: "The Current Employment Statistics Program provides employment, paid hours, and earnings information on a national basis in considerable industrial detail, collected monthly from about 375,000 employer units covering over 40 percent of total payroll employment."
+  size_class: "large"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "National employment, hours, and earnings data for all nonfarm activities including government"
+    time_series_count: "Over 1,600 published monthly employment series"
+    classification_system: "NAICS (North American Industry Classification System)"
+    update_schedule: "Third Friday following the reporting week (week containing the 12th) in the reference month"
+    begin_year: 1947
+    survey_methodology: "Monthly mail survey from sample of about 375,000 employer units with over 40 percent of total payroll employment"
+    calculation_basis: "Sample-based establishment survey covering all nonfarm activities"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/ee.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/ee
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/ee.txt
+    - Additional README: docs/bls/survey/ee_README
+
+tags: ["employment", "hours", "earnings", "monthly", "establishment", "national", "current_employment_statistics"]
+
+definition: |
+  The following is a definition of: EMPLOYMENT, HOURS, AND EARNINGS--NATIONAL (EE)
+
+  Survey Description: The Current Employment Statistics Program provides 
+  employment, paid hours, and earnings information on a national basis in 
+  considerable industrial detail. The Bureau of Labor Statistics cooperates 
+  with State agencies in collecting data each month from a sample of 
+  establishments in all nonfarm activities including government.
+
+  The data include series for total employment, number of women employed, 
+  number of production or nonsupervisory workers, average hourly earnings, 
+  average weekly hours, average weekly earnings, and average weekly overtime 
+  hours in manufacturing industries.
+
+  A sample of about 375,000 employer units with over 40 percent of total 
+  payroll employment is utilized for this monthly mail survey. For hours and 
+  earnings of production or nonsupervisory workers in private, nonagricultural
+  industries, the sample contains about 300,000 employer units.
+
+  Summary Data Available: For all employees, women, and production or 
+  nonsupervisory workers, over 1,600 published monthly employment series are 
+  available. The series for all employees include over 600 industries at 
+  various levels of aggregation.
+
+  Over 1,750 published monthly series for production workers' average weekly 
+  earnings, average hourly earnings, average weekly hours, and, in 
+  manufacturing, average weekly overtime hours are available.

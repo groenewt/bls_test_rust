@@ -1,3 +1,5 @@
+# CS Survey Runtime Configuration
+# Runtime settings, feature flags, and environment overrides
 config_version: 1
 feature_flags:
   enable_hot_reloads: false
@@ -33,3 +35,8 @@ checkpoint:
   enabled: true  # Enable checkpoints for large-sized data
   interval_records: 100000
   checkpoint_dir: "checkpoints/cs"
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60

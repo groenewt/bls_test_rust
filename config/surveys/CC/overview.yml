@@ -5,21 +5,21 @@ config_version: 1
 survey:
   code: "CC"
   name: "Employer Costs for Employee Compensation"
-  description: "The Employer Costs for Employee Compensation (ECEC) is a measure of the cost of labor. The compensation series includes wages and salaries plus employer costs for individual employee benefits."
+  description: "The Employer Costs for Employee Compensation (ECEC) measures the cost of labor, including wages and salaries and employer costs for employee benefits."
   size_class: "medium"
   characteristics:
     frequency: "quarterly"
-    coverage: "The survey covers all occupations in the civilian economy, which includes the total private economy (excluding farms and households), and the public sector (excluding the Federal government)."
-    time_series_count: "Employer Costs for Employee Compensation series"
-    classification_system: "1990 Census of Occupations"
-    update_schedule: "Updates are available about eight weeks following the end of the reference quarter"
+    coverage: "Civilian economy: private industry (excluding farms and households) and State and local governments (excluding Federal)."
+    time_series_count: "ECEC compensation, wages and salaries, and benefit cost series"
+    classification_system: "1990 Census of Occupations; SIC (historical)"
+    update_schedule: "About eight weeks after the end of the reference quarter"
     begin_year: 1986
-    survey_methodology: "The data are collected from a probability sample of about 30,000 occupations with 7,200 sample establishments in private industry and about 3,750 occupations within 800 sample establishments in State and local governments."
-    calculation_basis: "Employee benefit costs are calculated as cents-per-hour-worked for individual benefits"
+    survey_methodology: "Probability sample of ~30,000 occupations in private industry and ~3,750 in State and local governments; establishments classified by SIC (historical)."
+    calculation_basis: "Employee benefit costs are calculated as cents-per-hour-worked; compensation includes wages and salaries plus benefits."
 
 contacts:
   - role: "owner"
-    name: "Junie"
+    name: "groenewt"
     email: ""
 
 documentation:
@@ -27,56 +27,16 @@ documentation:
   data_dictionary: ""
   notes: |
     - Data location: data/raw/bls/cc
-    - Data files are in ASCII text format
-    - Spaces separate data elements in an original BLS file
-    - All costs per hour worked are stored to the nearest penny
-    - All percents are stored with one decimal place
-    - Reference quarters end in March, June, September, and December
+    - Files are ASCII with space-separated elements
+    - Costs per hour stored to nearest penny; percents have one decimal place
+    - Annual data available for early years; quarterly data begins June 2002
 
-tags: ["compensation", "employee_costs", "quarterly", "labor_costs", "benefits"]
+tags: ["compensation", "benefits", "labor_costs", "quarterly", "ecec"]
 
 definition: |
-  The following is a definition of: EMPLOYER COSTS FOR EMPLOYEE COMPENSATION (CC)
-
-  Survey Description: The Employer Costs for Employee Compensation (ECEC) is a measure
-  of the cost of labor. The compensation series includes wages and salaries plus employer
-  costs for individual employee benefits. Employee benefit costs are calculated 
-  as cents-per-hour-worked for individual benefits ranging from employer payments for 
-  Social Security to paid time off for holidays.
-
-  The survey covers all occupations in the civilian economy, which includes 
-  the total private economy (excluding farms and households), and the public 
-  sector (excluding the Federal government). Statistics are published for 
-  the private and public sectors separately, and the data are combined in a 
-  measure for the civilian economy.
-
-  The data are collected from a probability sample of about 30,000 occupations
-  with 7,200 sample establishments in private industry and about 3,750 
-  occupations within 800 sample establishments in State and local 
-  governments. The sample establishments are classified in industry 
-  categories based on the 1987 Standard Industrial Classification (SIC), as 
-  defined by the U.S. Office of Management and Budget. Within an 
-  establishment, specific job categories are selected to represent broader 
-  occupational definitions. Since March 1995, the jobs have been classified 
-  according to the 1990 Census of Occupations. 
-
-  Summary Data Available: For private industry workers, data are 
-  available for total compensation costs, for wages and salaries alone, and 
-  for individual benefit costs alone. Data are available by major occupational
-  and industry groups, as well as by region and bargaining status. Information
-  is available from 1986 to the present for most of these series.   
-
-  For State and local governments and the civilian economy (State and local 
-  governments plus private industry), data are available for major occupational 
-  and selected industry series. The data for these series are provided from
-  1991 to present.
-
-  Frequency of Observations: Data are available annually from 1986 to 1991.  
-  Data will become available quarterly beginning in June 2002.
-
-  Data Characteristics: All costs per hour worked are stored to the nearest
-  penny. All percents are stored with one decimal place.
-
-  Updating Schedule: Updates are available about eight weeks following the end
-  of the reference quarter. Reference quarters end in March, June, September,
-  and December.
+  The Employer Costs for Employee Compensation (ECEC) is a measure of the cost of
+  labor. The compensation series includes wages and salaries plus employer costs
+  for individual employee benefits. The survey covers all occupations in the civilian
+  economy, including private industry (excluding farms and households) and State and
+  local governments (excluding Federal). Data are published by major occupational and
+  industry groups, as well as by region and bargaining status.

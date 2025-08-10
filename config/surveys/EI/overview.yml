@@ -1,13 +1,56 @@
 # EI Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "EI"
-  name: "EI Survey"
-  description: "Bureau of Labor Statistics EI survey data"
+  name: "International Price Index"
+  description: "International Price Index statistics track merchandise import and export price indexes based on several classification systems and selected import and export services indexes."
   size_class: "medium"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "National import and export price data"
+    time_series_count: "International Price Index series"
+    classification_system: "Multiple (BEA, NAICS, Harmonized, etc.)"
+    update_schedule: "Monthly release"
+    begin_year: 1974
+    survey_methodology: "Price indexes for merchandise imports and exports. Full coverage of merchandise imports began in February 1983 and full coverage of merchandise exports began in 1984."
+    calculation_basis: "Price indexes calculated to one decimal place"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/ei.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/ei
+    - Data files are in ASCII text format with tab separators
+    - First record contains column headers
+    - Full doc: docs/bls/survey/ei.txt
+    - Multiple data files for different index types (BEA, NAICS, Harmonized, etc.)
+
+tags: ["international", "price_index", "monthly", "import", "export", "merchandise", "services"]
+
+definition: |
+  The following is a definition of: INTERNATIONAL PRICE INDEX (EI)
+
+  Summary Data Available: LABSTAT contains merchandise import and export 
+  index time series based on several classification systems and selected 
+  import and export services indexes. Full coverage of merchandise imports 
+  began in February 1983 and full coverage of merchandise exports began in 
+  1984.
+
+  Frequency of Observations: Prior to 1974, data was collected in June only. 
+  From 1974 through 1992, all data was published quarterly. Beginning in 
+  1993, two-digit price data is available on a monthly basis through the 
+  International Price Index press release, while more detailed information 
+  is available through supplemental tables.
+
+  Data Characteristics: Indexes and percentage changes are calculated to one 
+  decimal place.
+
+  Update Schedule: Monthly data may be revised in each of the
+  three months after original publication.

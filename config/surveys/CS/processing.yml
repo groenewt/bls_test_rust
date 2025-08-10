@@ -1,25 +1,30 @@
+# CS Survey Processing Configuration
+# Strategy, resources, chunking, mmap, cache
 config_version: 1
-strategy:
-  mode: "mmap"  # Use memory mapping for large files
-  max_concurrency: 1
 
-resources:
-  max_threads: 8  # Increased parallelization for large-sized data
-  memory_limit_gb: 16
-  
-io:
-  chunk_size_mb: 100
-  buffer_pool_size: 16
-  
-features:
-  use_mmap: true  # Use memory mapping for large files
-  enable_statistics: true
-  enable_profiling: false
+# Direct strategy value (not nested)
+strategy: "mmap"
 
-transforms:
-  - id: "normalize_period"
-    expr: "upper(period)"
-  - id: "parse_value"
-    expr: "to_decimal(value, 18, 4)"
-  - id: "validate_series_id"
-    expr: "series_id matches '^cs[U]\\d{15}$'"
+# Flattened configuration fields
+max_threads: 8
+chunk_size: 104857600  # 100MB in bytes
+memory_limit: 16384    # 16GB in MB
+parallel: true        # Multi-threaded for large survey
+
+# Chunking configuration
+chunking:
+  size: 104857600      # 100MB in bytes
+  strategy: "sequential"
+  overlap: null
+
+# Memory mapping configuration
+mmap:
+  enabled: true        # Beneficial for large-sized data
+  threshold: null
+  prefetch: null
+
+# Cache configuration  
+cache:
+  enabled: true
+  size: 16777216       # 16MB cache size
+  ttl: 3600           # 1 hour TTL

@@ -1,0 +1,26 @@
+# FA Survey Staging Environment Overrides
+config_version: 1
+
+# Staging-specific processing settings
+processing:
+  features:
+    enable_profiling: false
+    enable_statistics: true
+
+# Staging output settings
+output:
+  destination:
+    base_path: "data/stage/processed/bls/FA"
+
+# Staging quality settings
+quality:
+  policy:
+    mode: "continue"
+    sample_on_fail_rows: 25
+
+# Staging runtime settings
+runtime:
+  logging:
+    level: "info"
+  feature_flags:
+    enable_hot_reloads: false

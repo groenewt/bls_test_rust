@@ -1,3 +1,5 @@
+# CW Survey Quality Configuration
+# Data quality expectations, validation rules, and completeness checks
 config_version: 1
 expectations:
   non_null:

@@ -1,0 +1,28 @@
+# IS Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default processing overrides for IS survey (flattened structure)
+processing:
+  strategy: "chunked"  # Appropriate for medium survey (injury/illness data)
+  memory_limit: 4096    # 4GB in MB for processing annual injury data
+  max_threads: 4
+
+# Default output overrides (flattened structure)
+output:
+  formats: ["csv", "parquet"]  # Standard formats for IS survey
+  output_dir: "data/processed/bls/IS"
+  create_subdirs: true
+
+# Default quality settings (flattened structure)
+quality:
+  validation:
+    fail_on_error: true  # Strict validation by default for safety data
+    max_errors: 50  # Lower tolerance for injury/illness data
+
+# Default runtime settings (flattened structure)
+runtime:
+  logging:
+    level: "info"
+  features:
+    enable_data_validation: true

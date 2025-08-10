@@ -1,0 +1,28 @@
+# ML Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default processing overrides for ML survey (flattened structure)
+processing:
+  strategy: "in_memory"  # Appropriate for small survey
+  memory_limit: 2048    # 2GB in MB
+  max_threads: 2
+
+# Default output overrides (flattened structure)
+output:
+  formats: ["csv"]  # Standard format for ML survey
+  output_dir: "data/processed/bls/ML"
+  create_subdirs: true
+
+# Default quality settings (flattened structure)
+quality:
+  validation:
+    fail_on_error: false  # Continue processing with errors for ML survey
+    max_errors: 1000
+
+# Default runtime settings (flattened structure)
+runtime:
+  logging:
+    level: "info"
+  features:
+    enable_data_validation: true

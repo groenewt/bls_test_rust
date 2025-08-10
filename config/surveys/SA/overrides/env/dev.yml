@@ -1,0 +1,20 @@
+# SA Survey Development Environment Overrides
+config_version: 1
+
+# Development-specific settings
+logging:
+  level: "debug"
+
+# Reduced resource limits for development
+resources:
+  max_threads: 2
+  memory_limit_gb: 4
+
+# More lenient error handling for development
+error_handling:
+  max_errors: 5000
+  on_error: "continue"
+
+# Enable profiling in development
+features:
+  enable_profiling: true

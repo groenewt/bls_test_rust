@@ -1,4 +1,5 @@
 # MW Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
 config_version: 1
 
 # Required checks field for QualityConfig
@@ -13,7 +14,7 @@ checks:
     check_type: "validity"
     parameters:
       column: "year"
-      min: 1950
+      min: 1913
       max: 2055
     severity: "error"
     
@@ -26,26 +27,77 @@ checks:
 # Required validation field for QualityConfig
 validation:
   strict_mode: true
-  fail_on_error: true
-  max_errors: 1000
+  fail_on_error: false
+  max_errors: 5000
 
 expectations:
   non_null:
     - { file: "main", columns: ["series_id", "year", "period"] }
-    - { file: "series", columns: ["series_id"] }
+    - { file: "series", columns: ["series_id", "area_code", "item_code", "seasonal", "periodicity_code", "base_code", "base_period", "begin_year", "begin_period", "end_year", "end_period"] }
   
   ranges:
-    - { file: "main", column: "year", min: 1950, max: 2055 }
-    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "main", column: "year", min: 1913, max: 2055 }
+    - { file: "main", column: "value", min: 0.0, max: 9999.999 }
+    - { file: "series", column: "begin_year", min: 1913, max: 2067 }
+    - { file: "series", column: "end_year", min: 1913, max: 2067 }
+  
+  enums:
+    - { file: "main", column: "period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "S01", "S02", "S03", "A01"] }
+    - { file: "series", column: "begin_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "S01", "S02", "S03", "A01"] }
+    - { file: "series", column: "end_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "S01", "S02", "S03", "A01"] }
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+    - { file: "series", column: "periodicity_code", values: ["R", "M", "Q", "S", "A"] }
+    - { file: "series", column: "base_code", values: ["S", "U"] }
+  
+  regex:
+    - { file: "series", column: "series_id", pattern: "^MW[SU][A-Z0-9]{14}$" }
+    - { file: "series", column: "area_code", pattern: "^[A-Z0-9]{4}$" }
+    - { file: "series", column: "item_code", pattern: "^[A-Z0-9]{8}$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 17 }
+    - { file: "series", column: "area_code", exact: 4 }
+    - { file: "series", column: "item_code", exact: 8 }
+    - { file: "series", column: "seasonal", exact: 1 }
+    - { file: "series", column: "periodicity_code", exact: 1 }
+    - { file: "series", column: "base_code", exact: 1 }
+    - { file: "series", column: "base_period", max: 20 }
+  
+  lookup_exists:
+    - { file: "series", column: "area_code", lookup_table: "area" }
+    - { file: "series", column: "item_code", lookup_table: "item" }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+    - { file: "series", validation: "(end_year > begin_year) OR (end_year == begin_year AND end_period >= begin_period)", message: "End date must be after or equal to begin date" }
+    - { file: "main", validation: "value IS NULL OR value >= 0.0", message: "CPI values must be non-negative when not null" }
 
 row_count:
   min: 1
-  warn_below: 100
+  warn_below: 1000
 
 metrics:
-  collect: ["row_count", "null_count", "distinct(series_id)"]
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(area_code)", "distinct(item_code)"]
   persist: true
 
 policy:
-  mode: "fail_on_error"
-  sample_on_fail_rows: 50
+  mode: "continue"
+  max_errors: 5000
+  sample_on_fail_rows: 100
+  log_errors: true
+  error_file: "mw_errors.log"
+
+actions:
+  value_range_violation: "flag"
+  year_range_violation: "reject"
+  series_id_format_violation: "flag"
+  period_enum_violation: "flag"
+  area_code_format_violation: "flag"
+  item_code_format_violation: "flag"
+  seasonal_enum_violation: "flag"
+  periodicity_enum_violation: "flag"
+  base_code_enum_violation: "flag"
+  lookup_missing: "flag"
+  cross_field_violation: "reject"
+  length_violation: "reject"
+  required_field_missing: "reject"

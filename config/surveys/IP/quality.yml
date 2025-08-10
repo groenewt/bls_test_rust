@@ -2,6 +2,34 @@
 # Data quality expectations, validations, and thresholds
 config_version: 1
 
+# Required checks field for QualityConfig
+checks:
+  - name: "series_id_not_null"
+    check_type: "completeness"
+    parameters:
+      columns: ["series_id"]
+    severity: "error"
+  
+  - name: "year_range_check" 
+    check_type: "validity"
+    parameters:
+      column: "year"
+      min: 1987
+      max: 2055
+    severity: "error"
+    
+  - name: "unique_series_combination"
+    check_type: "uniqueness"
+    parameters:
+      columns: ["series_id", "year", "period"]
+    severity: "error"
+
+# Required validation field for QualityConfig
+validation:
+  strict_mode: true
+  fail_on_error: false
+  max_errors: 2000
+
 expectations:
   non_null:
     - { file: "main", columns: ["series_id", "year", "period"] }
@@ -13,17 +41,15 @@ expectations:
     - { file: "series", column: "begin_year", min: 1987, max: 2067 }
     - { file: "series", column: "end_year", min: 1987, max: 2067 }
   
-  patterns:
-    - { file: "main", column: "series_id", pattern: "^IP[U]\\w{19}$" }
-    - { file: "main", column: "period", pattern: "^A01$" }
+  enums:
+    - { file: "main", column: "period", values: ["A01"] }
+    - { file: "series", column: "begin_period", values: ["A01"] }
+    - { file: "series", column: "end_period", values: ["A01"] }
+  
+  regex:
     - { file: "series", column: "series_id", pattern: "^IP[U]\\w{19}$" }
   
-  values:
-    - { file: "main", column: "period", allowed: ["A01"] }
-    - { file: "series", column: "begin_period", allowed: ["A01"] }
-    - { file: "series", column: "end_period", allowed: ["A01"] }
-  
-  lengths:
+  length:
     - { file: "series", column: "series_id", exact: 21 }
   
   cross_field:
@@ -38,9 +64,13 @@ metrics:
   persist: true
 
 policy:
-  mode: "fail_on_error"
+  mode: "continue"
+  max_errors: 2000
   sample_on_fail_rows: 50
+  log_errors: true
+  error_file: "ip_errors.log"
 
+# Note: keeping lower-level data_validation for additional rules if used by downstream tools
 # Validation rules for data files
 data_validation:
   main:

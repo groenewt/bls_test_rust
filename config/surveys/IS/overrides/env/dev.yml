@@ -1,0 +1,30 @@
+# IS Survey Development Environment Overrides
+config_version: 1
+
+# Development-specific processing settings
+processing:
+  features:
+    enable_profiling: true
+    enable_statistics: true
+
+# Development output settings
+output:
+  destination:
+    base_path: "data/dev/processed/bls/IS"
+
+# Development quality settings
+quality:
+  policy:
+    mode: "warn_on_error"  # More lenient for development
+    sample_on_fail_rows: 50
+
+# Development runtime settings
+runtime:
+  logging:
+    level: "debug"
+  development:
+    enable_debug_output: true
+    save_intermediate_files: true
+    verbose_logging: true
+  feature_flags:
+    enable_hot_reloads: true

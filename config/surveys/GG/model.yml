@@ -1,4 +1,7 @@
+# GG Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
+
 series:
   path: "gg.series"
   index: "series_id"

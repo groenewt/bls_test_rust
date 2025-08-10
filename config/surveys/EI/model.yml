@@ -1,3 +1,582 @@
-# EI Survey Model Configuration
+# EI Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "ei.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "EIUCOCANMANU"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    index_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "CO"
+    series_name:
+      type: "string"
+      length: 100
+      nullable: true
+      example_value: "CANMANU"
+    base_period:
+      type: "string"
+      length: 35
+      nullable: true
+      example_value: "2000 = 100"
+    series_title:
+      type: "string"
+      length: 256
+      nullable: true
+      example_value: "All Commodities Import Price Index, Canada, Manufacturing"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1990"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2024"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M12"
+
+data_files:
+  - id: "current"
+    pattern: "ei.data.0.Current"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUCOCANMANU"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        pattern: "^M(0[1-9]|1[0-3])|Q(0[1-5])|S(0[1-3])$"
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 97.7
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "bea_import"
+    pattern: "ei.data.01.BEAImport"
+    index: "series_id"
+    estimated_size_gb: 0.3
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUIRALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 105.2
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "bea_export"
+    pattern: "ei.data.02.BEAExport"
+    index: "series_id"
+    estimated_size_gb: 0.3
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUIQALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 108.9
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "naics_import"
+    pattern: "ei.data.03.NAICSImport"
+    index: "series_id"
+    estimated_size_gb: 0.4
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUIZALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 102.3
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "naics_export"
+    pattern: "ei.data.04.NAICSExport"
+    index: "series_id"
+    estimated_size_gb: 0.4
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUIYALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 104.7
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "harmonized_import"
+    pattern: "ei.data.05.HarmonizedImport"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUIPALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 99.8
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "harmonized_export"
+    pattern: "ei.data.06.HarmonizedExport"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUIDALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 101.5
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "locality_origin"
+    pattern: "ei.data.07.LocalityofOrigin"
+    index: "series_id"
+    estimated_size_gb: 0.2
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUCOALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 103.2
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "locality_destination"
+    pattern: "ei.data.08.LocalityofDestination"
+    index: "series_id"
+    estimated_size_gb: 0.2
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUCDALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 106.8
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "terms_trade"
+    pattern: "ei.data.09.TermsofTrade"
+    index: "series_id"
+    estimated_size_gb: 0.1
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUCTALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 98.5
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "services_import"
+    pattern: "ei.data.10.ServicesImport"
+    index: "series_id"
+    estimated_size_gb: 0.3
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUIVALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 112.3
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "services_export"
+    pattern: "ei.data.11.ServicesExport"
+    index: "series_id"
+    estimated_size_gb: 0.3
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUIHALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 109.7
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "services_inbound"
+    pattern: "ei.data.12.ServicesInbound"
+    index: "series_id"
+    estimated_size_gb: 0.2
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUICALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 107.9
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "services_outbound"
+    pattern: "ei.data.13.ServicesOutbound"
+    index: "series_id"
+    estimated_size_gb: 0.2
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "EIUISALLITEMS"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 111.4
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "footnote"
+    path: "ei.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "P"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: true
+        example_value: "Preliminary"
+
+  - id: "index"
+    path: "ei.index"
+    index: "index_code"
+    description: "Maps index codes to index names"
+    schema:
+      index_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "IR"
+      index_name:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "BEA End Use Import"
+
+  - id: "period"
+    path: "ei.period"
+    index: "period"
+    description: "Maps period codes to period names"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"

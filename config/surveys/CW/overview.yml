@@ -1,3 +1,5 @@
+# CW Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
 survey:
   code: "CW"

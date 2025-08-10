@@ -50,3 +50,10 @@ lookup_config:
   lazy: ["event", "footnote", "hour", "industry", "los", "medical", "nature", "occupation", "pob", "race", "source", "special", "time", "weekday"]
   mmap: []
   cache_all: true
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

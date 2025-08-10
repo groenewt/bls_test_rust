@@ -1,13 +1,70 @@
 # WD Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "WD"
-  name: "WD Survey"
-  description: "Bureau of Labor Statistics WD survey data"
+  name: "Producer Price Index - Commodity Data - Discontinued"
+  description: "Producer Price Index - Commodity Data - discontinued (WD) contains discontinued commodity series from the Producer Price Index program."
   size_class: "medium"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "US commodity price data (discontinued series)"
+    time_series_count: "Discontinued Producer Price Index commodity series"
+    classification_system: "Commodity-based classification system"
+    update_schedule: "Historical data only (discontinued)"
+    begin_year: 1913
+    survey_methodology: "Historical commodity price index data that has been discontinued from the active WP survey"
+    calculation_basis: "Price relatives and index calculations for discontinued commodity series"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/wd.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/wd
+    - Data files are in ASCII text format
+    - Multiple data files partitioned by commodity groups
+    - Full doc: docs/bls/survey/wd.txt
+
+tags: ["producer_price_index", "commodity_data", "discontinued", "historical", "price_indices"]
+
+definition: |
+  The following is a definition of: PRODUCER PRICE INDEX-Discontinued Commodity Series (WD)
+
+  Program Description: The Producer Price Index - Commodity Data - discontinued (WD) 
+  contains discontinued commodity series from the Producer Price Index program. These 
+  series have been moved from the active WP database when they were discontinued.
+
+  Summary Data Available: The WD database contains historical price index data for 
+  commodity series that are no longer actively maintained. This includes indexes for 
+  various commodity groups including farm products, processed foods, textile products, 
+  fuels, chemicals, metals, machinery, and other manufactured goods.
+
+  The data is partitioned into multiple files by commodity groups:
+  - All commodities (group 00)
+  - Farm products (group 01) 
+  - Processed foods and feeds (group 02)
+  - Textile products and apparel (group 03)
+  - Hides, skins, leather (group 04)
+  - Fuels and related products (group 05)
+  - Chemicals and allied products (group 06)
+  - Rubber and plastic products (group 07)
+  - Lumber and wood products (group 08)
+  - Pulp, paper, and allied products (group 09)
+  - Metals and metal products (groups 10-109)
+  - Machinery and equipment (groups 11-119)
+  - Furniture and household durables (group 12)
+  - Nonmetallic mineral products (group 13)
+  - Transportation equipment (group 14)
+  - Miscellaneous products (group 15)
+  - Special groupings and aggregates
+  - Services (groups 30-79)
+  - Construction (group 80)
+
+  These discontinued series provide historical context and continuity for 
+  longitudinal analysis of commodity price trends.

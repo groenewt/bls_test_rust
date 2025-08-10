@@ -1,3 +1,191 @@
-# PR Survey Model Configuration
+# PR Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "pr.series"
+  index: "series_id"
+  estimated_size_gb: 0.05
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "PRU000000000000000000000000000"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    sector_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    measure_code:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "PRS"
+    duration_code:
+      type: "string"
+      length: 2
+      nullable: true
+      example_value: "00"
+    series_title:
+      type: "string"
+      length: 200
+      nullable: true
+      example_value: "Productivity index for Business sector"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1947"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "Q01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2025"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "Q04"
+
+data_files:
+  - id: "main"
+    pattern: "pr.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.2
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "PRU000000000000000000000000000"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(Q\\d{2}|A01)$"
+        nullable: false
+        example_value: "Q02"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 123.456
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "class"
+    path: "pr.class"
+    index: "class_code"
+    description: "Class codes"
+    schema:
+      class_code: { type: "string", length: 3, nullable: false, example_value: "PRS" }
+      class_text: { type: "string", length: 100, nullable: true, example_value: "Productivity" }
+  - id: "duration"
+    path: "pr.duration"
+    index: "duration_code"
+    description: "Duration codes"
+    schema:
+      duration_code: { type: "string", length: 2, nullable: false, example_value: "00" }
+      duration_text: { type: "string", length: 50, nullable: true, example_value: "All durations" }
+  - id: "footnote"
+    path: "pr.footnote"
+    index: "footnote_code"
+    description: "Footnote codes"
+    schema:
+      footnote_code: { type: "string", length: 1, nullable: false, example_value: "C" }
+      footnote_text: { type: "string", length: 100, nullable: true, example_value: "" }
+  - id: "measure"
+    path: "pr.measure"
+    index: "measure_code"
+    description: "Measure codes"
+    schema:
+      measure_code: { type: "string", length: 3, nullable: false, example_value: "PRS" }
+      measure_text: { type: "string", length: 100, nullable: true, example_value: "Productivity index" }
+  - id: "period"
+    path: "pr.period"
+    index: "period"
+    description: "Period codes"
+    schema:
+      period: { type: "string", length: 3, nullable: false, example_value: "Q01" }
+      period_abbr: { type: "string", length: 5, nullable: false, example_value: "Q1" }
+      period_name: { type: "string", length: 20, nullable: false, example_value: "First Quarter" }
+  - id: "seasonal"
+    path: "pr.seasonal"
+    index: "seasonal"
+    description: "Seasonal codes"
+    schema:
+      seasonal: { type: "string", length: 1, nullable: false, example_value: "S" }
+      seasonal_text: { type: "string", length: 20, nullable: true, example_value: "Seasonally adjusted" }
+  - id: "sector"
+    path: "pr.sector"
+    index: "sector_code"
+    description: "Sector codes"
+    schema:
+      sector_code: { type: "string", length: 2, nullable: false, example_value: "01" }
+      sector_name: { type: "string", length: 100, nullable: false, example_value: "Business" }
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "sector_code" }
+    to: { file: "sector", column: "sector_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "measure_code" }
+    to: { file: "measure", column: "measure_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "duration_code" }
+    to: { file: "duration", column: "duration_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "class", columns: ["class_code"] }
+    - { file: "duration", columns: ["duration_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+    - { file: "measure", columns: ["measure_code"] }
+    - { file: "period", columns: ["period"] }
+    - { file: "seasonal", columns: ["seasonal"] }
+    - { file: "sector", columns: ["sector_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "seasonal", "sector_code", "measure_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  PRSeriesId: { base: "string", length: 30 }
+  PRPeriod: { base: "string", length: 3, pattern: "^(Q\\d{2}|A01)$" }
+  PRValue: { base: "decimal", precision: 18, scale: 4 }

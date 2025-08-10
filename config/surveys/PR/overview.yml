@@ -1,13 +1,35 @@
 # PR Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "PR"
-  name: "PR Survey"
-  description: "Bureau of Labor Statistics PR survey data"
+  name: "Major Sector Productivity and Costs"
+  description: "Productivity and costs measures for six major sectors: Business, nonfarm business, nonfinancial corporations, total manufacturing, durable goods manufacturing, and nondurable goods manufacturing."
   size_class: "medium"
   characteristics:
-    frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    frequency: "quarterly"
+    coverage: "National data on major business sectors"
+    time_series_count: "Approximately 282 Major Sector Productivity series"
+    classification_system: "Business sector classifications"
+    update_schedule: "Updates near the beginning of the second and third month of each quarter"
+    begin_year: 1947
+    survey_methodology: "Based on output data from Bureau of Economic Analysis, Census Bureau, BLS, and Federal Reserve Board. Compensation data from BEA and BLS."
+    calculation_basis: "Industry analytic ratios (productivity, unit labor costs) and basic data (output, hours, compensation)"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/pr.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/pr
+    - Data files are in ASCII text format
+    - Series available quarterly and annually
+    - Base period for indexes: 2005 = 100
+    - Full doc: docs/bls/survey/pr.txt
+
+tags: ["productivity", "costs", "business_sectors", "quarterly", "manufacturing", "labor_costs"]

@@ -26,3 +26,10 @@ lookup_config:
   lazy: ["footnote", "industry", "supersector", "seasonal"]  # Load on demand
   mmap: []  # Use for large files
   cache_all: true  # Small enough to keep in memory
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

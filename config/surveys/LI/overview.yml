@@ -1,13 +1,56 @@
 # LI Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "LI"
-  name: "LI Survey"
-  description: "Bureau of Labor Statistics LI survey data"
+  name: "Department Store Inventory Price Index"
+  description: "The Department Store Inventory Price Index is an inventory weighted price index of goods carried by department stores, designed for use in preparing income tax returns by department stores using the Last-In-First-Out (LIFO) Method of Accounting."
   size_class: "medium"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "National basis for the Store Total and for 23 Groups of Departments"
+    time_series_count: "Department Store Inventory Price Index series"
+    classification_system: "Department Store Groups and Categories"
+    update_schedule: "Near the 15th of the month following the reference month"
+    begin_year: 1941
+    survey_methodology: "Derived entirely from the Consumer Price Index (CW and CU), using price data collected for CW and CU items in all kinds of stores"
+    calculation_basis: "Inventory weighted price index with base periods January 1941 = 100 (January 1986 = 100 for some series)"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/li.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/li
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/li.txt
+
+tags: ["inventory", "price_index", "monthly", "department_store", "lifo", "retail"]
+
+definition: |
+  The following is a definition of: DEPARTMENT STORE INVENTORY PRICE INDEX (LI)
+
+  Program Description: The Department Store Inventory Price Index is an 
+  inventory weighted price index of goods carried by department stores, 
+  designed for use in preparing income tax returns by department stores.  
+  Group indexes are used by stores employing the Last-In-First-Out (LIFO) 
+  Method of Accounting in conjunction with the Retail Inventory method.
+
+  Summary Data Available: Monthly data on Department Store Inventory Price Index are
+  derived from the Consumer Price Index (CW and CU). Price data collected for CW and CU 
+  items in all kinds of stores are used for the Department Store Inventory Indexes without 
+  change. Historical data are available for Groups 1-20, the Store Total, Soft Goods and 
+  Durable Goods from January 1941 to the present. Data are available for Groups 21, 22, 23, 
+  and the Miscellaneous category from January 1986 to the present.
+
+  The LIFO Marketbasket provides a considerable saving in cost and is considered an 
+  acceptable procedure for the LIFO Index, since prices for the same item in different 
+  types of stores are directly competitive. Indexes are presented on a national basis 
+  for the Store Total and for 23 Groups of Departments. Three special combinations of 
+  Goods: Soft Goods, Durable Goods, and Miscellaneous have also been prepared.

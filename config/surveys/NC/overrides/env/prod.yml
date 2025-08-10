@@ -1,0 +1,20 @@
+# NC Survey Production Environment Overrides
+config_version: 1
+
+# Production-specific settings
+logging:
+  level: "warn"
+
+# Full resource limits for production
+resources:
+  max_threads: 6
+  memory_limit_gb: 8
+
+# Strict error handling for production
+error_handling:
+  max_errors: 1000
+  on_error: "continue"
+
+# Disable profiling in production
+features:
+  enable_profiling: false

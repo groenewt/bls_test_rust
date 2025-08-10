@@ -1,13 +1,58 @@
 # PD Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "PD"
-  name: "PD Survey"
-  description: "Bureau of Labor Statistics PD survey data"
-  size_class: "medium"
+  name: "Producer Price Index Revision"
+  description: "Producer Price Index Revision indexes reflect price movements for the net outputs of producers organized according to the Standard Industrial Classification System (SIC). Contains discontinued series data."
+  size_class: "large"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "Over 500 mining and manufacturing industries and approximately 50 services industries"
+    time_series_count: "Discontinued Producer Price Index series"
+    classification_system: "SIC (Standard Industrial Classification System)"
+    update_schedule: "Updated every January and July to include historical data for newly discontinued time series"
+    begin_year: 1913
+    survey_methodology: "Scientific probability sampling techniques to select reporting establishments, products, and transactions. Net transaction prices actually received by reporting establishments."
+    calculation_basis: "Price movements for net outputs of domestic producers"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/pd.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/pd
+    - Data files are partitioned by industry codes
+    - Contains over 30 data files organized by industry
+    - Includes mapping files: footnote, industry, period, product
+    - Full doc: docs/bls/survey/pd.txt
+
+tags: ["producer_prices", "price_index", "discontinued_series", "sic_classification", "monthly", "manufacturing", "mining"]
+
+definition: |
+  The following is a definition of: PRODUCER PRICE INDEX REVISION (PD)
+
+  Survey Description: The Producer Price Index Revision indexes reflect
+  price movements for the net outputs of producers organized according to the 
+  Standard Industrial Classification System (SIC). Thus, the PC 
+  (current indexes) and PD (discontinued indexes) are compatible with a 
+  wide assortment of economic time series including: productivity, 
+  production, employment, wages, and earnings. Producer Price Index coverage
+  currently includes nearly all industries in the goods-producing sectors of
+  the American economy--mining, manufacturing, agriculture, fishing, and 
+  forestry--as well as gas, electricity, and goods competitive with those made
+  in the producing sectors, such as waste and scrap materials.
+
+  The PD database contains times series data that are not in calculation. 
+  Every January and July, the database is updated to include historical data 
+  for newly discontinued time series. Coverage includes over 500 mining and 
+  manufacturing industries and approximately 50 services industries.
+
+  BLS collects over 100,000 price quotations each month covering over 500 
+  industries and over 10,000 products and product categories. All indexes 
+  are stored with one decimal place.

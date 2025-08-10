@@ -1,3 +1,5 @@
+# CW Survey Runtime Configuration
+# Feature flags, environment overrides, logging, and error handling
 config_version: 1
 feature_flags:
   enable_hot_reloads: false

@@ -1,36 +1,30 @@
 # CF Survey Processing Configuration
+# Strategy, resources, chunking, mmap, cache
 config_version: 1
 
-strategy:
-  mode: "chunked"     # in_memory|chunked|parallel|streaming|exclusive
-  max_concurrency: 1
+# Direct strategy value (not nested)
+strategy: "chunked"
 
-resources:
-  max_threads: 4
-  memory_limit_gb: 8
+# Flattened configuration fields
+max_threads: 4
+chunk_size: 20971520  # 20MB in bytes
+memory_limit: 8192    # 8GB in MB
+parallel: true       # Multi-threaded for medium survey
 
-io:
-  chunk_size_mb: 20
-  buffer_pool_size: 8
+# Chunking configuration
+chunking:
+  size: 20971520      # 20MB in bytes
+  strategy: "sequential"
+  overlap: null
 
-features:
-  use_mmap: true
-  enable_statistics: true
-  enable_profiling: false
+# Memory mapping configuration
+mmap:
+  enabled: true       # Beneficial for medium-sized survey
+  threshold: null
+  prefetch: null
 
-transforms:
-  - id: "normalize_period"
-    expr: "upper(period)"
-  - id: "parse_value"
-    expr: "to_int32(value)"
-
-error_handling:
-  on_error: "continue"  # Continue processing other records
-  max_errors: 1000      # Stop if too many errors
-  log_errors: true
-  error_file: "cf_errors.log"
-
-checkpoint:
-  enabled: true  # Enable for medium-sized data
-  interval_records: 50000
-  checkpoint_dir: "checkpoints/cf"
+# Cache configuration  
+cache:
+  enabled: true
+  size: 8388608       # 8MB cache size
+  ttl: 3600          # 1 hour TTL

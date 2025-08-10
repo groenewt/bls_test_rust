@@ -1,0 +1,20 @@
+# NC Survey Staging Environment Overrides
+config_version: 1
+
+# Staging-specific settings
+logging:
+  level: "info"
+
+# Production-like resource limits for staging
+resources:
+  max_threads: 4
+  memory_limit_gb: 6
+
+# Moderate error handling for staging
+error_handling:
+  max_errors: 2000
+  on_error: "continue"
+
+# Disable profiling in staging
+features:
+  enable_profiling: false

@@ -1,3 +1,265 @@
-# OR Survey Model Configuration
+# OR Survey Data Model Configuration
+# Data model: files, schemas, relationships for Occupational Requirements (OR)
 config_version: 1
-models: {}
+
+series:
+  path: "or.series"
+  index: "series_id"
+  estimated_size_gb: 0.05
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "ORS000000000000000000000000000"
+    occupation_code:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: "11-1011"
+    industry_code:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: "611110"
+    job_characteristic_code:
+      type: "string"
+      length: 4
+      nullable: true
+      example_value: "CIV"
+    ownership_code:
+      type: "string"
+      length: 2
+      nullable: true
+      example_value: "G"
+    requirement_code:
+      type: "string"
+      length: 4
+      nullable: true
+      example_value: "PHYS"
+    estimate_code:
+      type: "string"
+      length: 4
+      nullable: true
+      example_value: "PCT"
+    datatype_code:
+      type: "string"
+      length: 2
+      nullable: true
+      example_value: "P"
+    category_code:
+      type: "string"
+      length: 4
+      nullable: true
+      example_value: "CAT1"
+    seasonal:
+      type: "string"
+      length: 3
+      nullable: true
+      example_value: "U"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2016"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2025"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "or.data.1.AllData"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "ORS000000000000000000000000000"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|Q\\d{2}|A01)$"
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 6
+        nullable: true
+        example_value: 12.3456
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "additive"
+    path: "or.additive"
+    index: "additive_code"
+    description: "Related elements sum together"
+    schema:
+      additive_code: { type: "string", length: 4, nullable: false }
+      additive_text: { type: "string", length: 200, nullable: true }
+
+  - id: "aspect"
+    path: "or.aspect"
+    index: "aspect_code"
+    description: "Aspect (standard errors and related)"
+    schema:
+      aspect_code: { type: "string", length: 4, nullable: false }
+      aspect_text: { type: "string", length: 200, nullable: true }
+
+  - id: "category"
+    path: "or.category"
+    index: "category_code"
+    description: "Related estimates grouped in categories"
+    schema:
+      category_code: { type: "string", length: 4, nullable: false }
+      category_text: { type: "string", length: 200, nullable: true }
+
+  - id: "datatype"
+    path: "or.datatype"
+    index: "datatype_code"
+    description: "Measurement type of estimate"
+    schema:
+      datatype_code: { type: "string", length: 4, nullable: false }
+      datatype_text: { type: "string", length: 200, nullable: true }
+
+  - id: "estimate"
+    path: "or.estimate"
+    index: "estimate_code"
+    description: "Specific element estimated"
+    schema:
+      estimate_code: { type: "string", length: 6, nullable: false }
+      estimate_text: { type: "string", length: 200, nullable: true }
+
+  - id: "footnote"
+    path: "or.footnote"
+    index: "footnote_code"
+    description: "Footnotes"
+    schema:
+      footnote_code: { type: "string", length: 1, nullable: false }
+      footnote_text: { type: "string", length: 100, nullable: true }
+
+  - id: "industry"
+    path: "or.industry"
+    index: "industry_code"
+    description: "Industry (NAICS)"
+    schema:
+      industry_code: { type: "string", length: 10, nullable: false }
+      industry_name: { type: "string", length: 120, nullable: true }
+
+  - id: "job_characteristic"
+    path: "or.job_characteristic"
+    index: "job_characteristic_code"
+    description: "Worker and establishment characteristics"
+    schema:
+      job_characteristic_code: { type: "string", length: 4, nullable: false }
+      job_characteristic_text: { type: "string", length: 200, nullable: true }
+
+  - id: "occupation"
+    path: "or.occupation"
+    index: "occupation_code"
+    description: "Occupation (SOC)"
+    schema:
+      occupation_code: { type: "string", length: 10, nullable: false }
+      occupation_name: { type: "string", length: 120, nullable: true }
+
+  - id: "ownership"
+    path: "or.ownership"
+    index: "ownership_code"
+    description: "Ownership"
+    schema:
+      ownership_code: { type: "string", length: 2, nullable: false }
+      ownership_name: { type: "string", length: 60, nullable: true }
+
+  - id: "requirement"
+    path: "or.requirement"
+    index: "requirement_code"
+    description: "Main requirement type"
+    schema:
+      requirement_code: { type: "string", length: 6, nullable: false }
+      requirement_text: { type: "string", length: 200, nullable: true }
+
+  - id: "seasonal"
+    path: "or.seasonal"
+    index: "seasonal"
+    description: "Seasonal codes"
+    schema:
+      seasonal: { type: "string", length: 3, nullable: false }
+      seasonal_text: { type: "string", length: 40, nullable: true }
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "occupation_code" }
+    to: { file: "occupation", column: "occupation_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "job_characteristic_code" }
+    to: { file: "job_characteristic", column: "job_characteristic_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "ownership_code" }
+    to: { file: "ownership", column: "ownership_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "requirement_code" }
+    to: { file: "requirement", column: "requirement_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "estimate_code" }
+    to: { file: "estimate", column: "estimate_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "datatype_code" }
+    to: { file: "datatype", column: "datatype_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "category_code" }
+    to: { file: "category", column: "category_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "occupation", columns: ["occupation_code"] }
+    - { file: "industry", columns: ["industry_code"] }
+    - { file: "job_characteristic", columns: ["job_characteristic_code"] }
+    - { file: "ownership", columns: ["ownership_code"] }
+    - { file: "requirement", columns: ["requirement_code"] }
+    - { file: "estimate", columns: ["estimate_code"] }
+    - { file: "datatype", columns: ["datatype_code"] }
+    - { file: "category", columns: ["category_code"] }
+    - { file: "seasonal", columns: ["seasonal"] }
+  required_fields:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }

@@ -1,4 +1,7 @@
+# TU Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "TU"
   name: "American Time Use Survey"
@@ -7,17 +10,39 @@ survey:
   characteristics:
     frequency: "annual"
     coverage: "Time Use data are available for the civilian, noninstitutional population age 15 and older and various subpopulations"
+    time_series_count: "ATUS time series data"
     classification_system: "Activity codes, demographic characteristics, and time use categories"
-    begin_year: 2003
     update_schedule: "Annual release"
+    begin_year: 2003
     survey_methodology: "Individuals are randomly selected from a subset of households that have completed their eighth and final month of interviews for the Current Population Survey (CPS)."
     calculation_basis: "Time use estimates are constructed for different activities, including average hours per day, participation rates, and number of persons."
-    time_series_count: "ATUS time series data"
-  contacts:
-    - role: "owner"
-      name: "groenewt"
-      email: ""
-  documentation:
-    primary: "docs/bls/survey/tu.txt"
-    data_dictionary: ""
-  tags: ["time-use", "activities", "household", "demographics", "labor-statistics"]
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/tu.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/tu
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/tu.txt
+
+tags: ["time-use", "activities", "household", "demographics", "labor-statistics"]
+
+definition: |
+  The following is a definition of: AMERICAN TIME USE SURVEY
+
+  Program Description: The American Time Use Survey (ATUS) is the Nation's 
+  first federally administered, continuous survey on time use in the United States. 
+  The goal of the survey is to measure how people divide their time among life's activities.
+
+  Summary Data Available: Time Use data are available for the civilian, 
+  noninstitutional population age 15 and older living in private households. 
+  Individuals are randomly selected from a subset of households that have completed 
+  their eighth and final month of interviews for the Current Population Survey (CPS). 
+  Data are collected on activities such as paid work, household activities, 
+  eldercare, childcare, volunteer activities, socializing, sports, and leisure.

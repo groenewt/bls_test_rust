@@ -1,4 +1,9 @@
+# GP Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
+
+models: {}
+
 series:
   path: "gp.series"
   index: "series_id"

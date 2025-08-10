@@ -1,0 +1,28 @@
+# LN Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default processing overrides for LN survey (flattened structure)
+processing:
+  strategy: "chunked"  # Appropriate for medium-large survey
+  memory_limit: 4096    # 4GB in MB
+  max_threads: 4
+
+# Default output overrides (flattened structure)
+output:
+  formats: ["csv", "parquet"]  # Standard formats for LN survey
+  output_dir: "data/processed/bls/LN"
+  create_subdirs: true
+
+# Default quality settings (flattened structure)
+quality:
+  validation:
+    fail_on_error: true  # Strict validation by default
+    max_errors: 500
+
+# Default runtime settings (flattened structure)
+runtime:
+  logging:
+    level: "info"
+  features:
+    enable_data_validation: true

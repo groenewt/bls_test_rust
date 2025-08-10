@@ -1,3 +1,158 @@
-# PC Survey Model Configuration
+# PC Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
+
 models: {}
+
+series:
+  path: "pc.series"
+  index: "series_id"
+  estimated_size_gb: 0.8
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "PCU113310113310P"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "113310"
+    product_code:
+      type: "string"
+      length: 15
+      nullable: false
+      example_value: "113310P"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    base_date:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "198112"
+    series_title:
+      type: "string"
+      length: 256
+      nullable: false
+      example_value: "PPI industry data for Logging-Primary products, not seasonally adjusted"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1981"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M12"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: true
+      example_value: "2024"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: true
+      example_value: "M11"
+
+data_files:
+  - id: "main"
+    pattern: "pc.data.*"
+    index: "series_id"
+    estimated_size_gb: 2.5
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "PCU113310113310P"
+      year:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "1994"
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 12
+        scale: 3
+        nullable: true
+        example_value: "82.0"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: "P"
+
+lookups:
+  - id: "industry"
+    path: "pc.industry"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "113300"
+      industry_text:
+        type: "string"
+        length: 150
+        nullable: false
+        example_value: "Forestry and logging"
+  - id: "product"
+    path: "pc.product"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "113300"
+      product_code:
+        type: "string"
+        length: 15
+        nullable: false
+        example_value: "11330041300"
+      product_text:
+        type: "string"
+        length: 150
+        nullable: false
+        example_value: "Primary products"
+  - id: "footnote"
+    path: "pc.footnote"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "P"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: false
+        example_value: "Preliminary"
+  - id: "period"
+    path: "pc.period"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"

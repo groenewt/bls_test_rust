@@ -1,3 +1,97 @@
-# SU Survey Model Configuration
+Skipping (no dags.yml or not parseable): ["BG", "BP", "CD", "CE", "CH", "CM", "CU", "CW", "TU"]# SU Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
+
+series:
+  path: "su.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id: { type: "string", length: 17, nullable: false }
+    area_code: { type: "string", length: 4, nullable: false }
+    item_code: { type: "string", length: 8, nullable: false }
+    seasonal_code: { type: "string", length: 1, enum: ["U"], nullable: false }
+    periodicity_code: { type: "string", length: 1, enum: ["R"], nullable: false }
+    base_code: { type: "string", length: 1, enum: ["S"], nullable: false }
+    base_period: { type: "string", length: 20, nullable: true }
+    footnote_codes: { type: "string", length: 10, nullable: true }
+    begin_year: { type: "string", length: 4, nullable: false }
+    begin_period: { type: "string", length: 3, nullable: false }
+    end_year: { type: "string", length: 4, nullable: false }
+    end_period: { type: "string", length: 3, nullable: false }
+
+data_files:
+  - id: "main"
+    pattern: "su.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.2
+    schema:
+      series_id: { type: "string", length: 17, nullable: false }
+      year: { type: "string", length: 4, nullable: false }
+      period: { type: "string", length: 3, nullable: false }
+      value: { type: "decimal", precision: 18, scale: 4, nullable: true }
+      footnote_codes: { type: "string", length: 10, nullable: true }
+
+lookups:
+  - id: "area"
+    path: "su.area"
+    index: "area_code"
+    schema:
+      area_code: { type: "string", length: 4, nullable: false }
+      area_name: { type: "string", length: 80, nullable: false }
+
+  - id: "base"
+    path: "su.base"
+    index: "base_code"
+    schema:
+      base_code: { type: "string", length: 1, nullable: false }
+      base_name: { type: "string", length: 20, nullable: false }
+
+  - id: "footnote"
+    path: "su.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code: { type: "string", length: 1, nullable: false }
+      footnote_text: { type: "string", length: 100, nullable: false }
+
+  - id: "item"
+    path: "su.item"
+    index: "item_code"
+    schema:
+      item_code: { type: "string", length: 8, nullable: false }
+      item_name: { type: "string", length: 100, nullable: false }
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "item_code" }
+    to: { file: "item", column: "item_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "base_code" }
+    to: { file: "base", column: "base_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "area", columns: ["area_code"] }
+    - { file: "item", columns: ["item_code"] }
+    - { file: "base", columns: ["base_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+  required_fields:
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "area_code", "item_code", "seasonal_code", "periodicity_code", "base_code", "begin_year", "begin_period", "end_year", "end_period"] }
+
+types:
+  aliases:
+    SUYear: { base: "string", pattern: "^[0-9]{4}$", range: [1999, 2067] }
+    SUPeriod: { base: "string", pattern: "^M(0[1-9]|1[0-3])$" }
+    SUSeriesId: { base: "string", length: 17, pattern: "^SUUR[0-9]{4}[A-Z0-9]{1,8}$" }
+
+# Compatibility field for direct ModelConfig parser (ignored by YAML adapter)
 models: {}

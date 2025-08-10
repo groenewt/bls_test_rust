@@ -1,0 +1,28 @@
+# PD Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default processing overrides for PD survey (flattened structure)
+processing:
+  strategy: "mmap"       # Appropriate for large survey
+  memory_limit: 16384    # 16GB in MB
+  max_threads: 8
+
+# Default output overrides (flattened structure)
+output:
+  formats: ["csv"]  # Standard format for PD survey
+  output_dir: "data/processed/bls/PD"
+  create_subdirs: true
+
+# Default quality settings (flattened structure)
+quality:
+  validation:
+    fail_on_error: false  # Continue processing for large survey
+    max_errors: 5000
+
+# Default runtime settings (flattened structure)
+runtime:
+  logging:
+    level: "info"
+  features:
+    enable_data_validation: true

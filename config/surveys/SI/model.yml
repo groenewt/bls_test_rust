@@ -1,3 +1,217 @@
-# SI Survey Model Configuration
+# SI Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
+
 models: {}
+
+series:
+  path: "si.series"
+  index: "series_id"
+  estimated_size_gb: 0.2
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "SIU00000001"
+    division_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "09"
+    industry_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0000"
+    data_type_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "3"
+    case_type_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2002"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2002"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "si.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "SIU00000001"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2002
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|Q\\d{2}|A\\d{2})$"
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 33.3
+      footnote_codes:
+        type: "string"
+        length: 2
+        nullable: true
+        example_value: "Z"
+
+lookups:
+  - id: "division"
+    path: "si.division"
+    index: "division_code"
+    description: "Industry division code to name mapping"
+    schema:
+      division_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "30"
+      division_name:
+        type: "string"
+        length: 80
+        nullable: false
+        example_value: "Manufacturing"
+
+  - id: "industry"
+    path: "si.industry"
+    index: ["division_code", "industry_code"]
+    description: "Industry mapping by division and industry code"
+    schema:
+      division_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "30"
+      industry_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "2010"
+      industry_name:
+        type: "string"
+        length: 120
+        nullable: false
+        example_value: "Meat products"
+
+  - id: "data_type"
+    path: "si.data_type"
+    index: "data_type_code"
+    description: "Data type code to description"
+    schema:
+      data_type_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "3"
+      data_type_text:
+        type: "string"
+        length: 120
+        nullable: false
+        example_value: "Rate of injury and illness cases per 100 full-time workers"
+
+  - id: "case_type"
+    path: "si.case_type"
+    index: "case_type_code"
+    description: "Case type code to description"
+    schema:
+      case_type_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      case_type_text:
+        type: "string"
+        length: 120
+        nullable: false
+        example_value: "Total recordable cases"
+
+  - id: "footnote"
+    path: "si.footnote"
+    index: "footnote_code"
+    description: "Footnote codes"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "Z"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: true
+        example_value: "Rounded to zero"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "division_code" }
+    to: { file: "division", column: "division_code" }
+    type: "many-to-one"
+  - from: { file: "series", columns: ["division_code", "industry_code"] }
+    to: { file: "industry", columns: ["division_code", "industry_code"] }
+    type: "many-to-one"
+  - from: { file: "series", column: "data_type_code" }
+    to: { file: "data_type", column: "data_type_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "case_type_code" }
+    to: { file: "case_type", column: "case_type_code" }
+    type: "many-to-one"
+  - from: { file: "main", column: "footnote_codes" }
+    to: { file: "footnote", column: "footnote_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "division", columns: ["division_code"] }
+    - { file: "industry", columns: ["division_code", "industry_code"] }
+    - { file: "data_type", columns: ["data_type_code"] }
+    - { file: "case_type", columns: ["case_type_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "division_code", "industry_code", "data_type_code", "case_type_code"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  SISeriesId: { base: "string", length: 17, pattern: "^SI[U][0-9A-Z]+$" }
+  SIDivisionCode: { base: "string", length: 2, pattern: "^[0-9]{2}$" }
+  SIIndustryCode: { base: "string", length: 4, pattern: "^[0-9]{4}$" }
+  SIPeriod: { base: "string", length: 3, pattern: "^(M\\d{2}|Q\\d{2}|A\\d{2})$" }
+  SIValue: { base: "decimal", precision: 18, scale: 4, min: 0 }

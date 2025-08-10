@@ -1,13 +1,55 @@
 # ML Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "ML"
-  name: "ML Survey"
-  description: "Bureau of Labor Statistics ML survey data"
-  size_class: "medium"
+  name: "Mass Layoffs"
+  description: "Mass Layoffs statistics provide information about mass layoff events, which involve at least 50 initial claims for unemployment insurance benefits from a single establishment during a consecutive 5-week period."
+  size_class: "small"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "National and state data on mass layoff events"
+    time_series_count: "Mass layoff series"
+    classification_system: "NAICS (North American Industry Classification System)"
+    update_schedule: "Monthly release"
+    begin_year: 1995
+    survey_methodology: "Based on unemployment insurance claims data combined with establishment information."
+    calculation_basis: "Establishment-level data on layoff events meeting mass layoff criteria"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/ml.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/ml
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/ml.txt
+
+tags: ["employment", "layoffs", "unemployment", "monthly", "establishment"]
+
+definition: |
+  The following is a definition of: MASS LAYOFFS
+
+  Program Description: Mass Layoffs statistics provide information about mass
+  layoff events, which involve at least 50 initial claims for unemployment
+  insurance benefits from a single establishment during a consecutive 5-week
+  period.
+
+  Summary Data Available: Monthly data on Mass Layoffs are derived from
+  unemployment insurance claims data combined with establishment information.
+  The program identifies establishments that have at least 50 initial claims
+  for unemployment insurance benefits filed against them during a consecutive
+  5-week period, with at least 50 persons separated from their jobs for at
+  least 31 days.
+
+  The Mass Layoffs data include information on the number of layoff events,
+  the number of initial claims associated with these events, and various
+  characteristics of the establishments and workers involved. Data are
+  available by industry, geographic area, and other establishment and worker
+  characteristics.

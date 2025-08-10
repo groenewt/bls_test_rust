@@ -1,3 +1,198 @@
-# WD Survey Model Configuration
+# WD Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
+
+series:
+  path: "wd.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "WDUSI138011"
+    group_code:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "SI"
+    item_code:
+      type: "string"
+      length: 12
+      nullable: false
+      example_value: "138011"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    base_date:
+      type: "string"
+      length: 6
+      nullable: true
+      example_value: "198206"
+    series_title:
+      type: "string"
+      length: 256
+      nullable: true
+      example_value: "PPI Commodity data for Special indexes-Stainless steel mill products, not seasonally adjusted, discontinued"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1967"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1974"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M12"
+
+data_files:
+  - id: "current"
+    pattern: "wd.data.0.Current"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "WDUSI138011"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 1994
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 12
+        scale: 1
+        nullable: true
+        example_value: 105.9
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+  - id: "all_commodities"
+    pattern: "wd.data.1.AllCommodities"
+    index: "series_id"
+    estimated_size_gb: 0.1
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "WDUSI138011"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 1994
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 12
+        scale: 1
+        nullable: true
+        example_value: 105.9
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "footnote"
+    path: "wd.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "P"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: true
+        example_value: "Text"
+
+  - id: "group"
+    path: "wd.group"
+    index: "group_code"
+    description: "Maps group codes to group descriptions"
+    schema:
+      group_code:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "01"
+      group_text:
+        type: "string"
+        length: 150
+        nullable: false
+        example_value: "Text"
+
+  - id: "item"
+    path: "wd.item"
+    index: ["group_code", "item_code"]
+    description: "Maps group and item codes to item descriptions"
+    schema:
+      group_code:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "01"
+      item_code:
+        type: "string"
+        length: 12
+        nullable: false
+        example_value: "110217"
+      item_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Text"
+
+  - id: "seasonal"
+    path: "wd.seasonal"
+    index: "seasonal_code"
+    description: "Maps seasonal codes to seasonal descriptions"
+    schema:
+      seasonal_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "U"
+      seasonal_text:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "Not Seasonally Adjusted"
+
 models: {}

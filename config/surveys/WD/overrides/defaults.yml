@@ -1,0 +1,18 @@
+# WD Survey Organizational Defaults
+# Org/team defaults for this survey
+config_version: 1
+
+# Default resource limits for WD survey
+resources:
+  max_threads: 4
+  memory_limit_gb: 8
+
+# Default error handling
+error_handling:
+  max_errors: 2000
+  log_errors: true
+
+# Default logging level
+logging:
+  level: "info"
+  structured: true

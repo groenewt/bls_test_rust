@@ -2,21 +2,34 @@
 # Strategy, resources, chunking, mmap, cache
 config_version: 1
 
-strategy:
-  mode: "mmap"
-  max_concurrency: 1
+# Direct strategy value (not nested)
+strategy: "mmap"
 
-resources:
-  max_threads: 8
-  memory_limit_gb: 16
+# Flattened configuration fields
+max_threads: 8
+chunk_size: 104857600  # 100MB in bytes
+memory_limit: 16384    # 16GB in MB
+parallel: true         # Enable parallelization for large survey
 
-io:
-  chunk_size_mb: 100
-  buffer_pool_size: 16
+# Chunking configuration
+chunking:
+  size: 104857600       # 100MB in bytes
+  strategy: "sequential"
+  overlap: null
 
+# Memory mapping configuration
+mmap:
+  enabled: true
+  threshold: null
+  prefetch: null
+
+# Cache configuration  
+cache:
+  enabled: true
+  size: 4194304         # 4MB cache size
+  ttl: 7200             # 2 hours TTL
+
+# Optional: additional flags preserved for compatibility (ignored if not supported)
 features:
-  use_mmap: true
   enable_statistics: true
   enable_profiling: false
-
-transforms: []

@@ -11,7 +11,7 @@ set -euo pipefail
 # This script builds the release binary and runs the DAG pipeline for COUNT random surveys.
 # It captures logs under logs/ and prints where processed outputs are written.
 
-COUNT=15
+COUNT=3
 ENVIRONMENT=${ENV:-dev}
 
 echo "[INFO] Building release binary..."

@@ -25,21 +25,21 @@ graph:
     - id: "process"
       type: "execute"
       inputs: ["plan"]
-      parallelism: 1
+      parallelism: 2
       retries: { max: 2, backoff_sec: 30 }
-      sla_minutes: 30
+      sla_minutes: 60
       
     - id: "write"
       type: "output"
       inputs: ["process"]
-      retries: { max: 1, backoff_sec: 10 }
-      sla_minutes: 15
+      retries: { max: 2, backoff_sec: 15 }
+      sla_minutes: 30
       
     - id: "qc"
       type: "quality_checks"
       inputs: ["write"]
-      retries: { max: 1, backoff_sec: 5 }
-      sla_minutes: 10
+      retries: { max: 1, backoff_sec: 10 }
+      sla_minutes: 15
 
   edges:
     - from: "discover"
@@ -52,3 +52,13 @@ graph:
       to: "write"
     - from: "write"
       to: "qc"
+
+# Global DAG settings
+settings:
+  max_active_runs: 1
+  catchup: false
+  depends_on_past: false
+  email_on_failure: true
+  email_on_retry: false
+  retries: 1
+  retry_delay_minutes: 5

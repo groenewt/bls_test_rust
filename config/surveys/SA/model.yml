@@ -1,3 +1,158 @@
-# SA Survey Model Configuration
+# SA Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "sa.series"
+  index: "series_id"
+  estimated_size_gb: 0.02
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "SASR0000SA0"
+    area_code:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "0000"
+    item_code:
+      type: "string"
+      length: 7
+      nullable: false
+      example_value: "0000000"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    periodicity_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "R"
+    base_period:
+      type: "string"
+      length: 20
+      nullable: true
+      example_value: "1982-84=100"
+
+data_files:
+  - id: "main"
+    pattern: "sa.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.05
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "SASR00000001"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|Q\\d{2}|A01)$"
+        nullable: false
+        example_value: "M06"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 100.1234
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "area"
+    path: "sa.area"
+    index: "area_code"
+    description: "Area mapping"
+    schema:
+      area_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "A100"
+      area_name:
+        type: "string"
+        length: 80
+        nullable: false
+        example_value: "Sample Area"
+
+  - id: "item"
+    path: "sa.item"
+    index: "item_code"
+    description: "Item mapping"
+    schema:
+      item_code:
+        type: "string"
+        length: 7
+        nullable: false
+        example_value: "0000000"
+      item_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Sample Item"
+
+  - id: "footnote"
+    path: "sa.footnote"
+    index: "footnote_code"
+    description: "Footnote mapping"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "C"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: true
+        example_value: ""
+
+  - id: "period"
+    path: "sa.period"
+    index: "period"
+    description: "Period mapping"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "item_code" }
+    to: { file: "item", column: "item_code" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"

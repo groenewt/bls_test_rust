@@ -1,0 +1,29 @@
+# OR Survey Default Overrides
+# Org/team defaults for this survey
+config_version: 1
+
+# Default processing overrides for OR survey (flattened structure)
+processing:
+  strategy: "chunked"     # Appropriate for medium-sized survey with multiple data files
+  memory_limit: 4096      # 4GB in MB - OR has more complex data structure
+  max_threads: 4
+
+# Default output overrides (flattened structure)
+output:
+  formats: ["csv", "parquet"]  # Standard formats for OR survey
+  output_dir: "data/processed/bls/OR"
+  create_subdirs: true
+
+# Default quality settings (flattened structure)
+quality:
+  validation:
+    fail_on_error: true  # Strict validation by default
+    max_errors: 200      # Higher threshold for OR due to complexity
+
+# Default runtime settings (flattened structure)
+runtime:
+  logging:
+    level: "info"
+  features:
+    enable_data_validation: true
+    enable_occupational_classification: true  # OR-specific feature

@@ -1,4 +1,34 @@
+# EB Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
 config_version: 1
+
+# Required checks field for QualityConfig
+checks:
+  - name: "series_id_not_null"
+    check_type: "completeness"
+    parameters:
+      columns: ["series_id"]
+    severity: "error"
+  
+  - name: "year_range_check" 
+    check_type: "validity"
+    parameters:
+      column: "year"
+      min: 1979
+      max: 2055
+    severity: "error"
+    
+  - name: "unique_series_combination"
+    check_type: "uniqueness"
+    parameters:
+      columns: ["series_id", "year", "period"]
+    severity: "error"
+
+# Required validation field for QualityConfig
+validation:
+  strict_mode: true
+  fail_on_error: false
+  max_errors: 1000
 expectations:
   non_null:
     - { file: "series", columns: ["series_id", "title_code", "type_code", "begin_year", "begin_period", "end_year", "end_period"] }
@@ -41,8 +71,22 @@ metrics:
   persist: true
 
 policy:
-  mode: "fail_on_error"
+  mode: "continue"
+  max_errors: 1000
   sample_on_fail_rows: 50
+  log_errors: true
+  error_file: "eb_errors.log"
+
+actions:
+  value_range_violation: "flag"
+  year_range_violation: "reject"
+  series_id_format_violation: "flag"
+  period_enum_violation: "flag"
+  title_code_format_violation: "flag"
+  type_code_format_violation: "flag"
+  cross_field_violation: "reject"
+  length_violation: "reject"
+  required_field_missing: "reject"
 
 validation_rules:
   data_series:

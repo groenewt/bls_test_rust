@@ -51,3 +51,10 @@ lookup_loading:
   mmap: []
   # Keep all lookups in memory once loaded
   cache_all: true
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

@@ -1,8 +1,9 @@
 # MW Survey Output Configuration
+# Output formats, partitioning, compression
 config_version: 1
 
 # Required formats field as array
-formats: ["csv"]
+formats: ["csv", "parquet"]
 
 # Required output directory and filename pattern
 output_dir: "data/processed/bls/MW"
@@ -14,10 +15,16 @@ csv:
   quote_char: "\""
   escape_char: "\\"
   header: true
+  null_value: ""
+
+parquet:
+  compression: "snappy"
+  row_group_size: 100000
 
 partitioning:
-  partition_by: ["year"]
-  max_file_size_mb: 512
+  enabled: true
+  partition_by: ["year", "area_code"]
+  max_file_size_mb: 1024
 
 naming:
   dataset: "bls_mw"
@@ -29,3 +36,12 @@ evolution:
 
 destination:
   base_path: "data/processed/bls/MW"
+
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]

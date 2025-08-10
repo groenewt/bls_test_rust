@@ -1,13 +1,58 @@
 # SH Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "SH"
-  name: "SH Survey"
-  description: "Bureau of Labor Statistics SH survey data"
+  name: "Occupational Injuries and Illnesses Incidence Rate Data"
+  description: "Annual measure of incidence of work-related injuries and illnesses in the form of the number of injuries and illnesses, or lost workdays per 100 full-time employees."
   size_class: "medium"
   characteristics:
-    frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    frequency: "annual"
+    coverage: "Virtually the entire private sector except self-employed, farms with fewer than 11 employees, Federal agencies"
+    time_series_count: "Occupational injury and illness incidence rates"
+    classification_system: "SIC (Standard Industrial Classification)"
+    update_schedule: "Annual release"
+    begin_year: 1978
+    survey_methodology: "Stratified random sample with Neyman allocation, about 280,000 sample units selected nationwide"
+    calculation_basis: "Number of injuries/illnesses per 100 full-time workers: (N/EH) x 200,000"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/sh.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/sh
+    - Data files are in ASCII text format
+    - Full doc: docs/bls/survey/sh.txt
+
+tags: ["occupational_safety", "injuries", "illnesses", "incidence_rates", "annual", "workplace_safety"]
+
+definition: |
+  The following is a definition of: OCCUPATIONAL INJURIES AND ILLNESSES INCIDENCES RATE DATA (SH)
+
+  Survey Description: The occupational injury and illness incidence rate is
+  an annual measure of incidence of work-related injuries and illnesses and 
+  is in the form of the number of injuries and illnesses, or lost workdays 
+  per 100 full-time employees. For this purpose, 200,000 employee hours 
+  represent 100 employee years.
+
+  Data collected through the annual survey are based on records which 
+  employers maintain under the Occupational Safety and Health Act. The data 
+  include all cases resulting from work accidents or exposure in the work 
+  environment which result in death, nonfatal illness, or nonfatal injury 
+  which involves medical treatment (beyond first aid), loss of consciousness, 
+  restriction of work or motion, or transfer to another job.
+
+  Virtually the entire private sector is covered by the survey, except 
+  self-employed individuals, farms with fewer than 11 employees, employers 
+  regulated by other Federal safety and health laws, and Federal, State, and 
+  local government agencies.
+
+  The incidence rates are calculated for three categories: (1) injury and illness combined, 
+  (2) injury only; and (3) illness only. The incidence rates for each category are available 
+  at various SIC industry levels and severity classifications.

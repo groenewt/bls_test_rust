@@ -5,7 +5,7 @@ config_version: 1
 series:
   path: "cc.series"
   index: "series_id"
-  estimated_size_gb: 0.1
+  estimated_size_gb: 0.2
   schema:
     series_id:
       type: "string"
@@ -16,7 +16,7 @@ series:
       type: "string"
       length: 1
       nullable: false
-      example_value: "0"
+      example_value: "1"
     benefit_code:
       type: "string"
       length: 5
@@ -46,7 +46,7 @@ series:
       type: "string"
       length: 3
       nullable: false
-      example_value: "Q05"
+      example_value: "Q01"
     end_year:
       type: "string"
       length: 4
@@ -62,7 +62,7 @@ data_files:
   - id: "main"
     pattern: "cc.data.*"
     index: "series_id"
-    estimated_size_gb: 0.5
+    estimated_size_gb: 0.8
     schema:
       series_id:
         type: "string"
@@ -71,16 +71,16 @@ data_files:
         example_value: "CCU010000100000D"
       year:
         type: "int32"
-        min: 1986
-        max: 2055
+        min: 1900
+        max: 2100
         nullable: false
         example_value: 1998
       period:
         type: "string"
         length: 3
-        pattern: "^(Q0[1-5])$"
+        pattern: "^(Q\\d{2}|A01)$"
         nullable: false
-        example_value: "Q05"
+        example_value: "Q01"
       value:
         type: "decimal"
         precision: 18
@@ -97,7 +97,7 @@ lookups:
   - id: "sector"
     path: "cc.sector"
     index: "sector_code"
-    description: "Maps sector codes to sector names"
+    description: "Sector lookup"
     schema:
       sector_code:
         type: "string"
@@ -112,23 +112,23 @@ lookups:
       display_level:
         type: "string"
         length: 1
-        nullable: false
+        nullable: true
         example_value: "1"
       selectable:
         type: "string"
         length: 1
-        nullable: false
+        nullable: true
         example_value: "T"
       sort_sequence:
         type: "string"
         length: 3
-        nullable: false
+        nullable: true
         example_value: "1"
 
   - id: "benefit"
     path: "cc.benefit"
     index: "benefit_code"
-    description: "Maps benefit codes to benefit names"
+    description: "Benefit lookup"
     schema:
       benefit_code:
         type: "string"
@@ -143,23 +143,23 @@ lookups:
       display_level:
         type: "string"
         length: 1
-        nullable: false
+        nullable: true
         example_value: "0"
       selectable:
         type: "string"
         length: 1
-        nullable: false
+        nullable: true
         example_value: "T"
       sort_sequence:
         type: "string"
         length: 3
-        nullable: false
+        nullable: true
         example_value: "1"
 
   - id: "costfactor"
     path: "cc.costfactor"
     index: "costfactor_code"
-    description: "Maps cost factor codes to cost factor names"
+    description: "Cost factor lookup"
     schema:
       costfactor_code:
         type: "string"
@@ -175,7 +175,7 @@ lookups:
   - id: "footnote"
     path: "cc.footnote"
     index: "footnote_code"
-    description: "Maps footnote codes to footnote text"
+    description: "Footnote lookup"
     schema:
       footnote_code:
         type: "string"
@@ -185,13 +185,13 @@ lookups:
       footnote_text:
         type: "string"
         length: 100
-        nullable: false
+        nullable: true
         example_value: "Cost per hour worked is $0.01 or less."
 
   - id: "industryocc"
     path: "cc.industryocc"
     index: "industryocc_code"
-    description: "Maps industry occupation codes to industry occupation names"
+    description: "Industry occupation lookup"
     schema:
       industryocc_code:
         type: "string"
@@ -206,17 +206,7 @@ lookups:
       display_level:
         type: "string"
         length: 1
-        nullable: false
-        example_value: "0"
-      selectable:
-        type: "string"
-        length: 1
-        nullable: false
-        example_value: "T"
-      sort_sequence:
-        type: "string"
-        length: 3
-        nullable: false
+        nullable: true
         example_value: "1"
 
 relationships:
@@ -229,11 +219,11 @@ relationships:
   - from: { file: "series", column: "benefit_code" }
     to: { file: "benefit", column: "benefit_code" }
     type: "many-to-one"
-  - from: { file: "series", column: "industryocc_code" }
-    to: { file: "industryocc", column: "industryocc_code" }
-    type: "many-to-one"
   - from: { file: "series", column: "costfactor_code" }
     to: { file: "costfactor", column: "costfactor_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industryocc_code" }
+    to: { file: "industryocc", column: "industryocc_code" }
     type: "many-to-one"
 
 constraints:
@@ -246,15 +236,14 @@ constraints:
     - { file: "footnote", columns: ["footnote_code"] }
     - { file: "industryocc", columns: ["industryocc_code"] }
   required_fields:
-    - { file: "series", columns: ["series_id", "sector_code", "benefit_code", "industryocc_code", "costfactor_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "series", columns: ["series_id", "sector_code", "benefit_code", "industryocc_code", "costfactor_code"] }
     - { file: "main", columns: ["series_id", "year", "period"] }
 
 types:
-  CCSeriesId: { base: "string", length: 17, pattern: "^CC[US]\\d{15}$" }
-  CCSectorCode: { base: "string", length: 1, pattern: "^[0-9]$" }
+  CCSeriesId: { base: "string", length: 17, pattern: "^CCU[0-9A-Z]+$" }
+  CCSectorCode: { base: "string", length: 1, pattern: "^[0-9A-Z]{1}$" }
   CCBenefitCode: { base: "string", length: 5, pattern: "^[0-9]{5}$" }
   CCIndustryOccCode: { base: "string", length: 6, pattern: "^[0-9]{6}$" }
-  CCCostFactorCode: { base: "string", length: 1, pattern: "^[A-Z]$" }
-  CCPeriod: { base: "string", length: 3, pattern: "^Q0[1-5]$" }
-  CCValue: { base: "decimal", precision: 18, scale: 4, min: -10000000000000000.0, max: 10000000000000000.0 }
-  CCYear: { base: "int32", min: 1986, max: 2055 }
+  CCCostFactor: { base: "string", length: 1, pattern: "^[A-Z]$" }
+  CCPeriod: { base: "string", length: 3, pattern: "^(Q\\d{2}|A01)$" }
+  CCValue: { base: "decimal", precision: 18, scale: 4, min: -10000000000000000, max: 10000000000000000 }

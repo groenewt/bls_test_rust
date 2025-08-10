@@ -1,7 +1,12 @@
+# FM Survey Runtime Configuration
+# Feature flags, env overrides mapping, logging
 config_version: 1
+
 feature_flags:
   enable_hot_reloads: false
   use_memory_map_series: true
+  enable_checkpoints: true
+  enable_parallel_processing: true
   enable_statistics_collection: true
   enable_profiling: false
   cache_lookup_tables: true
@@ -9,14 +14,16 @@ feature_flags:
 environment_overrides:
   - key: "BLS_FM_MEMORY_LIMIT_GB"
     maps_to: "resources.memory_limit_gb"
+  - key: "BLS_FM_MAX_THREADS"
+    maps_to: "resources.max_threads"
   - key: "BLS_OUTPUT_FORMAT"
     maps_to: "format"
   - key: "BLS_PARTITION_STRATEGY"
     maps_to: "partition_hints.strategy"
   - key: "BLS_FM_USE_MMAP"
     maps_to: "features.use_mmap"
-  - key: "BLS_FM_MAX_THREADS"
-    maps_to: "resources.max_threads"
+  - key: "BLS_FM_MAX_ERRORS"
+    maps_to: "policy.max_errors"
 
 logging:
   level: "info"
@@ -27,3 +34,19 @@ logging:
     processing: "info"
     output: "info"
     quality: "warn"
+
+checkpoint:
+  enabled: true
+  interval_records: 10000
+  checkpoint_dir: "checkpoints/fm"
+
+error_handling:
+  on_error: "continue"
+  max_errors: 1000
+  log_errors: true
+  error_file: "fm_errors.log"
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60

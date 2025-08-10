@@ -1,4 +1,35 @@
+# CU Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
 config_version: 1
+
+# Required checks field for QualityConfig
+checks:
+  - name: "series_id_not_null"
+    check_type: "completeness"
+    parameters:
+      columns: ["series_id"]
+    severity: "error"
+  
+  - name: "year_range_check" 
+    check_type: "validity"
+    parameters:
+      column: "year"
+      min: 1913
+      max: 2055
+    severity: "error"
+    
+  - name: "unique_series_combination"
+    check_type: "uniqueness"
+    parameters:
+      columns: ["series_id", "year", "period"]
+    severity: "error"
+
+# Required validation field for QualityConfig
+validation:
+  strict_mode: true
+  fail_on_error: false
+  max_errors: 2000
+
 expectations:
   non_null:
     - { file: "main", columns: ["series_id", "year", "period"] }
@@ -20,7 +51,7 @@ expectations:
     - { file: "series", column: "series_id", pattern: "^CU[SU][RS]\\d{4}[A-Z0-9]{3,8}$" }
     - { file: "series", column: "area_code", pattern: "^[0-9A-Z]{4}$" }
   
-  lengths:
+  length:
     - { file: "series", column: "series_id", exact: 17 }
     - { file: "series", column: "area_code", exact: 4 }
     - { file: "series", column: "item_code", max: 8 }

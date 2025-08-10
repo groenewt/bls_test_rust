@@ -14,8 +14,10 @@ csv:
   quote_char: "\""
   escape_char: "\\"
   header: true
+  null_value: ""
 
 partitioning:
+  enabled: true
   partition_by: ["year"]
   max_file_size_mb: 512
 
@@ -29,3 +31,12 @@ evolution:
 
 destination:
   base_path: "data/processed/bls/PR"
+
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]

@@ -26,3 +26,9 @@ error_handling:
     enabled: false
     interval_records: 10000
     checkpoint_dir: "checkpoints/bg"
+
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60

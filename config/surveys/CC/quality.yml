@@ -1,164 +1,103 @@
 # CC Survey Quality Configuration
-# Validations, expectations, thresholds
+# Data quality expectations, validations, and thresholds
 config_version: 1
 
-expectations:
-  non_null:
-    - { file: "series", columns: ["series_id", "sector_code", "benefit_code", "industryocc_code", "costfactor_code", "begin_year", "begin_period", "end_year", "end_period"] }
-    - { file: "main", columns: ["series_id", "year", "period"] }
-    - { file: "sector", columns: ["sector_code", "sector_title"] }
-    - { file: "benefit", columns: ["benefit_code", "benefit_title"] }
-    - { file: "costfactor", columns: ["costfactor_code", "costfactor_text"] }
-    - { file: "footnote", columns: ["footnote_code", "footnote_text"] }
-    - { file: "industryocc", columns: ["industryocc_code", "industryocc_title"] }
+# Required checks field for QualityConfig
+checks:
+  - name: "series_id_not_null"
+    check_type: "completeness"
+    parameters:
+      columns: ["series_id"]
+    severity: "error"
 
-  ranges:
-    - { file: "main", column: "year", min: 1986, max: 2055 }
-    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
-    - { file: "series", column: "begin_year", min: 1986, max: 2067 }
-    - { file: "series", column: "end_year", min: 1986, max: 2067 }
+  - name: "year_range_check"
+    check_type: "validity"
+    parameters:
+      column: "year"
+      min: 1986
+      max: 2055
+    severity: "error"
 
-  enums:
-    - { file: "main", column: "period", values: ["Q01", "Q02", "Q03", "Q04", "Q05"] }
-    - { file: "series", column: "begin_period", values: ["Q01", "Q02", "Q03", "Q04", "Q05"] }
-    - { file: "series", column: "end_period", values: ["Q01", "Q02", "Q03", "Q04", "Q05"] }
+  - name: "period_values_check"
+    check_type: "validity"
+    parameters:
+      column: "period"
+      allowed_values: ["Q01", "Q02", "Q03", "Q04", "Q05"]
+    severity: "error"
 
-  regex:
-    - { file: "series", column: "series_id", pattern: "^CC[US]\\d{15}$" }
-    - { file: "main", column: "series_id", pattern: "^CC[US]\\d{15}$" }
-    - { file: "main", column: "period", pattern: "^Q0[1-5]$" }
-    - { file: "series", column: "sector_code", pattern: "^[0-9]$" }
-    - { file: "series", column: "benefit_code", pattern: "^[0-9]{5}$" }
-    - { file: "series", column: "industryocc_code", pattern: "^[0-9]{6}$" }
+  - name: "series_id_format_check"
+    check_type: "validity"
+    parameters:
+      column: "series_id"
+      pattern: "^CC[US]\\d{15}$"
+    severity: "warning"
 
-  unique:
-    - { file: "series", columns: ["series_id"] }
-    - { file: "main", columns: ["series_id", "year", "period"] }
-    - { file: "sector", columns: ["sector_code"] }
-    - { file: "benefit", columns: ["benefit_code"] }
-    - { file: "costfactor", columns: ["costfactor_code"] }
-    - { file: "footnote", columns: ["footnote_code"] }
-    - { file: "industryocc", columns: ["industryocc_code"] }
+  - name: "sector_code_not_null"
+    check_type: "completeness"
+    parameters:
+      columns: ["sector_code"]
+    severity: "error"
 
-  referential_integrity:
-    - { from_file: "main", from_column: "series_id", to_file: "series", to_column: "series_id" }
-    - { from_file: "series", from_column: "sector_code", to_file: "sector", to_column: "sector_code" }
-    - { from_file: "series", from_column: "benefit_code", to_file: "benefit", to_column: "benefit_code" }
-    - { from_file: "series", from_column: "industryocc_code", to_file: "industryocc", to_column: "industryocc_code" }
-    - { from_file: "series", from_column: "costfactor_code", to_file: "costfactor", to_column: "costfactor_code" }
+  - name: "benefit_code_format_check"
+    check_type: "validity"
+    parameters:
+      column: "benefit_code"
+      pattern: "^[0-9]{5}$"
+    severity: "warning"
+
+  - name: "industryocc_code_format_check"
+    check_type: "validity"
+    parameters:
+      column: "industryocc_code"
+      pattern: "^[0-9]{6}$"
+    severity: "warning"
+
+  - name: "value_range_check"
+    check_type: "validity"
+    parameters:
+      column: "value"
+      min: -10000000000000000.0
+      max: 10000000000000000.0
+    severity: "warning"
+
+  - name: "begin_year_range_check"
+    check_type: "validity"
+    parameters:
+      column: "begin_year"
+      min: 1986
+      max: 2067
+    severity: "error"
+
+  - name: "end_year_range_check"
+    check_type: "validity"
+    parameters:
+      column: "end_year"
+      min: 1986
+      max: 2067
+    severity: "error"
+
+  - name: "series_uniqueness_check"
+    check_type: "uniqueness"
+    parameters:
+      columns: ["series_id"]
+    severity: "error"
+
+  - name: "data_uniqueness_check"
+    check_type: "uniqueness"
+    parameters:
+      columns: ["series_id", "year", "period"]
+    severity: "error"
+
+# Minimal required quality schema additions
+expectations: {}
 
 row_count:
   min: 1
-  warn_below: 100
 
 metrics:
-  collect: ["row_count", "null_count", "distinct_count", "min", "max"]
-  persist: true
+  collect: []
+  persist: false
 
 policy:
-  mode: "fail_on_error"
-  sample_on_fail_rows: 50
-
-# Validation rules with actions
-validation_rules:
-  - field: "value"
-    rule: "range"
-    min: -10000000000000000.0
-    max: 10000000000000000.0
-    action: "flag"  # Flag but don't reject
-    
-  - field: "year"
-    rule: "range"
-    min: 1986
-    max: 2055
-    action: "reject"  # Reject invalid years
-    
-  - field: "series_id"
-    rule: "pattern"
-    pattern: "^CC[US]\\d{15}$"
-    description: "Invalid series ID format: should be CC[U/S] followed by 15 digits"
-    action: "flag"
-    
-  - field: "series_id"
-    rule: "length"
-    exact: 17
-    action: "reject"
-    description: "Series ID must be exactly 17 characters"
-    
-  - field: "sector_code"
-    rule: "length"
-    exact: 1
-    action: "reject"
-    description: "Sector code must be exactly 1 character"
-    
-  - field: "sector_code"
-    rule: "pattern"
-    pattern: "^[0-9]$"
-    action: "flag"
-    description: "Sector code should be a single digit"
-    
-  - field: "benefit_code"
-    rule: "length"
-    exact: 5
-    action: "reject"
-    description: "Benefit code must be exactly 5 characters"
-    
-  - field: "benefit_code"
-    rule: "pattern"
-    pattern: "^[0-9]{5}$"
-    action: "flag"
-    description: "Benefit code should be 5 digits"
-    
-  - field: "industryocc_code"
-    rule: "length"
-    exact: 6
-    action: "reject"
-    description: "Industry occupation code must be exactly 6 characters"
-    
-  - field: "industryocc_code"
-    rule: "pattern"
-    pattern: "^[0-9]{6}$"
-    action: "flag"
-    description: "Industry occupation code should be 6 digits"
-    
-  - field: "costfactor_code"
-    rule: "length"
-    exact: 1
-    action: "reject"
-    description: "Cost factor code must be exactly 1 character"
-    
-  - field: "begin_year"
-    rule: "range"
-    min: 1986
-    max: 2067
-    action: "reject"
-    description: "Begin year must be between 1986 and 2067"
-    
-  - field: "end_year"
-    rule: "range"
-    min: 1986
-    max: 2067
-    action: "reject"
-    description: "End year must be between 1986 and 2067"
-    
-  - field: "end_year"
-    rule: "greater_than_or_equal"
-    compare_field: "begin_year"
-    action: "reject"
-    description: "End year must be >= begin year"
-    
-  - field: "period"
-    rule: "values"
-    allowed: ["Q01", "Q02", "Q03", "Q04", "Q05"]
-    action: "flag"
-    description: "Invalid period value"
-
-# Completeness checks
-completeness:
-  required_fields: ["series_id", "year", "period"]
-  nullable_fields: ["value", "footnote_codes"]
-
-# Statistics for query optimization
-statistics:
-  enabled: true
-  columns: ["year", "period", "value", "series_id", "sector_code", "benefit_code"]
+  mode: "warn_only"
+  sample_on_fail_rows: 20

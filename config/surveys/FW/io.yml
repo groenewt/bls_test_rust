@@ -23,3 +23,10 @@ lookup_config:
   lazy: ["footnote", "event", "industry", "occupation", "source"]
   mmap: ["category"]
   cache_all: true
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

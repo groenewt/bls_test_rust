@@ -2,7 +2,13 @@
 # Output formats, partitioning, compression
 config_version: 1
 
-format: "csv"
+# Required formats field as array
+formats: ["csv"]
+
+# Required output directory and filename pattern
+output_dir: "data/processed/bls/CC"
+filename_pattern: "{survey}_{table}_{timestamp}"
+create_subdirs: true
 
 csv:
   delimiter: ","
@@ -12,6 +18,7 @@ csv:
   null_value: ""
 
 partitioning:
+  enabled: true
   partition_by: ["year"]
   max_file_size_mb: 512
 
@@ -25,6 +32,15 @@ evolution:
 
 destination:
   base_path: "data/processed/bls/CC"
+
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]
 
 # Data series output configuration
 data_series:

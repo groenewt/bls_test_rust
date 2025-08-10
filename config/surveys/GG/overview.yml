@@ -1,4 +1,7 @@
+# GG Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "GG"
   name: "Green Goods and Services Survey"
@@ -7,17 +10,48 @@ survey:
   characteristics:
     frequency: "quarterly"
     coverage: "National and State estimates of GGS employment levels and rates by NAICS industry code and ownership"
+    time_series_count: "Green Goods and Services Survey series"
     classification_system: "2007 NAICS codes"
-    begin_year: 2010
     update_schedule: "To be determined"
+    begin_year: 2010
     survey_methodology: "Sample of approximately 120,000 randomly selected establishments per year from the Quarterly Census of Employment and Wages (QCEW) sample frame"
     calculation_basis: "Employment levels and rates associated with producing green goods or providing green services"
-    time_series_count: "Green Goods and Services Survey series"
-  contacts:
-    - role: "owner"
-      name: "groenewt"
-      email: ""
-  documentation:
-    primary: "docs/bls/survey/gg.txt"
-    data_dictionary: ""
-  tags: ["green", "goods", "services", "employment", "environment", "naics"]
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/gg.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/gg
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/gg.txt
+
+tags: ["green", "goods", "services", "employment", "environment", "naics"]
+
+definition: |
+  The following is a definition of: GREEN GOODS AND SERVICES SURVEY (GG)
+
+  Program Description: The Green Goods and Services (GGS) program provides 
+  national and State estimates of GGS employment levels and rates by North 
+  American Industrial Classification System (NAICS) industry code and ownership.
+
+  Summary Data Available: The GGS program produces estimates of employment and 
+  establishments associated with the production of green goods or the provision 
+  of green services. These data help users understand the scope of green 
+  economic activity and employment in the United States.
+
+  The survey methodology involves sampling approximately 120,000 randomly 
+  selected establishments per year from the Quarterly Census of Employment 
+  and Wages (QCEW) sample frame. This provides comprehensive coverage of 
+  establishments across industries to identify those involved in green 
+  goods and services production.
+
+  Data Characteristics: Employment levels and rates are calculated based on 
+  establishments' involvement in producing green goods or providing green 
+  services, classified according to the 2007 NAICS codes. The data provides 
+  insights into the environmental sector's contribution to overall employment.

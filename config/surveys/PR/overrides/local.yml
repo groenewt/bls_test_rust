@@ -1,0 +1,20 @@
+# PR Survey Local Developer Overrides
+# This file is for developer machine overrides (should be gitignored)
+config_version: 1
+
+# Example local overrides - uncomment and modify as needed
+# logging:
+#   level: "debug"
+
+# resources:
+#   max_threads: 2
+#   memory_limit_gb: 4
+
+# error_handling:
+#   max_errors: 100
+
+# features:
+#   enable_profiling: true
+
+# destination:
+#   base_path: "/tmp/pr_output"

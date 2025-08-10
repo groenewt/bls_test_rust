@@ -1,19 +1,30 @@
+# BG Survey Processing Configuration
+# Strategy, resources, chunking, mmap, cache
 config_version: 1
-strategy:
-  mode: "in_memory"
-  max_concurrency: 1
 
-resources:
-  max_threads: 2
-  memory_limit_gb: 2
+# Direct strategy value (not nested)
+strategy: "in_memory"
 
-io:
-  chunk_size_mb: 32
-  buffer_pool_size: 2
+# Flattened configuration fields
+max_threads: 2
+chunk_size: 10485760  # 10MB in bytes
+memory_limit: 1024     # 1GB in MB
+parallel: false        # Single-threaded for small/micro survey
 
-features:
-  use_mmap: false
-  enable_statistics: true
-  enable_profiling: false
+# Chunking configuration
+chunking:
+  size: 10485760       # 10MB in bytes
+  strategy: "sequential"
+  overlap: null
 
-transforms: []
+# Memory mapping configuration
+mmap:
+  enabled: false       # Small dataset; mmap unnecessary
+  threshold: null
+  prefetch: null
+
+# Cache configuration  
+cache:
+  enabled: true
+  size: 1048576        # 1MB cache size
+  ttl: 3600            # 1 hour TTL

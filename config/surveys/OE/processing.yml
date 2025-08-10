@@ -2,17 +2,17 @@
 config_version: 1
 
 # Direct strategy value (not nested)
-strategy: "chunked"
+strategy: "mmap"
 
 # Flattened configuration fields
-max_threads: 4
-chunk_size: 52428800  # 50MB in bytes
-memory_limit: 4096    # 4GB in MB
-parallel: true       # Multi-threaded processing
+max_threads: 8
+chunk_size: 104857600  # 100MB in bytes
+memory_limit: 16384    # 16GB in MB
+parallel: true         # Multi-threaded processing for large survey
 
 # Chunking configuration
 chunking:
-  size: 52428800      # 50MB in bytes
+  size: 104857600     # 100MB in bytes
   strategy: "sequential"
   overlap: null
 

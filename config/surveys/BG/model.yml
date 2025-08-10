@@ -1,8 +1,11 @@
+# BG Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
+
 series:
   path: "bg.series"
   index: "series_id"
-  estimated_size_gb: 0.01
+  estimated_size_gb: 0.005
   schema:
     series_id:
       type: "string"
@@ -42,7 +45,7 @@ series:
     seasonal:
       type: "string"
       length: 1
-      nullable: false
+      nullable: true
       example_value: "U"
     begin_year:
       type: "string"
@@ -52,6 +55,7 @@ series:
     begin_period:
       type: "string"
       length: 3
+      pattern: "^Q\\d{2}$"
       nullable: false
       example_value: "Q02"
     end_year:
@@ -62,6 +66,7 @@ series:
     end_period:
       type: "string"
       length: 3
+      pattern: "^Q\\d{2}$"
       nullable: false
       example_value: "Q02"
 
@@ -69,6 +74,7 @@ data_files:
   - id: "main"
     pattern: "bg.data.*"
     index: "series_id"
+    estimated_size_gb: 0.02
     schema:
       series_id:
         type: "string"
@@ -77,22 +83,22 @@ data_files:
         example_value: "BGU01111001"
       year:
         type: "int32"
-        min: 1980
-        max: 2000
+        min: 1900
+        max: 2100
         nullable: false
-        example_value: "1984"
+        example_value: 1984
       period:
         type: "string"
         length: 3
-        pattern: "^(Q0[1-5]|Q13)$"
+        pattern: "^Q\\d{2}$"
         nullable: false
         example_value: "Q02"
       value:
         type: "decimal"
         precision: 18
-        scale: 4
+        scale: 1
         nullable: true
-        example_value: "3.9"
+        example_value: 3.9
       cont_break:
         type: "string"
         length: 1
@@ -113,6 +119,7 @@ lookups:
   - id: "alteration"
     path: "bg.alteration"
     index: "alteration_code"
+    description: "Maps alteration codes to alteration text"
     schema:
       alteration_code:
         type: "string"
@@ -122,12 +129,13 @@ lookups:
       alteration_text:
         type: "string"
         length: 50
-        nullable: false
+        nullable: true
         example_value: "Changes (net increases, and no change)"
-  
+
   - id: "duration"
     path: "bg.duration"
     index: "contract_duration"
+    description: "Maps contract duration codes to contract duration text"
     schema:
       contract_duration:
         type: "string"
@@ -137,12 +145,13 @@ lookups:
       contract_duration_text:
         type: "string"
         length: 50
-        nullable: false
+        nullable: true
         example_value: "All contracts"
-  
+
   - id: "measure"
     path: "bg.measure"
     index: "measure_code"
+    description: "Maps measure codes to measure text"
     schema:
       measure_code:
         type: "string"
@@ -152,12 +161,13 @@ lookups:
       measure_text:
         type: "string"
         length: 90
-        nullable: false
-        example_value: "First contract year wage rate, all settlmts., 1,000 or more wkrs."
-  
+        nullable: true
+        example_value: "First contract year wage rate, all settlements, 1,000 or more wkrs."
+
   - id: "period"
     path: "bg.period"
     index: "period"
+    description: "Maps period codes to period names"
     schema:
       period:
         type: "string"
@@ -167,17 +177,18 @@ lookups:
       period_abbr:
         type: "string"
         length: 5
-        nullable: false
+        nullable: true
         example_value: "QTR2"
       period_name:
         type: "string"
         length: 20
-        nullable: false
+        nullable: true
         example_value: "Second Quarter"
-  
+
   - id: "sector"
     path: "bg.sector"
     index: "sector_code"
+    description: "Maps sector codes to sector names"
     schema:
       sector_code:
         type: "string"
@@ -187,12 +198,13 @@ lookups:
       sector_name:
         type: "string"
         length: 40
-        nullable: false
+        nullable: true
         example_value: "State and local government"
-  
+
   - id: "selection"
     path: "bg.selection"
     index: "contract_selection"
+    description: "Maps contract selection codes to contract selection text"
     schema:
       contract_selection:
         type: "string"
@@ -202,12 +214,13 @@ lookups:
       contract_selection_text:
         type: "string"
         length: 80
-        nullable: false
+        nullable: true
         example_value: "All contracts negotiated in periods"
-  
+
   - id: "unit"
     path: "bg.unit"
     index: "unit_code"
+    description: "Maps unit codes to unit text"
     schema:
       unit_code:
         type: "string"
@@ -217,8 +230,8 @@ lookups:
       unit_text:
         type: "string"
         length: 20
-        nullable: false
-        example_value: "Mean (in percents)"
+        nullable: true
+        example_value: "Percent"
 
 relationships:
   - from: { file: "main", column: "series_id" }
@@ -248,16 +261,26 @@ relationships:
   - from: { file: "series", column: "end_period" }
     to: { file: "period", column: "period" }
     type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
 
 constraints:
   unique:
     - { file: "series", columns: ["series_id"] }
     - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "alteration", columns: ["alteration_code"] }
+    - { file: "duration", columns: ["contract_duration"] }
+    - { file: "measure", columns: ["measure_code"] }
+    - { file: "period", columns: ["period"] }
+    - { file: "sector", columns: ["sector_code"] }
+    - { file: "selection", columns: ["contract_selection"] }
+    - { file: "unit", columns: ["unit_code"] }
   required_fields:
+    - { file: "series", columns: ["series_id", "measure_code", "unit_code", "alteration_code", "sector_code", "contract_duration", "contract_selection", "begin_year", "begin_period", "end_year", "end_period"] }
     - { file: "main", columns: ["series_id", "year", "period"] }
-    - { file: "series", columns: ["series_id", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
 
 types:
-  Year: { base: "int32", range: [1980, 2000] }
-  Period: { base: "string", pattern: "^(Q0[1-5]|Q13)$" }
-  SeriesId: { base: "string", length: 13, pattern: "^BG[US].{11}$" }
+  BGSeriesId: { base: "string", length: 13, pattern: "^BG[0-9A-Z]+$" }
+  BGPeriod: { base: "string", length: 3, pattern: "^Q\\d{2}$" }
+  BGValue: { base: "decimal", precision: 18, scale: 1, min: -10000000000000000.0, max: 10000000000000000.0 }

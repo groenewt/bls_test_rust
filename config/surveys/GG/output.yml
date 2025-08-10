@@ -1,11 +1,21 @@
+# GG Survey Output Configuration
+# Output formats, partitioning, compression
 config_version: 1
-format: "csv"  # Default format from original config
+
+# Required formats field as array
+formats: ["csv"]
+
+# Required output directory and filename pattern
+output_dir: "data/processed/bls/GG"
+filename_pattern: "{survey}_{table}_{timestamp}"
+create_subdirs: true
 
 csv:
   delimiter: ","
   quote_char: "\""
   escape_char: "\\"
   header: true
+  null_value: ""
 
 partitioning:
   enabled: true
@@ -23,30 +33,11 @@ evolution:
 destination:
   base_path: "data/processed/bls/GG"
 
-# Output configurations for different data types
-outputs:
-  data_series:
-    format: "csv"
-    partitioning:
-      enabled: true
-      partition_by: ["year"]
-    transformations:
-      sort_by: ["series_id", "year", "period"]
-      deduplicate: true
-      deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
-    statistics:
-      enabled: true
-      columns: ["year", "period", "value"]
-  
-  data_dict:
-    format: "csv"
-    partitioning:
-      enabled: false  # Single file output for series metadata
-    output_file: "gg_series_dict.csv"
-    transformations:
-      sort_by: ["series_id"]
-      deduplicate: false
-    statistics:
-      enabled: true
-      columns: ["series_id", "industry_code", "area_code", "begin_year", "end_year"]
-      output_file: "gg_series_dict_stats.json"
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]

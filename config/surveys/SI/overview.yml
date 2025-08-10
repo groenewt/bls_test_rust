@@ -1,13 +1,61 @@
 # SI Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "SI"
-  name: "SI Survey"
-  description: "Bureau of Labor Statistics SI survey data"
+  name: "State and Local Government Employment and Payrolls"
+  description: "Employment and payroll data for state and local governments, collected quarterly."
   size_class: "medium"
   characteristics:
-    frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    frequency: "quarterly"
+    coverage: "State and local government employment and payroll data for all 50 states and the District of Columbia"
+    time_series_count: "Approximately 2,500 series"
+    classification_system: "Government function categories"
+    update_schedule: "Quarterly release, typically 2-3 months after reference period"
+    begin_year: 1992
+    survey_methodology: "Data collected through quarterly surveys of state and local government units covering employment and payroll information by function"
+    calculation_basis: "Employment counts and payroll totals by government function and geographic area"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/si.md"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/si
+    - Data files are in ASCII text format
+    - Spaces separate data elements in original BLS files
+    - Employment data are in thousands of employees
+    - Payroll data are in thousands of dollars
+    - Quarterly data available for state and local government functions
+    - Updates become available with the quarterly release of new data
+
+tags: ["government_employment", "state_local", "quarterly", "payroll", "employment"]
+
+definition: |
+  The following is a definition of: State and Local Government Employment and Payrolls (SI)
+
+  Survey Description: The State and Local Government Employment and Payrolls survey 
+  collects quarterly employment and payroll data from state and local government units. 
+  The survey covers employment by function for all 50 states and the District of Columbia.
+
+  Data are collected through quarterly surveys covering employment counts and payroll 
+  totals by government function categories including education, highways, public welfare, 
+  hospitals, police protection, fire protection, corrections, parks and recreation, 
+  and other functions.
+
+  Summary Data Available: Employment and payroll data for state and local governments
+  by function and geographic area. Data include full-time and part-time employment
+  counts and total payroll amounts.
+
+  Frequency of Observations: All data are quarterly; monthly data are not available.
+
+  Data Characteristics: Employment data are reported in thousands of employees.
+  Payroll data are reported in thousands of dollars.
+
+  Updating Schedule: Updates become available with the quarterly release of new data, 
+  typically 2-3 months after the reference quarter.

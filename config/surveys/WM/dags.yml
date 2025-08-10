@@ -46,3 +46,13 @@ graph:
       to: "write"
     - from: "write"
       to: "qc"
+
+# Global DAG settings
+settings:
+  max_active_runs: 1
+  catchup: false
+  depends_on_past: false
+  email_on_failure: true
+  email_on_retry: false
+  retries: 1
+  retry_delay_minutes: 5

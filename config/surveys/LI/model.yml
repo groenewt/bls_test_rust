@@ -1,3 +1,173 @@
-# LI Survey Model Configuration
+# LI Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "li.series"
+  index: "series_id"
+  estimated_size_gb: 0.01
+  schema:
+    series_id:
+      type: "string"
+      length: 12
+      nullable: false
+      example_value: "SL00021"
+      pattern: "^SL[0-9A-Z]+$"
+    group_code:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: "00021"
+    series_title:
+      type: "string"
+      length: 200
+      nullable: true
+      example_value: "Store total - Department Store Inventory Price Index"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1941"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+      pattern: "^(M\\d{2}|A\\d{2})$"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2025"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M06"
+      pattern: "^(M\\d{2}|A\\d{2})$"
+
+data_files:
+  - id: "main"
+    pattern: "li.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.05
+    schema:
+      series_id:
+        type: "string"
+        length: 12
+        nullable: false
+        example_value: "SL00021"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2025
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|A\\d{2})$"
+        nullable: false
+        example_value: "M06"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 1
+        nullable: true
+        example_value: 123.4
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "area"
+    path: "li.area"
+    index: "area_code"
+    description: "Area codes (national basis for LI)"
+    schema:
+      area_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "0000"
+      area_name:
+        type: "string"
+        length: 80
+        nullable: false
+        example_value: "U.S. city average"
+
+  - id: "footnote"
+    path: "li.footnote"
+    index: "footnote_code"
+    description: "Footnotes"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "P"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: true
+        example_value: "Preliminary"
+
+  - id: "item"
+    path: "li.item"
+    index: "item_code"
+    description: "Group/item codes used by LI"
+    schema:
+      item_code:
+        type: "string"
+        length: 10
+        nullable: false
+        example_value: "00021"
+      item_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Store total"
+
+  - id: "period"
+    path: "li.period"
+    index: "period"
+    description: "Period of observation"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  LISeriesId: { base: "string", length: 12, pattern: "^SL[0-9A-Z]+$" }
+  LIPeriod:   { base: "string", length: 3,  pattern: "^(M\\d{2}|A\\d{2})$" }
+  LIValue:    { base: "decimal", precision: 18, scale: 1, min: 0 }

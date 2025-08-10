@@ -1,25 +1,45 @@
 # MP Survey Runtime Configuration
+# Feature flags, env overrides mapping, logging
 config_version: 1
 
-features:
-  async_processing: false
-  parallel_io: false
-  memory_optimization: false
-  experimental_features: false
+feature_flags:
+  enable_hot_reloads: false
+  use_memory_map_series: true   # MP can be medium-sized; enable mmap when needed
+  enable_parallel_processing: true
+  enable_caching: true
+  enable_lookup_preload: true
+  enable_data_validation: true
+  enable_statistics_collection: true
+  enable_profiling: false
+
+environment_overrides:
+  - key: "BLS_MP_MEMORY_LIMIT_GB"
+    maps_to: "resources.memory_limit_gb"
+  - key: "BLS_MP_MAX_THREADS"
+    maps_to: "resources.max_threads"
+  - key: "BLS_OUTPUT_FORMAT"
+    maps_to: "format"
+  - key: "BLS_MP_OUTPUT_PATH"
+    maps_to: "destination.base_path"
+  - key: "BLS_MP_ENABLE_VALIDATION"
+    maps_to: "feature_flags.enable_data_validation"
+  - key: "BLS_MP_LOG_LEVEL"
+    maps_to: "logging.level"
 
 logging:
-  level: "info"
-  format: null
-  output: null
-  structured: false
-
+  level: "info"        # trace|debug|info|warn|error
+  structured: true
+  include_survey_code: true
+  include_timestamps: true
+  
+# Development and debugging settings
+development:
+  enable_debug_output: false
+  save_intermediate_files: false
+  verbose_logging: false
+  
 # Performance monitoring
 monitoring:
   enabled: true  # Required field for MonitoringConfig
   metrics_endpoint: null
   health_check_interval: 60
-
-environment:
-  name: null
-  debug: false
-  profile: null

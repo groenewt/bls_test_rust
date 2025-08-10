@@ -1,3 +1,5 @@
+# FM Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
 series:
   path: "fm.series"
@@ -41,6 +43,7 @@ data_files:
   - id: "main"
     pattern: "fm.data.*"
     index: "series_id"
+    estimated_size_gb: 0.05
     schema:
       series_id: { type: "string", length: 10 }
       year: { type: "int32", min: 2009 }

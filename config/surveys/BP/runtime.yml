@@ -1,4 +1,13 @@
 config_version: 1
+
+# Core RuntimeConfig fields 
+features:
+  async_processing: false
+  parallel_io: false
+  memory_optimization: false
+  experimental_features: false
+
+# Legacy fields kept for compatibility
 feature_flags:
   enable_hot_reloads: false
   use_memory_map_series: true
@@ -20,7 +29,18 @@ environment_overrides:
 logging:
   level: "info"
   structured: true
-  log_file: "bp_processing.log"
+  format: "json"
+  output: "bp_processing.log"
+
+monitoring:
+  enabled: true
+  metrics_endpoint: null
+  health_check_interval: 60
+
+environment:
+  name: null
+  debug: false
+  profile: null
 
 checkpoint:
   enabled: false

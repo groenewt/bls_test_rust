@@ -1,3 +1,233 @@
-# ML Survey Model Configuration
+# ML Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "ml.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 20
+      nullable: false
+      example_value: "MLS0000000000000001"
+    area_code:
+      type: "string"
+      length: 5
+      nullable: false
+      example_value: "00000"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    dataelement_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    series_title:
+      type: "string"
+      length: 200
+      nullable: true
+      example_value: "Extended mass layoffs, events"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: "1"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1995"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2024"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M12"
+
+data_files:
+  - id: "main"
+    pattern: "ml.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.2
+    schema:
+      series_id:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "MLS0000000000000001"
+      year:
+        type: "integer"
+        nullable: false
+        example_value: 2023
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "integer"
+        nullable: true
+        example_value: 1250
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: "1"
+
+lookups:
+  - id: "area"
+    path: "ml.area"
+    index: "area_code"
+    schema:
+      area_code:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "00000"
+      area_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Total United States"
+      display_level:
+        type: "integer"
+        nullable: false
+        example_value: 0
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "integer"
+        nullable: false
+        example_value: 1
+
+  - id: "industry"
+    path: "ml.industry"
+    index: "industry_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      industry_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All Industries"
+      display_level:
+        type: "integer"
+        nullable: false
+        example_value: 0
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "integer"
+        nullable: false
+        example_value: 1
+
+  - id: "reasons"
+    path: "ml.reasons"
+    index: "reason_code"
+    schema:
+      reason_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      reason_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Business demand related"
+      display_level:
+        type: "integer"
+        nullable: false
+        example_value: 0
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "integer"
+        nullable: false
+        example_value: 1
+
+  - id: "state"
+    path: "ml.state"
+    index: "state_code"
+    schema:
+      state_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      state_text:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "Alabama"
+      display_level:
+        type: "integer"
+        nullable: false
+        example_value: 0
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "integer"
+        nullable: false
+        example_value: 1
+
+  - id: "footnote"
+    path: "ml.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: false
+        example_value: "Data not available"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"

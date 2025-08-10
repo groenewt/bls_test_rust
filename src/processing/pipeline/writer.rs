@@ -4,19 +4,17 @@
 //! The writer stage outputs processed data in various formats.
 
 use async_trait::async_trait;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::fs::File;
 use std::path::{Path, PathBuf};
-use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use crate::data::writer::{self, DataWriter, CsvDataWriter};
 use crate::data::writer::traits as writer_traits;
-use crate::data::writer::traits::{SeriesWriter, ObservationWriter, LookupWriter};
+use crate::data::writer::traits::{LookupWriter, ObservationWriter, SeriesWriter};
+use crate::data::writer::{self, CsvDataWriter, DataWriter};
 use crate::error::types::{ProcessingError, Result};
-use crate::processing::traits::{
-    PipelineStage, ProcessedData, ProcessingContext, WriterStage,
-};
+use crate::processing::traits::{PipelineStage, ProcessedData, ProcessingContext, WriterStage};
 
 // For combined Parquet output
 use arrow::array::{ArrayRef, Float64Builder, Int32Builder, StringBuilder};
@@ -145,7 +143,8 @@ impl PipelineStage for WriterStageImpl {
             let path = Path::new(&out_dir).join("observations.csv");
             let mut w = CsvDataWriter::new(mk_cfg());
             w.open(&path).await?;
-            w.write_observations_batch(&context.observation_data).await?;
+            w.write_observations_batch(&context.observation_data)
+                .await?;
             w.close().await?;
             self.stats.files_written += 1;
             self.stats.records_written += w.stats().records_written;
@@ -172,7 +171,8 @@ impl PipelineStage for WriterStageImpl {
                 return Err(ProcessingError::SystemError(format!(
                     "Failed to create final output directory {}: {}",
                     final_dir, e
-                )).into());
+                ))
+                .into());
             }
 
             // Build series map by series_id for fast joins
@@ -207,7 +207,10 @@ impl PipelineStage for WriterStageImpl {
             // Use config/surveys/<SC>/model.yml per guidelines
             let model_path = {
                 let sc = survey_code.to_uppercase();
-                Path::new("config").join("surveys").join(&sc).join("model.yml")
+                Path::new("config")
+                    .join("surveys")
+                    .join(&sc)
+                    .join("model.yml")
             };
             if model_path.exists() {
                 match crate::config::yaml_adapter::load_yaml_lookup_ids(&model_path.to_path_buf()) {
@@ -227,12 +230,18 @@ impl PipelineStage for WriterStageImpl {
                 dyn_ids.push(id);
             }
             // Exclude base/non-mapped tables
-            let exclude = |id: &str| id == "period" || id == ".period" || id == "footnote" || id == "contacts";
+            let exclude = |id: &str| {
+                id == "period" || id == ".period" || id == "footnote" || id == "contacts"
+            };
             // Dedupe while preserving first occurrence order
             let mut seen: HashSet<String> = HashSet::new();
             dyn_ids.retain(|id| {
-                if exclude(id) { return false; }
-                if seen.contains(id) { return false; }
+                if exclude(id) {
+                    return false;
+                }
+                if seen.contains(id) {
+                    return false;
+                }
                 seen.insert(id.clone());
                 true
             });
@@ -246,7 +255,10 @@ impl PipelineStage for WriterStageImpl {
             }
 
             // Helper to derive a code for a given lookup id from series/observation
-            let mut code_for = |id: &str, s: Option<&crate::data::model::Series>, obs: &crate::data::model::Observation| -> String {
+            let mut code_for = |id: &str,
+                                s: Option<&crate::data::model::Series>,
+                                obs: &crate::data::model::Observation|
+             -> String {
                 match id {
                     "area" => s.map(|sr| sr.area_code.clone()).unwrap_or_default(),
                     "item" => s.map(|sr| sr.item_code.clone()).unwrap_or_default(),
@@ -265,7 +277,11 @@ impl PipelineStage for WriterStageImpl {
                 let (title, scode) = if let Some(s) = s_opt {
                     (s.title().to_string(), s.survey_code().to_string())
                 } else {
-                    let sc = if sid.len() >= 2 { sid[0..2].to_uppercase() } else { String::new() };
+                    let sc = if sid.len() >= 2 {
+                        sid[0..2].to_uppercase()
+                    } else {
+                        String::new()
+                    };
                     (String::new(), sc)
                 };
 
@@ -275,7 +291,12 @@ impl PipelineStage for WriterStageImpl {
                     .get("period")
                     .and_then(|m| m.get(&per_code))
                     .cloned()
-                    .or_else(|| lookup_maps.get(".period").and_then(|m| m.get(&per_code)).cloned())
+                    .or_else(|| {
+                        lookup_maps
+                            .get(".period")
+                            .and_then(|m| m.get(&per_code))
+                            .cloned()
+                    })
                     .unwrap_or_default();
 
                 b_series_id.append_value(sid);
@@ -284,7 +305,11 @@ impl PipelineStage for WriterStageImpl {
                 b_year.append_value(obs.year() as i32);
                 b_period_code.append_value(&per_code);
                 b_period_name.append_value(&per_name);
-                if let Some(v) = obs.numeric_value() { b_value.append_value(v); } else { b_value.append_null(); }
+                if let Some(v) = obs.numeric_value() {
+                    b_value.append_value(v);
+                } else {
+                    b_value.append_null();
+                }
 
                 // Dynamic lookup columns
                 for (i, id) in dyn_ids.iter().enumerate() {
@@ -341,27 +366,35 @@ impl PipelineStage for WriterStageImpl {
 
             let schema = Arc::new(Schema::new(schema_fields));
 
-            let batch = RecordBatch::try_new(
-                schema.clone(),
-                arrays,
-            ).map_err(|e| ProcessingError::SystemError(format!("Failed to build record batch: {}", e)))?;
+            let batch = RecordBatch::try_new(schema.clone(), arrays).map_err(|e| {
+                ProcessingError::SystemError(format!("Failed to build record batch: {}", e))
+            })?;
 
             let combined_path = Path::new(&final_dir).join("combined.parquet");
-            let file = File::create(&combined_path)
-                .map_err(|e| ProcessingError::SystemError(format!("Failed to create combined parquet file {}: {}", combined_path.display(), e)))?;
+            let file = File::create(&combined_path).map_err(|e| {
+                ProcessingError::SystemError(format!(
+                    "Failed to create combined parquet file {}: {}",
+                    combined_path.display(),
+                    e
+                ))
+            })?;
 
             let props = WriterProperties::builder().build();
-            let mut aw = ArrowWriter::try_new(file, schema.clone(), Some(props))
-                .map_err(|e| ProcessingError::SystemError(format!("Failed to create ArrowWriter: {}", e)))?;
-            aw.write(&batch)
-                .map_err(|e| ProcessingError::SystemError(format!("Failed to write batch to Parquet: {}", e)))?;
-            aw.close()
-                .map_err(|e| ProcessingError::SystemError(format!("Failed to close Parquet writer: {}", e)))?;
+            let mut aw = ArrowWriter::try_new(file, schema.clone(), Some(props)).map_err(|e| {
+                ProcessingError::SystemError(format!("Failed to create ArrowWriter: {}", e))
+            })?;
+            aw.write(&batch).map_err(|e| {
+                ProcessingError::SystemError(format!("Failed to write batch to Parquet: {}", e))
+            })?;
+            aw.close().map_err(|e| {
+                ProcessingError::SystemError(format!("Failed to close Parquet writer: {}", e))
+            })?;
         }
 
         log::info!(
             "Writer stage completed: {} files, {} records",
-            self.stats.files_written, self.stats.records_written
+            self.stats.files_written,
+            self.stats.records_written
         );
         Ok(())
     }
@@ -372,11 +405,14 @@ impl PipelineStage for WriterStageImpl {
     }
 
     fn validate(&self, context: &ProcessingContext) -> Result<()> {
-        // Writer validation - data will be populated by loader stage during execution
-        // Just validate that we have input paths to work with
-        if context.input_paths.is_empty() {
+        // Writer validation: allow if we have either input paths configured OR data already loaded.
+        // This ensures validation works for individual series datasets populated by prior stages.
+        let has_data = !context.series_data.is_empty()
+            || !context.observation_data.is_empty()
+            || !context.lookup_data.is_empty();
+        if context.input_paths.is_empty() && !has_data {
             return Err(ProcessingError::InvalidConfiguration(
-                "No input paths provided for writing stage".to_string(),
+                "Writer stage requires input paths or preloaded data".to_string(),
             )
             .into());
         }
@@ -393,14 +429,15 @@ fn infer_survey_code(context: &ProcessingContext) -> String {
     if let Some(series) = context.series_data.first() {
         let code = series.survey_code().to_string();
         if !code.is_empty() {
-            return code.to_string();
+            return code.to_uppercase();
         }
     }
 
     // Try to infer from input paths (data/raw/bls/<code>/...)
     for p in &context.input_paths {
         let path = Path::new(p);
-        if let (Some(parent), Some(grand)) = (path.parent(), path.parent().and_then(|p| p.parent())) {
+        if let (Some(parent), Some(grand)) = (path.parent(), path.parent().and_then(|p| p.parent()))
+        {
             if let Some(grand_name) = grand.file_name() {
                 if grand_name.to_string_lossy().eq_ignore_ascii_case("bls") {
                     if let Some(dir) = parent.file_name() {
@@ -444,10 +481,23 @@ impl WriterStage for WriterStageImpl {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::processing::traits::ProcessingConfig as PConfig;
 
     #[test]
     fn test_writer_creation() {
         let writer = WriterStageImpl::new();
         assert_eq!(writer.name(), "writer");
+    }
+
+    #[test]
+    fn test_infer_survey_code_uppercase_from_paths() {
+        let mut ctx = ProcessingContext::new(PConfig::default());
+        ctx.input_paths = vec![
+            "data/raw/bls/wp/*.series".to_string(),
+            "data/raw/bls/wp/data/*".to_string(),
+            "data/raw/bls/wp/map/*".to_string(),
+        ];
+        let code = infer_survey_code(&ctx);
+        assert_eq!(code, "WP");
     }
 }

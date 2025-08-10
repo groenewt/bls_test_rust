@@ -1,3 +1,179 @@
-# ND Survey Model Configuration
+# ND Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "nd.series"
+  index: "series_id"
+  estimated_size_gb: 1.0
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "NDU1133101133105"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "113310"
+    product_code:
+      type: "string"
+      length: 15
+      nullable: false
+      example_value: "1133105"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "U"
+    base_date:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "198112"
+    series_title:
+      type: "string"
+      length: 256
+      nullable: true
+      example_value: "PPI industry data for Logging-Pulpwood, not seasonally adjusted, discontinued"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1981"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M12"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1991"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M05"
+
+data_files:
+  - id: "main"
+    pattern: "nd.data.*"
+    index: "series_id"
+    estimated_size_gb: 5.0
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "NDU11330011330041300"
+      year:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "1994"
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "string"
+        length: 12
+        nullable: true
+        example_value: "82.0"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: "P"
+
+lookups:
+  - id: "footnote"
+    path: "nd.footnote"
+    index: "footnote_code"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "P"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: true
+        example_value: "Preliminary"
+
+  - id: "industry"
+    path: "nd.industry"
+    index: "industry_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "113300"
+      industry_name:
+        type: "string"
+        length: 100
+        nullable: true
+        example_value: "Forestry and logging"
+
+  - id: "product"
+    path: "nd.product"
+    index: "product_code"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "113300"
+      product_code:
+        type: "string"
+        length: 15
+        nullable: false
+        example_value: "11330041300"
+      product_name:
+        type: "string"
+        length: 100
+        nullable: true
+        example_value: "Pulpwood"
+
+  - id: "period"
+    path: "nd.period"
+    index: "period"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: true
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: true
+        example_value: "January"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "product_code" }
+    to: { file: "product", column: "product_code" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "main", column: "footnote_codes" }
+    to: { file: "footnote", column: "footnote_code" }
+    type: "many-to-one"

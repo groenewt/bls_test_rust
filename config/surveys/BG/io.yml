@@ -1,8 +1,20 @@
+# BG Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
 config_version: 1
+
 discovery:
   root: "data/raw/bls/bg"
-  include: ["bg.series", "bg.data.*", "bg.alteration", "bg.duration", "bg.measure", "bg.period", "bg.sector", "bg.selection", "bg.unit"]
-  exclude: ["*.tmp", ".*", "*~"]
+  include:
+    - "bg.series"
+    - "bg.data.*"
+    - "map/bg.alteration"
+    - "map/bg.duration"
+    - "map/bg.measure"
+    - "map/bg.period"
+    - "map/bg.sector"
+    - "map/bg.selection"
+    - "map/bg.unit"
+  exclude: ["*.tmp", ".*", "*~", "*.bak"]
 
 combining:
   enabled: false
@@ -12,13 +24,14 @@ combining:
 
 partition_hints:
   strategy: "size_based"
-  max_partition_size_mb: 100
-  partition_by: ["sector_code"]
-
+  max_partition_size_mb: 256
+  partition_by: []
+  
 mmap:
-  enable_for_mb_greater_than: 10
-
-lookup_config:
+  enable_for_mb_greater_than: 100
+  
+# Lookup file loading strategy
+lookup_strategy:
   preload: ["period", "measure", "unit"]
   lazy: ["alteration", "duration", "sector", "selection"]
   mmap: []

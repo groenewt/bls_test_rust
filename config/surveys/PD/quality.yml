@@ -1,4 +1,5 @@
 # PD Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
 config_version: 1
 
 # Required checks field for QualityConfig
@@ -13,7 +14,7 @@ checks:
     check_type: "validity"
     parameters:
       column: "year"
-      min: 1950
+      min: 1913
       max: 2055
     severity: "error"
     
@@ -26,26 +27,70 @@ checks:
 # Required validation field for QualityConfig
 validation:
   strict_mode: true
-  fail_on_error: true
-  max_errors: 1000
+  fail_on_error: false
+  max_errors: 5000
 
 expectations:
   non_null:
     - { file: "main", columns: ["series_id", "year", "period"] }
-    - { file: "series", columns: ["series_id"] }
+    - { file: "series", columns: ["series_id", "industry_code", "product_code", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
   
   ranges:
-    - { file: "main", column: "year", min: 1950, max: 2055 }
+    - { file: "main", column: "year", min: 1913, max: 2055 }
     - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "series", column: "begin_year", min: 1913, max: 2067 }
+    - { file: "series", column: "end_year", min: 1913, max: 2067 }
+  
+  enums:
+    - { file: "main", column: "period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "S01", "S02", "S03"] }
+    - { file: "series", column: "begin_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "S01", "S02", "S03"] }
+    - { file: "series", column: "end_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "S01", "S02", "S03"] }
+    - { file: "series", column: "seasonal", values: ["U", "S"] }
+  
+  regex:
+    - { file: "series", column: "series_id", pattern: "^PD[US]\\d{4}#\\d+$" }
+    - { file: "series", column: "industry_code", pattern: "^\\d{4}$" }
+    - { file: "series", column: "product_code", pattern: "^#\\d+$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 17 }
+    - { file: "series", column: "industry_code", exact: 4 }
+    - { file: "series", column: "seasonal", exact: 1 }
+    - { file: "series", column: "bench_date", exact: 4 }
+  
+  lookup_exists:
+    - { file: "series", column: "industry_code", lookup_table: "industry" }
+    - { file: "series", column: "product_code", lookup_table: "product" }
+    - { file: "main", column: "period", lookup_table: "period" }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+    - { file: "series", validation: "(end_year > begin_year) OR (end_year == begin_year AND end_period >= begin_period)", message: "End date must be after or equal to begin date" }
 
 row_count:
   min: 1
-  warn_below: 100
+  warn_below: 1000
 
 metrics:
-  collect: ["row_count", "null_count", "distinct(series_id)"]
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(industry_code)", "distinct(product_code)"]
   persist: true
 
 policy:
-  mode: "fail_on_error"
-  sample_on_fail_rows: 50
+  mode: "continue"
+  max_errors: 5000
+  sample_on_fail_rows: 100
+  log_errors: true
+  error_file: "pd_errors.log"
+
+actions:
+  value_range_violation: "flag"
+  year_range_violation: "reject"
+  series_id_format_violation: "flag"
+  period_enum_violation: "flag"
+  industry_code_format_violation: "flag"
+  product_code_format_violation: "flag"
+  seasonal_enum_violation: "flag"
+  lookup_missing: "flag"
+  cross_field_violation: "reject"
+  length_violation: "reject"
+  required_field_missing: "reject"

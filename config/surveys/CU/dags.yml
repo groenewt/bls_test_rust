@@ -1,3 +1,5 @@
+# CU Survey DAG Configuration
+# Pipeline DAG with tasks, dependencies, retries, and SLAs
 config_version: 1
 graph:
   tasks:
@@ -92,3 +94,13 @@ graph:
       to: "finalize"
     - from: "qc_data"
       to: "finalize"
+
+# Global DAG settings
+settings:
+  max_active_runs: 1
+  catchup: false
+  depends_on_past: false
+  email_on_failure: true
+  email_on_retry: false
+  retries: 1
+  retry_delay_minutes: 5

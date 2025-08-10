@@ -45,6 +45,9 @@ development:
   
 # Performance monitoring
 monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60
   enable_metrics: true
   metrics_interval_seconds: 60
   track_memory_usage: true

@@ -1,4 +1,7 @@
+# HC Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "HC"
   name: "Occupational Injuries and Illnesses - Characteristics Data"
@@ -6,15 +9,49 @@ survey:
   size_class: "medium"
   characteristics:
     frequency: "annual"
-    coverage: "Detailed breakouts of injury and illness data by a variety of characteristics"
+    coverage: "Detailed breakouts of injury and illness data by a variety of characteristics, including age, category, event, gender, industry, length of service, nature, occupation, part of body, race, and source"
+    time_series_count: "Occupational injury and illness characteristics series"
     classification_system: "Age, category, event, gender, industry, length of service, nature, occupation, part of body, race, and source"
+    update_schedule: "OSHS Characteristics data are published annually"
     begin_year: 1992
-    update_schedule: "Annual release"
-  contacts:
-    - role: "owner"
-      name: "groenewt"
-      email: ""
-  documentation:
-    primary: "docs/bls/survey/hc.txt"
-    data_dictionary: ""
-  tags: ["occupational", "injuries", "illnesses", "characteristics", "safety"]
+    survey_methodology: "Survey respondents provide additional information for a subset of the most serious nonfatal cases logged, namely, those that involved at least 1 day away from work, beyond the day of injury or onset of illness."
+    calculation_basis: "Characteristics data collection for serious workplace injury and illness cases"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/hc.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/hc
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/hc.txt
+
+tags: ["occupational", "injuries", "illnesses", "characteristics", "safety"]
+
+definition: |
+  The following is a definition of: Occupational Injuries and Illnesses - Characteristics Data (HC)
+
+  Survey Description: Besides injury and illness counts, survey respondents 
+  also are asked to provide additional information for a subset of the most 
+  serious nonfatal cases logged, namely, those that involved at least 1 day 
+  away from work, beyond the day of injury or onset of illness. Employers 
+  answer several questions about these cases, including the demographics of 
+  the worker disabled, the nature of the disabling condition, and the event 
+  and source producing that condition.
+
+  Summary Data Available: Detailed breakouts of injury and illness data by
+  a variety of characteristics, including age, category, event, gender,
+  industry, length of service, nature, occupation, part of body, race, and
+  source are available.
+
+  Frequency of Observations: Monthly, quarterly, and annual data are 
+  available.
+
+  Data Characteristics: Data are reported to one decimal place.
+
+  Updating Schedule: OSHS Characteristics data are published annually.

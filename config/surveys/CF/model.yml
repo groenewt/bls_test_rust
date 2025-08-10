@@ -282,6 +282,27 @@ constraints:
   unique:
     - { file: "series", columns: ["series_id"] }
     - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "case", columns: ["case_code"] }
+    - { file: "category", columns: ["category_code"] }
+    - { file: "category2", columns: ["category_code"] }
+    - { file: "datatype", columns: ["datatype_code"] }
+    - { file: "event", columns: ["event_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+    - { file: "industry", columns: ["industry_code"] }
+    - { file: "occupation", columns: ["occupation_code"] }
+    - { file: "source", columns: ["source_code"] }
   required_fields:
     - { file: "main", columns: ["series_id", "year", "period"] }
     - { file: "series", columns: ["series_id", "category_code", "datatype_code", "case_code", "industry_code", "event_code", "source_code", "occupation_code", "begin_year", "begin_period", "end_year", "end_period"] }
+
+types:
+  CFSeriesId: { base: "string", length: 17, pattern: "^CF[US]\\d{10}$" }
+  CFCategoryCode: { base: "string", length: 2, pattern: "^[0-9A-Z]{2}$" }
+  CFDatatypeCode: { base: "string", length: 1, pattern: "^[0-9A-Z]$" }
+  CFCaseCode: { base: "string", length: 1, pattern: "^[0-9A-Z]$" }
+  CFIndustryCode: { base: "string", length: 4, pattern: "^[0-9A-Z]{4}$" }
+  CFEventCode: { base: "string", length: 4, pattern: "^[0-9A-Z]{4}$" }
+  CFSourceCode: { base: "string", length: 4, pattern: "^[0-9A-Z]{4}$" }
+  CFOccupationCode: { base: "string", length: 4, pattern: "^[0-9A-Z]{4}$" }
+  CFPeriod: { base: "string", length: 3, pattern: "^A01$" }
+  CFValue: { base: "int32", min: 0, max: 100000 }

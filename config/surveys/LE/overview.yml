@@ -1,13 +1,33 @@
 # LE Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "LE"
-  name: "LE Survey"
-  description: "Bureau of Labor Statistics LE survey data"
+  name: "Labor Economics (LE)"
+  description: "LE survey providing labor economics related time series (example configuration)."
   size_class: "medium"
   characteristics:
     frequency: "monthly"
     coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    time_series_count: "thousands of series"
+    classification_system: "LE classification system"
+    update_schedule: "Monthly release"
+    begin_year: 1980
+    survey_methodology: "Collected from administrative and survey sources; example placeholder."
+    calculation_basis: "Varies by measure; see documentation."
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/le.md"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/le
+    - Data files are ASCII text
+    - Example configuration modeled after reference surveys
+
+tags: ["le", "labor", "monthly", "bls"]

@@ -32,20 +32,65 @@ validation:
 expectations:
   non_null:
     - { file: "main", columns: ["series_id", "year", "period"] }
-    - { file: "series", columns: ["series_id"] }
+    - { file: "series", columns: ["series_id", "group_code", "item_code", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
   
   ranges:
-    - { file: "main", column: "year", min: 1950, max: 2055 }
+    - { file: "main", column: "year", min: 1913, max: 2055 }
     - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "series", column: "begin_year", min: 1913, max: 2055 }
+    - { file: "series", column: "end_year", min: 1913, max: 2055 }
+  
+  enums:
+    - { file: "main", column: "period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "begin_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "end_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+  
+  regex:
+    - { file: "series", column: "series_id", pattern: "^WD[SU][A-Z0-9]{27}$" }
+    - { file: "series", column: "base_date", pattern: "^[0-9]{6}$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 30 }
+    - { file: "series", column: "group_code", exact: 3 }
+    - { file: "series", column: "item_code", exact: 12 }
+    - { file: "series", column: "seasonal", exact: 1 }
+    - { file: "series", column: "base_date", exact: 6 }
+  
+  lookup_exists:
+    - { file: "series", column: "group_code", lookup_table: "group" }
+    - { file: "series", column: "item_code", lookup_table: "item" }
+    - { file: "series", column: "seasonal", lookup_table: "seasonal" }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+    - { file: "series", validation: "(end_year > begin_year) OR (end_year == begin_year AND end_period >= begin_period)", message: "End date must be after or equal to begin date" }
 
 row_count:
   min: 1
   warn_below: 100
 
 metrics:
-  collect: ["row_count", "null_count", "distinct(series_id)"]
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(group_code)", "distinct(item_code)"]
   persist: true
 
 policy:
-  mode: "fail_on_error"
+  mode: "continue"
+  max_errors: 1000
   sample_on_fail_rows: 50
+  log_errors: true
+  error_file: "wd_errors.log"
+
+actions:
+  value_range_violation: "flag"
+  year_range_violation: "reject"
+  series_id_format_violation: "flag"
+  period_enum_violation: "flag"
+  group_code_format_violation: "flag"
+  item_code_format_violation: "flag"
+  seasonal_enum_violation: "flag"
+  base_date_format_violation: "flag"
+  lookup_missing: "flag"
+  cross_field_violation: "reject"
+  length_violation: "reject"
+  required_field_missing: "reject"

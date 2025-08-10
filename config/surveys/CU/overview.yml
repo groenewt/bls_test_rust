@@ -1,3 +1,5 @@
+# CU Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
 survey:
   code: "CU"
@@ -13,15 +15,19 @@ survey:
     time_series_count: "Several hundred consumer items and groups of items"
     survey_methodology: "Prices collected from a sample of 75 urban places"
     calculation_basis: "Comparison of cost of a sample 'market basket' of goods and services"
-  contacts:
-    - role: "owner"
-      name: "BLS Team"
-      email: "bls@example.org"
-  documentation:
-    primary: "docs/bls/survey/cu.txt"
-    data_dictionary: "docs/bls/dictionaries/CU.md"
-  tags: ["consumer", "price", "index", "urban", "time-series"]
-  definition: |
+
+contacts:
+  - role: "owner"
+    name: "BLS Team"
+    email: "bls@example.org"
+
+documentation:
+  primary: "docs/bls/survey/cu.txt"
+  data_dictionary: "docs/bls/dictionaries/CU.md"
+
+tags: ["consumer", "price", "index", "urban", "time-series"]
+
+definition: |
     The Consumer Price Index (CPI) is a statistical measure
     of change, over time, of the prices of goods and services in major 
     expenditure groups--such as food, housing, apparel, transportation, and 

@@ -1,23 +1,30 @@
+# EB Survey Processing Configuration
+# Strategy, resources, chunking, mmap, cache
 config_version: 1
-strategy:
-  mode: "in_memory"
-  max_concurrency: 1
 
-resources:
-  max_threads: 2
-  memory_limit_gb: 4
+# Direct strategy value (not nested)
+strategy: "in_memory"
 
-io:
-  chunk_size_mb: 64
-  buffer_pool_size: 4
+# Flattened configuration fields
+max_threads: 2
+chunk_size: 16777216  # 16MB in bytes (smaller for small survey)
+memory_limit: 4096    # 4GB in MB
+parallel: false       # Single-threaded for small survey
 
-features:
-  use_mmap: true
-  enable_statistics: true
-  enable_profiling: false
+# Chunking configuration
+chunking:
+  size: 16777216      # 16MB in bytes
+  strategy: "sequential"
+  overlap: null
 
-transforms:
-  - id: "sort_data"
-    expr: "sort_by(series_id, year, period)"
-  - id: "deduplicate_data"
-    expr: "deduplicate_on(series_id, year, period, footnote_codes)"
+# Memory mapping configuration
+mmap:
+  enabled: true       # Beneficial even for small survey
+  threshold: null
+  prefetch: null
+
+# Cache configuration  
+cache:
+  enabled: true
+  size: 2097152       # 2MB cache size
+  ttl: 1800          # 30 minutes TTL

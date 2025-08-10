@@ -1,3 +1,238 @@
-# JL Survey Model Configuration
+# JL Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "jl.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "JLS000000NEJOR"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    region_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "NE"
+    dataelement_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "JO"
+    ratelevel_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "R"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2000"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M12"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2024"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M12"
+
+data_files:
+  - id: "current"
+    pattern: "jl.data.0.Current"
+    index: "series_id"
+    estimated_size_gb: 0.3
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "JLS000000NEJOR"
+      year:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "2024"
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M12"
+      value:
+        type: "string"
+        length: 12
+        nullable: true
+        example_value: "1036"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+  - id: "all_items"
+    pattern: "jl.data.1.AllItems"
+    index: "series_id"
+    estimated_size_gb: 2.0
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "JLS000000NEJOR"
+      year:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "2024"
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M12"
+      value:
+        type: "string"
+        length: 12
+        nullable: true
+        example_value: "1036"
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "dataelement"
+    path: "jl.dataelement"
+    index: "dataelement_code"
+    description: "Data element codes mapping file"
+    schema:
+      dataelement_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "JO"
+      dataelement_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Job Openings"
+
+  - id: "industry"
+    path: "jl.industry"
+    index: "industry_code"
+    description: "Industry codes mapping file"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      industry_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Total nonfarm"
+
+  - id: "period"
+    path: "jl.period"
+    index: "period"
+    description: "Period codes mapping file"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+
+  - id: "ratelevel"
+    path: "jl.ratelevel"
+    index: "ratelevel_code"
+    description: "Rate/Level codes mapping file"
+    schema:
+      ratelevel_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "R"
+      ratelevel_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Rate"
+
+  - id: "region"
+    path: "jl.region"
+    index: "region_code"
+    description: "Region codes mapping file"
+    schema:
+      region_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "NE"
+      region_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Northeast"
+
+relationships:
+  - from: { file: "current", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "all_items", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "region_code" }
+    to: { file: "region", column: "region_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "dataelement_code" }
+    to: { file: "dataelement", column: "dataelement_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "ratelevel_code" }
+    to: { file: "ratelevel", column: "ratelevel_code" }
+    type: "many-to-one"
+  - from: { file: "current", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+  - from: { file: "all_items", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"

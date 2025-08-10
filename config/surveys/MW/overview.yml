@@ -1,13 +1,61 @@
 # MW Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "MW"
-  name: "MW Survey"
-  description: "Bureau of Labor Statistics MW survey data"
-  size_class: "medium"
+  name: "Consumer Price Index - Urban Wage Earners and Clerical Workers"
+  description: "The Consumer Price Index (CPI) is a statistical measure of change, over time, of the prices of goods and services in major expenditure groups typically purchased by urban consumers. This index covers urban wage earners and clerical workers."
+  size_class: "large"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "U.S. average indexes for about 350 consumer items and groups, area indexes for 27 urban places, regional and city-size classifications"
+    time_series_count: "Consumer Price Index series for urban wage earners and clerical workers"
+    classification_system: "Consumer expenditure categories (food, housing, apparel, transportation, medical care, etc.)"
+    update_schedule: "Monthly release near the 15th of the month following the reference month"
+    begin_year: 1913
+    survey_methodology: "Prices for about 100,000 items and data on about 8,300 housing units are collected in a sample of 91 urban places."
+    calculation_basis: "Market basket comparison using base period 1982-1984=100"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/Mw.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/mw
+    - Data files are partitioned into multiple separate files (mw.data.0 through mw.data.19)
+    - Base period: 1982-1984 = 100 for most indexes
+    - Indexes stored to one decimal place, except "Purchasing Power" values (three decimal places)
+    - Full doc: docs/bls/survey/Mw.txt
+
+tags: ["consumer_price_index", "cpi", "monthly", "urban_wage_earners", "clerical_workers", "price_inflation"]
+
+definition: |
+  The following is a definition of: CONSUMER PRICE INDEX - Urban Wage Earners and Clerical Workers (MW)
+
+  Survey Description: The Consumer Price Index (CPI) is a statistical measure
+  of change, over time, of the prices of goods and services in major 
+  expenditure groups--such as food, housing, apparel, transportation, and 
+  medical care--typically purchased by urban consumers. Essentially, it 
+  compares the cost of a sample "market basket" of goods and services in a 
+  specific month relative to the cost of the same "market basket" in an 
+  earlier reference period. This reference period is designated as the base 
+  period.
+
+  The CPI introduced by the BLS in 1987 includes indexes for two 
+  populations; urban wage earners and clerical workers (MW), and all urban 
+  consumers (MU).
+
+  Summary Data Available: U.S. average indexes for both populations are 
+  available for about 350 consumer items and groups of items. In addition, 
+  over 100 of the indexes have been adjusted for seasonality. The indexes 
+  are monthly with some beginning in 1913.
+
+  Area indexes are available for 27 urban places with about 65 items and groups
+  per area. Regional indexes are available for four regions with about 95 items
+  and groups per region. City-size indexes are available for four size classes
+  with about 95 items and groups per class.

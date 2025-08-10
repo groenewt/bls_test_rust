@@ -1,3 +1,5 @@
+# CU Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
 series:
   path: "cu.series"
@@ -21,6 +23,7 @@ data_files:
   - id: "main"
     pattern: "cu.data.*"
     index: "series_id"
+    estimated_size_gb: 8.0
     schema:
       series_id: { type: "string", length: 17, nullable: false }
       year: { type: "string", length: 4, nullable: false }

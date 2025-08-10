@@ -1,3 +1,218 @@
-# EE Survey Model Configuration
+# EE Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "ee.series"
+  index: "series_id"
+  estimated_size_gb: 0.2
+  schema:
+    series_id:
+      type: "string"
+      length: 11
+      nullable: false
+      example_value: "EES00000001"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    data_type_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1939"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2003"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M04"
+
+data_files:
+  - id: "main"
+    pattern: "data/ee.data.*"
+    index: "series_id"
+    estimated_size_gb: 1.5
+    schema:
+      series_id:
+        type: "string"
+        length: 11
+        nullable: false
+        example_value: "EES00000001"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 1990
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|Q\\d{2}|A01)$"
+        nullable: false
+        example_value: "M01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 108946
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: "p"
+
+lookups:
+  - id: "industry"
+    path: "map/ee.industry"
+    index: "industry_code"
+    description: "Maps industry codes (SIC groupings) to industry names"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "300000"
+      SIC_code:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: "20-39"
+      publishing_status:
+        type: "string"
+        length: 2
+        nullable: true
+        example_value: "AO"
+      industry_name:
+        type: "string"
+        length: 200
+        nullable: false
+        example_value: "Manufacturing"
+
+  - id: "datatype"
+    path: "map/ee.datatype"
+    index: "data_type_code"
+    description: "Maps data type codes to text"
+    schema:
+      data_type_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      data_type_text:
+        type: "string"
+        length: 120
+        nullable: false
+        example_value: "ALL EMPLOYEES, THOUSANDS"
+
+  - id: "period"
+    path: "map/ee.period"
+    index: "period"
+    description: "Maps period codes to names"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      period_abbr:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "JAN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "January"
+
+  - id: "seasonal"
+    path: "map/ee.seasonal"
+    index: "seasonal_code"
+    description: "Seasonal adjustment flags"
+    schema:
+      seasonal_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "S"
+      seasonal_text:
+        type: "string"
+        length: 40
+        nullable: false
+        example_value: "Seasonally Adjusted"
+
+  - id: "footnote"
+    path: "map/ee.footnote"
+    index: "footnote_code"
+    description: "Footnotes for data values"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "p"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: true
+        example_value: "preliminary"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "data_type_code" }
+    to: { file: "datatype", column: "data_type_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal_code" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "industry", columns: ["industry_code"] }
+    - { file: "datatype", columns: ["data_type_code"] }
+    - { file: "period", columns: ["period"] }
+    - { file: "seasonal", columns: ["seasonal_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "industry_code", "data_type_code", "seasonal", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  EESeriesId: { base: "string", length: 11, pattern: "^EES\\d{8}$" }
+  EEIndustryCode: { base: "string", length: 6, pattern: "^\\d{6}$" }
+  EEDataTypeCode: { base: "string", length: 2, pattern: "^\\d{2}$" }
+  EESeasonal: { base: "string", length: 1, pattern: "^[SU]$" }
+  EEPeriod: { base: "string", length: 3, pattern: "^(M\\d{2}|Q\\d{2}|A01)$" }
+  EEValue: { base: "decimal", precision: 18, scale: 4 }

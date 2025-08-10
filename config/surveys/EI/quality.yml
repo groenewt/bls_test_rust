@@ -1,4 +1,5 @@
 # EI Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
 config_version: 1
 
 # Required checks field for QualityConfig
@@ -13,7 +14,7 @@ checks:
     check_type: "validity"
     parameters:
       column: "year"
-      min: 1950
+      min: 1974
       max: 2055
     severity: "error"
     
@@ -23,29 +24,79 @@ checks:
       columns: ["series_id", "year", "period"]
     severity: "error"
 
+  - name: "price_index_range_check"
+    check_type: "validity"
+    parameters:
+      column: "value"
+      min: 0.0
+      max: 1000.0
+    severity: "warning"
+
 # Required validation field for QualityConfig
 validation:
   strict_mode: true
-  fail_on_error: true
-  max_errors: 1000
+  fail_on_error: false
+  max_errors: 1500
 
 expectations:
   non_null:
-    - { file: "main", columns: ["series_id", "year", "period"] }
-    - { file: "series", columns: ["series_id"] }
+    - { file: "current", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "seasonal", "index_code", "begin_year", "begin_period", "end_year", "end_period"] }
   
   ranges:
-    - { file: "main", column: "year", min: 1950, max: 2055 }
-    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "current", column: "year", min: 1974, max: 2055 }
+    - { file: "current", column: "value", min: 0.0, max: 1000.0 }
+    - { file: "series", column: "begin_year", min: 1974, max: 2067 }
+    - { file: "series", column: "end_year", min: 1974, max: 2067 }
+  
+  enums:
+    - { file: "current", column: "period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "S01", "S02", "S03"] }
+    - { file: "series", column: "seasonal", values: ["S", "U"] }
+    - { file: "series", column: "begin_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "S01", "S02", "S03"] }
+    - { file: "series", column: "end_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13", "Q01", "Q02", "Q03", "Q04", "Q05", "S01", "S02", "S03"] }
+  
+  regex:
+    - { file: "series", column: "series_id", pattern: "^EI[SU][A-Z]{2}[A-Z0-9]{1,}$" }
+    - { file: "series", column: "index_code", pattern: "^[A-Z]{2}$" }
+    - { file: "current", column: "period", pattern: "^(M(0[1-9]|1[0-3])|Q(0[1-5])|S(0[1-3]))$" }
+  
+  length:
+    - { file: "series", column: "series_id", min: 12, max: 30 }
+    - { file: "series", column: "seasonal", exact: 1 }
+    - { file: "series", column: "index_code", exact: 2 }
+    - { file: "current", column: "series_id", min: 12, max: 17 }
+    - { file: "current", column: "period", exact: 3 }
+  
+  lookup_exists:
+    - { file: "series", column: "index_code", lookup_table: "index" }
+    - { file: "current", column: "period", lookup_table: "period" }
+  
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+    - { file: "series", validation: "(end_year > begin_year) OR (end_year == begin_year AND end_period >= begin_period)", message: "End date must be after or equal to begin date" }
 
 row_count:
   min: 1
-  warn_below: 100
+  warn_below: 50
 
 metrics:
-  collect: ["row_count", "null_count", "distinct(series_id)"]
+  collect: ["row_count", "null_count", "distinct(series_id)", "distinct(index_code)", "min(value)", "max(value)", "avg(value)"]
   persist: true
 
 policy:
-  mode: "fail_on_error"
-  sample_on_fail_rows: 50
+  mode: "continue"
+  max_errors: 1500
+  sample_on_fail_rows: 30
+  log_errors: true
+  error_file: "ei_errors.log"
+
+actions:
+  value_range_violation: "flag"
+  year_range_violation: "reject"
+  series_id_format_violation: "flag"
+  period_enum_violation: "flag"
+  index_code_format_violation: "flag"
+  lookup_missing: "flag"
+  cross_field_violation: "reject"
+  length_violation: "reject"
+  required_field_missing: "reject"

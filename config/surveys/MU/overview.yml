@@ -1,13 +1,54 @@
 # MU Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "MU"
-  name: "MU Survey"
-  description: "Bureau of Labor Statistics MU survey data"
-  size_class: "medium"
+  name: "Consumer Price Index - All Urban Consumers"
+  description: "The Consumer Price Index (CPI) measures the average change over time in the prices paid by urban consumers for a market basket of consumer goods and services. This index covers all urban consumers (MU)."
+  size_class: "large"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "U.S. average indexes for about 350 consumer items and groups; regional, city-size, and area indexes"
+    time_series_count: "CPI series for all urban consumers across items, regions, sizes, and areas"
+    classification_system: "Consumer expenditure categories (food, housing, apparel, transportation, medical care, etc.)"
+    update_schedule: "Monthly near the 15th of the month following the reference month"
+    begin_year: 1913
+    survey_methodology: "Prices for about 100,000 items and data on about 8,300 housing units are collected in a sample of 91 urban places."
+    calculation_basis: "Market basket comparison using designated base period (most commonly 1982-84=100)"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/Mu.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/mu
+    - Data files are partitioned into multiple separate files (mu.data.0 through mu.data.19)
+    - Base period: commonly 1982-1984 = 100 for most indexes
+    - Indexes stored to one decimal place; purchasing power values use three decimal places
+    - Full doc: docs/bls/survey/Mu.txt
+
+tags: ["consumer_price_index", "cpi", "monthly", "all_urban_consumers", "price_inflation"]
+
+definition: |
+  The following is a definition of: CONSUMER PRICE INDEX - All Urban Consumers (MU)
+
+  Survey Description: The Consumer Price Index (CPI) is a statistical measure
+  of change, over time, of the prices of goods and services in major 
+  expenditure groups--such as food, housing, apparel, transportation, and 
+  medical care--typically purchased by urban consumers. It compares the cost of
+  a sample "market basket" of goods and services in a specific month relative
+  to the cost of the same "market basket" in an earlier reference period.
+
+  Summary Data Available: U.S. average indexes are available for about 350
+  consumer items and groups. Over 100 of the indexes have been adjusted for
+  seasonality. Indexes are monthly with some beginning in 1913, and area,
+  regional, and city-size indexes are available at different frequencies.
+
+  Area indexes are available for 27 urban places with about 65 items and groups
+  per area. Regional and city-size indexes provide broader geographic views with
+  similar item coverage.

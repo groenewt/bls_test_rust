@@ -1,3 +1,282 @@
-# MU Survey Model Configuration
+# MU Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+models:
+  series:
+    path: "mu.series"
+    index: "series_id"
+    estimated_size_gb: 0.3
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "MUSR0000SA0"
+      area_code:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "0000"
+      item_code:
+        type: "string"
+        length: 8
+        nullable: false
+        example_value: "SA0"
+      seasonal:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "S"
+      periodicity_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "R"
+      base_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "S"
+      base_period:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "1982-84=100"
+      begin_year:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "1913"
+      begin_period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M01"
+      end_year:
+        type: "string"
+        length: 4
+        nullable: false
+        example_value: "2024"
+      end_period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "M12"
+
+  data_files:
+    - id: "current"
+      pattern: "mu.data.0.Current"
+      index: "series_id"
+      estimated_size_gb: 0.2
+      description: "All current year-to-date"
+      schema:
+        series_id:
+          type: "string"
+          length: 17
+          nullable: false
+        year:
+          type: "int32"
+          min: 1900
+          max: 2100
+          nullable: false
+        period:
+          type: "string"
+          length: 3
+          pattern: "^(M\\d{2}|Q\\d{2}|S\\d{2}|A\\d{2})$"
+          nullable: false
+        value:
+          type: "decimal"
+          precision: 18
+          scale: 2
+          nullable: true
+        footnote_codes:
+          type: "string"
+          length: 10
+          nullable: true
+
+    - id: "all_items"
+      pattern: "mu.data.1.AllItems"
+      index: "series_id"
+      estimated_size_gb: 0.3
+      description: "All items (item_code AA0, SA0)"
+      schema:
+        series_id:
+          type: "string"
+          length: 17
+          nullable: false
+        year:
+          type: "int32"
+          min: 1900
+          max: 2100
+          nullable: false
+        period:
+          type: "string"
+          length: 3
+          pattern: "^(M\\d{2}|Q\\d{2}|S\\d{2}|A\\d{2})$"
+          nullable: false
+        value:
+          type: "decimal"
+          precision: 18
+          scale: 2
+          nullable: true
+        footnote_codes:
+          type: "string"
+          length: 10
+          nullable: true
+
+    - id: "summaries"
+      pattern: "mu.data.2.Summaries"
+      index: "series_id"
+      estimated_size_gb: 0.4
+      description: "Summaries (item_code SA0, SA1, etc.)"
+      schema:
+        series_id:
+          type: "string"
+          length: 17
+          nullable: false
+        year:
+          type: "int32"
+          min: 1900
+          max: 2100
+          nullable: false
+        period:
+          type: "string"
+          length: 3
+          pattern: "^(M\\d{2}|Q\\d{2}|S\\d{2}|A\\d{2})$"
+          nullable: false
+        value:
+          type: "decimal"
+          precision: 18
+          scale: 2
+          nullable: true
+        footnote_codes:
+          type: "string"
+          length: 10
+          nullable: true
+
+    - id: "regional_data"
+      pattern: "mu.data.*"
+      index: "series_id"
+      estimated_size_gb: 2.0
+      description: "Regional and area-specific data files (mu.data.3-19)"
+      schema:
+        series_id:
+          type: "string"
+          length: 17
+          nullable: false
+        year:
+          type: "int32"
+          min: 1900
+          max: 2100
+          nullable: false
+        period:
+          type: "string"
+          length: 3
+          pattern: "^(M\\d{2}|Q\\d{2}|S\\d{2}|A\\d{2})$"
+          nullable: false
+        value:
+          type: "decimal"
+          precision: 18
+          scale: 2
+          nullable: true
+        footnote_codes:
+          type: "string"
+          length: 10
+          nullable: true
+
+  lookups:
+    - id: "area"
+      path: "mu.area"
+      index: "area_code"
+      description: "Maps area codes to area names"
+      schema:
+        area_code:
+          type: "string"
+          length: 4
+          nullable: false
+          example_value: "0100"
+        area_name:
+          type: "string"
+          length: 40
+          nullable: false
+          example_value: "MIAMI, FLA"
+
+    - id: "item"
+      path: "mu.item"
+      index: "item_code"
+      description: "Maps item codes to item names"
+      schema:
+        item_code:
+          type: "string"
+          length: 8
+          nullable: false
+          example_value: "SA0"
+        item_name:
+          type: "string"
+          length: 100
+          nullable: false
+          example_value: "All items"
+
+    - id: "contacts"
+      path: "mu.contacts"
+      index: "contact_code"
+      description: "Contacts for BLS MU survey"
+      schema:
+        contact_code:
+          type: "string"
+          length: 10
+          nullable: false
+        contact_name:
+          type: "string"
+          length: 100
+          nullable: false
+        contact_info:
+          type: "string"
+          length: 200
+          nullable: true
+
+  relationships:
+    - name: "series_to_data"
+      type: "one_to_many"
+      parent: "series"
+      child: "data_files"
+      parent_key: "series_id"
+      child_key: "series_id"
+
+    - name: "series_to_area"
+      type: "many_to_one"
+      parent: "series"
+      child: "area"
+      parent_key: "area_code"
+      child_key: "area_code"
+
+    - name: "series_to_item"
+      type: "many_to_one"
+      parent: "series"
+      child: "item"
+      parent_key: "item_code"
+      child_key: "item_code"
+
+  validation:
+    rules:
+      - name: "series_id_format"
+        description: "Series ID must start with MU and be 17 characters"
+        field: "series_id"
+        pattern: "^MU[A-Z0-9]{15}$"
+      - name: "year_range"
+        description: "Year must be between 1913 and current year + 1"
+        field: "year"
+        min: 1913
+        max: 2026
+      - name: "period_format"
+        description: "Period must be valid monthly, quarterly, semi-annual, or annual format"
+        field: "period"
+        pattern: "^(M(01|02|03|04|05|06|07|08|09|10|11|12|13)|Q(01|02|03|04|05)|S(01|02|03)|A(01))$"
+      - name: "value_precision"
+        description: "Value must have appropriate precision for CPI data"
+        field: "value"
+        precision: 18
+        scale: 2
+        min: 0
+        max: 9999.99

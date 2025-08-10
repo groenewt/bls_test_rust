@@ -1,3 +1,5 @@
+# TU Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
 config_version: 1
 expectations:
   non_null:
@@ -11,9 +13,6 @@ expectations:
   regex:
     - { file: "main", column: "period", pattern: "^(A01|Q0[1-4])$" }
     - { file: "series", column: "series_id", pattern: "^TU[U]\\d{16}$" }
-  row_count:
-    min: 1
-    warn_below: 1000
   uniqueness:
     - { file: "series", columns: ["series_id"] }
     - { file: "main", columns: ["series_id", "year", "period"] }
@@ -24,3 +23,7 @@ policy:
   mode: "fail_on_error"
   sample_on_fail_rows: 50
   max_errors: 1000
+
+row_count:
+  min: 1
+  warn_below: 1000

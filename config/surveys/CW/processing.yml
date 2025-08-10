@@ -1,21 +1,34 @@
+# CW Survey Processing Configuration
 config_version: 1
-strategy:
-  mode: "exclusive"
-  max_concurrency: 1
 
-resources:
-  max_threads: 8
-  memory_limit_gb: 16
+# Direct strategy value (not nested)
+strategy: "mmap"
 
-io:
-  chunk_size_mb: 100
-  buffer_pool_size: 16
+# Flattened configuration fields
+max_threads: 8
+chunk_size: 104857600  # 100MB in bytes
+memory_limit: 16384    # 16GB in MB
+parallel: true         # Enable multi-threaded processing
 
-features:
-  use_mmap: true
-  enable_statistics: true
-  enable_profiling: false
+# Chunking configuration
+chunking:
+  size: 104857600       # 100MB in bytes
+  strategy: "sequential"
+  overlap: null
 
+# Memory mapping configuration
+mmap:
+  enabled: true
+  threshold: null
+  prefetch: null
+
+# Cache configuration  
+cache:
+  enabled: true
+  size: 16777216        # 16MB cache size
+  ttl: 3600             # 1 hour TTL
+
+# Preserved transforms
 transforms:
   - id: "normalize_period"
     expr: "upper(period)"

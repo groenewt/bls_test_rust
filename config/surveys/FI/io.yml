@@ -1,3 +1,5 @@
+# FI Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
 config_version: 1
 discovery:
   root: "data/raw/bls/FI"
@@ -23,3 +25,10 @@ lookup_config:
   lazy: ["footnote", "case", "category", "datatype", "event", "source"]  # Load on demand
   mmap: []  # Use for large files
   cache_all: true  # Small enough to keep in memory
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

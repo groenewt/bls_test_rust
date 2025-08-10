@@ -1,4 +1,35 @@
+# HC Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
 config_version: 1
+
+# Required checks field for QualityConfig
+checks:
+  - name: "series_id_not_null"
+    check_type: "completeness"
+    parameters:
+      columns: ["series_id"]
+    severity: "error"
+  
+  - name: "year_range_check" 
+    check_type: "validity"
+    parameters:
+      column: "year"
+      min: 1992
+      max: 2055
+    severity: "error"
+    
+  - name: "unique_series_combination"
+    check_type: "uniqueness"
+    parameters:
+      columns: ["series_id", "year", "period"]
+    severity: "error"
+
+# Required validation field for QualityConfig
+validation:
+  strict_mode: true
+  fail_on_error: false
+  max_errors: 2000
+
 expectations:
   non_null:
     - { file: "main", columns: ["series_id", "year", "period"] }
@@ -19,8 +50,24 @@ expectations:
   length:
     - { file: "series", column: "series_id", exact: 17 }
     - { file: "main", column: "series_id", exact: 17 }
+  lookup_exists:
+    - { file: "series", column: "category_code", lookup_table: "category2" }
+    - { file: "series", column: "datatype_code", lookup_table: "datatype" }
+    - { file: "series", column: "casetype_code", lookup_table: "case" }
+    - { file: "series", column: "age_code", lookup_table: "age" }
+    - { file: "series", column: "race_code", lookup_table: "race" }
+    - { file: "series", column: "gender_code", lookup_table: "gender" }
+    - { file: "series", column: "pob_code", lookup_table: "pob" }
+    - { file: "series", column: "event_code", lookup_table: "event" }
+    - { file: "series", column: "source_code", lookup_table: "source" }
+    - { file: "series", column: "occupation_code", lookup_table: "occupation" }
+    - { file: "series", column: "nature_code", lookup_table: "nature" }
+    - { file: "series", column: "industry_code", lookup_table: "industry" }
+    - { file: "series", column: "los_code", lookup_table: "los" }
+
   cross_field:
     - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
+    - { file: "series", validation: "(end_year > begin_year) OR (end_year == begin_year AND end_period >= begin_period)", message: "End date must be after or equal to begin date" }
 
 row_count:
   min: 1
@@ -31,8 +78,24 @@ metrics:
   persist: true
 
 policy:
-  mode: "fail_on_error"
+  mode: "continue"
+  max_errors: 2000
   sample_on_fail_rows: 50
+  log_errors: true
+  error_file: "hc_errors.log"
+
+actions:
+  value_range_violation: "flag"
+  year_range_violation: "reject"
+  series_id_format_violation: "flag"
+  period_enum_violation: "flag"
+  category_code_format_violation: "flag"
+  datatype_code_format_violation: "flag"
+  casetype_code_format_violation: "flag"
+  lookup_missing: "flag"
+  cross_field_violation: "reject"
+  length_violation: "reject"
+  required_field_missing: "reject"
 
 validation_rules:
   data_file:

@@ -2,6 +2,9 @@
 # Data model: files, schemas, relationships
 config_version: 1
 
+# New schema requires explicit models field
+models: {}
+
 series:
   path: "hs.series"
   index: "series_id"

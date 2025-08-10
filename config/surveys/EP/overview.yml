@@ -1,13 +1,53 @@
 # EP Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "EP"
-  name: "EP Survey"
-  description: "Bureau of Labor Statistics EP survey data"
+  name: "Employment Projections"
+  description: "Bureau of Labor Statistics projections of industry and occupational employment developed through six interrelated steps."
   size_class: "medium"
   characteristics:
-    frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    frequency: "biannual"
+    coverage: "National employment projections by occupation and industry"
+    time_series_count: "Employment Projections series"
+    classification_system: "National Employment Matrix occupation and industry codes"
+    update_schedule: "Updated twice per year - wages in April, projections in September"
+    begin_year: 1988
+    survey_methodology: "Six interrelated steps: labor force, aggregate economy, final demand (GDP), industry output, industry employment, and employment/openings by occupation"
+    calculation_basis: "Employment projections, employment change, job openings, education, training, and wage data"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/ep.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/ep
+    - Series identification: EP U OOOOOO IIIIII format
+    - Only annual averages available (unadjusted for seasonality)
+    - Further info: https://www.bls.gov/emp
+    - Contact: Employment Projections program, BLS, (202) 691-5700
+
+tags: ["employment", "projections", "occupational", "industry", "wages", "job_openings", "biannual"]
+
+definition: |
+  The following is a definition of: EMPLOYMENT PROJECTIONS
+
+  Program Description: Bureau of Labor Statistics projections of industry and occupational employment
+  are developed in a series of six interrelated steps, each of which is based on 
+  a different procedure or model and assumptions: labor force, aggregate economy,
+  final demand (GDP) by consuming sector and product, industry output, industry 
+  employment, and employment and openings by occupation. The results produced by
+  each step are key inputs to following steps, and the sequence may be repeated 
+  multiple times to allow feedback and to ensure consistency.
+
+  Summary Data Available: The Employment Projections program develops employment, projected 
+  employment, employment change, job openings, education, training, and wage
+  data for each detailed National Employment Matrix occupation. Employment, projected 
+  employment, and employment change data are also available for summary occupations.
+
+  Updates: The database is updated twice per year; wages are updated in April and projections are updated in September.

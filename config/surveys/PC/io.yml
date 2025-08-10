@@ -15,3 +15,29 @@ output:
     pattern: null
     timestamp_format: null
     include_survey_code: false
+
+discovery:
+  root: "data/raw/bls/pc"
+  include: ["pc.series", "pc.data.*"]
+  exclude: ["*.tmp", ".*", "*~", "*.bak"]
+
+combining:
+  enabled: false
+  strategy: "none"
+  thresholds:
+    small_file_mb: 10
+
+partition_hints:
+  strategy: "size_based"
+  max_partition_size_mb: 256
+  partition_by: []
+
+mmap:
+  enable_for_mb_greater_than: 100
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

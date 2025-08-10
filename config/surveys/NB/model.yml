@@ -1,3 +1,94 @@
-# NB Survey Model Configuration
+# NB Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "nb.series"
+  index: "series_id"
+  estimated_size_gb: 0.01
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "NB000000000000000"
+    series_title:
+      type: "string"
+      length: 200
+      nullable: true
+      example_value: "Sample NB series title"
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1980"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2025"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M12"
+
+data_files:
+  - id: "main"
+    pattern: "nb.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.05
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "NB000000000000000"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2025
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|Q\\d{2}|A01)$"
+        nullable: false
+        example_value: "M06"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 123.4567
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups: []
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  NBSeriesId: { base: "string", length: 30, pattern: "^[A-Z0-9]+$" }
+  NBPeriod:   { base: "string", length: 3,  pattern: "^(M\\d{2}|Q\\d{2}|A01)$" }
+  NBValue:    { base: "decimal", precision: 18, scale: 4 }

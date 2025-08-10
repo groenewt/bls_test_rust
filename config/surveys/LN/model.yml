@@ -1,3 +1,405 @@
-# LN Survey Model Configuration
+# LN Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "ln.series"
+  index: "series_id"
+  estimated_size_gb: 0.5
+  schema:
+    series_id:
+      type: "string"
+      length: 17
+      nullable: false
+      example_value: "LNU01000000"
+    seasonal:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "S"
+    periodicity_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "M"
+    data_type_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "01"
+    sex_code:
+      type: "string"
+      length: 1
+      nullable: true
+      example_value: "M"
+    race_code:
+      type: "string"
+      length: 2
+      nullable: true
+      example_value: "01"
+    age_code:
+      type: "string"
+      length: 2
+      nullable: true
+      example_value: "16"
+    education_code:
+      type: "string"
+      length: 2
+      nullable: true
+      example_value: "31"
+    occupation_code:
+      type: "string"
+      length: 6
+      nullable: true
+      example_value: "000000"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: true
+      example_value: "000000"
+    class_code:
+      type: "string"
+      length: 1
+      nullable: true
+      example_value: "1"
+    lfst_code:
+      type: "string"
+      length: 2
+      nullable: true
+      example_value: "01"
+    origin_code:
+      type: "string"
+      length: 2
+      nullable: true
+      example_value: "01"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1948"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2025"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "M06"
+
+data_files:
+  - id: "main"
+    pattern: "ln.data.*"
+    index: "series_id"
+    estimated_size_gb: 2.0
+    schema:
+      series_id:
+        type: "string"
+        length: 17
+        nullable: false
+        example_value: "LNU01000000"
+      year:
+        type: "int32"
+        min: 1900
+        max: 2100
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(M\\d{2}|Q\\d{2}|A01)$"
+        nullable: false
+        example_value: "M06"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 62.5
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "seasonal"
+    path: "ln.seasonal"
+    index: "seasonal_code"
+    description: "Seasonal adjustment codes to descriptions"
+    schema:
+      seasonal_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "S"
+      seasonal_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Seasonally adjusted"
+
+  - id: "periodicity"
+    path: "ln.periodicity"
+    index: "periodicity_code"
+    description: "Periodicity codes (M, Q, A)"
+    schema:
+      periodicity_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "M"
+      periodicity_text:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Monthly"
+
+  - id: "footnote"
+    path: "ln.footnote"
+    index: "footnote_code"
+    description: "Footnote codes"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "P"
+      footnote_text:
+        type: "string"
+        length: 100
+        nullable: true
+        example_value: "Preliminary"
+
+  - id: "sexs"
+    path: "ln.sexs"
+    index: "sex_code"
+    description: "Sex codes"
+    schema:
+      sex_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "M"
+      sex_text:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Men"
+
+  - id: "race"
+    path: "ln.race"
+    index: "race_code"
+    description: "Race codes"
+    schema:
+      race_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      race_text:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "White"
+
+  - id: "ages"
+    path: "ln.ages"
+    index: "age_code"
+    description: "Age group codes"
+    schema:
+      age_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "16"
+      age_text:
+        type: "string"
+        length: 50
+        nullable: false
+        example_value: "16 years and over"
+
+  - id: "education"
+    path: "ln.education"
+    index: "education_code"
+    description: "Education codes"
+    schema:
+      education_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "31"
+      education_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Less than a high school diploma"
+
+  - id: "occupation"
+    path: "ln.occupation"
+    index: "occupation_code"
+    description: "Occupation codes"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      occupation_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Total, 16 years and over"
+
+  - id: "industry"
+    path: "ln.indy"
+    index: "industry_code"
+    description: "Industry codes"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      industry_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Total, 16 years and over"
+
+  - id: "class"
+    path: "ln.class"
+    index: "class_code"
+    description: "Class of worker codes"
+    schema:
+      class_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      class_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Wage and salary workers"
+
+  - id: "lfst"
+    path: "ln.lfst"
+    index: "lfst_code"
+    description: "Labor force status codes"
+    schema:
+      lfst_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      lfst_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "In labor force"
+
+  - id: "orig"
+    path: "ln.orig"
+    index: "origin_code"
+    description: "Hispanic or Latino origin codes"
+    schema:
+      origin_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      origin_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Hispanic or Latino"
+
+  - id: "datatype"
+    path: "ln.tdat"
+    index: "data_type_code"
+    description: "Data type codes"
+    schema:
+      data_type_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      data_type_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Unemployment rate"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "seasonal" }
+    to: { file: "seasonal", column: "seasonal_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "periodicity_code" }
+    to: { file: "periodicity", column: "periodicity_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "data_type_code" }
+    to: { file: "datatype", column: "data_type_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "sex_code" }
+    to: { file: "sexs", column: "sex_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "race_code" }
+    to: { file: "race", column: "race_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "age_code" }
+    to: { file: "ages", column: "age_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "education_code" }
+    to: { file: "education", column: "education_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "occupation_code" }
+    to: { file: "occupation", column: "occupation_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "industry_code" }
+    to: { file: "industry", column: "industry_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "class_code" }
+    to: { file: "class", column: "class_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "lfst_code" }
+    to: { file: "lfst", column: "lfst_code" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "seasonal", columns: ["seasonal_code"] }
+    - { file: "periodicity", columns: ["periodicity_code"] }
+    - { file: "footnote", columns: ["footnote_code"] }
+    - { file: "sexs", columns: ["sex_code"] }
+    - { file: "race", columns: ["race_code"] }
+    - { file: "ages", columns: ["age_code"] }
+    - { file: "education", columns: ["education_code"] }
+    - { file: "occupation", columns: ["occupation_code"] }
+    - { file: "industry", columns: ["industry_code"] }
+    - { file: "class", columns: ["class_code"] }
+    - { file: "lfst", columns: ["lfst_code"] }
+  required_fields:
+    - { file: "series", columns: ["series_id", "seasonal", "periodicity_code", "data_type_code", "begin_year", "begin_period", "end_year", "end_period"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  LNSeriesId: { base: "string", length: 17, pattern: "^LN[US][0-9A-Z]+$" }
+  LNPeriod: { base: "string", length: 3, pattern: "^(M\\d{2}|Q\\d{2}|A01)$" }
+  LNValue: { base: "decimal", precision: 18, scale: 4 }

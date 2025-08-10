@@ -1,0 +1,30 @@
+# FA Survey Development Environment Overrides
+config_version: 1
+
+# Development-specific processing settings
+processing:
+  features:
+    enable_profiling: true  # Enable profiling in dev
+    enable_statistics: true
+
+# Development output settings
+output:
+  destination:
+    base_path: "data/dev/processed/bls/FA"
+
+# Development quality settings
+quality:
+  policy:
+    mode: "warn_only"  # More lenient in development
+    sample_on_fail_rows: 10
+
+# Development runtime settings
+runtime:
+  logging:
+    level: "debug"  # More verbose logging in dev
+  development:
+    enable_debug_output: true
+    save_intermediate_files: true
+    verbose_logging: true
+  feature_flags:
+    enable_hot_reloads: true

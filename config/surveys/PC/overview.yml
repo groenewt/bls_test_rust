@@ -1,13 +1,59 @@
 # PC Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "PC"
-  name: "PC Survey"
-  description: "Bureau of Labor Statistics PC survey data"
-  size_class: "medium"
+  name: "Producer Price Index Revision-Current Series"
+  description: "The Producer Price Index Revision-Current Series indexes reflect price movements for the net output of producers organized according to the North American Industry Classification System (NAICS)."
+  size_class: "large"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "National data covering mining, manufacturing, agriculture, forestry, natural gas, electricity, construction, and selected service industries"
+    time_series_count: "Over 100,000 price quotations covering over 600 industries and 6,000 products"
+    classification_system: "NAICS (North American Industry Classification System)"
+    update_schedule: "Monthly release on or before the 15th of the following month"
+    begin_year: 1981
+    survey_methodology: "Scientific probability sampling of establishments, products, and transactions for actual revenue/transaction prices"
+    calculation_basis: "Price index calculations with base periods and seasonal adjustment options"
+    data_precision: "1 decimal place through June 2021, 3 decimal places after June 2021"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/pc.txt"
+  data_dictionary: "BLS Handbook of Methods, Chapter 14, Producer Prices"
+  notes: |
+    - Data location: data/raw/bls/pc
+    - Data files are partitioned into multiple files by industry/sector
+    - ASCII text format with space-separated elements
+    - Full doc: docs/bls/survey/pc.txt
+    - Reference: https://www.bls.gov/opub/hom/pdf/homch14.pdf
+
+tags: ["producer_price_index", "ppi", "prices", "manufacturing", "services", "monthly", "naics"]
+
+definition: |
+  The following is a definition of: PRODUCER PRICE INDEX REVISION-CURRENT SERIES (PC)
+
+  Survey Description: The Producer Price Index Revision-Current Series indexes reflect
+  price movements for the net output of producers organized according to the 
+  North American Industry Classification System (NAICS). The PC dataset is compatible 
+  with a wide assortment of NAICS-based economic time series including: productivity, 
+  production, employment, wages, and earnings.
+
+  The PPI universe consists of the output of all industries in the goods-producing 
+  sectors of the U.S. economy- mining, manufacturing, agriculture, fishing, and 
+  forestry- as well as natural gas, electricity, construction, and goods competitive
+  with those made in the producing sectors, such as waste and scrap materials. In
+  addition, as of January 2011, the PPI program covered more than three-quarters of the
+  service sector's output, publishing data for selected industries in wholesale and retail 
+  trade; transportation and warehousing; information; finance and insurance; real estate; 
+  professional, scientific, and technical services; administrative support; health care; 
+  and accommodation.
+
+  Coverage includes roughly 500 mining and manufacturing industries and approximately 
+  150 services industries. BLS collects over 100,000 price quotations each month covering 
+  over 600 industries and over 6,000 products and product categories.

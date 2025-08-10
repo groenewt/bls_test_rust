@@ -1,13 +1,62 @@
 # LN Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "LN"
-  name: "LN Survey"
-  description: "Bureau of Labor Statistics LN survey data"
+  name: "Labor Force Statistics from the Current Population Survey"
+  description: "Comprehensive data on the labor force, the employed, and the unemployed, classified by demographic and economic characteristics"
   size_class: "medium"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "The Current Population Survey (CPS) covers the civilian, noninstitutional population age 16 and older in the United States, including 50 States and the District of Columbia"
+    time_series_count: "Labor force statistics series with detailed demographic breakdowns"
+    classification_system: "Standard occupational and industrial classifications, demographic categories"
+    update_schedule: "Monthly with the Employment Situation news release"
+    begin_year: 1948
+    survey_methodology: "Sample survey of about 60,000 households conducted monthly by U.S. Census Bureau for BLS. Data collected by trained interviewers based on activity for calendar week including the 12th of the month"
+    calculation_basis: "Counts (in thousands) and rates such as unemployment rate, labor force participation rate, and employment-population ratio"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/ln.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/ln
+    - Multiple mapping files for demographic and economic characteristics
+    - Series file: ln.series with beginning and end dates
+    - Main data file: ln.data.1.AllData
+    - Monthly estimates and quarterly/annual averages available
+    - Seasonally adjusted data revised annually for previous 5 years
+
+tags: ["labor_force", "employment", "unemployment", "demographics", "monthly", "cps", "current_population_survey"]
+
+definition: |
+  The following is a definition of: Labor Force Statistics from the Current Population Survey (LN)
+
+  Survey Description: The Current Population Survey (CPS) is a sample survey of the population 16 years of age and over.  
+  The survey is conducted each month by the U.S. Census Bureau for the Bureau of Labor Statistics and provides 
+  comprehensive data on the labor force, the employed, and the unemployed, classified by such characteristics 
+  as age, sex, race, family relationship, marital status, occupation, and industry attachment.
+
+  The information is collected by trained interviewers from a sample of about 60,000 households. Sample areas are chosen to 
+  represent all counties and independent cities in the United States, with coverage in 50 States and the District of 
+  Columbia. The data collected are based on the activity or status reported for the calendar week including the 
+  12th of the month.
+
+  Summary Data Available: CPS data are available for the civilian, noninstitutional population age 16 
+  and older and various detailed groups, with estimates available by age, race, sex, Hispanic or Latino
+  ethnicity, employment status, occupation, industry, class of worker, educational attainment, telework status,
+  and other characteristics.
+
+  Frequency of Observations: CPS data are collected each month, and monthly estimates are presented in the Employment 
+  Situation News Release. Some data series are available as quarterly or annual averages.
+
+  Data Characteristics: Data include counts (presented in thousands) and rates such as the unemployment
+  rate, labor force participation rate, and employment-population ratio.
+
+  Updating Schedule: Updates are available with the issuance of the monthly Employment Situation news release.

@@ -41,3 +41,8 @@ lookup_config:
   lazy: ["footnote", "period", "seasonal"]
   mmap: []
   cache_all: true
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60

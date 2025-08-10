@@ -1,19 +1,30 @@
+# GG Survey Processing Configuration
+# Strategy, resources, chunking, mmap, cache
 config_version: 1
-strategy:
-  mode: "chunked"  # Process in chunks due to medium size
-  max_concurrency: 4
 
-resources:
-  max_threads: 4  # Increased parallelization for medium-sized data
-  memory_limit_gb: 8
+# Direct strategy value (not nested)
+strategy: "chunked"
 
-io:
-  chunk_size_mb: 50
-  buffer_pool_size: 8
+# Flattened configuration fields
+max_threads: 4
+chunk_size: 52428800  # 50MB in bytes
+memory_limit: 8192    # 8GB in MB
+parallel: true       # Multi-threaded for medium survey
 
-features:
-  use_mmap: true  # Use memory mapping for large files
-  enable_statistics: true
-  enable_profiling: false
+# Chunking configuration
+chunking:
+  size: 52428800      # 50MB in bytes
+  strategy: "sequential"
+  overlap: null
 
-transforms: []
+# Memory mapping configuration
+mmap:
+  enabled: true       # Beneficial for medium-sized survey
+  threshold: null
+  prefetch: null
+
+# Cache configuration  
+cache:
+  enabled: true
+  size: 8388608       # 8MB cache size
+  ttl: 3600          # 1 hour TTL

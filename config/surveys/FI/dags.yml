@@ -1,3 +1,5 @@
+# FI Survey DAG Configuration
+# Workflow orchestration and task dependencies
 config_version: 1
 graph:
   tasks:
@@ -82,3 +84,13 @@ graph:
       to: "qc"
     - from: "write_dict"
       to: "qc"
+
+# Global DAG settings
+settings:
+  max_active_runs: 1
+  catchup: false
+  depends_on_past: false
+  email_on_failure: true
+  email_on_retry: false
+  retries: 1
+  retry_delay_minutes: 5

@@ -1,3 +1,282 @@
-# FA Survey Model Configuration
+# FA Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "fa.series"
+  index: "series_id"
+  estimated_size_gb: 0.2
+  schema:
+    series_id:
+      type: "string"
+      length: 30
+      nullable: false
+      example_value: "FAS0000000000001000000001A"
+    industry_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    occupation_code:
+      type: "string"
+      length: 6
+      nullable: false
+      example_value: "000000"
+    state_code:
+      type: "string"
+      length: 2
+      nullable: false
+      example_value: "00"
+    ownership_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "5"
+    case_type:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "0"
+    datatype_code:
+      type: "string"
+      length: 1
+      nullable: false
+      example_value: "1"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "1992"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: false
+      example_value: "2024"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: false
+      example_value: "A01"
+    series_title:
+      type: "string"
+      length: 200
+      nullable: true
+      example_value: "Fatal occupational injuries -- Total"
+
+data_files:
+  - id: "main"
+    pattern: "fa.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.3
+    schema:
+      series_id:
+        type: "string"
+        length: 30
+        nullable: false
+        example_value: "FAS0000000000001000000001A"
+      year:
+        type: "int32"
+        min: 1990
+        max: 2100
+        nullable: false
+        example_value: 2025
+      period:
+        type: "string"
+        length: 3
+        pattern: "^(A\\d{2})$"
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 4764
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "case"
+    path: "fa.case"
+    index: "case_code"
+    description: "Maps case type codes to case type names"
+    schema:
+      case_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      case_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Total fatal injuries"
+
+  - id: "datatype"
+    path: "fa.datatype"
+    index: "datatype_code"
+    description: "Maps data type codes to data type names"
+    schema:
+      datatype_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "1"
+      datatype_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Fatal injuries"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "footnote"
+    path: "fa.footnote"
+    index: "footnote_code"
+    description: "Maps footnote codes to footnote text"
+    schema:
+      footnote_code:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "C"
+      footnote_text:
+        type: "string"
+        length: 200
+        nullable: true
+        example_value: "Data do not meet BLS or BLS agent agency disclosure standards."
+
+  - id: "industry"
+    path: "fa.industry"
+    index: "industry_code"
+    description: "Maps industry codes to industry names"
+    schema:
+      industry_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      industry_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All industries"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "1"
+
+  - id: "occupation"
+    path: "fa.occupation"
+    index: "occupation_code"
+    description: "Maps occupation codes to occupation names"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "000000"
+      occupation_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "All occupations"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "1"
+
+  - id: "source"
+    path: "fa.source"
+    index: "source_code"
+    description: "Maps source codes to source names"
+    schema:
+      source_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      source_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Census of Fatal Occupational Injuries (CFOI)"
+      display_level:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "0"
+      selectable:
+        type: "string"
+        length: 1
+        nullable: false
+        example_value: "T"
+      sort_sequence:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "1"
+
+  - id: "state"
+    path: "fa.state"
+    index: "state_code"
+    description: "Maps state codes to state names"
+    schema:
+      state_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "00"
+      state_name:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "National"

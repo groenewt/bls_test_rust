@@ -1,3 +1,200 @@
-# OE Survey Model Configuration
+# OE Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
-models: {}
+
+series:
+  path: "oe.series"
+  index: "series_id"
+  estimated_size_gb: 0.1
+  schema:
+    series_id:
+      type: "string"
+      length: 29
+      nullable: false
+      example_value: "OEU00100000000000000000000000"
+    area_code:
+      type: "string"
+      length: 7
+      nullable: true
+      example_value: "0010000"
+    occupation_code:
+      type: "string"
+      length: 6
+      nullable: true
+      example_value: "110000"
+    datatype_code:
+      type: "string"
+      length: 2
+      nullable: true
+      example_value: "01"
+    series_title:
+      type: "string"
+      length: 256
+      nullable: true
+      example_value: "Example OEWS series title"
+    footnote_codes:
+      type: "string"
+      length: 10
+      nullable: true
+      example_value: ""
+    begin_year:
+      type: "string"
+      length: 4
+      nullable: true
+      example_value: "2015"
+    begin_period:
+      type: "string"
+      length: 3
+      nullable: true
+      example_value: "A01"
+    end_year:
+      type: "string"
+      length: 4
+      nullable: true
+      example_value: "2025"
+    end_period:
+      type: "string"
+      length: 3
+      nullable: true
+      example_value: "A01"
+
+data_files:
+  - id: "main"
+    pattern: "oe.data.*"
+    index: "series_id"
+    estimated_size_gb: 0.5
+    schema:
+      series_id:
+        type: "string"
+        length: 29
+        nullable: false
+        example_value: "OEU00100000000000000000000000"
+      year:
+        type: "int32"
+        min: 1950
+        max: 2055
+        nullable: false
+        example_value: 2024
+      period:
+        type: "string"
+        length: 3
+        pattern: "^A01$|^M\\d{2}$"
+        nullable: false
+        example_value: "A01"
+      value:
+        type: "decimal"
+        precision: 18
+        scale: 4
+        nullable: true
+        example_value: 123.4567
+      footnote_codes:
+        type: "string"
+        length: 10
+        nullable: true
+        example_value: ""
+
+lookups:
+  - id: "area"
+    path: "oe.area"
+    index: "area_code"
+    description: "Maps area codes to area names"
+    schema:
+      area_code:
+        type: "string"
+        length: 7
+        nullable: false
+        example_value: "0010000"
+      area_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "United States"
+
+  - id: "occupation"
+    path: "oe.occupation"
+    index: "occupation_code"
+    description: "Maps occupation codes to occupation names"
+    schema:
+      occupation_code:
+        type: "string"
+        length: 6
+        nullable: false
+        example_value: "110000"
+      occupation_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Management occupations"
+
+  - id: "datatype"
+    path: "oe.datatype"
+    index: "datatype_code"
+    description: "Maps datatype codes to datatype names"
+    schema:
+      datatype_code:
+        type: "string"
+        length: 2
+        nullable: false
+        example_value: "01"
+      datatype_text:
+        type: "string"
+        length: 100
+        nullable: false
+        example_value: "Employment"
+
+  - id: "period"
+    path: "oe.period"
+    index: "period"
+    description: "Maps period codes to period names"
+    schema:
+      period:
+        type: "string"
+        length: 3
+        nullable: false
+        example_value: "A01"
+      period_abbr:
+        type: "string"
+        length: 5
+        nullable: false
+        example_value: "ANN"
+      period_name:
+        type: "string"
+        length: 20
+        nullable: false
+        example_value: "Annual"
+
+relationships:
+  - from: { file: "main", column: "series_id" }
+    to: { file: "series", column: "series_id" }
+    type: "many-to-one"
+  - from: { file: "series", column: "area_code" }
+    to: { file: "area", column: "area_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "occupation_code" }
+    to: { file: "occupation", column: "occupation_code" }
+    type: "many-to-one"
+  - from: { file: "series", column: "datatype_code" }
+    to: { file: "datatype", column: "datatype_code" }
+    type: "many-to-one"
+  - from: { file: "main", column: "period" }
+    to: { file: "period", column: "period" }
+    type: "many-to-one"
+
+constraints:
+  unique:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+    - { file: "area", columns: ["area_code"] }
+    - { file: "occupation", columns: ["occupation_code"] }
+    - { file: "datatype", columns: ["datatype_code"] }
+    - { file: "period", columns: ["period"] }
+  required_fields:
+    - { file: "series", columns: ["series_id"] }
+    - { file: "main", columns: ["series_id", "year", "period"] }
+
+types:
+  OESeriesId: { base: "string", length: 29, pattern: "^OE[SU][0-9A-Z]{27}$" }
+  OEAreaCode: { base: "string", length: 7, pattern: "^[0-9]{7}$" }
+  OEOccupationCode: { base: "string", length: 6, pattern: "^[0-9]{6}$" }
+  OEPeriod: { base: "string", length: 3, pattern: "^(A01|M\\d{2})$" }
+  OEValue: { base: "decimal", precision: 18, scale: 4 } 

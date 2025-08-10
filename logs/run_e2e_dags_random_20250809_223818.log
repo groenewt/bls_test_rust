@@ -1,0 +1,106 @@
+[2m2025-08-10T03:38:18.698097Z[0m [32m INFO[0m [2mrusty[0m[2m:[0m Initialized rusty v0.1.0 with tracing
+[2m2025-08-10T03:38:18.699739Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for AP in dev environment
+[2m2025-08-10T03:38:18.700735Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for BD in dev environment
+[2m2025-08-10T03:38:18.701443Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for BG in dev environment
+[2m2025-08-10T03:38:18.701818Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for BP in dev environment
+[2m2025-08-10T03:38:18.702208Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CB in dev environment
+[2m2025-08-10T03:38:18.702740Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CC in dev environment
+[2m2025-08-10T03:38:18.703153Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CD in dev environment
+[2m2025-08-10T03:38:18.703425Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CE in dev environment
+[2m2025-08-10T03:38:18.703768Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CF in dev environment
+[2m2025-08-10T03:38:18.704128Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CH in dev environment
+[2m2025-08-10T03:38:18.704543Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CI in dev environment
+[2m2025-08-10T03:38:18.704929Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CM in dev environment
+[2m2025-08-10T03:38:18.705281Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CS in dev environment
+[2m2025-08-10T03:38:18.705818Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CU in dev environment
+[2m2025-08-10T03:38:18.706149Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CW in dev environment
+[2m2025-08-10T03:38:18.706459Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CX in dev environment
+[2m2025-08-10T03:38:18.707237Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for EB in dev environment
+[2m2025-08-10T03:38:18.707507Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for EC in dev environment
+[2m2025-08-10T03:38:18.707758Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for EE in dev environment
+[2m2025-08-10T03:38:18.708003Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for EI in dev environment
+[2m2025-08-10T03:38:18.708250Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for EP in dev environment
+[2m2025-08-10T03:38:18.708487Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for FA in dev environment
+[2m2025-08-10T03:38:18.708729Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for FI in dev environment
+[2m2025-08-10T03:38:18.709109Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for FM in dev environment
+[2m2025-08-10T03:38:18.709522Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for FW in dev environment
+[2m2025-08-10T03:38:18.709831Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for GG in dev environment
+[2m2025-08-10T03:38:18.710234Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for GP in dev environment
+[2m2025-08-10T03:38:18.710562Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for HC in dev environment
+[2m2025-08-10T03:38:18.710879Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for HS in dev environment
+[2m2025-08-10T03:38:18.711215Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for II in dev environment
+[2m2025-08-10T03:38:18.711587Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for IN in dev environment
+[2m2025-08-10T03:38:18.712303Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for IP in dev environment
+[2m2025-08-10T03:38:18.712741Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for IS in dev environment
+[2m2025-08-10T03:38:18.712993Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for JL in dev environment
+[2m2025-08-10T03:38:18.713236Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for JT in dev environment
+[2m2025-08-10T03:38:18.713473Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for LA in dev environment
+[2m2025-08-10T03:38:18.713713Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for LE in dev environment
+[2m2025-08-10T03:38:18.713948Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for LI in dev environment
+[2m2025-08-10T03:38:18.714176Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for LN in dev environment
+[2m2025-08-10T03:38:18.714407Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for LU in dev environment
+[2m2025-08-10T03:38:18.714634Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for ML in dev environment
+[2m2025-08-10T03:38:18.714858Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for MP in dev environment
+[2m2025-08-10T03:38:18.715086Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for MU in dev environment
+[2m2025-08-10T03:38:18.715317Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for MW in dev environment
+[2m2025-08-10T03:38:18.715548Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for NB in dev environment
+[2m2025-08-10T03:38:18.715775Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for NC in dev environment
+[2m2025-08-10T03:38:18.716001Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for ND in dev environment
+[2m2025-08-10T03:38:18.716225Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for NW in dev environment
+[2m2025-08-10T03:38:18.716456Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for OE in dev environment
+[2m2025-08-10T03:38:18.716684Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for OR in dev environment
+[2m2025-08-10T03:38:18.716926Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for PC in dev environment
+[2m2025-08-10T03:38:18.717152Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for PD in dev environment
+[2m2025-08-10T03:38:18.717375Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for PR in dev environment
+[2m2025-08-10T03:38:18.717597Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for SA in dev environment
+[2m2025-08-10T03:38:18.717822Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for SH in dev environment
+[2m2025-08-10T03:38:18.718050Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for SI in dev environment
+[2m2025-08-10T03:38:18.718278Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for SM in dev environment
+[2m2025-08-10T03:38:18.718649Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for SU in dev environment
+[2m2025-08-10T03:38:18.718877Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for TU in dev environment
+[2m2025-08-10T03:38:18.719441Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for WD in dev environment
+[2m2025-08-10T03:38:18.719684Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for WM in dev environment
+[2m2025-08-10T03:38:18.720555Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for WP in dev environment
+[2m2025-08-10T03:38:18.721144Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for WS in dev environment
+Discovered surveys: 63 | DAG-enabled: 6 | No DAG: 57
+  Skipping (no dags.yml or not parseable): ["BG", "BP", "CB", "CC", "CD", "CE", "CF", "CH", "CI", "CM", "CS", "CU", "CW", "EB", "EC", "EE", "EI", "EP", "FA", "FI", "FM", "FW", "GG", "GP", "HC", "HS", "II", "IP", "IS", "JL", "JT", "LA", "LE", "LI", "LN", "LU", "ML", "MP", "MU", "MW", "NB", "NC", "ND", "NW", "OE", "OR", "PC", "PD", "PR", "SA", "SH", "SI", "SM", "SU", "TU", "WD", "WS"]
+Random selection seed: 1754797098721451365
+Processing DAGs for 3 random surveys: ["BD", "WM", "IN"]
+
+=== DAG Processing survey BD ===
+[2m2025-08-10T03:38:18.721456Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for BD in dev environment
+[2m2025-08-10T03:38:18.722064Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Starting DAG execution: pipeline
+[2m2025-08-10T03:38:18.722069Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: discover
+[2m2025-08-10T03:38:18.722072Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Starting loader stage execution    
+[2m2025-08-10T03:38:18.722131Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722139Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722146Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722153Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722160Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722167Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722174Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722180Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722187Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722194Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722201Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-10T03:38:18.722237Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/bd.series    
+[2m2025-08-10T03:38:18.746928Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/data/bd.data.0.Current    
+[2m2025-08-10T03:38:19.772743Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/data/bd.data.1.AllItems    
+[2m2025-08-10T03:38:21.083581Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/map/bd.dataclass    
+[2m2025-08-10T03:38:21.083603Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/map/bd.contacts    
+[2m2025-08-10T03:38:21.083614Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/map/bd.state    
+[2m2025-08-10T03:38:21.083616Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/map/bd.industry    
+[2m2025-08-10T03:38:21.083618Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/map/bd.footnote    
+[2m2025-08-10T03:38:21.083624Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/map/bd.county    
+[2m2025-08-10T03:38:21.083625Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/map/bd.sizeclass    
+[2m2025-08-10T03:38:21.083627Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Parsing BLS file: /home/groenewt/Documents/Rusty/data/raw/bls/bd/map/bd.msa    
+[2m2025-08-10T03:38:21.083629Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Loader stage completed: 11 files loaded, 7941563 records, 34464 series, 7907096 observations, 2 lookups    
+[2m2025-08-10T03:38:21.083633Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: discover (2361ms)
+[2m2025-08-10T03:38:21.083638Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: validate
+[2m2025-08-10T03:38:21.083640Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: validate (0ms)
+[2m2025-08-10T03:38:21.083641Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: plan
+[2m2025-08-10T03:38:21.083642Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: plan (0ms)
+[2m2025-08-10T03:38:21.083643Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: process
+[2m2025-08-10T03:38:21.083644Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: process (0ms)
+[2m2025-08-10T03:38:21.083646Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: write
+[2m2025-08-10T03:38:21.083647Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Starting writer stage execution    

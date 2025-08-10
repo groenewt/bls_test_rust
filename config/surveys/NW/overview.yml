@@ -1,13 +1,63 @@
 # NW Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "NW"
-  name: "NW Survey"
-  description: "Bureau of Labor Statistics NW survey data"
+  name: "National Compensation Survey"
+  description: "The National Compensation Survey (NCS) program produces information on wages by occupation for many metropolitan areas and also for the Nation as a whole. Data are available for private industry, State and local governments, full-time workers, part-time workers, and other workforce characteristics."
   size_class: "medium"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "Over 150 metropolitan areas and non-metropolitan counties throughout the United States"
+    time_series_count: "National Compensation Survey series"
+    classification_system: "Occupation-based wage classification"
+    update_schedule: "Monthly data collection over periods of a few months per area"
+    begin_year: 1978
+    survey_methodology: "Sample of establishments in both private sector and State and local governments"
+    calculation_basis: "Mean hourly wage data for workers in occupations"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/nw.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/nw
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/nw.txt
+
+tags: ["wages", "compensation", "occupation", "metropolitan", "hourly_wages"]
+
+definition: |
+  The following is a definition of: National Compensation Survey (NW)
+
+  Survey Description: The National Compensation Survey (NCS) program 
+  produces information on wages by occupation for many metropolitan areas 
+  and also for the Nation as a whole. Wage rates for different work 
+  levels within occupation groups also are published. Data are available 
+  for private industry, State and local governments, full-time workers, 
+  part-time workers, and other workforce characteristics.
+
+  The Bureau of Labor Statistics (BLS) selects a sample of 
+  establishments in both the private sector and State and local 
+  governments in over 150 metropolitan areas and non-metropolitan 
+  counties throughout the United States. Data are collected from all 
+  establishments in a specified area over a period of a few months. NCS 
+  data are used by both private companies and government agencies to help 
+  set pay and to compare their wages with those of other employers. The 
+  data are a major component of the pay-setting process for Federal 
+  Government employees. Economic and academic researchers also are 
+  interested in the findings.
+
+  Summary Data Available: The NCS Wage query presents mean hourly wage 
+  data for all workers in an occupation (private industry and State and 
+  local government combined). Currently, data may be obtained for over 
+  85 geographical areas, on a National level, and by the 9 census divisions 
+  as they are defined by BLS.
+
+  Data Characteristics: Hourly wages are stored to two decimal places.

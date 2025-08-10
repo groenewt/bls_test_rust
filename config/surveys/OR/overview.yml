@@ -2,12 +2,17 @@
 config_version: 1
 survey:
   code: "OR"
-  name: "OR Survey"
-  description: "Bureau of Labor Statistics OR survey data"
+  name: "Occupational Requirements Survey (ORS)"
+  description: "Job-related requirements including physical demands, environmental conditions, education and training, and cognitive/mental requirements."
   size_class: "medium"
   characteristics:
-    frequency: "monthly"
-    coverage: "US"
+    frequency: "annual"  # A01
+    coverage: "US civilian workers (private industry; state and local government)"
+    classification:
+      industry: "NAICS 2022"
+      occupation: "SOC 2018"
+  website: "https://www.bls.gov/ors/"
 contacts: []
-documentation: {}
-tags: []
+documentation:
+  reference: "docs/bls/survey/or.txt"
+tags: ["BLS", "ORS", "occupational", "requirements"]

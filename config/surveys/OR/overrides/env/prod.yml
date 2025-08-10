@@ -1,0 +1,36 @@
+# OR Survey Production Environment Overrides
+config_version: 1
+
+# Production-specific processing settings
+processing:
+  features:
+    enable_profiling: false
+    enable_statistics: true
+
+# Production output settings
+output:
+  destination:
+    base_path: "data/processed/bls/OR"
+
+# Production quality settings
+quality:
+  policy:
+    mode: "fail_on_error"  # Strict validation in production
+    sample_on_fail_rows: 75  # Higher sample for OR complexity
+
+# Production runtime settings
+runtime:
+  logging:
+    level: "warn"  # Less verbose logging in production
+  development:
+    enable_debug_output: false
+    save_intermediate_files: false
+    verbose_logging: false
+  feature_flags:
+    enable_hot_reloads: false
+    enable_occupational_debug: false  # Disabled in production
+  monitoring:
+    enable_metrics: true
+    track_memory_usage: true
+    track_processing_time: true
+    track_occupational_requirements: true  # OR-specific monitoring

@@ -1,4 +1,7 @@
+# GG Survey Input/Output Configuration
+# Input discovery, patterns, partition hints
 config_version: 1
+
 discovery:
   root: "data/raw/bls/gg"
   include: ["gg.series", "gg.data.*", "gg.altenergy", "gg.area", "gg.dataelement", "gg.footnote", "gg.greenquartile", "gg.industry", "gg.own", "gg.periodicity", "gg.ratelevel", "gg.seasonal", "gg.size"]
@@ -23,3 +26,10 @@ lookup_config:
   lazy: ["footnote", "altenergy", "dataelement", "periodicity", "ratelevel", "seasonal", "size"]  # Load on demand
   mmap: []  # use it for large files
   cache_all: true  # Small enough to keep in memory
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

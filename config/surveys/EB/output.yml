@@ -1,16 +1,26 @@
+# EB Survey Output Configuration
+# Output formats, partitioning, compression
 config_version: 1
-format: "csv"
+
+# Required formats field as array
+formats: ["csv"]
+
+# Required output directory and filename pattern
+output_dir: "data/processed/bls/EB"
+filename_pattern: "{survey}_{table}_{timestamp}"
+create_subdirs: true
 
 csv:
   delimiter: ","
   quote_char: "\""
   escape_char: "\\"
   header: true
+  null_value: ""
 
 partitioning:
+  enabled: false
   partition_by: ["year"]
   max_file_size_mb: 100
-  enabled: false
 
 naming:
   dataset: "bls_eb"
@@ -22,6 +32,15 @@ evolution:
 
 destination:
   base_path: "data/processed/bls/EB"
+
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]
 
 outputs:
   data_series:

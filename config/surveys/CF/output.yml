@@ -1,13 +1,21 @@
 # CF Survey Output Configuration
+# Output formats, partitioning, compression
 config_version: 1
 
-format: "csv"    # parquet|csv|json
+# Required formats field as array
+formats: ["csv"]
+
+# Required output directory and filename pattern
+output_dir: "data/processed/bls/CF"
+filename_pattern: "{survey}_{table}_{timestamp}"
+create_subdirs: true
 
 csv:
   delimiter: ","
   quote_char: "\""
   escape_char: "\\"
   header: true
+  null_value: ""
 
 partitioning:
   enabled: false
@@ -19,104 +27,17 @@ naming:
   version: "v1"
 
 evolution:
-  mode: "compatible"   # strict|compatible|additive
+  mode: "compatible"
   allow_nullability_change: false
 
 destination:
   base_path: "data/processed/bls/CF"
 
-data_series:
-  basic_load:
-    format: "csv"
-    partitioning:
-      enabled: false
-    use_mmap: true
-    series_size_class: "Medium"
-    list_data_files: ["cf.data.0.Current", "cf.data.1.AllData"]
-    partition_strategy:
-      partition_by: "category_code"
-      file_format: "cf.data.%d.%s"
-      load_dictionary_values: true
-    transformations:
-      sort_by: ["series_id", "year", "period"]
-      deduplicate: true
-      deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
-    statistics:
-      enabled: true
-      columns: ["year", "period", "value"]
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
 
-data_dict:
-  basic_load:
-    format: "csv"
-    partitioning:
-      enabled: false  # Single file output for series metadata
-    use_mmap: true
-    series_size_class: "Medium"
-    output_file: "cf_series_dict.csv"
-    mapping:
-      category_code:
-        lookup_table: "category"
-        lookup_key: "category_code"
-        lookup_value: "category_text"
-        create_field: "category_name"
-        on_missing: "UNKNOWN_CATEGORY"
-        cache: true
-      datatype_code:
-        lookup_table: "datatype"
-        lookup_key: "datatype_code"
-        lookup_value: "datatype_text"
-        create_field: "datatype_name"
-        on_missing: "UNKNOWN_DATATYPE"
-        cache: true
-      case_code:
-        lookup_table: "case"
-        lookup_key: "case_code"
-        lookup_value: "case_text"
-        create_field: "case_name"
-        on_missing: "UNKNOWN_CASE"
-        cache: true
-      industry_code:
-        lookup_table: "industry"
-        lookup_key: "industry_code"
-        lookup_value: "industry_text"
-        create_field: "industry_name"
-        on_missing: "UNKNOWN_INDUSTRY"
-        cache: true
-      event_code:
-        lookup_table: "event"
-        lookup_key: "event_code"
-        lookup_value: "event_text"
-        create_field: "event_name"
-        on_missing: "UNKNOWN_EVENT"
-        cache: true
-      source_code:
-        lookup_table: "source"
-        lookup_key: "source_code"
-        lookup_value: "source_text"
-        create_field: "source_name"
-        on_missing: "UNKNOWN_SOURCE"
-        cache: true
-      occupation_code:
-        lookup_table: "occupation"
-        lookup_key: "occupation_code"
-        lookup_value: "occupation_text"
-        create_field: "occupation_name"
-        on_missing: "UNKNOWN_OCCUPATION"
-        cache: true
-      footnote_codes:
-        lookup_table: "footnote"
-        lookup_key: "footnote_code"
-        lookup_value: "footnote_text"
-        create_field: "footnote_texts"
-        multiple: true
-        separator: " "
-        on_missing: "skip"
-        cache: true
-    transformations:
-      sort_by: ["series_id"]
-      deduplicate: false  # Series should be unique by definition
-      deduplicate_on: ["series_id"]
-    statistics:
-      enabled: true
-      columns: ["series_id", "category_code", "datatype_code", "case_code", "industry_code", "event_code", "source_code", "occupation_code", "begin_year", "end_year"]
-      output_file: "cf_series_dict_stats.json"
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]

@@ -15,6 +15,7 @@ csv:
   quote_char: "\""
   escape_char: "\\"
   header: true
+  null_value: ""
 
 partitioning:
   enabled: true

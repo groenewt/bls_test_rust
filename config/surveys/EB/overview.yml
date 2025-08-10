@@ -1,4 +1,7 @@
+# EB Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "EB"
   name: "Employee Benefits Survey"
@@ -7,17 +10,54 @@ survey:
   characteristics:
     frequency: "annual"
     coverage: "Private sector and State and local government establishments"
+    time_series_count: "Employee benefits data"
     classification_system: "Benefit types, establishment types, and employee characteristics"
-    begin_year: 1979
     update_schedule: "Annual release, typically in the summer following the reference year"
+    begin_year: 1979
     survey_methodology: "Sample of approximately 6,000 private sector and State and local government establishments"
     calculation_basis: "Percentage of employees who participate in a benefit, or average benefit provision"
-    time_series_count: "Employee benefits data"
-  contacts:
-    - role: "owner"
-      name: "Junie"
-      email: ""
-  documentation:
-    primary: "docs/bls/survey/eb.txt"
-    data_dictionary: ""
-  tags: ["employee", "benefits", "survey", "establishments", "compensation"]
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/eb.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/eb
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/eb.txt
+
+tags: ["employee", "benefits", "survey", "establishments", "compensation"]
+
+definition: |
+  The following is a definition of: EMPLOYEE BENEFITS SURVEY
+
+  Survey Description: The Employee Benefits Survey (EBS) is an annual survey
+  of the incidence and provisions of selected benefits provided by employers. 
+  The survey collects data from a sample of approximately 6,000 private sector
+  and State and local government establishments. The data are presented as a 
+  percentage of employees who participate in a certain benefit, or as an 
+  average benefit provision (for example, the average number of paid holidays 
+  provided to employees per year).
+
+  The survey covers paid leave benefits such as holidays and vacations, and 
+  person, funeral, jury duty, military, parental, and sick leave; sickness and
+  accident, long-term disability, and life insurance; medical, dental, and 
+  vision care plans; defined benefit pension and defined contribution plans; 
+  flexible benefits plans; reimbursement accounts; and unpaid parental leave.
+  Also, data are tabulated on the incidence of several other benefits, such as
+  severance pay, child-care assistance, wellness programs, and employee 
+  assistance programs.
+
+  Summary Data Available: Beginning in 1990, surveys of State and local governments 
+  and small establishments are conducted in even-numbered years and surveys of medium 
+  and large establishments are conducted in odd-numbered years. The small 
+  establishment survey includes all private nonfarm establishments with fewer
+  than 100 workers, while the State and local government survey includes all 
+  governments, regardless of the number of workers. All three surveys include
+  full- and part-time workers, and workers in all 50 States and the District 
+  of Columbia.

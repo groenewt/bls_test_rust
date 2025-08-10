@@ -1,0 +1,26 @@
+# FA Survey Production Environment Overrides
+config_version: 1
+
+# Production-specific processing settings
+processing:
+  features:
+    enable_profiling: false
+    enable_statistics: false
+
+# Production output settings
+output:
+  destination:
+    base_path: "data/processed/bls/FA"
+
+# Production quality settings
+quality:
+  policy:
+    mode: "continue"
+    sample_on_fail_rows: 50
+
+# Production runtime settings
+runtime:
+  logging:
+    level: "warn"
+  feature_flags:
+    enable_hot_reloads: false

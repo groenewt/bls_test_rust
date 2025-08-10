@@ -1,4 +1,5 @@
 # NC Survey Processing Configuration
+# Strategy, resources, chunking, mmap, cache
 config_version: 1
 
 # Direct strategy value (not nested)
@@ -7,8 +8,8 @@ strategy: "chunked"
 # Flattened configuration fields
 max_threads: 4
 chunk_size: 52428800  # 50MB in bytes
-memory_limit: 4096    # 4GB in MB
-parallel: true       # Multi-threaded processing
+memory_limit: 6144    # 6GB in MB
+parallel: true       # Multi-threaded for medium survey
 
 # Chunking configuration
 chunking:
@@ -18,12 +19,12 @@ chunking:
 
 # Memory mapping configuration
 mmap:
-  enabled: true       # Beneficial for medium survey
+  enabled: true       # Beneficial for larger survey
   threshold: null
   prefetch: null
 
 # Cache configuration  
 cache:
   enabled: true
-  size: 4194304       # 4MB cache size
+  size: 8388608       # 8MB cache size
   ttl: 3600          # 1 hour TTL

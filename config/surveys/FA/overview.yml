@@ -1,13 +1,54 @@
 # FA Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "FA"
-  name: "FA Survey"
-  description: "Bureau of Labor Statistics FA survey data"
-  size_class: "medium"
+  name: "Fatal Occupational Injuries"
+  description: "Fatal occupational injuries survey provides data on workplace fatalities and safety conditions across industries and occupations."
+  size_class: "small"
   characteristics:
-    frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    frequency: "annual"
+    coverage: "National, state, and industry data on workplace fatalities"
+    time_series_count: "Fatal injury series by industry, occupation, and demographics"
+    classification_system: "NAICS (North American Industry Classification System)"
+    update_schedule: "Annual release"
+    begin_year: 1992
+    survey_methodology: "Census of Fatal Occupational Injuries (CFOI) program data collection and analysis."
+    calculation_basis: "Comprehensive count of fatal work injuries occurring during the calendar year"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/fa.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/fa
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/fa.txt
+
+tags: ["safety", "fatalities", "occupational_injuries", "annual", "workplace_safety"]
+
+definition: |
+  The following is a definition of: FATAL OCCUPATIONAL INJURIES
+
+  Program Description: Fatal occupational injuries survey provides comprehensive
+  data on workplace fatalities and safety conditions across industries and 
+  occupations, helping to identify safety trends and inform policy decisions.
+
+  Summary Data Available: Annual data on Fatal Occupational Injuries are
+  collected through the Census of Fatal Occupational Injuries (CFOI) program.
+  This program provides a comprehensive count of fatal work injuries occurring
+  during the calendar year. The data include all work-related fatalities that
+  meet the CFOI criteria for workplace injuries and illnesses.
+
+  The Fatal Occupational Injuries data allow for analysis of workplace safety
+  trends by industry, occupation, demographic characteristics, and cause of
+  injury. This longitudinal data helps identify high-risk occupations and
+  industries, enabling targeted safety interventions and policy development.
+  The data are essential for workplace safety research, policy development,
+  and regulatory oversight of occupational safety and health standards.

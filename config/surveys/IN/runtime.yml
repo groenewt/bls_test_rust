@@ -37,3 +37,8 @@ checkpoint:
   enabled: true  # Enable checkpoints for medium-sized data
   interval_records: 50000
   checkpoint_dir: "checkpoints/in"
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60

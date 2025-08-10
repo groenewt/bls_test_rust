@@ -1,13 +1,64 @@
 # LA Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "LA"
-  name: "LA Survey"
-  description: "Bureau of Labor Statistics LA survey data"
+  name: "Local Area Unemployment Statistics"
+  description: "Labor force and unemployment estimates for states and local areas developed by state workforce agencies to measure local labor market conditions under a federal-state cooperative program."
   size_class: "medium"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "Approximately 8,300 geographic areas, including cities over 25,000 population, counties, metropolitan areas, states, and other areas"
+    time_series_count: "Monthly labor force and unemployment series for ~8,300 geographic areas"
+    classification_system: "Geographic classification by states, metropolitan areas, counties, and cities"
+    update_schedule: "Monthly with revisions to prior month estimates; annual revisions typically by mid-April"
+    begin_year: 1976
+    survey_methodology: "Derived from Current Population Survey, Current Employment Statistics survey, Quarterly Census of Employment and Wages, Census Bureau programs, and unemployment insurance claims data"
+    calculation_basis: "Labor force estimates by place of residence using national CPS data as benchmarks"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/la.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/la
+    - Data files are in ASCII text format organized by time periods and geography
+    - Multiple data files covering different time ranges (CurrentU90-94, CurrentU95-99, etc.)
+    - Both seasonally adjusted and non-seasonally adjusted data available
+    - Full doc: docs/bls/survey/la.txt
+
+tags: ["unemployment", "labor_force", "monthly", "geographic", "local_area"]
+
+definition: |
+  The following is a definition of: LOCAL AREA UNEMPLOYMENT STATISTICS (LA)
+
+  Survey Description: Labor force and unemployment estimates for states and
+  local areas are developed by state workforce agencies to measure local labor
+  market conditions under a federal-state cooperative program. The Department
+  of Labor develops the concepts, definitions, and technical procedures which
+  are used by state agencies for preparation of labor force and unemployment
+  estimates.
+
+  Summary Data Available: Monthly labor force and unemployment series are
+  available for approximately 8,300 geographic areas, including cities over
+  25,000 population, counties, metropolitan areas, states, and other areas.
+
+  For each area, the following measures are presented by place of residence:
+  * Total civilian labor force,
+  * Total number of people employed,
+  * Total number of people unemployed, and
+  * Unemployment rate
+
+  For states, three additional measures are available:
+  * Civilian noninstitutional population,
+  * Labor force participation rate, and
+  * Employment-population ratio
+
+  Data Characteristics: Rates and ratios are expressed as percents with one
+  decimal place. Levels are measured as individual persons (not thousands) and
+  are stored with no decimal places.

@@ -14,6 +14,13 @@ partition_hints:
   strategy: "size_based"
   max_partition_size_mb: 100
   partition_by: ["industry_code"]
-
+  
 mmap:
   enable_for_mb_greater_than: 50
+  
+# Lookup file loading strategy
+lookup_strategy:
+  preload: ["period", "unit", "measure", "industry"]
+  lazy: ["alteration", "periodicity", "selection", "duration"]
+  mmap: []
+  cache_all: true

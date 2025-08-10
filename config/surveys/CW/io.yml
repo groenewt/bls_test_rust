@@ -1,3 +1,5 @@
+# CW Survey I/O Configuration
+# Data discovery, partitioning, and file handling settings
 config_version: 1
 discovery:
   root: "data/raw/bls/cw"
@@ -61,5 +63,12 @@ mmap:
 lookup_config:
   preload: ["area", "item", "seasonal", "period"]
   lazy: ["footnote", "periodicity", "base"]
+  mmap: []
+  cache_all: true
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
   mmap: []
   cache_all: true

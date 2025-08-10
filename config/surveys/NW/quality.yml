@@ -1,4 +1,5 @@
 # NW Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
 config_version: 1
 
 # Required checks field for QualityConfig
@@ -13,7 +14,7 @@ checks:
     check_type: "validity"
     parameters:
       column: "year"
-      min: 1950
+      min: 1978
       max: 2055
     severity: "error"
     
@@ -31,12 +32,48 @@ validation:
 
 expectations:
   non_null:
-    - { file: "main", columns: ["series_id", "year", "period"] }
-    - { file: "series", columns: ["series_id"] }
+    - { file: "all_data", columns: ["series_id", "year", "period"] }
+    - { file: "series", columns: ["series_id", "state_code", "area_code", "ownership_code", "estimate_id", "industry_code", "occupation_code", "subcell_id", "datatype_id", "level_code", "begin_year", "begin_period", "end_year", "end_period"] }
   
   ranges:
-    - { file: "main", column: "year", min: 1950, max: 2055 }
-    - { file: "main", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "all_data", column: "year", min: 1978, max: 2055 }
+    - { file: "all_data", column: "value", min: -10000000000000000.0, max: 10000000000000000.0 }
+    - { file: "series", column: "begin_year", min: 1900, max: 2067 }
+    - { file: "series", column: "end_year", min: 1900, max: 2067 }
+  
+  enums:
+    - { file: "all_data", column: "period", values: ["M01","M02","M03","M04","M05","M06","M07","M08","M09","M10","M11","M12","M13"] }
+    - { file: "series", column: "begin_period", values: ["M01","M02","M03","M04","M05","M06","M07","M08","M09","M10","M11","M12","M13"] }
+    - { file: "series", column: "end_period", values: ["M01","M02","M03","M04","M05","M06","M07","M08","M09","M10","M11","M12","M13"] }
+  
+  regex:
+    - { file: "series", column: "series_id", pattern: "^NWU\\d{28}$" }
+    - { file: "series", column: "state_code", pattern: "^[0-9]{2}$" }
+    - { file: "series", column: "area_code", pattern: "^[0-9]{5}$" }
+    - { file: "series", column: "industry_code", pattern: "^[0-9]{4}$" }
+    - { file: "series", column: "occupation_code", pattern: "^[0-9]{6}$" }
+    - { file: "series", column: "level_code", pattern: "^[0-9]{2}$" }
+  
+  length:
+    - { file: "series", column: "series_id", exact: 30 }
+    - { file: "series", column: "state_code", exact: 2 }
+    - { file: "series", column: "area_code", exact: 5 }
+    - { file: "series", column: "industry_code", exact: 4 }
+    - { file: "series", column: "occupation_code", exact: 6 }
+    - { file: "series", column: "level_code", exact: 2 }
+  
+  lookup_exists:
+    - { file: "series", column: "ownership_code", lookup_table: "ownership" }
+    - { file: "series", column: "estimate_id", lookup_table: "estimate_id" }
+    - { file: "series", column: "industry_code", lookup_table: "industry" }
+    - { file: "series", column: "occupation_code", lookup_table: "occupation" }
+    - { file: "series", column: "subcell_id", lookup_table: "subcell_id" }
+    - { file: "series", column: "datatype_id", lookup_table: "datatype_id" }
+    - { file: "series", column: "level_code", lookup_table: "level" }
+    - { file: "series", column: "state_code", lookup_table: "starea" }
+
+  cross_field:
+    - { file: "series", validation: "end_year >= begin_year", message: "End year must be >= begin year" }
 
 row_count:
   min: 1

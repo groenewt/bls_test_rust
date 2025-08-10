@@ -1,4 +1,7 @@
+# FM Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "FM"
   name: "Marital and Family Labor Force Statistics"
@@ -7,17 +10,46 @@ survey:
   characteristics:
     frequency: "annual"
     coverage: "Civilian noninstitutional population age 16 years and over"
+    time_series_count: "Marital and family labor force statistics"
     classification_system: "Marital status, presence and age of own children, employment status"
-    begin_year: 2009
     update_schedule: "Annual release"
+    begin_year: 2009
     survey_methodology: "Monthly survey of about 60,000 eligible households conducted by the U.S. Census Bureau for the Bureau of Labor Statistics."
     calculation_basis: "Annual averages of information collected monthly in the survey, calculated from not seasonally adjusted monthly data."
-    time_series_count: "Marital and family labor force statistics"
-  contacts:
-    - role: "owner"
-      name: "groenewt"
-      email: ""
-  documentation:
-    primary: "docs/bls/survey/fm.txt"
-    data_dictionary: ""
-  tags: ["marital", "family", "labor", "force", "employment", "characteristics"]
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/fm.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/fm
+    - Data files are in ASCII text format
+    - Spaces separate data elements in an original BLS file
+    - Full doc: docs/bls/survey/fm.txt
+
+tags: ["marital", "family", "labor", "force", "employment", "characteristics"]
+
+definition: |
+  The following is a definition of: MARITAL AND FAMILY LABOR FORCE STATISTICS
+
+  Program Description: The marital and family labor force statistics (FM) database
+  from the Current Population Survey reflects data published each year in the news
+  release, "Employment Characteristics of Families."
+
+  Summary Data Available: The Current Population Survey (CPS), frequently referred
+  to as the household survey, is a monthly survey of about 60,000 eligible
+  households. The CPS provides information about the civilian noninstitutional
+  population age 16 years and over. All persons are classified as employed,
+  unemployed, or not in the labor force.
+
+  At the present time, only data for persons are available in the FM database.
+  Person data include employment status by marital status and presence and age of
+  own children. For example, the FM database includes the labor force participation
+  rate of mothers with children under age 6. The data are annual averages of
+  information collected monthly in the survey. The annual averages are calculated
+  from not seasonally adjusted monthly data. At present, the FM database has data
+  beginning with 2009 annual averages.

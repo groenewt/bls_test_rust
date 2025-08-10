@@ -1,13 +1,20 @@
 # CD Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "CD"
   name: "CD Survey"
-  description: "Bureau of Labor Statistics CD survey data"
-  size_class: "medium"
+  description: "BLS CD survey configuration migrated to the modular structure."
+  size_class: "small"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "See BLS documentation for CD survey."
+  contacts:
+    - role: "owner"
+      name: "groenewt"
+      email: ""
+  documentation:
+    primary: "docs/bls/survey/cd.md"
+    data_dictionary: ""
+  tags: ["cd", "bls", "survey"]

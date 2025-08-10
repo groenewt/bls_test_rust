@@ -17,3 +17,10 @@ partition_hints:
 
 mmap:
   enable_for_mb_greater_than: 100
+
+# Lookup file loading strategy
+lookup_strategy:
+  preload: []
+  lazy: []
+  mmap: []
+  cache_all: true

@@ -1,4 +1,35 @@
+# CS Survey Quality Configuration
+# Data quality checks, validation rules, and expectations
 config_version: 1
+
+# Required checks field for QualityConfig
+checks:
+  - name: "series_id_not_null"
+    check_type: "completeness"
+    parameters:
+      columns: ["series_id"]
+    severity: "error"
+  
+  - name: "year_range_check" 
+    check_type: "validity"
+    parameters:
+      column: "year"
+      min: 2011
+      max: 2067
+    severity: "error"
+    
+  - name: "unique_series_combination"
+    check_type: "uniqueness"
+    parameters:
+      columns: ["series_id", "year", "period"]
+    severity: "error"
+
+# Required validation field for QualityConfig
+validation:
+  strict_mode: true
+  fail_on_error: false
+  max_errors: 5000
+
 expectations:
   non_null:
     - { file: "main", columns: ["series_id", "year", "period"] }

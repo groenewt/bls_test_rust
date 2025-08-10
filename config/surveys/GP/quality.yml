@@ -1,4 +1,35 @@
+# GP Survey Quality Configuration
+# Data quality expectations, validations, and thresholds
 config_version: 1
+
+# Required checks field for QualityConfig
+checks:
+  - name: "series_id_not_null"
+    check_type: "completeness"
+    parameters:
+      columns: ["series_id"]
+    severity: "error"
+  
+  - name: "year_range_check" 
+    check_type: "validity"
+    parameters:
+      column: "year"
+      min: 1981
+      max: 2055
+    severity: "error"
+    
+  - name: "unique_series_combination"
+    check_type: "uniqueness"
+    parameters:
+      columns: ["series_id", "year", "period"]
+    severity: "error"
+
+# Required validation field for QualityConfig
+validation:
+  strict_mode: true
+  fail_on_error: false
+  max_errors: 2000
+
 expectations:
   non_null:
     - { file: "series", columns: ["series_id", "area_type_code", "state_code", "area_code", "labor_force_code", "charact_code", "begin_year", "begin_period", "end_year", "end_period"] }
@@ -138,6 +169,19 @@ validation_rules:
     required_fields: ["series_id", "area_type_code", "state_code", "area_code", "labor_force_code", "charact_code", "begin_year", "begin_period", "end_year", "end_period"]
     nullable_fields: ["footnote_codes"]
     unique_fields: ["series_id"]
+
+actions:
+  value_range_violation: "flag"
+  year_range_violation: "reject"
+  series_id_format_violation: "flag"
+  period_enum_violation: "flag"
+  state_code_format_violation: "flag"
+  area_code_format_violation: "flag"
+  labor_force_code_format_violation: "flag"
+  lookup_missing: "flag"
+  cross_field_violation: "reject"
+  length_violation: "reject"
+  required_field_missing: "reject"
 
 statistics:
   enabled: true

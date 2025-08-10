@@ -1,4 +1,5 @@
 # FA Survey Output Configuration
+# Output formats, partitioning, compression
 config_version: 1
 
 # Required formats field as array
@@ -14,10 +15,12 @@ csv:
   quote_char: "\""
   escape_char: "\\"
   header: true
+  null_value: ""
 
 partitioning:
+  enabled: true
   partition_by: ["year"]
-  max_file_size_mb: 512
+  max_file_size_mb: 256
 
 naming:
   dataset: "bls_fa"
@@ -29,3 +32,12 @@ evolution:
 
 destination:
   base_path: "data/processed/bls/FA"
+
+transformations:
+  sort_by: ["series_id", "year", "period"]
+  deduplicate: true
+  deduplicate_on: ["series_id", "year", "period", "footnote_codes"]
+
+statistics:
+  enabled: true
+  columns: ["year", "period", "value"]

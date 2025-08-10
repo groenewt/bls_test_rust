@@ -1,4 +1,7 @@
+# HC Survey Data Model Configuration
+# Data model: files, schemas, relationships
 config_version: 1
+
 series:
   path: "hc.series"
   index: "series_id"
@@ -8,83 +11,103 @@ series:
       type: "string"
       length: 17
       nullable: false
+      example_value: "HCU00000033322233"
     category_code:
       type: "string"
       length: 2
       nullable: false
+      example_value: "00"
     datatype_code:
       type: "string"
       length: 1
       nullable: false
+      example_value: "3"
     casetype_code:
       type: "string"
       length: 1
       nullable: false
+      example_value: "3"
     age_code:
       type: "string"
       length: 4
       nullable: false
+      example_value: "19XX"
     los_code:
       type: "string"
       length: 4
       nullable: false
+      example_value: "0000"
     race_code:
       type: "string"
       length: 4
       nullable: false
+      example_value: "1XXX"
     gender_code:
       type: "string"
       length: 4
       nullable: false
+      example_value: "MXXX"
     pob_code:
       type: "string"
       length: 4
       nullable: false
+      example_value: "00XX"
     event_code:
       type: "string"
       length: 4
       nullable: false
+      example_value: "010X"
     source_code:
       type: "string"
       length: 4
       nullable: false
+      example_value: "0110"
     occupation_code:
       type: "string"
       length: 4
       nullable: false
+      example_value: "0090"
     nature_code:
       type: "string"
       length: 4
       nullable: false
+      example_value: "011X"
     industry_code:
       type: "string"
       length: 4
       nullable: false
+      example_value: "0100"
     footnote_codes:
       type: "string"
       length: 10
       nullable: true
+      example_value: "1"
     begin_year:
       type: "string"
       length: 4
       nullable: false
+      example_value: "1992"
     begin_period:
       type: "string"
       length: 3
       nullable: false
+      example_value: "A01"
     end_year:
       type: "string"
       length: 4
       nullable: false
+      example_value: "2024"
     end_period:
       type: "string"
       length: 3
       nullable: false
+      example_value: "A01"
 
 data_files:
   - id: "main"
     pattern: "hc.data.*"
     index: "series_id"
+    estimated_size_gb: 1.0
     schema:
       series_id:
         type: "string"

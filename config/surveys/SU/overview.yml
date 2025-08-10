@@ -1,13 +1,70 @@
 # SU Survey Overview Configuration
+# Survey metadata and context information
 config_version: 1
+
 survey:
   code: "SU"
-  name: "SU Survey"
-  description: "Bureau of Labor Statistics SU survey data"
+  name: "Chained CPI-All Urban Consumers"
+  description: "The Chained Consumer Price Index for All Urban Consumers (C-CPI-U) supplements the existing Consumer Price Indexes, using a formula that accounts for the effect of substitution that consumers make across item categories in response to changes in relative prices."
   size_class: "medium"
   characteristics:
     frequency: "monthly"
-    coverage: "US"
-contacts: []
-documentation: {}
-tags: []
+    coverage: "National averages only, not seasonally adjusted"
+    time_series_count: "Varies by release"
+    classification_system: "Consumer goods and services categories with chained weighting"
+    update_schedule: "Monthly release, subject to revisions"
+    begin_year: 2002
+    survey_methodology: "Uses a superlative formula that accounts for consumer substitution within item categories, issued initially in preliminary form and subject to multiple revisions as more recent expenditure data become available"
+    calculation_basis: "Chained geometric means with expenditure weights from multiple time periods"
+
+contacts:
+  - role: "owner"
+    name: "groenewt"
+    email: ""
+
+documentation:
+  primary: "docs/bls/survey/su.txt"
+  data_dictionary: ""
+  notes: |
+    - Data location: data/raw/bls/su
+    - Data files are in ASCII text format
+    - Series ID pattern: SU followed by area, item, and base period codes
+    - C-CPI-U is issued first in preliminary form and subject to multiple revisions
+    - National averages only, not seasonally adjusted
+    - Updates become available with monthly CPI releases
+
+tags: ["chained_cpi", "consumer_price_index", "urban_consumers", "monthly", "cost_of_living", "substitution"]
+
+definition: |
+  The following is a definition of: Chained CPI-All Urban Consumers (SU)
+
+  Survey Description: The Chained Consumer Price Index for All Urban Consumers, 
+  designated the C-CPI-U, supplements the existing Consumer Price Indexes already 
+  produced by the BLS. The C-CPI-U uses a formula that accounts for the effect 
+  of substitution that consumers make across item categories in response to 
+  changes in relative prices.
+
+  The chained CPI uses a superlative formula that better accounts for consumers' 
+  responses to changes in relative prices within item categories. This measure 
+  is designed to be a closer approximation to a "cost-of-living" index than the 
+  present measures.
+
+  Unlike the traditional CPI measures, which use only a single expenditure base 
+  period to compute the price change over time, the chained CPI uses expenditure 
+  data from adjacent time periods to account for consumer substitution.
+
+  The C-CPI-U is issued first in preliminary form using the latest available 
+  expenditure data at that time and will be subject to multiple revisions, with 
+  the final index values being issued approximately two years after the 
+  reference period.
+
+  Summary Data Available: The C-CPI-U is issued for national averages only and 
+  is not seasonally adjusted.
+
+  Frequency of Observations: Monthly data with preliminary values subject to revision.
+
+  Data Characteristics: Uses chained geometric means with expenditure weights from 
+  multiple time periods to reflect consumer substitution patterns.
+
+  Updating Schedule: Updates become available with monthly CPI releases, with 
+  revisions continuing for approximately two years after initial release.

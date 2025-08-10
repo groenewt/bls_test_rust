@@ -2,25 +2,29 @@
 # Strategy, resources, chunking, mmap, cache
 config_version: 1
 
-strategy:
-  mode: "in_memory"
-  max_concurrency: 1
+# Direct strategy value (not nested)
+strategy: "in_memory"
 
-resources:
-  max_threads: 2
-  memory_limit_gb: 4
-  
-io:
-  chunk_size_mb: 64
-  buffer_pool_size: 4
+# Flattened configuration fields
+max_threads: 2
+chunk_size: 16777216   # 16MB in bytes
+memory_limit: 4096     # 4GB in MB
+parallel: false        # Single-threaded for small survey
 
-features:
-  use_mmap: true
-  enable_statistics: true
-  enable_profiling: false
+# Chunking configuration
+chunking:
+  size: 16777216       # 16MB in bytes
+  strategy: "sequential"
+  overlap: null
 
-transforms:
-  - id: "normalize_series_id"
-    expr: "upper(series_id)"
-  - id: "validate_period"
-    expr: "period in ['A01']"
+# Memory mapping configuration
+mmap:
+  enabled: true        # Beneficial for HS survey
+  threshold: null
+  prefetch: null
+
+# Cache configuration  
+cache:
+  enabled: true
+  size: 4194304        # 4MB cache size
+  ttl: 3600           # 1 hour TTL
