@@ -1,0 +1,13 @@
+# EI Survey Overview Configuration
+config_version: 1
+survey:
+  code: "EI"
+  name: "EI Survey"
+  description: "Bureau of Labor Statistics EI survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

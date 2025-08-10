@@ -407,6 +407,7 @@ mod tests {
     use super::*;
     use crate::plugin::traits::PluginStats;
     use std::time::SystemTime;
+    use crate::plugin::PluginConfig;
 
     // Mock plugin for testing
     #[derive(Debug)]

@@ -24,11 +24,12 @@ use std::path::PathBuf;
 use std::process;
 
 use rusty::{
-    config::{Config, ConfigLoader},
+    config::{Config, ConfigLoader, load_survey_config},
     error::{Error, Result},
     init_with_tracing,
-    processing::{ProcessingEngine, ProcessingInput, ProcessingOutput},
+    processing::{ProcessingEngine, ProcessingInput, ProcessingOutput, DagExecutor, LoaderStageImpl, WriterStageImpl, ProcessingConfig, ProcessingContext, PipelineStage},
 };
+use async_trait::async_trait;
 
 /// Command-line arguments structure
 #[derive(Debug)]
@@ -39,12 +40,16 @@ struct Args {
     config_path: Option<PathBuf>,
     verbose: bool,
     output_dir: Option<PathBuf>,
+    count: Option<usize>,
 }
 
 /// Available CLI commands
 #[derive(Debug)]
 enum Command {
     Process,
+    ProcessRandom,
+    ProcessDags,
+    ProcessDagsRandom,
     ListSurveys,
     Validate,
     ValidateConfig,
@@ -88,6 +93,9 @@ async fn main() {
             print_help();
             Ok(())
         }
+        Command::ProcessRandom => process_random(args).await,
+        Command::ProcessDags => process_dags(args).await,
+        Command::ProcessDagsRandom => process_dags_random(args).await,
     };
 
     // Handle any errors
@@ -117,6 +125,7 @@ fn parse_args() -> Result<Args> {
             config_path: None,
             verbose: false,
             output_dir: None,
+            count: None,
         });
     }
 
@@ -126,11 +135,15 @@ fn parse_args() -> Result<Args> {
     let mut config_path = None;
     let mut verbose = false;
     let mut output_dir = None;
+    let mut count: Option<usize> = None;
 
     let mut i = 1;
     while i < args.len() {
         match args[i].as_str() {
             "process" => command = Command::Process,
+            "process-random" => command = Command::ProcessRandom,
+            "process-dags" => command = Command::ProcessDags,
+            "process-dags-random" => command = Command::ProcessDagsRandom,
             "list-surveys" => command = Command::ListSurveys,
             "validate" => command = Command::Validate,
             "validate-config" => command = Command::ValidateConfig,
@@ -179,6 +192,23 @@ fn parse_args() -> Result<Args> {
                 }
             }
             "--verbose" | "-v" => verbose = true,
+            "--count" | "-n" => {
+                i += 1;
+                if i < args.len() {
+                    match args[i].parse::<usize>() {
+                        Ok(n) => count = Some(n),
+                        Err(_) => {
+                            return Err(Error::Config(rusty::error::ConfigError::InvalidArgument(
+                                format!("Invalid count value: {}", args[i]),
+                            )));
+                        }
+                    }
+                } else {
+                    return Err(Error::Config(rusty::error::ConfigError::InvalidArgument(
+                        "Missing number after --count".to_string(),
+                    )));
+                }
+            }
             _ => {
                 return Err(Error::Config(rusty::error::ConfigError::InvalidArgument(
                     format!("Unknown argument: {}", args[i]),
@@ -195,6 +225,7 @@ fn parse_args() -> Result<Args> {
         config_path,
         verbose,
         output_dir,
+        count,
     })
 }
 
@@ -208,23 +239,40 @@ async fn process_survey(args: Args) -> Result<()> {
 
     tracing::info!("Starting processing for survey: {}", survey_code);
 
-    // Load configuration
-    let config = if let Some(config_path) = args.config_path {
-        Config::load_from_file(&config_path)?
+    // Try loading configuration (optional). Proceed even if not available to allow raw processing fallback.
+    let _config_opt = if let Some(config_path) = args.config_path {
+        match Config::load_from_file(&config_path) {
+            Ok(cfg) => Some(cfg),
+            Err(e) => {
+                tracing::warn!("Failed to load config from file for {}: {}. Proceeding with defaults.", survey_code, e);
+                None
+            }
+        }
     } else {
-        Config::load_for_survey(&survey_code)?
+        match Config::load_for_survey(&survey_code) {
+            Ok(cfg) => Some(cfg),
+            Err(e) => {
+                tracing::warn!("Failed to load survey config for {}: {}. Proceeding with defaults.", survey_code, e);
+                None
+            }
+        }
     };
 
     // Create processing engine with processing config
     let processing_config = rusty::processing::ProcessingConfig::default();
     let mut engine = ProcessingEngine::new(processing_config);
 
-    // Create input and output for processing
-    let input = ProcessingInput::new(vec!["data/raw/bls/example.csv".to_string()]);
-    let output = ProcessingOutput::new(
-        vec!["data/processed/output.csv".to_string()],
-        "csv".to_string(),
-    );
+    // Use default discovery based on standard BLS directory layout to avoid strict config dependencies
+    let base_dir = std::path::PathBuf::from(format!("data/raw/bls/{}", survey_code.to_lowercase()));
+    let patterns = vec!["*.series".to_string(), "data/*".to_string(), "map/*".to_string()];
+    let input_paths = patterns
+        .into_iter()
+        .map(|p| base_dir.join(p).to_string_lossy().to_string())
+        .collect::<Vec<_>>();
+    let input = ProcessingInput::new(input_paths);
+
+    let output_path = format!("data/processed/{}/output.csv", survey_code);
+    let output = ProcessingOutput::new(vec![output_path], "csv".to_string());
 
     // Process the survey
     let _context = engine.process(input, output).await?;
@@ -524,29 +572,36 @@ fn print_help() {
     println!("    rusty <COMMAND> [OPTIONS]");
     println!();
     println!("COMMANDS:");
-    println!("    process          Process a BLS survey");
-    println!("    list-surveys     List available surveys");
-    println!("    validate         Validate a configuration file");
-    println!("    validate-config  Validate a survey configuration using modular system");
-    println!("    print-config     Print a survey configuration in readable format");
-    println!("    migrate-legacy   Migrate legacy monolithic config to modular structure");
-    println!("    --version        Show version information");
-    println!("    --help           Show this help message");
+    println!("    process               Process a BLS survey");
+    println!("    process-random        Process N random surveys (default: 5)");
+    println!("    process-dags          Execute DAG pipeline for a survey");
+    println!("    process-dags-random   Execute DAG pipeline for N random surveys (default: 5)");
+    println!("    list-surveys          List available surveys");
+    println!("    validate              Validate a configuration file");
+    println!("    validate-config       Validate a survey configuration using modular system");
+    println!("    print-config          Print a survey configuration in readable format");
+    println!("    migrate-legacy        Migrate legacy monolithic config to modular structure");
+    println!("    --version             Show version information");
+    println!("    --help                Show this help message");
     println!();
     println!("OPTIONS:");
     println!("    -s, --survey <CODE>     Survey code to process");
     println!("    -e, --env <ENV>         Environment (dev, stage, prod) [default: dev]");
     println!("    -c, --config <PATH>     Path to configuration file");
     println!("    -o, --output <DIR>      Output directory");
+    println!("    -n, --count <N>         Number of random surveys to process (process-random, process-dags-random)");
     println!("    -v, --verbose           Enable verbose logging");
     println!();
     println!("EXAMPLES:");
     println!("    rusty process --survey ap");
     println!("    rusty process --survey ap --env prod");
+    println!("    rusty process-random --count 5");
     println!("    rusty validate-config --survey ap --env dev");
     println!("    rusty print-config --survey ap --env prod");
     println!("    rusty migrate-legacy --survey ap");
     println!("    rusty validate --config config/surveys/ap.yml");
+    println!("    rusty process-dags --survey ap");
+    println!("    rusty process-dags-random --count 5");
     println!("    rusty list-surveys");
 }
 
@@ -572,5 +627,292 @@ mod tests {
     fn test_print_help() {
         // Test that print_help doesn't panic
         print_help();
+    }
+}
+
+
+/// Process N random surveys end-to-end
+async fn process_random(args: Args) -> Result<()> {
+    let count = args.count.unwrap_or(5);
+    tracing::info!("Selecting {} random surveys to process", count);
+
+    let surveys = discover_surveys().await?;
+    if surveys.is_empty() {
+        return Err(Error::Config(rusty::error::ConfigError::LoadError {
+            path: "config/surveys".to_string(),
+            source: "No surveys discovered".to_string(),
+        }));
+    }
+
+    let mut codes: Vec<String> = surveys.into_iter().map(|s| s.code).collect();
+    // Shuffle and take the requested count (or all if fewer available)
+    fastrand::shuffle(&mut codes);
+    let take_n = std::cmp::min(count, codes.len());
+    let selected: Vec<String> = codes.into_iter().take(take_n).collect();
+
+    println!("Processing {} random surveys: {:?}", take_n, selected);
+
+    let mut successes: Vec<String> = Vec::new();
+    let mut failures: Vec<(String, String)> = Vec::new();
+
+    for code in selected {
+        println!("\n=== Processing survey {} ===", code);
+        let per_args = Args {
+            command: Command::Process,
+            survey: Some(code.clone()),
+            environment: args.environment.clone(),
+            config_path: args.config_path.clone(),
+            verbose: args.verbose,
+            output_dir: args.output_dir.clone(),
+            count: None,
+        };
+
+        match process_survey(per_args).await {
+            Ok(_) => {
+                println!("[OK] {} processed successfully", code);
+                successes.push(code);
+            }
+            Err(e) => {
+                tracing::error!("Processing failed for {}: {}", code, e);
+                failures.push((code, format!("{}", e)));
+            }
+        }
+    }
+
+    println!("\n=== Random Processing Summary ===");
+    println!("Succeeded: {}", successes.len());
+    if !successes.is_empty() {
+        println!("  - {:?}", successes);
+    }
+    println!("Failed: {}", failures.len());
+    for (code, err) in &failures {
+        println!("  - {}: {}", code, err);
+    }
+
+    if failures.is_empty() {
+        Ok(())
+    } else {
+        // Return first failure as error, but after printing summary
+        let (code, err) = failures.into_iter().next().unwrap();
+        Err(Error::Processing(rusty::error::ProcessingError::SystemError(
+            format!("At least one survey failed ({}): {}", code, err),
+        )))
+    }
+}
+
+
+// --- DAG integration helpers and commands ---
+
+struct NoOpStage {
+    name: String,
+    description: String,
+}
+
+impl NoOpStage {
+    fn new(name: &str) -> Self {
+        Self { name: name.to_string(), description: "No-op stage".to_string() }
+    }
+}
+
+#[async_trait]
+impl PipelineStage for NoOpStage {
+    fn name(&self) -> &str { &self.name }
+    fn description(&self) -> &str { &self.description }
+    fn can_process(&self, _context: &ProcessingContext) -> Result<bool> { Ok(true) }
+    async fn execute(&mut self, _context: &mut ProcessingContext) -> Result<()> { Ok(()) }
+    fn dependencies(&self) -> Vec<String> { vec![] }
+    fn validate(&self, _context: &ProcessingContext) -> Result<()> { Ok(()) }
+    async fn cleanup(&mut self, _context: &mut ProcessingContext) -> Result<()> { Ok(()) }
+}
+
+async fn process_dags(args: Args) -> Result<()> {
+    let survey_code = args.survey.ok_or_else(|| {
+        Error::Config(rusty::error::ConfigError::InvalidArgument(
+            "Survey code is required for process-dags".to_string(),
+        ))
+    })?;
+
+    let env = args.environment.clone().unwrap_or_else(|| "dev".to_string());
+
+    // Load survey config to obtain DAGs
+    let survey_cfg = match load_survey_config(&survey_code, Some(&env)) {
+        Ok(cfg) => cfg,
+        Err(e) => {
+            return Err(Error::Config(rusty::error::ConfigError::LoadError {
+                path: format!("survey config for {}", survey_code),
+                source: e.to_string(),
+            }))
+        }
+    };
+
+    let dags_cfg = survey_cfg.dags.clone().ok_or_else(|| {
+        Error::Config(rusty::error::ConfigError::LoadError {
+            path: format!("config/surveys/{}/dags.yml", survey_code.to_uppercase()),
+            source: format!("dags.yml not found or failed to load for survey {}", survey_code),
+        })
+    })?;
+
+    // Choose DAG name (prefer a DAG named "pipeline" if present)
+    let chosen_dag_name = if dags_cfg.dags.contains_key("pipeline") {
+        "pipeline".to_string()
+    } else {
+        // pick the first dag
+        dags_cfg
+            .dags
+            .values()
+            .next()
+            .map(|d| d.name.clone())
+            .unwrap_or_else(|| "pipeline".to_string())
+    };
+
+    // Build processing context with inferred input paths
+    let mut context = build_processing_context_for_survey(&survey_code);
+
+    // Create executor and register stages based on the DAG tasks
+    let mut executor = DagExecutor::new(dags_cfg.clone());
+
+    // Find selected dag definition to map tasks to stages
+    let dag_def = dags_cfg
+        .dags
+        .values()
+        .find(|d| d.name == chosen_dag_name)
+        .ok_or_else(|| Error::Processing(rusty::error::ProcessingError::PipelineError {
+            stage: chosen_dag_name.clone(),
+            message: "DAG definition not found".to_string(),
+        }))?;
+
+    register_stages_for_dag(&mut executor, dag_def);
+
+    // Execute
+    let exec_ctx = executor.execute_dag(&chosen_dag_name, context).await?;
+
+    let series_count = exec_ctx.processing_context.series_data.len();
+    let obs_count = exec_ctx.processing_context.observation_data.len();
+    let lookup_count = exec_ctx.processing_context.lookup_data.len();
+
+    println!("DAG processing completed successfully for survey: {}", survey_code);
+    println!(
+        "  Records summary -> series: {}, observations: {}, lookups: {}",
+        series_count, obs_count, lookup_count
+    );
+    println!(
+        "  Outputs (expected): data/processed/{}/[series.csv, observations.csv, lookups.csv]",
+        survey_code.to_uppercase()
+    );
+    Ok(())
+}
+
+async fn process_dags_random(args: Args) -> Result<()> {
+    let count = args.count.unwrap_or(5);
+    let env = args.environment.clone().unwrap_or_else(|| "dev".to_string());
+
+    let surveys = discover_surveys().await?;
+    if surveys.is_empty() {
+        return Err(Error::Config(rusty::error::ConfigError::LoadError {
+            path: "config/surveys".to_string(),
+            source: "No surveys discovered".to_string(),
+        }));
+    }
+
+    // Filter to those with dags.yml available
+    let mut with_dag: Vec<String> = Vec::new();
+    for s in surveys {
+        if let Ok(cfg) = load_survey_config(&s.code, Some(&env)) {
+            if cfg.dags.is_some() {
+                with_dag.push(s.code);
+            }
+        }
+    }
+
+    if with_dag.is_empty() {
+        return Err(Error::Config(rusty::error::ConfigError::LoadError {
+            path: "config/surveys/*/dags.yml".to_string(),
+            source: "No DAG-enabled surveys found".to_string(),
+        }));
+    }
+
+    fastrand::shuffle(&mut with_dag);
+    let take_n = std::cmp::min(count, with_dag.len());
+    let selected: Vec<String> = with_dag.into_iter().take(take_n).collect();
+
+    println!("Processing DAGs for {} random surveys: {:?}", take_n, selected);
+
+    let mut successes: Vec<String> = Vec::new();
+    let mut failures: Vec<(String, String)> = Vec::new();
+
+    for code in selected {
+        println!("\n=== DAG Processing survey {} ===", code);
+        let per_args = Args {
+            command: Command::ProcessDags,
+            survey: Some(code.clone()),
+            environment: args.environment.clone(),
+            config_path: args.config_path.clone(),
+            verbose: args.verbose,
+            output_dir: args.output_dir.clone(),
+            count: None,
+        };
+
+        match process_dags(per_args).await {
+            Ok(_) => {
+                println!("[OK] {} DAG processed successfully", code);
+                successes.push(code);
+            }
+            Err(e) => {
+                failures.push((code, format!("{}", e)));
+            }
+        }
+    }
+
+    println!("\n=== DAG Random Processing Summary ===");
+    println!("Succeeded: {}", successes.len());
+    if !successes.is_empty() {
+        println!("  - {:?}", successes);
+    }
+    println!("Failed: {}", failures.len());
+    for (code, err) in &failures {
+        println!("  - {}: {}", code, err);
+    }
+
+    if failures.is_empty() { Ok(()) } else {
+        let (code, err) = failures.into_iter().next().unwrap();
+        Err(Error::Processing(rusty::error::ProcessingError::SystemError(
+            format!("At least one DAG run failed ({}): {}", code, err),
+        )))
+    }
+}
+
+fn build_processing_context_for_survey(survey_code: &str) -> ProcessingContext {
+    let config = ProcessingConfig::default();
+    let mut context = ProcessingContext::new(config);
+
+    let base_dir = std::path::PathBuf::from(format!("data/raw/bls/{}", survey_code.to_lowercase()));
+    let patterns = vec!["*.series".to_string(), "data/*".to_string(), "map/*".to_string()];
+    let input_paths = patterns
+        .into_iter()
+        .map(|p| base_dir.join(p).to_string_lossy().to_string())
+        .collect::<Vec<_>>();
+    context.input_paths = input_paths;
+    context
+}
+
+fn register_stages_for_dag(executor: &mut DagExecutor, dag: &rusty::config::model::DagDefinition) {
+    use std::collections::HashSet;
+
+    // Determine task mapping by type
+    let mut registered: HashSet<String> = HashSet::new();
+    for (name, task) in &dag.tasks {
+        let kind = task.task_type.to_lowercase();
+        let stage: Box<dyn PipelineStage> = match kind.as_str() {
+            "scan" | "discover" | "load_lookups" | "load" => Box::new(LoaderStageImpl::new()),
+            "output" | "writer" | "write_output" | "export" | "finalize" | "parquet" | "save" | "write" => Box::new(WriterStageImpl::new()),
+            _ => Box::new(NoOpStage::new(name)),
+        };
+        if !registered.contains(name) {
+            if let Err(e) = executor.register_task(name.clone(), stage) {
+                tracing::warn!("Failed to register task {}: {}", name, e);
+            } else {
+                registered.insert(name.clone());
+            }
+        }
     }
 }

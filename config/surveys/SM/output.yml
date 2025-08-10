@@ -1,5 +1,5 @@
 config_version: 1
-format: "csv"
+format: "parquet"
 csv:
   delimiter: ","
   quote_char: "\""

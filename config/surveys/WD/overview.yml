@@ -1,0 +1,13 @@
+# WD Survey Overview Configuration
+config_version: 1
+survey:
+  code: "WD"
+  name: "WD Survey"
+  description: "Bureau of Labor Statistics WD survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

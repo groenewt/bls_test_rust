@@ -1,0 +1,13 @@
+# SA Survey Overview Configuration
+config_version: 1
+survey:
+  code: "SA"
+  name: "SA Survey"
+  description: "Bureau of Labor Statistics SA survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

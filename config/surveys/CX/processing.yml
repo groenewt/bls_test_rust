@@ -4,21 +4,29 @@
 
 config_version: 1
 
-strategy:
-  mode: "chunked"     # Process in chunks due to medium size
-  max_concurrency: 4  # Increased parallelization for medium-sized data
+# Direct strategy value (not nested)
+strategy: "chunked"
 
-resources:
-  max_threads: 4
-  memory_limit_gb: 8  # Appropriate for medium-sized survey
+# Flattened configuration fields
+max_threads: 4
+chunk_size: 52428800  # 50MB in bytes
+memory_limit: 8192    # 8GB in MB
+parallel: true       # Multi-threaded for medium survey
 
-io:
-  chunk_size_mb: 50
-  buffer_pool_size: 8
+# Chunking configuration
+chunking:
+  size: 52428800      # 50MB in bytes
+  strategy: "sequential"
+  overlap: null
 
-features:
-  use_mmap: true           # Use memory mapping for large files
-  enable_statistics: true  # Collect statistics for optimization
-  enable_profiling: false  # Disable profiling in production
+# Memory mapping configuration
+mmap:
+  enabled: true       # Beneficial for medium survey
+  threshold: null
+  prefetch: null
 
-transforms: []  # No specific transforms defined in original config
+# Cache configuration  
+cache:
+  enabled: true
+  size: 8388608       # 8MB cache size
+  ttl: 3600          # 1 hour TTL

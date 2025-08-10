@@ -1,0 +1,13 @@
+# LI Survey Overview Configuration
+config_version: 1
+survey:
+  code: "LI"
+  name: "LI Survey"
+  description: "Bureau of Labor Statistics LI survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

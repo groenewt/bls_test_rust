@@ -1,0 +1,13 @@
+# EP Survey Overview Configuration
+config_version: 1
+survey:
+  code: "EP"
+  name: "EP Survey"
+  description: "Bureau of Labor Statistics EP survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

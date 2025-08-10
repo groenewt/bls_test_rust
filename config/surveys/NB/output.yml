@@ -1,0 +1,31 @@
+# NB Survey Output Configuration
+config_version: 1
+
+# Required formats field as array
+formats: ["csv"]
+
+# Required output directory and filename pattern
+output_dir: "data/processed/bls/NB"
+filename_pattern: "{survey}_{table}_{timestamp}"
+create_subdirs: true
+
+csv:
+  delimiter: ","
+  quote_char: "\""
+  escape_char: "\\"
+  header: true
+
+partitioning:
+  partition_by: ["year"]
+  max_file_size_mb: 512
+
+naming:
+  dataset: "bls_nb"
+  version: "v1"
+
+evolution:
+  mode: "compatible"
+  allow_nullability_change: false
+
+destination:
+  base_path: "data/processed/bls/NB"

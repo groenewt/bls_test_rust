@@ -1,0 +1,13 @@
+# LE Survey Overview Configuration
+config_version: 1
+survey:
+  code: "LE"
+  name: "LE Survey"
+  description: "Bureau of Labor Statistics LE survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

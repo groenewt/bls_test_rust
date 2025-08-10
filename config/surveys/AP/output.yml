@@ -2,7 +2,13 @@
 # Output formats, partitioning, compression
 config_version: 1
 
-format: "csv"
+# Required formats field as array
+formats: ["csv","parquet"]
+
+# Required output directory and filename pattern
+output_dir: "data/processed/bls/AP"
+filename_pattern: "{survey}_{table}_{timestamp}"
+create_subdirs: true
 
 csv:
   delimiter: ","

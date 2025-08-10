@@ -1,0 +1,13 @@
+# MP Survey Overview Configuration
+config_version: 1
+survey:
+  code: "MP"
+  name: "MP Survey"
+  description: "Bureau of Labor Statistics MP survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

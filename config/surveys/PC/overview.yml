@@ -1,0 +1,13 @@
+# PC Survey Overview Configuration
+config_version: 1
+survey:
+  code: "PC"
+  name: "PC Survey"
+  description: "Bureau of Labor Statistics PC survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

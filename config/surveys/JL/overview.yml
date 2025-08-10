@@ -1,0 +1,13 @@
+# JL Survey Overview Configuration
+config_version: 1
+survey:
+  code: "JL"
+  name: "JL Survey"
+  description: "Bureau of Labor Statistics JL survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

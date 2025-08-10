@@ -1,0 +1,13 @@
+# ML Survey Overview Configuration
+config_version: 1
+survey:
+  code: "ML"
+  name: "ML Survey"
+  description: "Bureau of Labor Statistics ML survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

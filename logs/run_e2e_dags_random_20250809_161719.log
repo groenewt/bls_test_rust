@@ -1,0 +1,323 @@
+[2m2025-08-09T21:17:19.576377Z[0m [32m INFO[0m [2mrusty[0m[2m:[0m Initialized rusty v0.1.0 with tracing
+[2m2025-08-09T21:17:19.577616Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for AP in dev environment
+[2m2025-08-09T21:17:19.578019Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/AP/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 6 column 3, skipping
+[2m2025-08-09T21:17:19.578064Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/AP/output.yml': missing field `formats` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.578144Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/AP/quality.yml': missing field `checks` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.578183Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse runtime.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/AP/runtime.yml': monitoring: missing field `enabled` at line 43 column 3, skipping
+[2m2025-08-09T21:17:19.578293Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to merge defaults.yml: Failed to deserialize merged config: invalid type: map, expected a Value::Tagged enum, skipping
+[2m2025-08-09T21:17:19.578537Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for BD in dev environment
+[2m2025-08-09T21:17:19.578974Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/BD/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 6 column 3, skipping
+[2m2025-08-09T21:17:19.579003Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/BD/output.yml': missing field `formats` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.579074Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/BD/quality.yml': missing field `checks` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.579296Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for BG in dev environment
+[2m2025-08-09T21:17:19.579670Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for BP in dev environment
+[2m2025-08-09T21:17:19.580067Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CB in dev environment
+[2m2025-08-09T21:17:19.580590Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CC in dev environment
+[2m2025-08-09T21:17:19.580985Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CE in dev environment
+[2m2025-08-09T21:17:19.581309Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CF in dev environment
+[2m2025-08-09T21:17:19.581722Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CH in dev environment
+[2m2025-08-09T21:17:19.582161Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CI in dev environment
+[2m2025-08-09T21:17:19.582537Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CM in dev environment
+[2m2025-08-09T21:17:19.582891Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CS in dev environment
+[2m2025-08-09T21:17:19.583471Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CU in dev environment
+[2m2025-08-09T21:17:19.583803Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CW in dev environment
+[2m2025-08-09T21:17:19.584112Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CX in dev environment
+[2m2025-08-09T21:17:19.584413Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/CX/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 8 column 3, skipping
+[2m2025-08-09T21:17:19.584469Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/CX/output.yml': missing field `formats` at line 5 column 1, skipping
+[2m2025-08-09T21:17:19.584561Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/CX/quality.yml': missing field `checks` at line 5 column 1, skipping
+[2m2025-08-09T21:17:19.584602Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse runtime.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/CX/runtime.yml': monitoring: missing field `enabled` at line 54 column 3, skipping
+[2m2025-08-09T21:17:19.584726Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to merge defaults.yml: Failed to deserialize merged config: invalid type: map, expected a Value::Tagged enum, skipping
+[2m2025-08-09T21:17:19.584871Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for EB in dev environment
+[2m2025-08-09T21:17:19.585205Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for FI in dev environment
+[2m2025-08-09T21:17:19.585575Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for FM in dev environment
+[2m2025-08-09T21:17:19.585979Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for FW in dev environment
+[2m2025-08-09T21:17:19.586279Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for GG in dev environment
+[2m2025-08-09T21:17:19.586679Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for GP in dev environment
+[2m2025-08-09T21:17:19.586999Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for HC in dev environment
+[2m2025-08-09T21:17:19.587321Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for HS in dev environment
+[2m2025-08-09T21:17:19.587651Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for II in dev environment
+[2m2025-08-09T21:17:19.588009Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for IN in dev environment
+[2m2025-08-09T21:17:19.588381Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/IN/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 6 column 3, skipping
+[2m2025-08-09T21:17:19.588450Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/IN/output.yml': missing field `formats` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.588602Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/IN/quality.yml': missing field `checks` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.588852Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for IP in dev environment
+[2m2025-08-09T21:17:19.589426Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for SM in dev environment
+[2m2025-08-09T21:17:19.589936Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for TU in dev environment
+[2m2025-08-09T21:17:19.590505Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for WM in dev environment
+[2m2025-08-09T21:17:19.590990Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WM/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 6 column 3, skipping
+[2m2025-08-09T21:17:19.591011Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WM/output.yml': missing field `formats` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.591082Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WM/quality.yml': missing field `checks` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.591330Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for WP in dev environment
+[2m2025-08-09T21:17:19.591716Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WP/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 6 column 3, skipping
+[2m2025-08-09T21:17:19.591743Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WP/output.yml': missing field `formats` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.591817Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WP/quality.yml': missing field `checks` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.592004Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for WS in dev environment
+Processing DAGs for 5 random surveys: ["IN", "WP", "WM", "AP", "CX"]
+
+=== DAG Processing survey IN ===
+[2m2025-08-09T21:17:19.592433Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for IN in dev environment
+[2m2025-08-09T21:17:19.592777Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/IN/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 6 column 3, skipping
+[2m2025-08-09T21:17:19.592830Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/IN/output.yml': missing field `formats` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.592940Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/IN/quality.yml': missing field `checks` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.593142Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Starting DAG execution: pipeline
+[2m2025-08-09T21:17:19.593147Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: discover
+[2m2025-08-09T21:17:19.593150Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Starting loader stage execution    
+[2m2025-08-09T21:17:19.593207Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593215Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593222Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593229Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593236Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593243Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593250Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593257Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593264Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593271Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593278Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593284Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593293Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Loader stage completed: 12 files loaded, 0 records, 0 series, 0 observations, 0 lookups    
+[2m2025-08-09T21:17:19.593294Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: discover (0ms)
+[2m2025-08-09T21:17:19.593297Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: validate
+[2m2025-08-09T21:17:19.593299Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: validate (0ms)
+[2m2025-08-09T21:17:19.593300Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: plan
+[2m2025-08-09T21:17:19.593301Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: plan (0ms)
+[2m2025-08-09T21:17:19.593302Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: process
+[2m2025-08-09T21:17:19.593303Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: process (0ms)
+[2m2025-08-09T21:17:19.593305Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: write
+[2m2025-08-09T21:17:19.593306Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Starting writer stage execution    
+[2m2025-08-09T21:17:19.593311Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Writer stage completed: 0 files, 0 records    
+[2m2025-08-09T21:17:19.593312Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: write (0ms)
+[2m2025-08-09T21:17:19.593313Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: qc
+[2m2025-08-09T21:17:19.593314Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: qc (0ms)
+[2m2025-08-09T21:17:19.593315Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m DAG execution completed: pipeline (0ms)
+DAG processing completed successfully for survey: IN
+  Records summary -> series: 0, observations: 0, lookups: 0
+  Outputs (expected): data/processed/IN/[series.csv, observations.csv, lookups.csv]
+[OK] IN DAG processed successfully
+
+=== DAG Processing survey WP ===
+[2m2025-08-09T21:17:19.593326Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for WP in dev environment
+[2m2025-08-09T21:17:19.593620Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WP/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 6 column 3, skipping
+[2m2025-08-09T21:17:19.593643Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WP/output.yml': missing field `formats` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.593716Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WP/quality.yml': missing field `checks` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.593859Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Starting DAG execution: pipeline
+[2m2025-08-09T21:17:19.593863Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: discover
+[2m2025-08-09T21:17:19.593865Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Starting loader stage execution    
+[2m2025-08-09T21:17:19.593980Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593988Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.593995Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594002Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594009Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594017Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594024Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594030Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594037Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594044Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594051Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594057Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594064Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594071Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594077Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594084Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594091Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594097Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594104Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594111Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594117Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594124Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594131Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594137Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594144Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594151Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594158Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594165Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594171Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594178Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594185Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594191Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594198Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594205Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594211Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594218Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594225Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594231Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594238Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594245Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594252Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594259Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.594267Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Loader stage completed: 42 files loaded, 0 records, 0 series, 0 observations, 0 lookups    
+[2m2025-08-09T21:17:19.594269Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: discover (0ms)
+[2m2025-08-09T21:17:19.594271Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: validate
+[2m2025-08-09T21:17:19.594272Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: validate (0ms)
+[2m2025-08-09T21:17:19.594273Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: plan
+[2m2025-08-09T21:17:19.594274Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: plan (0ms)
+[2m2025-08-09T21:17:19.594275Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: process
+[2m2025-08-09T21:17:19.594276Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: process (0ms)
+[2m2025-08-09T21:17:19.594277Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: write
+[2m2025-08-09T21:17:19.594279Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Starting writer stage execution    
+[2m2025-08-09T21:17:19.594282Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Writer stage completed: 0 files, 0 records    
+[2m2025-08-09T21:17:19.594284Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: write (0ms)
+[2m2025-08-09T21:17:19.594285Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: qc
+[2m2025-08-09T21:17:19.594285Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: qc (0ms)
+[2m2025-08-09T21:17:19.594286Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m DAG execution completed: pipeline (0ms)
+DAG processing completed successfully for survey: WP
+  Records summary -> series: 0, observations: 0, lookups: 0
+  Outputs (expected): data/processed/WP/[series.csv, observations.csv, lookups.csv]
+[OK] WP DAG processed successfully
+
+=== DAG Processing survey WM ===
+[2m2025-08-09T21:17:19.594296Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for WM in dev environment
+[2m2025-08-09T21:17:19.594805Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WM/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 6 column 3, skipping
+[2m2025-08-09T21:17:19.594825Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WM/output.yml': missing field `formats` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.594898Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/WM/quality.yml': missing field `checks` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.595125Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Starting DAG execution: pipeline
+[2m2025-08-09T21:17:19.595130Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: discover
+[2m2025-08-09T21:17:19.595132Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Starting loader stage execution    
+[2m2025-08-09T21:17:19.595184Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595192Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595199Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595206Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595213Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595220Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595226Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595233Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595240Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595247Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595254Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595260Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595274Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595283Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595290Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.595298Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Loader stage completed: 15 files loaded, 0 records, 0 series, 0 observations, 0 lookups    
+[2m2025-08-09T21:17:19.595300Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: discover (0ms)
+[2m2025-08-09T21:17:19.595302Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: validate
+[2m2025-08-09T21:17:19.595303Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: validate (0ms)
+[2m2025-08-09T21:17:19.595304Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: plan
+[2m2025-08-09T21:17:19.595304Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: plan (0ms)
+[2m2025-08-09T21:17:19.595306Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: process
+[2m2025-08-09T21:17:19.595306Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: process (0ms)
+[2m2025-08-09T21:17:19.595308Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: write
+[2m2025-08-09T21:17:19.595309Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Starting writer stage execution    
+[2m2025-08-09T21:17:19.595312Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Writer stage completed: 0 files, 0 records    
+[2m2025-08-09T21:17:19.595313Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: write (0ms)
+[2m2025-08-09T21:17:19.595314Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: qc
+[2m2025-08-09T21:17:19.595315Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: qc (0ms)
+[2m2025-08-09T21:17:19.595316Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m DAG execution completed: pipeline (0ms)
+DAG processing completed successfully for survey: WM
+  Records summary -> series: 0, observations: 0, lookups: 0
+  Outputs (expected): data/processed/WM/[series.csv, observations.csv, lookups.csv]
+[OK] WM DAG processed successfully
+
+=== DAG Processing survey AP ===
+[2m2025-08-09T21:17:19.595330Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for AP in dev environment
+[2m2025-08-09T21:17:19.595630Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/AP/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 6 column 3, skipping
+[2m2025-08-09T21:17:19.595674Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/AP/output.yml': missing field `formats` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.595756Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/AP/quality.yml': missing field `checks` at line 3 column 1, skipping
+[2m2025-08-09T21:17:19.595790Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse runtime.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/AP/runtime.yml': monitoring: missing field `enabled` at line 43 column 3, skipping
+[2m2025-08-09T21:17:19.595896Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to merge defaults.yml: Failed to deserialize merged config: invalid type: map, expected a Value::Tagged enum, skipping
+[2m2025-08-09T21:17:19.596047Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Starting DAG execution: pipeline
+[2m2025-08-09T21:17:19.596053Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: discover
+[2m2025-08-09T21:17:19.596055Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Starting loader stage execution    
+[2m2025-08-09T21:17:19.596101Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596109Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596116Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596123Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596129Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596136Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596142Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596150Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596156Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596163Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596170Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596178Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Loader stage completed: 11 files loaded, 0 records, 0 series, 0 observations, 0 lookups    
+[2m2025-08-09T21:17:19.596180Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: discover (0ms)
+[2m2025-08-09T21:17:19.596182Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: validate_model
+[2m2025-08-09T21:17:19.596183Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: validate_model (0ms)
+[2m2025-08-09T21:17:19.596184Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: load_lookups
+[2m2025-08-09T21:17:19.596185Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Starting loader stage execution    
+[2m2025-08-09T21:17:19.596218Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596225Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596231Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596238Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596244Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596250Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596257Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596263Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596270Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596277Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596283Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.596291Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Loader stage completed: 11 files loaded, 0 records, 0 series, 0 observations, 0 lookups    
+[2m2025-08-09T21:17:19.596292Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: load_lookups (0ms)
+[2m2025-08-09T21:17:19.596294Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: validate_data
+[2m2025-08-09T21:17:19.596295Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: validate_data (0ms)
+[2m2025-08-09T21:17:19.596296Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: plan
+[2m2025-08-09T21:17:19.596297Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: plan (0ms)
+[2m2025-08-09T21:17:19.596298Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: process_series
+[2m2025-08-09T21:17:19.596299Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: process_series (0ms)
+[2m2025-08-09T21:17:19.596300Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: process_data
+[2m2025-08-09T21:17:19.596301Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: process_data (0ms)
+[2m2025-08-09T21:17:19.596302Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: write_output
+[2m2025-08-09T21:17:19.596303Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Starting writer stage execution    
+[2m2025-08-09T21:17:19.596306Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Writer stage completed: 0 files, 0 records    
+[2m2025-08-09T21:17:19.596307Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: write_output (0ms)
+[2m2025-08-09T21:17:19.596309Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: create_data_dict
+[2m2025-08-09T21:17:19.596310Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: create_data_dict (0ms)
+[2m2025-08-09T21:17:19.596311Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: quality_checks
+[2m2025-08-09T21:17:19.596312Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: quality_checks (0ms)
+[2m2025-08-09T21:17:19.596313Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m DAG execution completed: pipeline (0ms)
+DAG processing completed successfully for survey: AP
+  Records summary -> series: 0, observations: 0, lookups: 0
+  Outputs (expected): data/processed/AP/[series.csv, observations.csv, lookups.csv]
+[OK] AP DAG processed successfully
+
+=== DAG Processing survey CX ===
+[2m2025-08-09T21:17:19.596323Z[0m [32m INFO[0m [2mrusty::config::loader[0m[2m:[0m Loading survey config for CX in dev environment
+[2m2025-08-09T21:17:19.596655Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse processing.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/CX/processing.yml': strategy: invalid type: map, expected a YAML tag starting with '!' at line 8 column 3, skipping
+[2m2025-08-09T21:17:19.596713Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse output.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/CX/output.yml': missing field `formats` at line 5 column 1, skipping
+[2m2025-08-09T21:17:19.596808Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse quality.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/CX/quality.yml': missing field `checks` at line 5 column 1, skipping
+[2m2025-08-09T21:17:19.596848Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to parse runtime.yml (may have different structure): System error: Parse error in format 'YAML' with context 'file: /home/groenewt/Documents/Rusty/config/surveys/CX/runtime.yml': monitoring: missing field `enabled` at line 54 column 3, skipping
+[2m2025-08-09T21:17:19.596967Z[0m [33m WARN[0m [2mrusty::config::loader[0m[2m:[0m Failed to merge defaults.yml: Failed to deserialize merged config: invalid type: map, expected a Value::Tagged enum, skipping
+[2m2025-08-09T21:17:19.597137Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Starting DAG execution: pipeline
+[2m2025-08-09T21:17:19.597143Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: discover
+[2m2025-08-09T21:17:19.597145Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Starting loader stage execution    
+[2m2025-08-09T21:17:19.597171Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.597178Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.597190Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Loader stage completed: 2 files loaded, 0 records, 0 series, 0 observations, 0 lookups    
+[2m2025-08-09T21:17:19.597192Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: discover (0ms)
+[2m2025-08-09T21:17:19.597194Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: validate_input
+[2m2025-08-09T21:17:19.597195Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: validate_input (0ms)
+[2m2025-08-09T21:17:19.597196Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: load_lookups
+[2m2025-08-09T21:17:19.597197Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Starting loader stage execution    
+[2m2025-08-09T21:17:19.597212Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.597219Z[0m [33m WARN[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Reader contains no records    
+[2m2025-08-09T21:17:19.597226Z[0m [32m INFO[0m [2mrusty::processing::pipeline::loader[0m[2m:[0m Loader stage completed: 2 files loaded, 0 records, 0 series, 0 observations, 0 lookups    
+[2m2025-08-09T21:17:19.597227Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: load_lookups (0ms)
+[2m2025-08-09T21:17:19.597228Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: plan
+[2m2025-08-09T21:17:19.597229Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: plan (0ms)
+[2m2025-08-09T21:17:19.597230Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: process_series
+[2m2025-08-09T21:17:19.597231Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: process_series (0ms)
+[2m2025-08-09T21:17:19.597232Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: process_data
+[2m2025-08-09T21:17:19.597233Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: process_data (0ms)
+[2m2025-08-09T21:17:19.597234Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: join_lookups
+[2m2025-08-09T21:17:19.597235Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: join_lookups (0ms)
+[2m2025-08-09T21:17:19.597236Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: write_data_series
+[2m2025-08-09T21:17:19.597237Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Starting writer stage execution    
+[2m2025-08-09T21:17:19.597271Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Writer stage completed: 0 files, 0 records    
+[2m2025-08-09T21:17:19.597272Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: write_data_series (0ms)
+[2m2025-08-09T21:17:19.597274Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: write_data_dict
+[2m2025-08-09T21:17:19.597275Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Starting writer stage execution    
+[2m2025-08-09T21:17:19.597277Z[0m [32m INFO[0m [2mrusty::processing::pipeline::writer[0m[2m:[0m Writer stage completed: 0 files, 0 records    
+[2m2025-08-09T21:17:19.597278Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: write_data_dict (0ms)
+[2m2025-08-09T21:17:19.597279Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: quality_checks
+[2m2025-08-09T21:17:19.597280Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: quality_checks (0ms)
+[2m2025-08-09T21:17:19.597281Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Executing task: generate_stats
+[2m2025-08-09T21:17:19.597282Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m Task completed: generate_stats (0ms)
+[2m2025-08-09T21:17:19.597283Z[0m [32m INFO[0m [2mrusty::processing::dag[0m[2m:[0m DAG execution completed: pipeline (0ms)
+DAG processing completed successfully for survey: CX
+  Records summary -> series: 0, observations: 0, lookups: 0
+  Outputs (expected): data/processed/CX/[series.csv, observations.csv, lookups.csv]
+[OK] CX DAG processed successfully
+
+=== DAG Random Processing Summary ===
+Succeeded: 5
+  - ["IN", "WP", "WM", "AP", "CX"]
+Failed: 0

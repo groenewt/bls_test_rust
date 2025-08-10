@@ -4,7 +4,7 @@
 //! data processing workflow.
 
 use crate::error::types::{ProcessingError, Result};
-use crate::processing::pipeline::{DefaultPipeline, create_default_pipeline};
+use crate::processing::pipeline::{DefaultPipeline, create_default_pipeline, create_minimal_pipeline};
 use crate::processing::registry::ProcessorRegistryImpl;
 use crate::processing::strategy::factory::DefaultProcessorFactory;
 use crate::processing::traits::{
@@ -73,7 +73,7 @@ impl ProcessingEngine {
     pub fn new(config: ProcessingConfig) -> Self {
         let factory = Arc::new(DefaultProcessorFactory::new());
         let registry = Arc::new(ProcessorRegistryImpl::default());
-        let pipeline = Box::new(DefaultPipeline::new(config.clone()));
+        let pipeline = Box::new(create_minimal_pipeline(config.clone()).expect("Failed to create minimal pipeline"));
 
         Self {
             config,

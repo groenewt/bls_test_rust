@@ -1,0 +1,13 @@
+# JT Survey Overview Configuration
+config_version: 1
+survey:
+  code: "JT"
+  name: "JT Survey"
+  description: "Bureau of Labor Statistics JT survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

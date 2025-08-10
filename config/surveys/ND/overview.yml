@@ -1,0 +1,13 @@
+# ND Survey Overview Configuration
+config_version: 1
+survey:
+  code: "ND"
+  name: "ND Survey"
+  description: "Bureau of Labor Statistics ND survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

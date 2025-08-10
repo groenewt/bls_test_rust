@@ -1,0 +1,13 @@
+# FA Survey Overview Configuration
+config_version: 1
+survey:
+  code: "FA"
+  name: "FA Survey"
+  description: "Bureau of Labor Statistics FA survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

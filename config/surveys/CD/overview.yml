@@ -1,0 +1,13 @@
+# CD Survey Overview Configuration
+config_version: 1
+survey:
+  code: "CD"
+  name: "CD Survey"
+  description: "Bureau of Labor Statistics CD survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

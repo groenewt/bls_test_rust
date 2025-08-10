@@ -1,0 +1,13 @@
+# MU Survey Overview Configuration
+config_version: 1
+survey:
+  code: "MU"
+  name: "MU Survey"
+  description: "Bureau of Labor Statistics MU survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

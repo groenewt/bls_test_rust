@@ -51,10 +51,9 @@ error_handling:
 
 # Performance monitoring
 monitoring:
-  enable_metrics: true
-  metrics_interval_seconds: 30
-  memory_usage_threshold: 0.8  # Alert when memory usage exceeds 80%
-  processing_time_threshold_minutes: 120  # Alert if processing takes longer than 2 hours
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 30
 
 # Resource limits
 resource_limits:

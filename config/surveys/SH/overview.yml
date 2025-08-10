@@ -1,0 +1,13 @@
+# SH Survey Overview Configuration
+config_version: 1
+survey:
+  code: "SH"
+  name: "SH Survey"
+  description: "Bureau of Labor Statistics SH survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

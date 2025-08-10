@@ -2,6 +2,34 @@
 # Validations, expectations, thresholds
 config_version: 1
 
+# Required checks field for QualityConfig
+checks:
+  - name: "series_id_not_null"
+    check_type: "completeness"
+    parameters:
+      columns: ["series_id"]
+    severity: "error"
+  
+  - name: "year_range_check" 
+    check_type: "validity"
+    parameters:
+      column: "year"
+      min: 1947
+      max: 2055
+    severity: "error"
+    
+  - name: "unique_series_combination"
+    check_type: "uniqueness"
+    parameters:
+      columns: ["series_id", "year", "period"]
+    severity: "error"
+
+# Required validation field for QualityConfig
+validation:
+  strict_mode: true
+  fail_on_error: true
+  max_errors: 5000
+
 expectations:
   non_null:
     - { file: "main", columns: ["series_id", "year", "period"] }
@@ -19,13 +47,13 @@ expectations:
     - { file: "series", column: "end_period", values: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13"] }
   
   regex:
-    - { file: "main", column: "series_id", pattern: "^WP[SU]\\d{8}$" }
-    - { file: "series", column: "series_id", pattern: "^WP[SU]\\d{8}$" }
+    - { file: "main", column: "series_id", pattern: "^WP[SU]\\d{6}$" }
+    - { file: "series", column: "series_id", pattern: "^WP[SU]\\d{6}$" }
   
   length:
-    - { file: "series", column: "series_id", exact: 30 }
-    - { file: "series", column: "group_code", exact: 3 }
-    - { file: "series", column: "item_code", exact: 12 }
+    - { file: "series", column: "series_id", exact: 10 }
+    - { file: "series", column: "group_code", exact: 2 }
+    - { file: "series", column: "item_code", exact: 6 }
   
   lookup_exists:
     - { file: "series", column: "group_code", lookup_table: "group" }

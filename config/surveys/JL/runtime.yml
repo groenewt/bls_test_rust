@@ -1,0 +1,25 @@
+# JL Survey Runtime Configuration
+config_version: 1
+
+features:
+  async_processing: false
+  parallel_io: false
+  memory_optimization: false
+  experimental_features: false
+
+logging:
+  level: "info"
+  format: null
+  output: null
+  structured: false
+
+# Performance monitoring
+monitoring:
+  enabled: true  # Required field for MonitoringConfig
+  metrics_endpoint: null
+  health_check_interval: 60
+
+environment:
+  name: null
+  debug: false
+  profile: null

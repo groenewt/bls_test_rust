@@ -1,0 +1,13 @@
+# EE Survey Overview Configuration
+config_version: 1
+survey:
+  code: "EE"
+  name: "EE Survey"
+  description: "Bureau of Labor Statistics EE survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

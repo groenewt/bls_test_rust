@@ -4,37 +4,31 @@
 
 config_version: 1
 
-# Default processing settings for CX survey
+# Default processing settings for CX survey (flattened structure)
 processing:
-  strategy:
-    mode: "chunked"
-    max_concurrency: 4
-  
-  resources:
-    max_threads: 4
-    memory_limit_gb: 8
+  strategy: "chunked"
+  max_threads: 4
+  memory_limit: 8192    # 8GB in MB
+  parallel: true
 
-# Default output settings
+# Default output settings (flattened structure)
 output:
-  format: "csv"
-  partitioning:
-    enabled: true
-    partition_by: ["year"]
+  formats: ["csv"]
+  output_dir: "data/processed/bls/CX"
+  create_subdirs: true
 
-# Default quality settings
+# Default quality settings (flattened structure)
 quality:
-  policy:
-    mode: "fail_on_error"
-    max_error_rate: 0.05
+  validation:
+    fail_on_error: true
+    max_errors: 1000
 
-# Default runtime settings
+# Default runtime settings (flattened structure)
 runtime:
-  feature_flags:
+  features:
     enable_checkpoints: true
     enable_statistics: true
     enable_profiling: false
   
-  error_handling:
-    on_error: "continue"
-    max_errors: 2000
-    log_errors: true
+  monitoring:
+    enabled: true

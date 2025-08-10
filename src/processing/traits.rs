@@ -113,6 +113,12 @@ pub struct ProcessingContext {
     /// Custom context data
     pub custom_data: HashMap<String, String>,
     pub data_readers: Vec<Box<dyn DataReader>>,
+    /// Loaded series data
+    pub series_data: Vec<crate::data::model::Series>,
+    /// Loaded observation data 
+    pub observation_data: Vec<crate::data::model::Observation>,
+    /// Loaded lookup data
+    pub lookup_data: Vec<crate::data::model::Lookup>,
 }
 
 impl ProcessingContext {
@@ -126,6 +132,9 @@ impl ProcessingContext {
             temp_files: Vec::new(),
             custom_data: HashMap::new(),
             data_readers: vec![],
+            series_data: Vec::new(),
+            observation_data: Vec::new(), 
+            lookup_data: Vec::new(),
         }
     }
 

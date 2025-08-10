@@ -1,0 +1,17 @@
+# OR Survey IO Configuration
+config_version: 1
+input:
+  base_dir: "data/raw/bls"
+  patterns: []
+  format:
+    type: "fixed_width"
+    encoding: "utf-8"
+  validation:
+    strict: true
+output:
+  base_dir: "data/processed"
+  structure: []
+  naming:
+    pattern: null
+    timestamp_format: null
+    include_survey_code: false

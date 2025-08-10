@@ -15,7 +15,7 @@
 //! ## Usage
 
 use crate::config::model::{
-    Config, DagsConfig, IoConfig, ModelConfig, OutputConfig, OverrideConfig, OverviewConfig,
+    Config, DagsConfig, ModelConfig, OutputConfig, OverrideConfig, OverviewConfig,
     ProcessingConfig, QualityConfig, RuntimeConfig, SurveyConfig,
 };
 use crate::error::{ConfigError, Result};
@@ -345,11 +345,23 @@ impl ConfigLoader {
             )));
         }
 
-        // Load other required configs
-        self.load_optional_survey_config(config, &survey_dir, "io.yml", |c, cfg: IoConfig| {
-            c.merge_io_config(&cfg)
-                .map_err(ConfigError::MergeError)
-        })?;
+        // Load io.yml with YAML adapter
+        let io_path = survey_dir.join("io.yml");
+        if io_path.exists() {
+            match crate::config::yaml_adapter::load_yaml_io_config(&io_path) {
+                Ok(io_config) => {
+                    config.merge_io_config(&io_config)
+                        .map_err(ConfigError::MergeError)?;
+                    tracing::debug!("Successfully loaded io.yml using YAML adapter");
+                }
+                Err(e) => {
+                    tracing::warn!(
+                        "Failed to parse io.yml (may have different structure): {}, skipping", 
+                        e
+                    );
+                }
+            }
+        }
         self.load_optional_survey_config(
             config,
             &survey_dir,
@@ -387,16 +399,29 @@ impl ConfigLoader {
             },
         )?;
 
-        // Load optional DAGs config
+        // Load optional DAGs config with YAML adapter fallback
         let dags_path = survey_dir.join("dags.yml");
         if dags_path.exists() {
-            match file::read_yaml::<DagsConfig, _>(&dags_path) {
+            // First try the YAML adapter that supports the `graph/tasks/edges` schema
+            match crate::config::yaml_adapter::load_yaml_dags_config(&dags_path) {
                 Ok(dags_config) => {
                     config.dags = Some(dags_config);
-                    debug!("Loaded dags.yml for {}", survey_code);
+                    debug!("Loaded dags.yml for {} using YAML adapter", survey_code);
                 }
-                Err(e) => {
-                    warn!("Failed to parse dags.yml (may have different structure): {}, skipping", e);
+                Err(adapter_err) => {
+                    // Fall back to direct parsing if the adapter doesn't match
+                    match file::read_yaml::<DagsConfig, _>(&dags_path) {
+                        Ok(dags_config) => {
+                            config.dags = Some(dags_config);
+                            debug!("Loaded dags.yml for {} using direct parser", survey_code);
+                        }
+                        Err(e) => {
+                            warn!(
+                                "Failed to parse dags.yml via adapter ({}) and direct parser ({}), skipping",
+                                adapter_err, e
+                            );
+                        }
+                    }
                 }
             }
         }

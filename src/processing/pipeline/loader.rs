@@ -46,6 +46,7 @@ use crate::error::types::{ProcessingError, Result};
 use crate::processing::traits::{
     LoaderStage, PipelineStage, ProcessingContext,
 };
+use crate::processing::ProcessingConfig;
 use crate::utils::file::get_file_size;
 
 /// Implementation of the loader stage
@@ -189,11 +190,9 @@ impl LoaderStageImpl {
             } else if path.exists() {
                 resolved_paths.push(path);
             } else {
-                return Err(ProcessingError::PipelineError {
-                    stage: "loader".to_string(),
-                    message: format!("Input path does not exist: {path_str}"),
-                }
-                .into());
+                // Be resilient: warn and continue instead of failing the whole loader
+                log::warn!("[loader] Input path does not exist, skipping: {}", path_str);
+                continue;
             }
         }
 
@@ -238,6 +237,10 @@ impl LoaderStageImpl {
             || path_str.contains(".item")
             || path_str.contains(".industry")
             || path_str.contains(".occupation")
+            || path_str.contains(".footnote")
+            || path_str.contains(".period")
+            || path_str.contains(".seasonal")
+            || path_str.contains(".contacts")
         {
             Ok("lookup".to_string())
         } else if path_str.contains(".survey") {
@@ -417,6 +420,289 @@ impl LoaderStageImpl {
         }
     }
 
+    /// Parse BLS data files directly and populate context
+    fn parse_bls_data(&mut self, paths: &[String], context: &mut ProcessingContext) -> Result<()> {
+        use std::fs::File;
+        use std::io::{BufRead, BufReader};
+        use crate::data::model::{Series, Observation, Lookup};
+        use std::collections::HashMap;
+        
+        // Aggregate lookup tables across files
+        let mut lookup_tables: HashMap<String, Lookup> = HashMap::new();
+        
+        for path_str in paths {
+            let path = Path::new(path_str);
+            if !path.exists() {
+                continue;
+            }
+            
+            let filename = path.file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or("");
+                
+            log::info!("Parsing BLS file: {}", path.display());
+            
+            if filename.contains(".series") {
+                // Parse series file
+                let file = File::open(path).map_err(|e| 
+                    crate::error::types::Error::Processing(
+                        crate::error::types::ProcessingError::SystemError(
+                            format!("Failed to open file {}: {}", path.display(), e)
+                        )
+                    )
+                )?;
+                let reader = BufReader::new(file);
+                let mut lines = reader.lines();
+                
+                // Read header and map column indices if available
+                let mut col_index: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+                if let Some(header_res) = lines.next() {
+                    if let Ok(header) = header_res {
+                        let headers: Vec<String> = if header.contains('\t') {
+                            header.split('\t').map(|s| s.trim().to_lowercase()).collect()
+                        } else {
+                            header.split_whitespace().map(|s| s.trim().to_lowercase()).collect()
+                        };
+                        for (i, h) in headers.iter().enumerate() {
+                            col_index.insert(h.clone(), i);
+                        }
+                    }
+                }
+
+                // Column helpers with sensible defaults/fallbacks
+                let sid_idx = *col_index.get("series_id").unwrap_or(&0);
+                let title_idx = col_index.get("series_title").copied();
+                let area_idx = col_index.get("area_code").copied();
+                let item_idx = col_index.get("item_code").copied();
+                let seasonal_idx = col_index.get("seasonal").copied();
+                let periodicity_idx = col_index.get("periodicity_code").or_else(|| col_index.get("periodicity")).copied();
+                let base_code_idx = col_index.get("base_code").copied();
+                let base_period_idx = col_index.get("base_period").copied();
+
+                // Process data lines
+                for line_result in lines {
+                    let line = match line_result {
+                        Ok(line) => line,
+                        Err(e) => {
+                            log::warn!("Failed to read line: {}", e);
+                            continue;
+                        }
+                    };
+
+                    // Prefer TSV, fallback to whitespace
+                    let fields_tab: Vec<&str> = line.split('\t').collect();
+                    let fields: Vec<&str> = if fields_tab.len() > 1 { fields_tab } else { line.split_whitespace().collect() };
+
+                    if fields.is_empty() { continue; }
+
+                    let get_field = |idx_opt: Option<usize>| -> String {
+                        idx_opt
+                            .and_then(|i| fields.get(i).map(|s| s.trim().to_string()))
+                            .unwrap_or_default()
+                    };
+
+                    let series_id = get_field(Some(sid_idx));
+                    if series_id.is_empty() { continue; }
+
+                    // Title: prefer header-based index, else fallback to legacy assumption of 4th column
+                    let series_title = if let Some(i) = title_idx {
+                        get_field(Some(i))
+                    } else if fields.len() >= 4 {
+                        fields[3].trim().to_string()
+                    } else {
+                        String::new()
+                    };
+
+                    let mut series = Series::new(&series_id, &series_title);
+                    let area_code = get_field(area_idx);
+                    if !area_code.is_empty() { series.area_code = area_code; }
+                    let item_code = get_field(item_idx);
+                    if !item_code.is_empty() { series.item_code = item_code; }
+                    let seasonal = get_field(seasonal_idx);
+                    if !seasonal.is_empty() { series.seasonal = seasonal; }
+                    let periodicity = get_field(periodicity_idx);
+                    if !periodicity.is_empty() { series.periodicity_code = periodicity; }
+                    let base_code = get_field(base_code_idx);
+                    if !base_code.is_empty() { series.base_code = base_code; }
+                    let base_period = get_field(base_period_idx);
+                    if !base_period.is_empty() { series.base_period = base_period; }
+
+                    // Infer survey code from path .../bls/<code>/...
+                    let mut inferred_survey_code = String::from("XX");
+                    if let Some(parent) = path.parent() {
+                        if let Some(grand) = parent.parent() {
+                            if let Some(grand_name) = grand.file_name() {
+                                if grand_name.to_string_lossy().eq_ignore_ascii_case("bls") {
+                                    if let Some(dir) = parent.file_name() {
+                                        inferred_survey_code = dir.to_string_lossy().to_uppercase();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    series.survey_code = inferred_survey_code;
+
+                    context.series_data.push(series);
+                    self.stats.records_loaded += 1;
+                }
+            } else if filename.contains(".data") {
+                // Parse observation data file
+                let file = File::open(path).map_err(|e| 
+                    crate::error::types::Error::Processing(
+                        crate::error::types::ProcessingError::SystemError(
+                            format!("Failed to open file {}: {}", path.display(), e)
+                        )
+                    )
+                )?;
+                let reader = BufReader::new(file);
+                let mut lines = reader.lines();
+                
+                // Skip header line
+                if let Some(_header) = lines.next() {
+                    // Process data lines
+                    for line_result in lines {
+                        let line = match line_result {
+                            Ok(line) => line,
+                            Err(e) => {
+                                log::warn!("Failed to read line: {}", e);
+                                continue;
+                            }
+                        };
+                        // Prefer TSV, fallback to whitespace for uncleaned files
+                        let fields_tab: Vec<&str> = line.split('\t').collect();
+                        let (series_id, year, period, value_opt) = if fields_tab.len() >= 4 {
+                            let sid = fields_tab[0].trim().to_string();
+                            let yr: i32 = fields_tab[1].trim().parse().unwrap_or(0);
+                            let per = fields_tab[2].trim().to_string();
+                            let val_str = fields_tab[3].trim();
+                            let val_opt = sanitize_numeric(val_str);
+                            (sid, yr, per, val_opt)
+                        } else {
+                            let mut sid = String::new();
+                            let mut yr: i32 = 0;
+                            let mut per = String::new();
+                            let mut val_opt: Option<f64> = None;
+                            let tokens: Vec<&str> = line.split_whitespace().collect();
+                            if tokens.len() >= 4 {
+                                sid = tokens[0].trim().to_string();
+                                yr = tokens[1].trim().parse().unwrap_or(0);
+                                per = tokens[2].trim().to_string();
+                                val_opt = sanitize_numeric(tokens[3].trim());
+                            }
+                            (sid, yr, per, val_opt)
+                        };
+
+                        if !series_id.is_empty() {
+                            let observation = Observation::new(
+                                &series_id,
+                                &year,
+                                &period,
+                                value_opt
+                            );
+                            context.observation_data.push(observation);
+                            self.stats.records_loaded += 1;
+                        }
+                    }
+                }
+            } else if filename.contains(".area")
+                     || filename.contains(".item")
+                     || filename.contains(".footnote")
+                     || filename.contains(".period")
+                     || filename.contains(".seasonal")
+                     || filename.contains(".contacts") {
+                // Parse lookup files and aggregate into tables with entries
+                let file = File::open(path).map_err(|e| 
+                    crate::error::types::Error::Processing(
+                        crate::error::types::ProcessingError::SystemError(
+                            format!("Failed to open file {}: {}", path.display(), e)
+                        )
+                    )
+                )?;
+                let reader = BufReader::new(file);
+                let mut lines = reader.lines();
+
+                // Determine table id from filename
+                let table_id = if filename.contains(".area") { "area" }
+                               else if filename.contains(".item") { "item" }
+                               else if filename.contains(".footnote") { "footnote" }
+                               else if filename.contains(".seasonal") { "seasonal" }
+                               else if filename.contains(".contacts") { "contacts" }
+                               else { "period" };
+
+                // Infer survey code from path .../bls/<code>/...
+                let mut survey_code = String::from("XX");
+                if let Some(parent) = path.parent() {
+                    if let Some(grand) = parent.parent() {
+                        if let Some(grand_name) = grand.file_name() {
+                            if grand_name.to_string_lossy().eq_ignore_ascii_case("bls") {
+                                if let Some(dir) = parent.file_name() {
+                                    survey_code = dir.to_string_lossy().to_uppercase();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Ensure lookup table exists
+                lookup_tables.entry(table_id.to_string()).or_insert_with(|| Lookup::for_survey(table_id, table_id, &survey_code));
+                
+                // Skip header line
+                if let Some(_header) = lines.next() {
+                    // Process data lines
+                    for line_result in lines {
+                        let line = match line_result {
+                            Ok(line) => line,
+                            Err(e) => {
+                                log::warn!("Failed to read line: {}", e);
+                                continue;
+                            }
+                        };
+
+                        // Prefer TSV, fallback to whitespace
+                        let fields_tab: Vec<&str> = line.split('\t').collect();
+                        let (code, description) = if fields_tab.len() >= 2 {
+                            let code = fields_tab[0].trim().to_string();
+                            let desc = if table_id == "period" && fields_tab.len() >= 3 {
+                                // Use the period_name column if present
+                                fields_tab[2].trim().to_string()
+                            } else {
+                                fields_tab[1..].join(" ").trim().to_string()
+                            };
+                            (code, desc)
+                        } else {
+                            let toks: Vec<&str> = line.split_whitespace().collect();
+                            if toks.len() >= 2 {
+                                let code = toks[0].trim().to_string();
+                                let desc = if table_id == "period" && toks.len() >= 3 {
+                                    toks[2].trim().to_string()
+                                } else {
+                                    toks[1..].join(" ").trim().to_string()
+                                };
+                                (code, desc)
+                            } else { (String::new(), String::new()) }
+                        };
+
+                        if !code.is_empty() {
+                            if let Some(table) = lookup_tables.get_mut(table_id) {
+                                table.add_entry(&code, &description, None);
+                                self.stats.records_loaded += 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // After parsing all files, add aggregated lookup tables to context
+        if !lookup_tables.is_empty() {
+            for (_, table) in lookup_tables.into_iter() {
+                context.lookup_data.push(table);
+            }
+        }
+        
+        Ok(())
+    }
+
     /// Estimate data size for memory planning
     fn estimate_data_size_internal(&self, paths: &[String]) -> Result<u64> {
         let mut total_size = 0u64;
@@ -432,12 +718,75 @@ impl LoaderStageImpl {
     }
 }
 
-fn resolve_path(_p0: &String) -> Result<PathBuf> {
-    todo!()
+fn resolve_path(path_str: &String) -> Result<PathBuf> {
+    use std::path::Path;
+    let path = Path::new(path_str);
+    
+    // Convert to absolute path if relative
+    if path.is_absolute() {
+        Ok(path.to_path_buf())
+    } else {
+        // For relative paths, resolve relative to current working directory
+        match std::env::current_dir() {
+            Ok(cwd) => Ok(cwd.join(path)),
+            Err(e) => Err(crate::error::types::Error::Processing(
+                crate::error::types::ProcessingError::InvalidConfiguration(
+                    format!("Failed to get current directory: {}", e)
+                )
+            ))
+        }
+    }
 }
 
-fn expand_wildcards(_p0: &Path) -> Result<Vec<PathBuf>> {
-    todo!()
+fn expand_wildcards(path: &Path) -> Result<Vec<PathBuf>> {
+    use std::fs;
+
+    let path_str = path.to_string_lossy();
+
+    // For now, implement basic wildcard expansion
+    if path_str.contains('*') || path_str.contains('?') {
+        // Simple wildcard expansion - if path contains wildcards,
+        // try to match files in the parent directory
+        if let Some(parent) = path.parent() {
+            let filename_pattern = path.file_name().and_then(|n| n.to_str()).unwrap_or("*");
+
+            match fs::read_dir(parent) {
+                Ok(entries) => {
+                    let mut result = Vec::new();
+                    for entry in entries {
+                        if let Ok(entry) = entry {
+                            let entry_path = entry.path();
+                            // Only include files (skip directories)
+                            if entry_path.is_file() {
+                                if let Some(entry_name) = entry_path.file_name().and_then(|n| n.to_str()) {
+                                    // Very basic matching: if pattern has wildcard, include all; otherwise exact match
+                                    if filename_pattern.contains('*') || filename_pattern.contains('?') {
+                                        result.push(entry_path);
+                                    } else if entry_name == filename_pattern {
+                                        result.push(entry_path);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Ok(result)
+                }
+                Err(_e) => {
+                    // Be resilient: missing directory or unreadable dir returns empty results
+                    Ok(Vec::new())
+                }
+            }
+        } else {
+            Ok(Vec::new())
+        }
+    } else {
+        // No wildcards, return the path as-is if it exists
+        if path.exists() {
+            Ok(vec![path.to_path_buf()])
+        } else {
+            Ok(Vec::new()) // Return empty if file doesn't exist
+        }
+    }
 }
 
 impl Default for LoaderStageImpl {
@@ -464,17 +813,38 @@ impl PipelineStage for LoaderStageImpl {
     async fn execute(&mut self, context: &mut ProcessingContext) -> Result<()> {
         log::info!("Starting loader stage execution");
 
+        // Make loader idempotent across DAG tasks: skip if already executed
+        if context.custom_data.get("loader_executed").map(|v| v == "true").unwrap_or(false) {
+            log::info!("Loader already executed for this context; skipping to avoid duplicates");
+            return Ok(());
+        }
+
         // Load data from input paths
         let input_paths = context.input_paths.clone();
         let readers = self.load_data_from_paths(&input_paths, context)?;
 
+        // Parse BLS data directly from files and populate context
+        // Use resolved (expanded) file paths so patterns like '*.series' and 'data/*' are honored
+        let resolved_paths = self.resolve_input_paths(&input_paths)?;
+        let resolved_strs: Vec<String> = resolved_paths
+            .iter()
+            .map(|p| p.to_string_lossy().to_string())
+            .collect();
+        self.parse_bls_data(&resolved_strs, context)?;
+
         // Store readers in context for next stages
         context.data_readers = readers;
 
+        // Mark as executed to prevent duplicate loads in subsequent DAG tasks
+        context.custom_data.insert("loader_executed".to_string(), "true".to_string());
+
         log::info!(
-            "Loader stage completed: {} files loaded, {} records",
+            "Loader stage completed: {} files loaded, {} records, {} series, {} observations, {} lookups",
             self.stats.files_loaded,
-            self.stats.records_loaded
+            self.stats.records_loaded,
+            context.series_data.len(),
+            context.observation_data.len(),
+            context.lookup_data.len()
         );
 
         Ok(())
@@ -682,4 +1052,15 @@ mod tests {
         // Should not fail
         assert!(loader.cleanup(&mut context).await.is_ok());
     }
+}
+
+
+// Helper: sanitize numeric strings from raw BLS files (space-separated/uncleaned)
+// - removes commas and trims whitespace
+// - interprets "-" or empty as missing (None)
+fn sanitize_numeric(s: &str) -> Option<f64> {
+    let t = s.trim();
+    if t.is_empty() || t == "-" { return None; }
+    let cleaned = t.replace(",", "");
+    cleaned.parse::<f64>().ok()
 }

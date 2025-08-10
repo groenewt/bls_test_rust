@@ -154,7 +154,8 @@ impl CsvDataWriter {
         }
 
         if let Some(ref mut writer) = self.writer {
-            let headers = vec!["code", "name", "description"];
+            // Flattened lookup entries: one row per entry across all tables
+            let headers = vec!["table_id", "code", "description", "parent_code", "survey_code"];
 
             writer
                 .write_record(&headers)
@@ -498,62 +499,84 @@ impl LookupWriter for CsvDataWriter {
         self.validate_record(lookup, "lookup")?;
         self.write_lookup_headers()?;
 
-        let record = self.lookup_to_record(lookup);
-        let record_size = record.iter().map(|s| s.len()).sum::<usize>() as u64;
+        let table_id = lookup.table_id.clone();
+        let survey_code = lookup.survey_code.clone();
+
+        let mut total_bytes = 0u64;
+        let mut rows_written = 0u64;
+        let mut errors = 0u64;
 
         if let Some(ref mut writer) = self.writer {
-            writer.write_record(&record).map_err(|e| {
-                DataError::io_error(format!("Failed to write lookup record: {e}"))
-            })?;
-
-            self.update_stats(1, record_size, 0, start_time);
+            for entry in lookup.entries.values() {
+                let record = vec![
+                    table_id.clone(),
+                    entry.code.clone(),
+                    entry.description.clone(),
+                    entry.parent_code.clone().unwrap_or_default(),
+                    survey_code.clone(),
+                ];
+                let record_size = record.iter().map(|s| s.len()).sum::<usize>() as u64;
+                match writer.write_record(&record) {
+                    Ok(_) => {
+                        total_bytes += record_size;
+                        rows_written += 1;
+                    }
+                    Err(e) => {
+                        errors += 1;
+                        eprintln!("Failed to write lookup record: {e}");
+                    }
+                }
+            }
         } else {
             return Err(DataError::io_error("No writer available".to_string()).into());
         }
 
+        self.update_stats(rows_written, total_bytes, errors, start_time);
         Ok(())
     }
 
     async fn write_lookups_batch(&mut self, lookups: &[Lookup]) -> Result<()> {
         let start_time = Instant::now();
-        let mut total_bytes = 0;
-        let mut errors = 0;
+        let mut total_bytes = 0u64;
+        let mut errors = 0u64;
+        let mut rows_written = 0u64;
 
         self.write_lookup_headers()?;
 
-        // Pre-process all records to avoid borrow conflicts
-        let mut processed_records = Vec::new();
+        // Preprocess records to avoid borrow conflicts of self.writer
+        let mut records: Vec<Vec<String>> = Vec::new();
         for lookup in lookups {
-            match self.validate_record(lookup, "lookup") {
-                Ok(_) => {
-                    let record = self.lookup_to_record(lookup);
-                    let record_size = record.iter().map(|s| s.len()).sum::<usize>() as u64;
-                    total_bytes += record_size;
-                    processed_records.push(record);
-                }
-                Err(_) => {
-                    errors += 1;
-                }
+            self.validate_record(lookup, "lookup")?;
+            let table_id = lookup.table_id.clone();
+            let survey_code = lookup.survey_code.clone();
+            for entry in lookup.entries.values() {
+                let record = vec![
+                    table_id.clone(),
+                    entry.code.clone(),
+                    entry.description.clone(),
+                    entry.parent_code.clone().unwrap_or_default(),
+                    survey_code.clone(),
+                ];
+                let record_size = record.iter().map(|s| s.len()).sum::<usize>() as u64;
+                total_bytes += record_size;
+                records.push(record);
             }
         }
 
         if let Some(ref mut writer) = self.writer {
-            for record in processed_records {
+            for record in records {
                 if let Err(e) = writer.write_record(&record) {
                     errors += 1;
                     eprintln!("Failed to write lookup record: {e}");
+                } else {
+                    rows_written += 1;
                 }
             }
         } else {
             return Err(DataError::io_error("No writer available".to_string()).into());
         }
 
-        self.update_stats(
-            lookups.len() as u64 - errors,
-            total_bytes,
-            errors,
-            start_time,
-        );
+        self.update_stats(rows_written, total_bytes, errors, start_time);
         Ok(())
     }
 

@@ -1,0 +1,13 @@
+# SU Survey Overview Configuration
+config_version: 1
+survey:
+  code: "SU"
+  name: "SU Survey"
+  description: "Bureau of Labor Statistics SU survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []

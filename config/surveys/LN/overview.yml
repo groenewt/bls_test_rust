@@ -1,0 +1,13 @@
+# LN Survey Overview Configuration
+config_version: 1
+survey:
+  code: "LN"
+  name: "LN Survey"
+  description: "Bureau of Labor Statistics LN survey data"
+  size_class: "medium"
+  characteristics:
+    frequency: "monthly"
+    coverage: "US"
+contacts: []
+documentation: {}
+tags: []
